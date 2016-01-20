@@ -1,0 +1,22 @@
+{
+  "name": "gestionlan/framework",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Manuel Muñoz Rosa",
+      "email": "mmunoz@gestionlan.com"
+    }
+  ],
+  "autoload" : {
+    "psr-4": {
+      "GLFramework\\": "src/"
+    },
+    "files": [
+      "src/functions.php"
+    ]
+  },
+  "require": {
+    "twig/twig": "~1.0",
+    "symfony/yaml": "^3.0"
+  }
+}

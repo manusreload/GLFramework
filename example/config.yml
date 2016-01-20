@@ -1,0 +1,17 @@
+app:
+  basepath: /
+  index: home
+  name: Demo
+  banner: images/logo.jpg
+
+  controllers: pages
+  model: model
+  views:
+    - view
+    - view/includes
+
+database:
+  hostname: 127.0.0.1
+  username: root
+  password:
+  database: dbdemo
