@@ -26,6 +26,7 @@ class View
         $directoriesTmp = $config['app']['views'];
         if(!is_array($directoriesTmp)) $directoriesTmp = array($directoriesTmp);
         $directories = array();
+        $directories[] = __DIR__ . "/../views";
         foreach($directoriesTmp as &$directory)
         {
             $directory = $dir . "/" . $directory;
