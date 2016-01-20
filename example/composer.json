@@ -1,0 +1,12 @@
+{
+  "license": "proprietary",
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "http://satis.mmunoz.net"
+    }
+  ],
+  "require": {
+    "gestionlan/framework": "dev-master"
+  }
+}

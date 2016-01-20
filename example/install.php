@@ -7,7 +7,7 @@
  */
 
 
-require_once "../vendor/autoload.php";
+require_once "vendor/autoload.php";
 
 $bs = new \GLFramework\Bootstrap(__DIR__);
 $bs->install();
