@@ -25,13 +25,13 @@ class AuthController extends Controller
         // TODO: Implement run() method.
         if(isset($_SESSION['user']))
         {
-            $db = $this->getDb();
             $username =  $_SESSION['user'][0];
             $password =  $_SESSION['user'][1];
-            $user = $db->select_first("SELECT * FROM tbl_user WHERE user_name = '$username' AND password = '$password'");
+            $user = $this->instanceUser(null);
+            $user = $user->getByUserPassword($username, $password);
             if($user)
             {
-                $this->user = new User($user);
+                $this->user = $this->instanceUser($user);
             }
             else{
                 unset($_SESSION['user']);
@@ -66,7 +66,8 @@ class AuthController extends Controller
             $username = $db->escape_string($_POST['username']); // Para evitar inyecciones SQL
             $password = md5($_POST['password']);
 
-            $user = $db->select_first("SELECT * FROM tbl_user WHERE user_name = '$username' AND password = '$password'");
+            $user = $this->instanceUser(null);
+            $user = $user->getByUserPassword($username, $password);
             if($user)
             {
                 $_SESSION['user'] = array($username, $password);
@@ -93,6 +94,15 @@ class AuthController extends Controller
     public function setRequireLogin($requireLogin)
     {
         $this->requireLogin = $requireLogin;
+    }
+
+    /**
+     * @param $data
+     * @return User
+     */
+    public function instanceUser($data)
+    {
+        return new User($data);
     }
 
 
