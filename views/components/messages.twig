@@ -1,0 +1,5 @@
+{% for message in this.getMessages() %}
+    <div class="alert alert-{{ message.type }}">
+        {{ message.message }}
+    </div>
+{% endfor %}

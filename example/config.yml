@@ -1,14 +1,19 @@
 app:
-  basepath: /
+  basepath:
   index: home
   name: Demo
   banner: images/logo.jpg
 
-  controllers: pages
+  controllers:
+    - pages
   model: model
   views:
     - view
     - view/includes
+
+  routes:
+    - home: ["/home/example/[i:id]", GET]
+    - sub_home: ["/home/sub/example/[i:id]", GET]
 
 database:
   hostname: 127.0.0.1

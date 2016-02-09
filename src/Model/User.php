@@ -35,4 +35,9 @@ class User extends Model
         return $this->db->select_first("SELECT * FROM {$this->table_name} WHERE user_name = '$user' AND password = '$password'");
 
     }
+
+    public function encrypt($pass)
+    {
+        return md5($pass);
+    }
 }

@@ -29,23 +29,24 @@ class DBConnection
 
     public function connect()
     {
-        if(!self::$link)
-        {
+        if (!self::$link) {
             $config = Bootstrap::getSingleton()->getConfig();
             self::$link = mysqli_connect($config['database']['hostname'],
                 $config['database']['username'],
                 $config['database']['password']);
-            try{
+            if (self::$link) {
+                self::$link->query("SET NAMES utf8");
+                try {
 
-                if(self::$link->get_connection_stats())
-                {
-                    self::$selected = self::$link->select_db($config['database']['database']);
-                    return self::$selected;
+//                    if (self::$link->get_connection_stats()) {
+                        self::$selected = self::$link->select_db($config['database']['database']);
+
+                        return self::$selected;
+//                    }
+                } catch (\Exception $ex) {
                 }
-            }catch(\Exception $ex)
-            {
+                return self::$selected;
             }
-            return self::$selected;
         }
         return self::$selected;
     }
@@ -57,49 +58,74 @@ class DBConnection
 
     public function escape_string($string)
     {
-        if($string == null) return $string;
+        if(!self::$link) return $string;
+
+        if ($string == null) return $string;
         return mysqli_escape_string(self::$link, $string);
+
     }
 
     public function select($query)
     {
-        $result = mysqli_query(self::$link, $query);
-        $list = array();
-        if($result)
-        {
-            while($row = $result->fetch_assoc())
-            {
-                $list[] = $row;
+        if (self::$link) {
+
+            $result = mysqli_query(self::$link, $query);
+            $list = array();
+            if ($result) {
+                while ($row = $result->fetch_assoc()) {
+                    $list[] = $row;
+                }
+                return $list;
+            } else {
+                throw new \Exception(self::$link->error);
             }
-            return $list;
-        }
-        else{
-            throw new \Exception(self::$link->error);
+        } else {
+            throw new \Exception("Database connection is not open!");
         }
     }
 
     public function select_first($query)
     {
         $result = $this->select($query);
-        if($result && count($result) > 0) return $result[0];
+        if ($result && count($result) > 0) return $result[0];
         return $result;
     }
 
     public function select_count($query)
     {
         $result = $this->select_first($query);
-        if($result) return current($result);
+        if ($result) return current($result);
         return 0;
     }
 
     public function exec($query)
     {
-        $result = mysqli_query(self::$link, $query);
-        if($result)
+        if(self::$link)
         {
-            return isset($result->current_field) || true;
+
+            $result = mysqli_query(self::$link, $query);
+            if ($result) {
+                return isset($result->current_field) || true;
+            }
+
+            throw new \Exception(self::$link->error);
         }
+        throw new \Exception("Database connection is not open!");
+
+    }
+
+
+    public function insert($query)
+    {
+        if($this->exec($query))
+            return $this->getLastInsertId();
         return false;
+
+    }
+
+    public function getLastInsertId()
+    {
+        return $this->getLink()->insert_id;
     }
 
     public function error()

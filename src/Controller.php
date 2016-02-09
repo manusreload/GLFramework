@@ -18,24 +18,28 @@ abstract class Controller
     private $view;
     var $messages = array();
     var $config = array();
+    var $description = "";
+
     /**
      * Controller constructor.
+     * @param string $base
      */
-    public function __construct()
+    public function __construct($base = "")
     {
         $this->config = Bootstrap::getSingleton()->getConfig();
         $this->restoreMessages();
         $this->name = get_class($this);
-        $this->template = $this->name . ".twig";
+        $base = substr($base, 0, strrpos($base, "."));
+        $this->template = $base . ".twig";
 
         $this->view = new View($this);
     }
 
     abstract public function run();
 
-    public function display($data)
+    public function display($data, $params)
     {
-        return $this->view->render($data);
+        return $this->view->render($data, $params);
     }
 
     /**

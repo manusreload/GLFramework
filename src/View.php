@@ -26,7 +26,6 @@ class View
         $directoriesTmp = $config['app']['views'];
         if(!is_array($directoriesTmp)) $directoriesTmp = array($directoriesTmp);
         $directories = array();
-        $directories[] = __DIR__ . "/../views";
         foreach($directoriesTmp as &$directory)
         {
             $directory = $dir . "/" . $directory;
@@ -35,6 +34,7 @@ class View
                 $directories[] = $directory;
             }
         }
+        $directories[] = __DIR__ . "/../views";
         $this->controller = $controller;
         $loader = new \Twig_Loader_Filesystem($directories);
         $this->twig = new \Twig_Environment($loader, array());
@@ -51,12 +51,16 @@ class View
         $this->twig->addFilter(new \Twig_SimpleFilter('implode', array($this, 'implode')));
     }
 
-    public function render($data = null)
+    public function render($data = null, $params = array())
     {
-        $data = $data == null?array():$data;
-        $template = $this->twig->loadTemplate($this->controller->getTemplate());
-        return $template->render($data);
-
+        if($this->controller->getTemplate() != null)
+        {
+            $data = $data == null?array():$data;
+            $this->twig->addGlobal('params', $params[0]);
+            $template = $this->twig->loadTemplate($this->controller->getTemplate());
+            return $template->render($data);
+        }
+        return $data;
     }
 
     public function addFilter($filter)

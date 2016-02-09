@@ -21,34 +21,44 @@ class DBStructure
 
         $fields = array();
         $definition = $model->getDefinition();
-        $definitionFields = $definition['fields'];
-        $definitionFields[ $definition['index'] ] = array('type' => "int(11)", 'autoincrement' => true);
-        foreach($definitionFields as $field => $props)
+        if(isset($definition['fields']))
         {
-            if(is_array($props))
+
+            $definitionFields = $definition['fields'];
+            if(is_array($definition['index']))
             {
-
-                $fields[$field] = array(
-                    'field' => $field,
-                );
-
-                if(isset($props['type']))
-                    $fields[$field]['type'] = $props['type'];
-                if(isset($props['default']))
-                    $fields[$field]['default'] = $props['default'];
-                else
-                    $fields[$field]['default'] = "";
-                if(isset($props['autoincrement']))
-                    $fields[$field]['autoincrement'] = $props['autoincrement'];
-
+                $definitionFields[ $definition['index']['field'] ] = $definition['index'];
             }
             else{
-                $fields[$field] = array(
-                    'field' => $field,
-                    'type' => $props,
-                    'default' => "",
-//                'null' => 1
-                );
+                $definitionFields[ $definition['index'] ] = array('type' => "int(11)", 'autoincrement' => true);
+            }
+            foreach($definitionFields as $field => $props)
+            {
+                if(is_array($props))
+                {
+
+                    $fields[$field] = array(
+                        'field' => $field,
+                    );
+
+                    if(isset($props['type']))
+                        $fields[$field]['type'] = $props['type'];
+                    if(isset($props['default']))
+                        $fields[$field]['default'] = $props['default'];
+                    else
+                        $fields[$field]['default'] = "";
+                    if(isset($props['autoincrement']))
+                        $fields[$field]['autoincrement'] = $props['autoincrement'];
+
+                }
+                else{
+                    $fields[$field] = array(
+                        'field' => $field,
+                        'type' => $props,
+                        'default' => "",
+    //                'null' => 1
+                    );
+                }
             }
         }
         $result = array();
@@ -70,7 +80,9 @@ class DBStructure
         }
         foreach($tables as $table)
         {
-            $info = $db->select("DESCRIBE " . $table);
+            $table = $db->escape_string($table);
+
+            $info = $db->select("DESCRIBE `" . $table . "`");
             $fields = array();
             foreach ($info as $row) {
                 $field = array();

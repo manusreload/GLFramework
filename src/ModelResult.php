@@ -26,6 +26,9 @@ class ModelResult
     }
 
 
+    /**
+     * @return Model
+     */
     public function getModel()
     {
         return $this->model_class->newInstance($this->model);

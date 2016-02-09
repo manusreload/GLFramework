@@ -62,11 +62,10 @@ class AuthController extends Controller
     {
         if(isset($_POST['username']) && isset($_POST['password']))
         {
+            $user = $this->instanceUser(null);
             $db = $this->getDb();
             $username = $db->escape_string($_POST['username']); // Para evitar inyecciones SQL
-            $password = md5($_POST['password']);
-
-            $user = $this->instanceUser(null);
+            $password = $user->encrypt($_POST['password']);
             $user = $user->getByUserPassword($username, $password);
             if($user)
             {
@@ -74,6 +73,7 @@ class AuthController extends Controller
                 $this->quit("home");
             }
             else{
+                $this->addMessage("Usuario contraseña incorrecta", "danger");
                 return array("error" => true);
             }
         }
@@ -102,6 +102,8 @@ class AuthController extends Controller
      */
     public function instanceUser($data)
     {
+        if(class_exists("User"))
+            return new \User($data);
         return new User($data);
     }
 
