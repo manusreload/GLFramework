@@ -94,11 +94,12 @@ class Module
 
     public function register_autoload_controllers()
     {
-        spl_autoload_register(function($class)
+        $map = $this->controllers_map;
+        spl_autoload_register(function($class) use($map)
         {
            if(isset($this->controllers_map[$class]))
            {
-               $file = $this->controllers_map[$class];
+               $file = $map[$class];
                require_once $file;
                return true;
            }
