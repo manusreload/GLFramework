@@ -12,6 +12,7 @@ app:
     - view/includes
 
   routes:
+    - MyNameSpace\home: ["/home/example/[i:id]", GET]
     - home: ["/home/example/[i:id]", GET]
     - sub_home: ["/home/sub/example/[i:id]", GET]
 

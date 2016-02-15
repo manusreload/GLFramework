@@ -4,6 +4,8 @@ Test successful!
 
     {{ this.variable }}
 
+    <a href="{{ this.getLink('MyNameSpace\\home', {'id' : 100}) }}">URL</a>
+
 {% endblock %}
 {% block scripts %}{% endblock %}
 {% block styles %}{% endblock %}

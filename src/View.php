@@ -56,7 +56,7 @@ class View
         if($this->controller->getTemplate() != null)
         {
             $data = $data == null?array():$data;
-            $this->twig->addGlobal('params', $params[0]);
+            $this->twig->addGlobal('params', $params);
             $template = $this->twig->loadTemplate($this->controller->getTemplate());
             return $template->render($data);
         }

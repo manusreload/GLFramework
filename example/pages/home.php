@@ -6,6 +6,8 @@
  * Time: 19:11
  */
 
+namespace MyNameSpace;
+
 class home extends \GLFramework\Controller
 {
 
