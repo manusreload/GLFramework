@@ -74,7 +74,7 @@ class Module
                 if($file != "." && $file != "..")
                 {
                     $filename = $current . "/" . $file;
-                    $name = ($folder?$folder . "/":"") . $file;
+                    $name = $folder . "/" . $file;
                     $ext = substr($file, strrpos($file, "."));
                     if($ext == ".php")
                     {
@@ -97,7 +97,7 @@ class Module
         $map = $this->controllers_map;
         spl_autoload_register(function($class) use($map)
         {
-           if(isset($this->controllers_map[$class]))
+           if(isset($map[$class]))
            {
                $file = $map[$class];
                require_once $file;
@@ -121,10 +121,12 @@ class Module
      */
     public function register_router($router)
     {
+        $list = array();
         $controllers = $this->getControllers();
         foreach($controllers as $controller => $file)
         {
             $routes = $this->getControllerDefaultRoutes($controller, $file);
+            $list[] = $routes;
             foreach($routes as $route)
             {
                 $this->register_router_controller($router, $route, $controller);
@@ -177,7 +179,7 @@ class Module
 
         if(!is_array($params)) $params = array($params);
         $route = $params[0];
-        $method = isset($params[1])?$params[1]:"GET";
+        $method = isset($params[1])?$params[1]:"GET|POST";
         $name = isset($params[2])?$params[2]:$controller;
         if(in_array($name, $this->controllers_routes)) $name = null;
         else $this->controllers_routes[] = $name;

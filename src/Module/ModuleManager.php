@@ -9,6 +9,7 @@
 namespace GLFramework\Module;
 
 
+use GLFramework\Controller\ErrorController;
 use GLFramework\Controller\ExceptionController;
 use Symfony\Component\Yaml\Yaml;
 
@@ -35,7 +36,7 @@ class ModuleManager
     {
         $this->config = $config;
         $this->directory = $directory;
-        $this->router = new \AltoRouter();
+        $this->router = new \AltoRouter(array(), $this->config['app']['basepath']);
     }
 
     /**
