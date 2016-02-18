@@ -114,4 +114,10 @@ abstract class Controller
         return $this->view;
     }
 
+    public function getLink($controller, $params = array())
+    {
+        $controller = (string) $controller;
+        return Bootstrap::getSingleton()->getManager()->getRouter()->generate($controller, $params);
+    }
+
 }

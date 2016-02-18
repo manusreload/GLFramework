@@ -11,14 +11,18 @@ namespace GLFramework;
 
 use GLFramework\Controller\ErrorController;
 use GLFramework\Controller\ExceptionController;
+use GLFramework\Module\ModuleManager;
 use Symfony\Component\Yaml\Yaml;
 
 class Bootstrap
 {
     private static $singelton;
+    /**
+     * @var ModuleManager
+     */
+    private $manager;
     private $config;
     private $directory;
-    private $map = array();
 
     /**
      * Bootstrap constructor.
@@ -42,131 +46,21 @@ class Bootstrap
         $bootstrap->run();
     }
 
-    /**
-     * @param $name
-     * @return Controller
-     */
-    public function instanceController($name)
+    public function init()
     {
-        if(class_exists($name))
-        {
-            $reflector = new \ReflectionClass($name);
-            $fn = $reflector->getFileName();
-            $file = str_replace($this->directory . "/", "", $fn);
-            $base = substr($file, strpos($file, "/") + 1);
-            return new $name($base);
-        }
+        $this->register_error_handler();
+
+        $this->config = Yaml::parse(file_get_contents($this->directory . "/config.yml"));
+        $this->manager = new ModuleManager($this->config, $this->directory);
+        $this->manager->init();
     }
+
     public function run()
     {
         session_start();
-
-        if(!$this->run_router())
-        {
-            $filename = $this->getFilename();
-            $index = $this->config['app']['index'];
-            $files = array("$filename", "$filename/$index", "$filename{$index}");
-            try {
-                foreach ($files as $file) {
-                    $controller = str_replace("/", "_", $file);
-                    if(class_exists($controller))
-                    {
-                        $this->runController($controller);
-                        return;
-                    }
-                }
-                $this->runController(new ErrorController("Controller not found: $filename"));
-            } catch (\Exception $ex) {
-                try {
-                    $this->runController(new ExceptionController($ex));
-
-                } catch (\Exception $ex) {
-                    print_debug($ex);
-                }
-            }
-        }
+        $this->manager->run();
     }
 
-    public function run_router()
-    {
-        $router = new \AltoRouter();
-        if(isset($this->config['app']['routes']))
-        {
-            foreach($this->config['app']['routes'] as $item)
-            {
-                foreach($item as $controller => $params)
-                {
-                    if(!is_array($params)) $params = array($params);
-                    $route = $params[0];
-                    $method = isset($params[1])?$params[1]:"GET";
-                    $router->map($method, $route, function() use($controller)
-                    {
-                        $this->runController($controller, func_get_args());
-                    });
-                }
-
-            }
-            if($match = $router->match())
-            {
-                $args = array();
-                $args[] = $match['params'];
-                foreach($match['params'] as $param)
-                {
-                    $args[] = $param;
-                }
-                call_user_func_array($match['target'], $args);
-                return true;
-            }
-
-        }
-
-        return false;
-
-
-    }
-
-    public function init()
-    {
-        $this->config = Yaml::parse(file_get_contents($this->directory . "/config.yml"));
-        $this->register_autoload_model();
-        $this->register_controllers();
-        $this->register_error_handler();
-    }
-
-    public function register_controllers($folder = null)
-    {
-        if($folder == null)
-        {
-            $controllers = $this->config['app']['controllers'];
-            if (!is_array($controllers)) $controllers = array($controllers);
-            foreach($controllers as $controllerFolder)
-            {
-                $this->register_controllers($this->directory . "/" . $controllerFolder);
-            }
-        }
-        else{
-            if(is_dir($folder)) {
-                $files = scandir($folder);
-                foreach($files as $file)
-                {
-                    if($file != "." && $file != "..")
-                    {
-                        $filename = $folder . "/" . $file;
-                        $ext = substr($file, strrpos($file, "."));
-                        if($ext == ".php")
-                        {
-                            include_once $filename;
-                        }
-                        else if(is_dir($filename))
-                        {
-                            $this->register_controllers($filename);
-                        }
-                    }
-                }
-            }
-        }
-
-    }
 
     public function install()
     {
@@ -217,42 +111,6 @@ class Bootstrap
         }
     }
 
-    /**
-     * @param $controller Controller
-     * @param array $params
-     */
-    public function runController($controller, $params = array())
-    {
-        try
-        {
-            $class = $this->instanceController($controller);
-            $data = call_user_func_array(array($class, "run"), $params);
-            echo $class->display($data, $params);
-        }
-        catch(\Exception $ex)
-        {
-            $this->runController(new ExceptionController($ex));
-        }
-
-    }
-
-    public function getFilename()
-    {
-        $filename = $_SERVER['REQUEST_URI'];
-        $filename = str_replace($this->config['app']['basepath'], "", $filename);
-        if (($index = strpos($filename, "?")) !== FALSE) {
-            $filename = substr($filename, 0, $index);
-        }
-
-        if (strpos($filename, "/") === 0) {
-            $filename = substr($filename, 1);
-        }
-        if (($index = strrpos($filename, ".php")) !== FALSE) {
-            $filename = substr($filename, 0, $index);
-        }
-        return $filename;
-    }
-
     public function getConfig()
     {
         return $this->config;
@@ -265,6 +123,16 @@ class Bootstrap
     {
         return $this->directory;
     }
+
+    /**
+     * @return ModuleManager
+     */
+    public function getManager()
+    {
+        return $this->manager;
+    }
+
+
 
     public function getModels()
     {
@@ -283,22 +151,6 @@ class Bootstrap
         return $list;
     }
 
-    public function register_autoload_model()
-    {
-        $models = $this->config['app']['model'];
-        if (!is_array($models)) $models = array($models);
-        $dir = $this->directory;
-
-        spl_autoload_register(function ($class) use ($models, $dir) {
-            foreach ($models as $directory) {
-                $filename = $dir . "/" . $directory . "/$class.php";
-                if (file_exists($filename)) {
-                    include_once $filename;
-                    return true;
-                }
-            }
-        });
-    }
 
     public function log($message, $level = 1)
     {
