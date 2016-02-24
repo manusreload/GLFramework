@@ -36,6 +36,7 @@ class Model
     {
         $this->db = new DBConnection();
         $this->setData($data);
+
     }
 
     public function insert($data = null)
@@ -227,11 +228,18 @@ class Model
     public function setData($data)
     {
         if ($data != null) {
-            $fileds = $this->getFields();
-            foreach ($fileds as $filed) {
-                if (isset($data[$filed])) {
-                    $this->{$filed} = $data[$filed];
+            if(is_array($data))
+            {
+                $fileds = $this->getFields();
+                foreach ($fileds as $field) {
+                    if (isset($data[$field])) {
+                        $this->{$field} = $data[$field];
+                    }
                 }
+            }
+            else
+            {
+                $this->setData($this->get($data)->model);
             }
         }
         return $this;
@@ -243,6 +251,15 @@ class Model
     public function getDefinition()
     {
         return $this->definition;
+    }
+    /**
+     * @return array
+     */
+    public function getFieldDefinition($field)
+    {
+        if(isset($this->definition[$field]))
+            return $this->definition[$field];
+        return null;
     }
 
     /**

@@ -20,8 +20,12 @@ function print_debug($info)
 }
 function fix_date($date)
 {
-    $date = str_replace("/", "-", $date);
-    return date("Y-m-d", strtotime($date));
+    if($date != "")
+    {
+        $date = str_replace("/", "-", $date);
+        return date("Y-m-d", strtotime($date));
+    }
+    return $date;
 }
 
 

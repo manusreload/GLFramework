@@ -41,6 +41,7 @@ class View
         $this->twig->addGlobal('config', Bootstrap::getSingleton()->getConfig());
         $this->twig->addGlobal('_GET', $_GET);
         $this->twig->addGlobal('_POST', $_POST);
+        $this->twig->addGlobal('_REQUEST', $_REQUEST);
         $this->twig->addGlobal('this', $this->controller);
         $this->twig->addFilter(new \Twig_SimpleFilter('active', array($this, 'isHrefActive')));
         $this->twig->addFilter(new \Twig_SimpleFilter('fecha_hora', array($this, 'parseFechaHora')));

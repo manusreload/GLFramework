@@ -49,6 +49,7 @@ class Bootstrap
     public function init()
     {
         $this->register_error_handler();
+        date_default_timezone_set('Europe/Berlin');
 
         $this->config = Yaml::parse(file_get_contents($this->directory . "/config.yml"));
         $this->manager = new ModuleManager($this->config, $this->directory);

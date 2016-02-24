@@ -15,6 +15,7 @@ use GLFramework\Model\User;
 class AuthController extends Controller
 {
 
+    private $session_key = "auth_user";
     /**
      * @var User
      */
@@ -23,10 +24,10 @@ class AuthController extends Controller
     public function run()
     {
         // TODO: Implement run() method.
-        if(isset($_SESSION['user']))
+        if(isset($_SESSION['auth_user']))
         {
-            $username =  $_SESSION['user'][0];
-            $password =  $_SESSION['user'][1];
+            $username =  $_SESSION[$this->session_key][0];
+            $password =  $_SESSION[$this->session_key][1];
             $user = $this->instanceUser(null);
             $user = $user->getByUserPassword($username, $password);
             if($user)
@@ -42,11 +43,11 @@ class AuthController extends Controller
         if(isset($_GET['logout']))
         {
             $this->addMessage("Se ha desconectado correctamente");
-            unset($_SESSION['user']);
+            unset($_SESSION[$this->session_key]);
         }
         if($this->requireLogin)
         {
-            if(!isset($_SESSION['user']))
+            if(!isset($_SESSION[$this->session_key]))
             {
                 if(strpos($_SERVER['REQUEST_URI'], "/login") === FALSE)
                 {
@@ -69,7 +70,7 @@ class AuthController extends Controller
             $user = $user->getByUserPassword($username, $password);
             if($user)
             {
-                $_SESSION['user'] = array($username, $password);
+                $_SESSION[$this->session_key] = array($username, $password);
                 $this->quit("home");
             }
             else{
