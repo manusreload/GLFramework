@@ -18,13 +18,14 @@ class User extends Model
     var $nombre;
     var $email;
 
-    protected $table_name = "users";
+    protected $table_name = "user";
     protected $definition = array(
         'index' => 'id',
         'fields' => array(
             'user_name' => "varchar(20)",
             'password' => "varchar(200)",
             'privilegios' => "text",
+            'admin' => "int(11)",
             'nombre' => "text",
             'email' => "text",
         )
