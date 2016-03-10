@@ -9,26 +9,46 @@
 namespace GLFramework;
 
 
+use GLFramework\Module\Module;
+use GLFramework\Module\ModuleManager;
+use GLFramework\Upload\Uploads;
+
 abstract class Controller
 {
 
-    private $name = null;
+    var $name = null;
+    var $admin = false;
+
     private $template = null;
     private $db = null;
     private $view;
     var $messages = array();
     var $config = array();
     var $description = "";
+    var $directory;
+    /**
+     * @var Module
+     */
+    var $module;
+    var $params = array();
 
     /**
      * Controller constructor.
+     * @param $module Module
      * @param string $base
+     * @internal param array $config
      */
-    public function __construct($base = "")
+    public function __construct($base = "", $module = null)
     {
-        $this->config = Bootstrap::getSingleton()->getConfig();
+        if($module == null)
+            $module = ModuleManager::getInstance()->getMainModule();
+
+        $this->module = $module;
+        $this->config = $this->module->getConfig();
         $this->restoreMessages();
-        $this->name = get_class($this);
+        if(empty($this->name))
+            $this->name = get_class($this);
+        $this->directory = dirname($base);
         $base = substr($base, 0, strrpos($base, "."));
         $this->template = $base . ".twig";
 
@@ -89,7 +109,7 @@ abstract class Controller
     public function getDb()
     {
         if(!$this->db)
-            $this->db = new DBConnection();
+            $this->db = new DatabaseManager();
         return $this->db;
     }
 
@@ -114,10 +134,57 @@ abstract class Controller
         return $this->view;
     }
 
-    public function getLink($controller, $params = array())
+    public function getLink($controller, $params = array(), $fullPath = false)
     {
+        if($controller instanceof Controller) $controller = get_class($controller);
         $controller = (string) $controller;
-        return Bootstrap::getSingleton()->getManager()->getRouter()->generate($controller, $params);
+        $url = Bootstrap::getSingleton()->getManager()->getRouter()->generate($controller, $params);
+        if($fullPath)
+        {
+            $protocol = "http";
+            if(strpos($_SERVER['SCRIPT_URI'], "https") !== FALSE) $protocol = "https";
+            return $protocol . "://" . $_SERVER['HTTP_HOST'] . $url;
+        }
+        return $url;
+    }
+
+    /**
+     * @param $name
+     * @param null $module Module
+     * @return string
+     */
+    public function getResource($name, $module = null)
+    {
+        if($module == null) $module = $this->module;
+        if(is_string($module)) $module = ModuleManager::getModuleInstanceByName($module);
+        $config = $module->getConfig();
+        $folders = $config['app']['resources'];
+        if(!is_array($folders)) $folders = array($folders);
+        foreach($folders as $folder)
+        {
+            $path = $module->getDirectory() . "/" . $folder . "/" . $name;
+            if(file_exists($path))
+            {
+                $path = realpath($path);
+                $base = dirname($_SERVER['SCRIPT_FILENAME']);
+                $index = strpos($path, $base);
+                $url = substr($path, $index + strlen($base));
+                $protocol = "http";
+                if(strpos($_SERVER['SCRIPT_URI'], "https") !== FALSE) $protocol = "https";
+
+                return $protocol . "://" . $_SERVER['SERVER_NAME'] . $url;
+            }
+        }
+    }
+
+    public function getUploads()
+    {
+        return new Uploads($this->module->getDirectory(), $this->config);
+    }
+
+    public function setContentType($type)
+    {
+        header("Content-Type: " . $type);
     }
 
 }

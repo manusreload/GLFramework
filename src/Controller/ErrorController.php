@@ -30,7 +30,6 @@ class ErrorController extends Controller
 
     public function run()
     {
-        // TODO: Implement run() method.
         if(isset($_SERVER['HTTP_REFERER']))
             $this->refer = $_SERVER['HTTP_REFERER'];
         $this->setTemplate("error.twig");

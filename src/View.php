@@ -9,10 +9,15 @@
 namespace GLFramework;
 
 
+use GLFramework\Module\ModuleManager;
+
 class View
 {
     private $filters = array();
     private $twig;
+    /**
+     * @var Controller
+     */
     private $controller;
 
     /**
@@ -21,28 +26,19 @@ class View
      */
     public function __construct($controller)
     {
-        $config = Bootstrap::getSingleton()->getConfig();
-        $dir = Bootstrap::getSingleton()->getDirectory();
-        $directoriesTmp = $config['app']['views'];
-        if(!is_array($directoriesTmp)) $directoriesTmp = array($directoriesTmp);
-        $directories = array();
-        foreach($directoriesTmp as &$directory)
-        {
-            $directory = $dir . "/" . $directory;
-            if(is_dir($directory))
-            {
-                $directories[] = $directory;
-            }
-        }
-        $directories[] = __DIR__ . "/../views";
         $this->controller = $controller;
+        $directories = ModuleManager::getInstance()->getViews($controller->module);
         $loader = new \Twig_Loader_Filesystem($directories);
         $this->twig = new \Twig_Environment($loader, array());
-        $this->twig->addGlobal('config', Bootstrap::getSingleton()->getConfig());
+        $this->twig->addGlobal('config', $this->controller->config);
         $this->twig->addGlobal('_GET', $_GET);
         $this->twig->addGlobal('_POST', $_POST);
         $this->twig->addGlobal('_REQUEST', $_REQUEST);
+        $this->twig->addGlobal('_SERVER', $_SERVER);
         $this->twig->addGlobal('this', $this->controller);
+        $this->twig->addGlobal('render', $this);
+        $this->twig->addGlobal('manager', ModuleManager::getInstance());
+        $this->twig->addFunction(new \Twig_SimpleFunction('fire', array($this, 'fireEvent')));
         $this->twig->addFilter(new \Twig_SimpleFilter('active', array($this, 'isHrefActive')));
         $this->twig->addFilter(new \Twig_SimpleFilter('fecha_hora', array($this, 'parseFechaHora')));
         $this->twig->addFilter(new \Twig_SimpleFilter('fecha', array($this, 'parseFecha')));
@@ -58,10 +54,21 @@ class View
         {
             $data = $data == null?array():$data;
             $this->twig->addGlobal('params', $params);
+//            die($this->twig->getLoader()->isFresh($this->controller->getTemplate()));
             $template = $this->twig->loadTemplate($this->controller->getTemplate());
             return $template->render($data);
         }
         return $data;
+    }
+
+    public function mail($template, $data = array(), &$css = array())
+    {
+        $this->twig->addFunction(new \Twig_SimpleFunction('css', function($file) use(&$css)
+        {
+            $css[] = $file;
+        }));
+        $template = $this->twig->loadTemplate($template);
+        return $template->render($data);
     }
 
     public function addFilter($filter)
@@ -116,6 +123,29 @@ class View
     {
         return $this->twig;
     }
+
+    public function fireEvent($name, $args = array())
+    {
+        Events::fire($name, $args);
+    }
+
+    /**
+     * @return Controller
+     */
+    public function getController()
+    {
+        return $this->controller;
+    }
+
+    /**
+     * @param Controller $controller
+     */
+    public function setController($controller)
+    {
+        $this->controller = $controller;
+    }
+
+    
 
 
 }

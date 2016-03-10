@@ -1,7 +1,10 @@
+{% set simple = true %}
 {% extends "templates/base.twig" %}
 
 {% block title %}Error{% endblock %}
 {% block body %}
+
+    {{ parent() }}
     <h1>Ha ocurrido algo inesperado :(</h1>
     <div class="alert alert-danger">
 
@@ -10,10 +13,15 @@
 
     <a href="{{ this.refer }}" class="btn btn-success"><i class="glyphicon glyphicon-chevron-left"></i> Volver</a>
     <a href="#" class="btn btn-warning"> Reportar incidencia</a>
+    <a href="/" class="btn btn-default"> Inicio</a>
+
+    {{ fire('displayExtraErrorView',[render ]) }}
 {% if this.trace %}
     <h1>Stacktrace</h1>
     <pre>{{ this.trace }}</pre>
 {% endif %}
 {% endblock %}
 {% block scripts %}{% endblock %}
-{% block styles %}{% endblock %}
+{% block styles %}
+    {{ parent() }}
+{% endblock %}

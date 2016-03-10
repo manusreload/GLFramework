@@ -1,0 +1,18 @@
+title: group_permissions
+description: Permite agrupar paginas y dar acceso a los usuarios.
+version: 0.0.0
+
+app:
+  index: home
+  controllers: controller
+  model: model
+  views: views
+
+  routes:
+      - GLFramework\Modules\GroupPermissions\groups: /admin/groups/[i:id]?/[a:a]?/[i:page]?
+      - GLFramework\Modules\GroupPermissions\groups_ajax: /admin/ajax/groups
+
+  listeners:
+    beforeControllerRun: GLFrameworkModules\EventReceiver::beforeControllerRun
+    isUserAllowed: GLFrameworkModules\EventReceiver::isUserAllowed
+

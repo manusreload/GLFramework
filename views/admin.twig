@@ -1,0 +1,19 @@
+{% extends "templates/base.twig" %}
+
+{% block title %}Administrador{% endblock %}
+{% block body %}
+    <h1>Ha ocurrido algo inesperado :(</h1>
+    <div class="alert alert-danger">
+
+        Se ha producido un error al cargar el contenido. <br><strong>{{ this.error }}</strong>
+    </div>
+
+    <a href="{{ this.refer }}" class="btn btn-success"><i class="glyphicon glyphicon-chevron-left"></i> Volver</a>
+    <a href="#" class="btn btn-warning"> Reportar incidencia</a>
+{% if this.trace %}
+    <h1>Stacktrace</h1>
+    <pre>{{ this.trace }}</pre>
+{% endif %}
+{% endblock %}
+{% block scripts %}{% endblock %}
+{% block styles %}{% endblock %}

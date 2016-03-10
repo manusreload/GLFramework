@@ -17,6 +17,7 @@ class User extends Model
     var $privilegios;
     var $nombre;
     var $email;
+    var $admin;
 
     protected $table_name = "user";
     protected $definition = array(
@@ -40,5 +41,16 @@ class User extends Model
     public function encrypt($pass)
     {
         return md5($pass);
+    }
+
+    public function getPages()
+    {
+        $pages = new Page();
+        $userPages = new UserPage();
+        $sql = "SELECT * FROM " . $userPages->getTableName() . " as up
+        LEFT JOIN {$pages->getTableName()} as p ON up.id_page = p.id
+        WHERE up.id_user = " . $this->id;
+
+        return $this->db->select($sql);
     }
 }

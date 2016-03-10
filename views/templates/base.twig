@@ -27,6 +27,8 @@
         {% block styles %}{% endblock %}
         <link href="{{ config.app.basepath }}/css/navbar-static-top.css" rel="stylesheet">
         <link href="{{ config.app.basepath }}/css/custom.css" rel="stylesheet">
+
+        {{ fire('displayStyle', [render ]) }}
     {% endblock %}
 </head>
 

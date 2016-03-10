@@ -26,6 +26,7 @@ class ModuleManager
      * @var Module
      */
     private $mainModule;
+    private static $instance;
 
     /**
      * ModuleManager constructor.
@@ -34,9 +35,47 @@ class ModuleManager
      */
     public function __construct($config, $directory)
     {
+        self::$instance = $this;
         $this->config = $config;
         $this->directory = $directory;
         $this->router = new \AltoRouter(array(), $this->config['app']['basepath']);
+    }
+
+    public static function getInstance()
+    {
+        return self::$instance;
+    }
+
+    public static function getModuleInstanceByName($name)
+    {
+        $instance = self::getInstance();
+        foreach($instance->getModules() as $module)
+        {
+            if($module->title == $name) return $module;
+        }
+    }
+
+    public static function exists($string)
+    {
+        $instance = self::getInstance();
+        foreach($instance->getModules() as $module)
+        {
+            if($module->title == $string) return true;
+        }
+        return false;
+    }
+
+    public static function existsController($key)
+    {
+        $instance = self::getInstance();
+        foreach($instance->getModules() as $module)
+        {
+            foreach($module->getControllers() as $controller => $file)
+            {
+                if($key == $controller) return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -47,7 +86,41 @@ class ModuleManager
         return $this->router;
     }
 
+    /**
+     * @return Module[]
+     */
+    public function getModules()
+    {
+        return $this->modules;
+    }
 
+    /**
+     * @return Module
+     */
+    public function getMainModule()
+    {
+        return $this->mainModule;
+    }
+
+    /**
+     * @param $module Module
+     * @return array
+     */
+    public function getViews($module)
+    {
+        $views = $module->getViews();
+        foreach($this->getModules() as $module2)
+        {
+            if($module2 != $module)
+            {
+                foreach($module2->getViews() as $view)
+                {
+                    $views[] = $view;
+                }
+            }
+        }
+        return $views;
+    }
 
     public function init()
     {
@@ -56,16 +129,23 @@ class ModuleManager
         {
             $this->mainModule = $module;
             $this->add($module);
-            $modulesDirectory = ($this->directory . "/modules");
-            if(is_dir($modulesDirectory))
+            if(isset($this->config['modules']))
             {
-                $modules = scandir($modulesDirectory);
-                foreach($modules as $folder)
+                foreach($this->config['modules'] as $key => $value)
                 {
-                    if($folder != "." && $folder != "..")
+                    $dirbase = $this->directory;
+                    if($key == "internal")
                     {
-                        $module = $this->load($modulesDirectory . "/" . $folder);
-                        $this->add($module);
+                        $dirbase = __DIR__ . "/../../modules";
+                    }
+                    if(!is_array($value)) $value = array($value);
+                    foreach($value as $name => $extra)
+                    {
+                        if(is_integer($name)) $name = $extra;
+                        $module = $this->load($dirbase . "/" . $name, $extra);
+                        if($module)
+                            $this->add($module);
+
                     }
                 }
             }
@@ -81,25 +161,40 @@ class ModuleManager
         }
     }
 
-    public function load($folder)
+    public function load($folder, $extra = null)
     {
         $configFile = $folder . "/config.yml";
         if(file_exists($configFile))
         {
             $config = Yaml::parse(file_get_contents($configFile));
-            $config = array_merge($config, $this->config);
-
+            $config = array_merge($this->config, $config);
+            if(is_array($extra))
+            {
+                $config = array_merge_recursive_ex($config, $extra);
+            }
             return new Module($config, $folder);
         }
         return null;
     }
 
+    /**
+     * @param $module Module
+     */
     public function add($module)
     {
         if($module != null)
             $this->modules[] = $module;
-
     }
+
+    public function isEnabled($name)
+    {
+        foreach($this->modules as $module)
+        {
+            if($name == $module->title) return true;
+        }
+        return false;
+    }
+
 
     public function run()
     {
@@ -108,6 +203,7 @@ class ModuleManager
             $module->register_router($this->router);
         }
         try {
+
             if($match = $this->router->match())
             {
                 $target = $match['target'];
@@ -130,4 +226,7 @@ class ModuleManager
         }
         return false;
     }
+
+
+
 }

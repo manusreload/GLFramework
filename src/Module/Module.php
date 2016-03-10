@@ -10,10 +10,14 @@ namespace GLFramework\Module;
 
 
 use GLFramework\Controller;
+use GLFramework\Events;
+use GLFramework\Model\UserPage;
 
 class Module
 {
 
+    var $title;
+    var $description;
     private $config;
     private $directory;
 
@@ -30,11 +34,15 @@ class Module
     {
         $this->config = $config;
         $this->directory = $directory;
+        if(isset($this->config['title']))
+            $this->title = $this->config['title'];
+        if(isset($this->config['description']))
+            $this->description = $this->config['description'];
     }
-
 
     public function init()
     {
+//        $this->register_composer();
         $controllers = $this->config['app']['controllers'];
         if (!is_array($controllers)) $controllers = array($controllers);
         foreach($controllers as $controllerFolder)
@@ -43,8 +51,8 @@ class Module
         }
         $this->register_autoload_controllers();
         $this->register_autoload_model();
+        $this->register_events();
     }
-
 
     public function register_autoload_model()
     {
@@ -115,9 +123,77 @@ class Module
         return $this->controllers;
     }
 
+    public function getModels()
+    {
+        $list = array();
+        $models = $this->config['app']['model'];
+        if (!is_array($models)) $models = array($models);
+        foreach ($models as $model) {
+            $folder = $this->directory . "/$model";
+            $files = scandir($folder);
+            foreach ($files as $file) {
+                if (strpos($file, ".php") !== FALSE) {
+                    $list[] = substr($file, 0, -4);
+                }
+            }
+        }
+        return $list;
+    }
+
+    /**
+     * Return folder to find views
+     */
+    public function getViews()
+    {
+        $config = $this->config;
+        $directories = array();
+        $dir = $this->directory;
+        if(isset($config['app']['views']))
+        {
+            $directoriesTmp = $config['app']['views'];
+            if(!is_array($directoriesTmp)) $directoriesTmp = array($directoriesTmp);
+            foreach($directoriesTmp as $directory)
+            {
+                $this->addFolder($directories, $dir . "/" . $directory);
+            }
+        }
+        // Add main module views
+        $mainModule = ModuleManager::getInstance()->getMainModule();
+        if($this != $mainModule) $this->addFolder($directories, $mainModule->getViews());
+        // Add framework views
+        $this->addFolder($directories, realpath(__DIR__ . "/../..") . "/views");
+        $this->addFolder($directories, realpath(__DIR__ . "/../..") . "/modules");
+        return $directories;
+    }
+
+    public function addFolder(&$array, $folder)
+    {
+        if(is_array($folder))
+        {
+            foreach($folder as $item)
+            {
+                $this->addFolder($array, $item);
+            }
+        }
+        else
+        {
+            if(is_dir($folder) && !in_array($folder, $array)) $array[] = $folder;
+        }
+
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDirectory()
+    {
+        return $this->directory;
+    }
+
 
     /**
      * @param $router \AltoRouter
+     * @return array
      */
     public function register_router($router)
     {
@@ -132,6 +208,7 @@ class Module
                 $this->register_router_controller($router, $route, $controller);
             }
         }
+        return $list;
     }
 
     public function getControllerDefaultRoutes($controller, $file)
@@ -141,6 +218,7 @@ class Module
         if(isset($this->config['app']['routes']))
         {
             $routes = $this->config['app']['routes'];
+            if(!is_integer(key($routes))) $routes = array($routes);
             foreach($routes as $item)
             {
                 if(isset($item[$controller]))
@@ -186,11 +264,37 @@ class Module
         $router->map($method, $route, array($this, $controller), $name);
     }
 
+    private function register_composer()
+    {
+        $composer = $this->getDirectory() . "/vendor/autoload.php";
+        if(file_exists($composer))
+        {
+            include_once $composer;
+        }
+    }
+
+    private function register_events()
+    {
+        if(isset($this->config['app']['listeners']))
+        {
+            $events = $this->config['app']['listeners'];
+            if(!is_array($events)) $events = array($events);
+            foreach($events as $event => $listener)
+            {
+                if(!is_array($listener)) $listener = array($listener);
+                foreach($listener as $fn)
+                {
+                    Events::getInstance()->listen($event, instance_method($fn));
+                }
+            }
+        }
+    }
+
     public function run($controller, $params = array())
     {
         if(!is_object($controller)) {
             $folder = $this->controllers[$controller];
-            $instance = new $controller($folder);
+            $instance = new $controller($folder, $this);
         }
         else
         {
@@ -199,12 +303,36 @@ class Module
 
         if($instance instanceof Controller)
         {
+            if($instance instanceof Controller\AuthController)
+            {
+                if($instance->user)
+                {
+                    if(!Events::fire('isUserAllowed', array($instance, $instance->user)))
+                    {
+                        throw new \Exception('El usuario no tiene permisos para acceder a este sitio');
+                    }
+                }
+            }
+            $instance->params = $params;
+            Events::fire('beforeControllerRun', array($instance));
             $data = call_user_func_array(array($instance, "run"), $params);
+            Events::fire('afterControllerRun', array($instance));
             echo $instance->display($data, $params);
+
             return true;
         }
         return false;
     }
+
+
+    /**
+     * @return mixed
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
 
 
 }

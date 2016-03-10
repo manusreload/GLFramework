@@ -27,10 +27,10 @@ class DBStructure
             $definitionFields = $definition['fields'];
             if(is_array($definition['index']))
             {
-                $definitionFields[ $definition['index']['field'] ] = $definition['index'];
+                $definitionFields = array( $definition['index']['field'] => $definition['index']) + $definitionFields;
             }
             else{
-                $definitionFields[ $definition['index'] ] = array('type' => "int(11)", 'autoincrement' => true);
+                $definitionFields = array( $definition['index']  => array('type' => "int(11)", 'autoincrement' => true)) + $definitionFields;
             }
             foreach($definitionFields as $field => $props)
             {
@@ -70,7 +70,7 @@ class DBStructure
 
     public function getCurrentStructure($table = "")
     {
-        $db = new DBConnection();
+        $db = new DatabaseManager();
         $res = $db->select("SHOW TABLES LIKE '$table'");
         $tables = array();
         $result = array();
@@ -200,7 +200,7 @@ class DBStructure
 
         $name = $field['field'];
         $type = $field['type'];
-        if(isset($field['autoincrement']))
+        if(isset($field['autoincrement']) && $field['autoincrement'])
         {
             $type .= " AUTO_INCREMENT";
         }
@@ -213,6 +213,10 @@ class DBStructure
         $table = $this->validTableName($table);
         $name = $field['field'];
         $type = $field['type'];
+        if(isset($field['default']) && $field['default'] != "")
+        {
+            $type .= " DEFAULT '" . $field['default']. "'";
+        }
         return "ALTER TABLE $table ADD {$name} {$type}";
     }
 
@@ -240,7 +244,7 @@ class DBStructure
         $fun = create_function('$a', 'return implode("-", $a);');
         $list = array_map($fun, $fields);
         ksort($list);
-        return sha1(implode("-", array_keys($list)) . implode("-", $list));
+        return sha1(strtolower(implode("-", array_keys($list)) . implode("-", $list)));
     }
 
 

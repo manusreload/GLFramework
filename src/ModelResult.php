@@ -35,22 +35,40 @@ class ModelResult
     }
 
     /**
+     * @param null $size
      * @return Model[]
      * @deprecated
      */
-    public function getModelsInstanced()
+    public function getModelsInstanced($size = null)
     {
         $instances = array();
-        foreach($this->models as $model)
+        if($size === null)
         {
-            $instances[] = $this->model_class->newInstance($model);
+            foreach($this->models as $model)
+            {
+                $instances[] = $this->model_class->newInstance($model);
+            }
+        }
+        else
+        {
+            for($i = 0; $i < $size; $i++)
+            {
+                if(isset($this->models[$i]))
+                {
+                    $instances[] = $this->model_class->newInstance($this->models[$i]);
+                }
+                else
+                {
+                    $instances[] = $this->model_class->newInstance();
+                }
+            }
         }
         return $instances;
     }
 
-    public function getModels()
+    public function getModels($size = null)
     {
-        return $this->getModelsInstanced();
+        return $this->getModelsInstanced($size);
     }
 
     public function offset($count)
@@ -75,5 +93,20 @@ class ModelResult
             return $models[$this->count() - 1];
         }
         return null;
+    }
+
+    public function json()
+    {
+        $list = array();
+        foreach($this->getModels() as $model)
+        {
+            $list[] = $model->json();
+        }
+        return $list;
+    }
+
+    public function reverse($size = null)
+    {
+        return array_reverse($this->getModels($size));;
     }
 }

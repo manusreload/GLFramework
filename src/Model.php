@@ -12,7 +12,7 @@ namespace GLFramework;
 class Model
 {
     /**
-     * @var DBConnection
+     * @var DatabaseManager
      */
     var $db;
     protected $table_name = "";
@@ -25,18 +25,19 @@ class Model
      */
 
     /*
-     * Reglas para sacar definicion (desde DESCRIBE TABLE <table>):
-     *  "([a-z_]+)\t([a-z0-9()]+).*" -> "'$1' => '$2',"
+     * Reglas para sacar definicion (desde DESCRIBE <table>):
+     *  "([a-z_]+)\t([a-z0-9(),]+).*" -> "'$1' => '$2',"
      */
+
+    protected $hidden = array();
 
     /**
      * Model constructor.
      */
     public function __construct($data = null)
     {
-        $this->db = new DBConnection();
+        $this->db = new DatabaseManager();
         $this->setData($data);
-
     }
 
     public function insert($data = null)
@@ -67,7 +68,7 @@ class Model
         $sql1 = "";
         foreach ($fields as $field) {
             $value = $this->getFieldValue($field, $data);
-            if (!empty($value) && !$this->isIndex($field)) {
+            if (isset($value) && $value !== '' && !$this->isIndex($field)) {
                 $value = $this->db->escape_string($value);
                 $sql1 .= "$field = '$value', ";
             }
@@ -117,6 +118,24 @@ class Model
                 $sql = substr($sql, 0, -5);
                 return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $sql"));
             }
+        }
+        return $this->build(array());
+    }
+
+    public function get_or($fields)
+    {
+        $fieldsValue = $fields;
+        $fields = $this->getFields();
+        $sql = "";
+        foreach ($fields as $field) {
+            if (isset($fieldsValue[$field])) {
+                $value = $fieldsValue[$field];
+                $sql .= $field . "= '" . $this->db->escape_string($value) . "' OR ";
+            }
+        }
+        if (!empty($sql)) {
+            $sql = substr($sql, 0, -4);
+            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $sql"));
         }
         return $this->build(array());
     }
@@ -225,15 +244,33 @@ class Model
         return $modelResult;
     }
 
-    public function setData($data)
+    public function setDataFromArray($data, $prefix = "", $suffix = "")
+    {
+
+    }
+    public function setData($data, $allowEmpty = true)
     {
         if ($data != null) {
             if(is_array($data))
             {
                 $fileds = $this->getFields();
                 foreach ($fileds as $field) {
-                    if (isset($data[$field])) {
-                        $this->{$field} = $data[$field];
+                    if (isset($data[$field]) && ($allowEmpty || $data[$field] !== '')) {
+                        if(strpos($this->getFieldDefinition($field), "varchar") !== FALSE ||
+                            $this->getFieldDefinition($field) == "text")
+                        {
+
+                            $encoding = mb_detect_encoding($data[$field]);
+                            if($encoding != 'utf8')
+                                $this->{$field} = mb_convert_encoding($data[$field], 'utf8', $encoding);
+                            else
+                                $this->{$field} = $data[$field];
+                        }
+                        else
+                        {
+
+                            $this->{$field} = $data[$field];
+                        }
                     }
                 }
             }
@@ -275,6 +312,20 @@ class Model
         $diff = new DBStructure();
         $excepted = $diff->getDefinition($this);
         return $diff->getStructureDifferences($excepted);
+    }
+
+    public function json($fields = array())
+    {
+        $json = array();
+        if(empty($fields)) $fields = $this->getFields();
+        foreach($fields as $field)
+        {
+            if(!in_array($field, $this->hidden))
+            {
+                $json[$field] = $this->getFieldValue($field);
+            }
+        }
+        return $json;
     }
 
 

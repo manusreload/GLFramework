@@ -21,9 +21,10 @@ class AuthController extends Controller
      */
     var $user;
     private $requireLogin = true;
-    public function run()
+
+    public function __construct($base, $module)
     {
-        // TODO: Implement run() method.
+        parent::__construct($base, $module);
         if(isset($_SESSION['auth_user']))
         {
             $username =  $_SESSION[$this->session_key][0];
@@ -37,9 +38,14 @@ class AuthController extends Controller
             else{
                 unset($_SESSION['user']);
             }
-
-
         }
+    }
+
+
+    public function run()
+    {
+        // TODO: Implement run() method.
+
         if(isset($_GET['logout']))
         {
             $this->addMessage("Se ha desconectado correctamente");
@@ -59,22 +65,28 @@ class AuthController extends Controller
         }
     }
 
-    public function processLogin()
+    public function processLogin($username = null, $password = null)
     {
-        if(isset($_POST['username']) && isset($_POST['password']))
+        if($username === null)
+            $username = $_POST['username'];
+        if($password === null)
+            $password = $_POST['password'];
+        if(isset($username) && isset($password))
         {
             $user = $this->instanceUser(null);
             $db = $this->getDb();
-            $username = $db->escape_string($_POST['username']); // Para evitar inyecciones SQL
-            $password = $user->encrypt($_POST['password']);
+            $username = $db->escape_string($username); // Para evitar inyecciones SQL
+            $password = $user->encrypt($password);
             $user = $user->getByUserPassword($username, $password);
             if($user)
             {
+                $this->user = $user;
                 $_SESSION[$this->session_key] = array($username, $password);
-                $this->quit("home");
+                $this->redirection("home");
+                return true;
             }
             else{
-                $this->addMessage("Usuario contraseña incorrecta", "danger");
+                $this->addMessage("Usuario o contraseña incorrecta", "danger");
                 return array("error" => true);
             }
         }
@@ -101,12 +113,14 @@ class AuthController extends Controller
      * @param $data
      * @return User
      */
-    public function instanceUser($data)
+    public function instanceUser($data = null)
     {
         if(class_exists("User"))
             return new \User($data);
         return new User($data);
     }
+
+
 
 
 }

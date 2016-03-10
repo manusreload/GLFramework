@@ -1,0 +1,141 @@
+{% extends "templates/base.twig" %}
+{# 
+ # Created by PhpStorm.
+ # User: manus
+ # Date: 25/02/16
+ # Time: 11:00
+ #}
+{% block title %}Administracion - Usuarios{% endblock %}
+{% block body %}
+<div class="row">
+    <div class="col-lg-6">
+        {% embed "templates/box.twig" %}
+            {% block title %}
+                Informacion del usuario
+            {% endblock %}
+            {% block content %}
+                <div class=" form">
+                    <form class="cmxform form-horizontal tasi-form" id="commentForm" method="post" action="{{ this.getLink(this, {id: this.users.id?:"add"}) }}">
+                        <div class="form-group ">
+                            <label class="control-label col-lg-2">Nombre de usuario</label>
+                            <div class="col-lg-10">
+                                <input class="form-control " type="text" name="user_name" value="{{ this.users.user_name }}" required />
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="cemail" class="control-label col-lg-2">Nombre</label>
+                            <div class="col-lg-10">
+                                <input class="form-control " id="cemail" type="text" name="nombre" value="{{ this.users.nombre }}" required />
+                            </div>
+                        </div>
+
+                        <div class="form-group ">
+                            <label for="cemail" class="control-label col-lg-2">E-Mail</label>
+                            <div class="col-lg-10">
+                                <input class="form-control " id="cemail" type="email" name="email" value="{{ this.users.email }}" required />
+                            </div>
+                        </div>
+
+                        <div class="form-group ">
+                            <label class="control-label col-lg-2">Privilegios</label>
+                            <div class="col-lg-10">
+                                <input class="form-control privilegios" type="text" name="privilegios" value="{{ this.users.privilegios }}" required />
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="control-label col-lg-2">Administrador</label>
+                            <div class="col-lg-10">
+                                <select class="form-control" name="admin">
+                                    <option value="0">Usuario normal</option>
+                                    <option value="1" {{ this.users.admin?"selected":"" }}>Administrador</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group ">
+                            <label class="control-label col-lg-2">Contraseña</label>
+                            <div class="col-lg-10">
+                                <input class="form-control " type="password" name="password" value="" placeholder="(Sin cambiar)"  />
+                                <br>
+                                <input class="form-control " type="password" name="password_validation" value="" placeholder="(Repetir)"  />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-offset-2 col-lg-10">
+                                <button class="btn btn-danger" type="submit" name="save">Guardar</button>
+                                <a class="btn btn-default" href="{{ this.getLink(this) }}">Cancelar</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            {% endblock %}
+        {% endembed %}
+    </div>
+    <div class="col-lg-6">
+        {% embed "templates/box.twig" %}
+            {% block title %}
+                Acceso a paginas
+            {% endblock %}
+            {% block content %}
+                {% if this.users.id > 0 %}
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Módulo</th>
+                        <th>Controlador</th>
+                        <th>Pagina</th>
+                        <th>Acceso permitido</th>
+                    </tr>
+                    {% for page in this.controllers %}
+                        <tr>
+                            <td title="{{ page }}">{{ this.getModuleNameByController(page).title }}</td>
+                            <td title="{{ page }}">{{ page }}</td>
+                            <td title="{{ page }}">{{ this.getLink(page) }}</td>
+                            <td>
+                                {% if this.isPageDefined(page) %}
+                                    {% if this.isPageAllowed(page) %}
+                                        <a class="btn btn-success" href="{{ this.getLink(this, {id: this.users.id, controller: page , state: 'delete'}) }}">
+                                            Permitido
+                                        </a>
+                                    {% else %}
+                                        <a class="btn btn-danger" href="{{ this.getLink(this, {id: this.users.id, controller: page , state: 'allow'}) }}">
+                                            No Permitido
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    {% if this.isPagePermission(page) %}
+                                        <a class="btn btn-default" title="Se concede el acceso de forma implícita" href="{{ this.getLink(this, {id: this.users.id, controller: page , state: 'deny'}) }}">
+                                            Permitido
+                                        </a>
+                                    {% else %}
+                                        <a class="btn btn-default" title="Se deniega el acceso de forma implícita" href="{{ this.getLink(this, {id: this.users.id, controller: page , state: 'allow'}) }}">
+                                            No Permitido
+                                        </a>
+                                    {% endif %}
+
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                {% else %}
+                    <div class="alert alert-danger">Guarde el usuario para poder asignarle paginas</div>
+                {% endif %}
+            {% endblock %}
+        {% endembed %}
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+    <script src="/js/jquery-ui-1.9.2.custom.min.js"></script>
+    <script src="/js/jquery.tagsinput.js"></script>
+    {% if manager.exists("group_permissions") %}
+        <script>
+            $(".privilegios").tagsInput({
+                'autocomplete_url': '{{ this.getLink('GLFramework\\Modules\\GroupPermissions\\groups_ajax') }}',
+                autocomplete:{selectFirst:true,autoFill:true}
+            });
+        </script>
+    {% endif %}
+
+{% endblock %}
+{% block styles %}{% endblock %}

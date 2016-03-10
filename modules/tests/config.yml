@@ -1,0 +1,15 @@
+title:  tests
+description: Pruebas para el framework
+version: 0.0.1
+
+app:
+  index: home
+
+  controllers: controller
+  model: model
+  views: views
+
+  routes:
+    GLFramework\Modules\Tests\tests: /tests
+
+
