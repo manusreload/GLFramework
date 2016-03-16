@@ -47,6 +47,7 @@ class Events
 
     public function _fire($event, $args = array())
     {
+        $buffer = false;
         if(!is_array($args)) $args = array($args);
         if(isset($this->handlers[$event]) && count(($this->handlers[$event])) > 0)
         {
@@ -55,18 +56,22 @@ class Events
             {
                 if(is_callable($fn))
                 {
-                    if(call_user_func_array($fn, $args) === true)
+                    $result = call_user_func_array($fn, $args);
+                    if($result === true)
                     {
                         return true;
+                    }
+                    else if(is_string($result))
+                    {
+                        $buffer .= $result;
                     }
                 }
                 else
                 {
                     Log::getInstance()->error("Can not call event: " . $event . " function: " . print_r($fn, true), array('events'));
-//                    throw new \Exception();
                 }
             }
-            return false;
+            return $buffer;
         }
         return 0;
     }

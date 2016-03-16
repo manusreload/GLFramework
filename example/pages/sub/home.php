@@ -11,7 +11,7 @@ class sub_home extends \GLFramework\Controller
 
     public function run()
     {
-        print_debug(func_get_args());
+
         // TODO: Implement run() method.
     }
 }

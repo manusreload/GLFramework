@@ -198,7 +198,7 @@ class ModuleManager
     }
 
 
-    public function run()
+    public function run($url = null, $method = null)
     {
         foreach($this->modules as $module)
         {
@@ -206,7 +206,7 @@ class ModuleManager
         }
         try {
 
-            if($match = $this->router->match())
+            if($match = $this->router->match($url, $method))
             {
                 $target = $match['target'];
                 $module = $target[0];
@@ -216,11 +216,11 @@ class ModuleManager
             }
             else
             {
-                $this->mainModule->run(new ErrorController("Controller not found."));
+                return $this->mainModule->run(new ErrorController("Controller not found."));
             }
         } catch (\Exception $ex) {
             try {
-                $this->mainModule->run(new ExceptionController($ex));
+                return $this->mainModule->run(new ExceptionController($ex));
 
             } catch (\Exception $ex) {
 //                print_debug($ex);

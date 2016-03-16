@@ -156,3 +156,8 @@ function now($format = "Y-m-d H:i:s")
 {
     return date($format);
 }
+
+function e($text)
+{
+    return htmlentities($text);
+}

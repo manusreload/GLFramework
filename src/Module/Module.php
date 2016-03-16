@@ -318,9 +318,7 @@ class Module
             $instance->params = $params;
             $data = call_user_func_array(array($instance, "run"), $params);
             Events::fire('afterControllerRun', array($instance));
-            echo $instance->display($data, $params);
-
-            return true;
+            return $instance->display($data, $params);
         }
         return false;
     }

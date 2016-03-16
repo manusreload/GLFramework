@@ -53,7 +53,7 @@ class Bootstrap
     public static function start($directory)
     {
         $bootstrap = new Bootstrap($directory);
-        $bootstrap->run();
+        echo $bootstrap->run();
     }
 
     public function init()
@@ -66,11 +66,11 @@ class Bootstrap
         $this->manager->init();
     }
 
-    public function run()
+    public function run($url = null, $method = null)
     {
         session_start();
         Events::fire('onCoreStartUp', $this->startTime);
-        $this->manager->run();
+        return $this->manager->run($url, $method);
     }
 
 

@@ -4,7 +4,8 @@ Test successful!
 
     {{ this.variable }}
 
-    <a href="{{ this.getLink('MyNameSpace\\home', {'id' : 100}) }}">URL</a>
+    <a title="url" href="{{ this.getLink('MyNameSpace\\home', {'id' : 100}) }}">URL Parametrized</a>
+    <a href="{{ this.getLink('sub_home', {'id' : 100}) }}">Sub home</a>
 
 {% endblock %}
 {% block scripts %}{% endblock %}

@@ -25,7 +25,8 @@
     "nuovo/spreadsheet-reader": "*",
     "tijsverkoyen/css-to-inline-styles": "^1.5",
     "maximebf/debugbar": ">=1.0.0",
-    "psr/log": ">= 1.0.0"
+    "psr/log": ">= 1.0.0",
+    "symfony/dom-crawler": "^3.0"
   },
   "extra": {
     "merge-plugin": {
