@@ -1,0 +1,31 @@
+# Copy this file to confg.dev.yml if you whant to redefine settings in testing context
+# This file is loaded when testing is executing
+#
+#
+#
+
+
+#
+#app:
+#  basepath:
+#  index: home
+#  name: Demo
+#  banner: images/logo.jpg
+#
+#  controllers:
+#    - pages
+#  model: model
+#  views:
+#    - view
+#    - view/includes
+#
+#  routes:
+#    - MyNameSpace\home: ["/home/example/[i:id]", GET]
+#    - home: ["/home/example/[i:id]", GET]
+#    - sub_home: ["/home/sub/example/[i:id]", GET]
+#
+#database:
+#  hostname: 127.0.0.1
+#  username: root
+#  password:
+#  database: dbdemo

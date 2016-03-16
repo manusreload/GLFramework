@@ -82,7 +82,7 @@ class AuthController extends Controller
             {
                 $this->user = $user;
                 $_SESSION[$this->session_key] = array($username, $password);
-                $this->redirection("home");
+                $this->redirection("/home");
                 return true;
             }
             else{

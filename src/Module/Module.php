@@ -291,6 +291,12 @@ class Module
         }
     }
 
+    /**
+     * @param $controller
+     * @param array $params
+     * @return bool|\GLFramework\Response
+     * @throws \Exception
+     */
     public function run($controller, $params = array())
     {
         if(!is_object($controller)) {
@@ -315,10 +321,7 @@ class Module
                     }
                 }
             }
-            $instance->params = $params;
-            $data = call_user_func_array(array($instance, "run"), $params);
-            Events::fire('afterControllerRun', array($instance));
-            return $instance->display($data, $params);
+            return $instance->call($params);
         }
         return false;
     }

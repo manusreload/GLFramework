@@ -32,6 +32,12 @@ abstract class Controller
     var $module;
     var $params = array();
 
+    var $redirect = false;
+    /**
+     * @var Response
+     */
+    var $response;
+
     /**
      * Controller constructor.
      * @param $module Module
@@ -53,6 +59,7 @@ abstract class Controller
         $this->template = $base . ".twig";
 
         $this->view = new View($this);
+        $this->response = new Response();
     }
 
     abstract public function run();
@@ -60,6 +67,20 @@ abstract class Controller
     public function display($data, $params)
     {
         return $this->view->render($data, $params);
+    }
+
+    public function call($params)
+    {
+        $this->params = $params;
+        $data = call_user_func_array(array($this, "run"), $params);
+        Events::fire('afterControllerRun', array($this));
+        $this->response->setContent($this->display($data, $params));
+        return $this->response;
+    }
+
+    public function getResponse()
+    {
+        return $this->response;
     }
 
     /**
@@ -80,7 +101,7 @@ abstract class Controller
 
     public function redirection($url)
     {
-        header("Location: $url");
+        $this->response->setRedirection($url);
     }
 
     public function restoreMessages()
@@ -100,7 +121,11 @@ abstract class Controller
     {
         if($redirection) $this->redirection($redirection);
         $this->shareMessages();
-        exit;
+        if(!GL_TESTING)
+        {
+            Bootstrap::dispatch($this->response);
+            exit;
+        }
     }
 
     /**
@@ -185,7 +210,7 @@ abstract class Controller
 
     public function setContentType($type)
     {
-        header("Content-Type: " . $type);
+        $this->response->setContentType($type);
     }
 
     public function log($message, $level)

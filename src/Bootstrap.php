@@ -34,23 +34,15 @@ class Bootstrap
         $this->startTime = microtime(true);
         $this->events = new Events();
         $this->directory = $directory;
-        $this->init();
+        $this->config = Yaml::parse(file_get_contents($this->directory . "/config.yml"));
         self::$singelton = $this;
     }
 
-    public function setupTest()
+    public static function dispatch($response)
     {
-        if(isset($GLOBALS['DATABASE_HOST']))
-        {
-
-            $this->config['database'] = array(
-                'hostname' => $GLOBALS['DATABASE_HOST'],
-                'username' => $GLOBALS['DATABASE_USER'],
-                'password' => $GLOBALS['DATABASE_PASSWD'],
-                'database' => $GLOBALS['DATABASE_DBNAME'],
-            );
-        }
+        $response->display();
     }
+
 
     public static function getSingleton()
     {
@@ -66,8 +58,9 @@ class Bootstrap
 
     public static function start($directory)
     {
+        define("GL_TESTING", false);
         $bootstrap = new Bootstrap($directory);
-        echo $bootstrap->run();
+        $bootstrap->run()->display();
     }
 
     public function init()
@@ -75,21 +68,34 @@ class Bootstrap
         $this->register_error_handler();
         date_default_timezone_set('Europe/Berlin');
 
-        $this->config = Yaml::parse(file_get_contents($this->directory . "/config.yml"));
         $this->manager = new ModuleManager($this->config, $this->directory);
         $this->manager->init();
     }
 
-    public function run($url = null, $method = null)
+    public function setupTest()
     {
-        session_start();
-        Events::fire('onCoreStartUp', $this->startTime);
-        return $this->manager->run($url, $method);
+        define("GL_TESTING", true);
+        if(file_exists($this->directory . "/config.dev.yml"))
+        {
+            $config = Yaml::parse(file_get_contents($this->directory . "/config.dev.yml"));
+            $this->config = array_merge($this->config, $config);
+        }
+        $this->init();
     }
 
+    public function run($url = null, $method = null)
+    {
+        $this->init();
+        session_start();
+        Events::fire('onCoreStartUp', $this->startTime);
+        $response = $this->manager->run($url, $method);
+        $response->setUri($url);
+        return $response;
+    }
 
     public function install()
     {
+        $this->init();
         echo "<pre>";
         $db = new DatabaseManager();
         if ($db->connect()) {

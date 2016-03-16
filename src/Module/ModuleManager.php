@@ -198,6 +198,11 @@ class ModuleManager
     }
 
 
+    /**
+     * @param null $url
+     * @param null $method
+     * @return \GLFramework\Response
+     */
     public function run($url = null, $method = null)
     {
         foreach($this->modules as $module)
