@@ -60,9 +60,11 @@ class AuthController extends Controller
                     if(!isset($_GET['logout']))
                         $this->addMessage("Por favor acceda con su cuenta antes de continuar", "warning");
                     $this->quit($this->config['app']['basepath'] . "/login");
+                    return false;
                 }
             }
         }
+        return true;
     }
 
     public function processLogin($username = null, $password = null)
