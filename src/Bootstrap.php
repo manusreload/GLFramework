@@ -38,6 +38,20 @@ class Bootstrap
         self::$singelton = $this;
     }
 
+    public function setupTest()
+    {
+        if(isset($GLOBALS['DATABASE_HOST']))
+        {
+
+            $this->config['database'] = array(
+                'hostname' => $GLOBALS['DATABASE_HOST'],
+                'username' => $GLOBALS['DATABASE_USER'],
+                'password' => $GLOBALS['DATABASE_PASSWD'],
+                'database' => $GLOBALS['DATABASE_DBNAME'],
+            );
+        }
+    }
+
     public static function getSingleton()
     {
         return self::$singelton;

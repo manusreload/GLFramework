@@ -16,6 +16,8 @@ class ControllerHomeTest extends \GLFramework\Tests\TestCase
             ->see("Hola mundo")
             ->click("URL Parametrized")
             ->see("Hola mundo")
-            ->click('Sub home')->see('Sub content')->dontSee("Hola mundo");
+            ->click('Sub home')
+            ->see('Sub content')
+            ->dontSee("Hola mundo");
     }
 }

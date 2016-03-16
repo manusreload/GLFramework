@@ -31,7 +31,13 @@ class DatabaseManager
      */
     public function __construct()
     {
+
         $this->connect();
+    }
+
+    public function getConfig()
+    {
+        return Bootstrap::getSingleton()->getConfig();
     }
 
     /**
@@ -39,7 +45,7 @@ class DatabaseManager
      */
     public function instanceConnector()
     {
-        $config = Bootstrap::getSingleton()->getConfig();
+        $config = $this->getConfig();
         if(isset($config['database']['connector']))
         {
             $connector = $config['database']['connector'];
@@ -51,7 +57,7 @@ class DatabaseManager
     public function connect()
     {
         if (!self::$connection) {
-            $config = Bootstrap::getSingleton()->getConfig();
+            $config =$this->getConfig();
             self::$connection = $this->instanceConnector();
             if(self::$connection->connect($config['database']['hostname'], $config['database']['username'], $config['database']['password']))
             {

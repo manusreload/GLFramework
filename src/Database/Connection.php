@@ -16,5 +16,7 @@ abstract class Connection
     abstract public function select($query, $returnArray = true);
     abstract public function getLastInsertId();
     abstract public function getLastError();
+    abstract public function getPDO();
+
 
 }

@@ -28,6 +28,9 @@
     "psr/log": ">= 1.0.0",
     "symfony/dom-crawler": "^3.0"
   },
+  "require-dev": {
+    "phpunit/phpunit": "5.0.*"
+  },
   "extra": {
     "merge-plugin": {
       "include": [
