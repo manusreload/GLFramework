@@ -1,0 +1,52 @@
+beforeControllerRun:
+    Se ejecuta antes de iniciar el controlador
+    params:
+        $instance:  Instancia del controlador
+    return excepted:
+        [none]
+
+afterControllerRun:
+    Se ejecuta depues de ejecutar el controlador
+    params:
+        $instance:  Instancia del controlador
+    return excepted:
+        [none]
+
+isUserAllowed:
+    Comprueba que el usuario tenga permisos para visualizar el controlador correspondiente.
+    params:
+        $instance:  Instancia del controlador
+        $user:      Usuario logeado
+    return excepted:
+         boolean:   true si tiene permisos, false en otro caso.
+
+onLog:
+    Logea un item en el log
+    params:
+        $message: Mensaje
+        $level: Nivel de logeo
+    return excepted:
+        [none]
+
+onMessageDisplay:
+    Cuando se muesta un mensaje en pantalla.
+    params:
+        $message: Mensaje
+        $type: Tipo de mensaje: success, danger...
+    return excepted:
+        [none]
+onPDOCreated:
+    Al instanciar la conexion con la base de datos.
+    params:
+        &$pdo: Connexión PDO
+onViewCreated:
+    Al instanciar una vista
+        &$view
+
+
+/////////// Eventos de la vista /////////////////
+
+displayStyle:
+    Se llama despues de mostrar el bloque de estilos css
+displayScripts:
+    Se llama despues de mostrar el bloque de scripts javascript

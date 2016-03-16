@@ -9,8 +9,7 @@
 namespace GLFramework;
 
 
-use GLFramework\Controller\ErrorController;
-use GLFramework\Controller\ExceptionController;
+use DebugBar\StandardDebugBar;
 use GLFramework\Module\ModuleManager;
 use Symfony\Component\Yaml\Yaml;
 
@@ -24,12 +23,15 @@ class Bootstrap
     private $events;
     private $config;
     private $directory;
+    private $startTime;
 
     /**
      * Bootstrap constructor.
      */
     public function __construct($directory)
     {
+        error_reporting(E_ERROR);
+        $this->startTime = microtime(true);
         $this->events = new Events();
         $this->directory = $directory;
         $this->init();
@@ -39,6 +41,12 @@ class Bootstrap
     public static function getSingleton()
     {
         return self::$singelton;
+    }
+
+    public static function isDebug()
+    {
+        $config = self::getSingleton()->getConfig();
+        return isset($config['app']['debug'])?$config['app']['debug']:false;
     }
 
 
@@ -61,6 +69,7 @@ class Bootstrap
     public function run()
     {
         session_start();
+        Events::fire('onCoreStartUp', $this->startTime);
         $this->manager->run();
     }
 
@@ -189,6 +198,13 @@ class Bootstrap
             $errfile = $error["file"];
             $errline = $error["line"];
             $errstr = $error["message"];
+
+            Log::getInstance()->error($errstr . " " . $errfile . " " . $errline);
+            if(isset($this->config['app']['ignore_errors']))
+            {
+                if(in_array($errno, $this->config['app']['ignore_errors'])) return;
+            }
+
             if(isset($this->config['app']['debug']) && $this->config['app']['debug'])
                 ($this->format_error($errno, $errstr, $errfile, $errline));
         }
@@ -202,7 +218,6 @@ class Bootstrap
 
     function format_error($errno, $errstr, $errfile, $errline)
     {
-//        $trace = print_r(debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), true);
 
         echo "
   <table>

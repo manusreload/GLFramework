@@ -109,4 +109,14 @@ class ModelResult
     {
         return array_reverse($this->getModels($size));;
     }
+
+    public function order($field)
+    {
+        usort($this->models, function($a, $b) use($field)
+        {
+            return $a[$field] - $b[$field];
+
+        });
+        return $this;
+    }
 }

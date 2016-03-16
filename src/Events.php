@@ -40,14 +40,15 @@ class Events
 
     }
 
-    public static function fire($event, $args)
+    public static function fire($event, $args = array())
     {
         return self::getInstance()->_fire($event, $args);
     }
 
     public function _fire($event, $args = array())
     {
-        if(isset($this->handlers[$event]))
+        if(!is_array($args)) $args = array($args);
+        if(isset($this->handlers[$event]) && count(($this->handlers[$event])) > 0)
         {
             $handlers = $this->handlers[$event];
             foreach($handlers as $fn)
@@ -61,10 +62,12 @@ class Events
                 }
                 else
                 {
-                    throw new \Exception("Can not call event: " . $event . " function: " . print_r($fn, true));
+                    Log::getInstance()->error("Can not call event: " . $event . " function: " . print_r($fn, true), array('events'));
+//                    throw new \Exception();
                 }
             }
+            return false;
         }
-        return false;
+        return 0;
     }
 }

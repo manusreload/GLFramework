@@ -15,6 +15,7 @@ class Model
      * @var DatabaseManager
      */
     var $db;
+    protected $order = "";
     protected $table_name = "";
     protected $definition = array();
     /*
@@ -130,7 +131,17 @@ class Model
         foreach ($fields as $field) {
             if (isset($fieldsValue[$field])) {
                 $value = $fieldsValue[$field];
-                $sql .= $field . "= '" . $this->db->escape_string($value) . "' OR ";
+                if(is_array($value))
+                {
+                    foreach($value as $subvalue)
+                    {
+                        $sql .= $field . "= '" . $this->db->escape_string($subvalue) . "' OR ";
+                    }
+                }
+                else
+                {
+                    $sql .= $field . "= '" . $this->db->escape_string($value) . "' OR ";
+                }
             }
         }
         if (!empty($sql)) {
@@ -156,6 +167,30 @@ class Model
             return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $index != '$value'"));
         return $this->get_all();
 
+    }
+
+    public function search($fields)
+    {
+        if(!is_array($fields)) $fields = array($this->getIndex() => $fields);
+
+        $fieldsValue = $fields;
+        $fields = $this->getFields();
+        $sql = "";
+        foreach ($fields as $field) {
+            if (isset($fieldsValue[$field])) {
+                $value = $fieldsValue[$field];
+                if($this->isString($field))
+                    $sql .= $field . " LIKE '%" . $this->db->escape_string($value) . "%' OR ";
+                else
+                    $sql .= $field . " = '" . $this->db->escape_string($value) . "' OR ";
+
+            }
+        }
+        if (!empty($sql)) {
+            $sql = substr($sql, 0, -4);
+            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $sql"));
+        }
+        return $this->build(array());
     }
 
 
@@ -241,6 +276,7 @@ class Model
         if (count($result) > 0) {
             $modelResult->model = $result[0];
         }
+        if($this->order != "") $modelResult->order($this->order);
         return $modelResult;
     }
 
@@ -256,8 +292,8 @@ class Model
                 $fileds = $this->getFields();
                 foreach ($fileds as $field) {
                     if (isset($data[$field]) && ($allowEmpty || $data[$field] !== '')) {
-                        if(strpos($this->getFieldDefinition($field), "varchar") !== FALSE ||
-                            $this->getFieldDefinition($field) == "text")
+                        if(strpos($this->getFieldType($field), "varchar") !== FALSE ||
+                            $this->getFieldType($field) == "text")
                         {
 
                             $encoding = mb_detect_encoding($data[$field]);
@@ -296,7 +332,17 @@ class Model
     {
         if(isset($this->definition[$field]))
             return $this->definition[$field];
+        if(isset($this->definition['fields'][$field]))
+            return $this->definition['fields'][$field];
         return null;
+    }
+    public function getFieldType($field)
+    {
+        $definition = $this->getFieldDefinition($field);
+        if($definition)
+        {
+            return $definition['type'];
+        }
     }
 
     /**
@@ -326,6 +372,14 @@ class Model
             }
         }
         return $json;
+    }
+
+    public function isString($field)
+    {
+        $def = strtolower( $this->getFieldDefinition($field) );
+        if(strpos($def, "varchar") !== FALSE) return true;
+        if(strpos($def, "text") !== FALSE) return true;
+        return false;
     }
 
 

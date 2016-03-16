@@ -16,6 +16,9 @@ class Manipulator
 {
 
     private $currentSheet;
+    /**
+     * @var Association[]
+     */
     private $association = array();
     private $modelName;
     private $filename;
@@ -67,16 +70,46 @@ class Manipulator
 
     public function field($nameInFile, $nameInModel, $fn = null)
     {
-        if($fn == null)
+        if($association = $this->getAssociation($nameInModel))
         {
-            $this->association[$nameInFile] = $nameInModel;
+            $association->addNameInFile($nameInFile);
         }
         else
         {
-            $this->association[$nameInFile] = array('field' => $nameInModel, 'fn' => $fn);
-
+            $association = new Association();
+            $association->addNameInFile($nameInFile);
+            $association->setNameInModel($nameInModel);
+            $association->setParser($fn);
+            $this->association[] = $association;
         }
         return $this;
+    }
+
+    private function getAssociation($nameInModel)
+    {
+        foreach($this->association as $association)
+        {
+            if($association->getNameInModel() == $nameInModel)
+            {
+                return $association;
+            }
+        }
+        return null;
+    }
+
+    public function constant($nameInModel, $value)
+    {
+        if($association = $this->getAssociation($nameInModel))
+        {
+            $association->setConstant($value);
+        }
+        else
+        {
+            $association = new Association();
+            $association->setNameInModel($nameInModel);
+            $association->setConstant($value);
+            $this->association[] = $association;
+        }
     }
 
     public function sheet($index)
@@ -124,24 +157,16 @@ class Manipulator
             $associative[$value] = $row[$key];
         }
         $model = new $this->modelName();
-        foreach($this->association as $key => $value)
+        foreach($this->association as $association)
         {
-            $field = $value;
-            if(is_array($value))
-            {
-                $field = $value['field'];
-                $model->{$field} = call_user_func($value['fn'], $associative[$key]);
-            }
-            else
-            {
-                $model->{$field} = $associative[$key];
-            }
+            $association->fill($model, $associative);
         }
         return $model;
     }
 
     public function debug($number, $config = array())
     {
+        $tmp = array();
         $list = array();
         $this->init($config);
         if($header = $this->getCore()->next())
@@ -149,12 +174,13 @@ class Manipulator
             while($data = $this->getCore()->next())
             {
                 if($data == null) break;
+                $tmp = $data;
                 $model = $this->build($header, $data);
                 $number--;
-                if($number > 0)
+                if($number >= 0)
                     $list[] = $model;
             }
         }
-        print_debug($header, $data, $list);
+        print_debug($header, $tmp, $list);
     }
 }

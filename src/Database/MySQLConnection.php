@@ -9,6 +9,10 @@
 namespace GLFramework\Database;
 
 
+use DebugBar\DataCollector\PDO\TraceablePDOStatement;
+use GLFramework\Events;
+use TijsVerkoyen\CssToInlineStyles\Exception;
+
 class MySQLConnection extends Connection
 {
 
@@ -16,14 +20,18 @@ class MySQLConnection extends Connection
      * @var \mysqli
      */
     private $link;
+    /**
+     * @var \PDO
+     */
+    private $pdo;
     public function connect($hostname, $username, $password)
     {
         try{
-            $this->link = new \mysqli();
-            $this->link->connect($hostname, $username, $password);
-            if($this->link->connect_error == 0)
+            $this->pdo = new \PDO('mysql:host=' . $hostname . ';', $username, $password);
+            Events::fire('onPDOCreated', array(&$this->pdo));
+            if($this->pdo->errorCode() == 0)
             {
-                $this->link->query("SET NAMES utf8");
+                $this->pdo->exec("SET NAMES utf8");
                 return true;
             }
         }catch(\Exception $ex)
@@ -35,55 +43,58 @@ class MySQLConnection extends Connection
 
     public function select_database($database)
     {
-        try{
+//        try{
 
-            if($this->link)
+            if($this->pdo)
             {
-                $this->link->select_db($database);
-                return true;
+                if($this->pdo->exec("USE " . $database) !== FALSE)
+                    return true;
             }
-        }catch(\Exception $ex)
-        {
-
-        }
+//        }catch(\Exception $ex)
+//        {
+//            new Exception($this->getLastError());
+//        }
         return false;
     }
 
     public function escape_string($value)
     {
-        if($this->link)
+        if($this->pdo)
         {
-            return $this->link->escape_string($value);
+            return substr($this->pdo->quote($value), 1, -1);
         }
         return $value;
     }
 
     public function select($query, $returnArray = true)
     {
-
-        $result = $this->link->query($query);
+        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING);
+        $result = $this->pdo->query($query);
         $list = array();
         if ($result) {
             if($returnArray)
             {
-                while ($row = $result->fetch_assoc()) {
-                    $list[] = $row;
-                }
-                return $list;
+                return $result->fetchAll();
             }
-            return isset($result->current_field) || true;
+            return true;
         } else {
-            throw new \Exception($this->link->error);
+            throw new \Exception($query . "\n" . $this->getLastError());
         }
     }
 
     public function getLastInsertId()
     {
-        return $this->link->insert_id;
+        return $this->pdo->lastInsertId();
     }
 
     public function getLastError()
     {
-        return $this->link->error;
+        $error = $this->pdo->errorInfo();
+        return $error[2];
+    }
+
+    public function getPDO()
+    {
+        return $this->pdo;
     }
 }

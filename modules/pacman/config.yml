@@ -16,5 +16,5 @@ app:
       - GLFramework\Modules\Pacman\pacman: /pacman
 
   listeners:
-    displayExtraErrorView: GLFramework\Modules\Pacman\pacman$$displayExtraErrorView
-    displayStyle: GLFramework\Modules\Pacman\pacman$$displayStyle
+    displayExtraErrorView: GLFramework\Modules\Pacman\pacman::displayExtraErrorView
+    displayStyle: GLFramework\Modules\Pacman\pacman::displayStyle

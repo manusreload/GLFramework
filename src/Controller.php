@@ -115,6 +115,7 @@ abstract class Controller
 
     public function addMessage($message, $type = "success")
     {
+        Events::fire('onMessageDisplay', array('message' => $message, 'type' => $type));
         $this->messages[] = array('message' => $message, 'type' => $type);
     }
 
@@ -185,6 +186,11 @@ abstract class Controller
     public function setContentType($type)
     {
         header("Content-Type: " . $type);
+    }
+
+    public function log($message, $level)
+    {
+        Events::fire('onLog', array('message' => $message, 'level' => $level));
     }
 
 }

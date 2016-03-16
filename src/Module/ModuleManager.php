@@ -11,6 +11,7 @@ namespace GLFramework\Module;
 
 use GLFramework\Controller\ErrorController;
 use GLFramework\Controller\ExceptionController;
+use GLFramework\Events;
 use Symfony\Component\Yaml\Yaml;
 
 class ModuleManager
@@ -124,6 +125,7 @@ class ModuleManager
 
     public function init()
     {
+        $time = microtime();
         $module = $this->load($this->directory);
         if($module)
         {
@@ -221,7 +223,7 @@ class ModuleManager
                 $this->mainModule->run(new ExceptionController($ex));
 
             } catch (\Exception $ex) {
-                print_debug($ex);
+//                print_debug($ex);
             }
         }
         return false;

@@ -30,6 +30,7 @@ class View
         $directories = ModuleManager::getInstance()->getViews($controller->module);
         $loader = new \Twig_Loader_Filesystem($directories);
         $this->twig = new \Twig_Environment($loader, array());
+        Events::fire('onViewCreated', array(&$this->twig));
         $this->twig->addGlobal('config', $this->controller->config);
         $this->twig->addGlobal('_GET', $_GET);
         $this->twig->addGlobal('_POST', $_POST);
@@ -54,11 +55,15 @@ class View
         {
             $data = $data == null?array():$data;
             $this->twig->addGlobal('params', $params);
-//            die($this->twig->getLoader()->isFresh($this->controller->getTemplate()));
             $template = $this->twig->loadTemplate($this->controller->getTemplate());
             return $template->render($data);
         }
         return $data;
+    }
+
+    public function display($template, $data = array())
+    {
+        return $this->getTwig()->render($template, $data);
     }
 
     public function mail($template, $data = array(), &$css = array())

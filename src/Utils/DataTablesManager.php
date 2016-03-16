@@ -18,25 +18,32 @@ class DataTablesManager
      */
     var $dataSource;
 
+    var $callback;
+
     /**
      * DataTablesManager constructor.
-     * @param $dataSource
+     * @param $callback
      */
-    public function __construct($dataSource)
+    public function __construct($callback)
     {
-        $this->dataSource = $dataSource;
+        $this->callback = $callback;
+    }
+
+    public function row($row)
+    {
+        return call_user_func($this->callback, $row);
     }
 
     public function process($fields)
     {
         $data = array();
-        foreach($this->dataSource as $model)
+        foreach($fields as $model)
         {
-            $data[] = $model->json($fields);
+            $data[] = $this->row($model);
         }
         header("Content-Type: text/json");
 
-        echo json_encode($data);
+        echo json_encode(array("data" => $data));
         die();
     }
 

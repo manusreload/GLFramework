@@ -23,7 +23,9 @@
     "phpmailer/phpmailer": "~5.2",
     "wikimedia/composer-merge-plugin": "^1.3",
     "nuovo/spreadsheet-reader": "*",
-    "tijsverkoyen/css-to-inline-styles": "^1.5"
+    "tijsverkoyen/css-to-inline-styles": "^1.5",
+    "maximebf/debugbar": ">=1.0.0",
+    "psr/log": ">= 1.0.0"
   },
   "extra": {
     "merge-plugin": {

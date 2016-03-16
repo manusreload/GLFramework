@@ -275,6 +275,7 @@ class Module
 
     private function register_events()
     {
+        $context = array();
         if(isset($this->config['app']['listeners']))
         {
             $events = $this->config['app']['listeners'];
@@ -284,7 +285,7 @@ class Module
                 if(!is_array($listener)) $listener = array($listener);
                 foreach($listener as $fn)
                 {
-                    Events::getInstance()->listen($event, instance_method($fn));
+                    Events::getInstance()->listen($event, instance_method($fn, $context));
                 }
             }
         }
@@ -303,18 +304,18 @@ class Module
 
         if($instance instanceof Controller)
         {
+            Events::fire('beforeControllerRun', array($instance));
             if($instance instanceof Controller\AuthController)
             {
                 if($instance->user)
                 {
-                    if(!Events::fire('isUserAllowed', array($instance, $instance->user)))
+                    if(Events::fire('isUserAllowed', array($instance, $instance->user)) === false)
                     {
                         throw new \Exception('El usuario no tiene permisos para acceder a este sitio');
                     }
                 }
             }
             $instance->params = $params;
-            Events::fire('beforeControllerRun', array($instance));
             $data = call_user_func_array(array($instance, "run"), $params);
             Events::fire('afterControllerRun', array($instance));
             echo $instance->display($data, $params);

@@ -13,6 +13,6 @@ app:
       - GLFramework\Modules\GroupPermissions\groups_ajax: /admin/ajax/groups
 
   listeners:
-    beforeControllerRun: GLFrameworkModules\EventReceiver::beforeControllerRun
-    isUserAllowed: GLFrameworkModules\EventReceiver::isUserAllowed
+    beforeControllerRun: GLFrameworkModules\EventReceiver->beforeControllerRun
+    isUserAllowed: GLFrameworkModules\EventReceiver->isUserAllowed
 

@@ -119,20 +119,29 @@ function array_merge_recursive_ex(array & $array1, array & $array2)
 /**
  * @param $name
  *
- * Syntax: SpaceName\ClassName::method
- * Syntax: SpaceName\ClassName$$staticMethod
+ * Syntax: SpaceName\ClassName->method
+ * Syntax: SpaceName\ClassName::staticMethod
+ * @param array $cache
  * @return array
  */
-function instance_method($name)
+function instance_method($name, &$cache = array())
 {
+    if(!$cache) $cache = array();
+    if(strpos($name, "->") !== FALSE)
+    {
+        $split = explode("->", $name);
+        $instance = null;
+        if(!isset($cache[$split[0]]))
+        {
+            $instance = new $split[0]();
+            $cache[$split[0]] = $instance;
+        }
+        $instance = $cache[$split[0]];
+        return array($instance, $split[1]);
+    }
     if(strpos($name, "::") !== FALSE)
     {
         $split = explode("::", $name);
-        return array(new $split[0](), $split[1]);
-    }
-    if(strpos($name, "$$") !== FALSE)
-    {
-        $split = explode("$$", $name);
         return $split[0] . "::" . $split[1];
     }
     return $name;
