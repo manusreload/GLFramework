@@ -89,7 +89,8 @@ class Bootstrap
         session_start();
         Events::fire('onCoreStartUp', $this->startTime);
         $response = $this->manager->run($url, $method);
-        $response->setUri($url);
+        if($response)
+            $response->setUri($url);
         return $response;
     }
 
