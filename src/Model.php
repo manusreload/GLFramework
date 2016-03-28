@@ -89,7 +89,7 @@ class Model
         $index = $this->getIndex();
         $value = $this->getFieldValue($index);
         if ($value) {
-            return $this->db->exec("DELETE FROM {$this->table_name} WHERE $index = '$value'", $this->getCacheId($indexValue));
+            return $this->db->exec("DELETE FROM {$this->table_name} WHERE $index = '$value'", $this->getCacheId($value));
         }
         return false;
     }
