@@ -15,6 +15,7 @@ class Response
     private $uri;
     private $contentType = null;
     private $redirection = null;
+    private $ajax;
     /**
      * @return mixed
      */
@@ -88,6 +89,23 @@ class Response
     {
         return $this->uri;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getAjax()
+    {
+        return $this->ajax;
+    }
+
+    /**
+     * @param mixed $ajax
+     */
+    public function setAjax($ajax)
+    {
+        $this->ajax = $ajax;
+    }
+
 
 
 }

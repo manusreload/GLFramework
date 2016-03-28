@@ -9,6 +9,8 @@
 namespace GLFramework;
 
 
+use GLFramework\Cache\Cache;
+use GLFramework\Cache\MemoryCache;
 use GLFramework\Database\Connection;
 use GLFramework\Database\MySQLConnection;
 
@@ -25,6 +27,11 @@ class DatabaseManager
      * @var Connection
      */
     private static $connection;
+
+    /**
+     * @var Cache
+     */
+    private static $cache;
 
     /**
      * DBConnection constructor.
@@ -54,16 +61,35 @@ class DatabaseManager
         return new MySQLConnection();
     }
 
+    private function createCache()
+    {
+        $config = $this->getConfig();
+        if(isset($config['database']['cache']))
+        {
+            $configCache = $config['database']['cache'];
+            if(isset($configCache['connector']))
+            {
+                $this->instanceCache($configCache['connector']);
+            }
+        }
+    }
+    private function instanceCache($name)
+    {
+        self::$cache = new $name();
+        self::$cache->connect($this->getConfig());
+    }
+
     public function connect()
     {
         if (!self::$connection) {
-            $config =$this->getConfig();
+            $config = $this->getConfig();
             self::$connection = $this->instanceConnector();
             if(self::$connection->connect($config['database']['hostname'], $config['database']['username'], $config['database']['password']))
             {
                 if(self::$connection->select_database($config['database']['database']))
                 {
                     self::$selected = true;
+                    $this->createCache();
                     return true;
                 }
             }
@@ -86,35 +112,57 @@ class DatabaseManager
 
         if ($string == null) return $string;
         return self::$connection->escape_string($string);
-
     }
 
-    public function select($query)
+    public function cache($result, $key, $duration = null)
+    {
+        if($key && $this->getCache())
+        {
+            $this->getCache()->set($key, $result, $duration);
+        }
+        return $result;
+    }
+    public function pre_cache(&$result, $key)
+    {
+        if($key != null && $this->getCache())
+        {
+            if($this->getCache()->hash($key))
+            {
+                $result = $this->getCache()->get($key);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function select($query, $cache = null, $duration = null)
     {
         if (self::$connection) {
-            return self::$connection->select($query, true);
+            if($this->pre_cache($result, $cache)) return $result;
+            return $this->cache(self::$connection->select($query, true), $cache, $duration);
         } else {
             throw new \Exception("Database connection is not open!");
         }
     }
 
-    public function select_first($query)
+    public function select_first($query, $cache = null)
     {
-        $result = $this->select($query);
+        $result = $this->select($query, $cache);
         if ($result && count($result) > 0) return $result[0];
         return $result;
     }
 
-    public function select_count($query)
+    public function select_count($query, $cache = null)
     {
-        $result = $this->select_first($query);
+        $result = $this->select_first($query, $cache);
         if ($result) return current($result);
         return 0;
     }
 
-    public function exec($query)
+    public function exec($query, $removeCache = null)
     {
         if (self::$connection) {
+            if($this->getCache() && $removeCache) $this->getCache()->remove($removeCache);
             return self::$connection->select($query, false);
         } else {
             throw new \Exception("Database connection is not open!");
@@ -153,5 +201,13 @@ class DatabaseManager
     public function getConnection()
     {
         return self::$connection;
+    }
+
+    /**
+     * @return Cache
+     */
+    public function getCache()
+    {
+        return self::$cache;
     }
 }

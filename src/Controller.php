@@ -72,8 +72,9 @@ abstract class Controller
     public function call($params)
     {
         $this->params = $params;
+        Events::fire('beforeControllerRun', array($this));
         $data = call_user_func_array(array($this, "run"), $params);
-        Events::fire('afterControllerRun', array($this));
+        Events::fire('afterControllerRun', array($this, $this->response));
         $this->response->setContent($this->display($data, $params));
         return $this->response;
     }

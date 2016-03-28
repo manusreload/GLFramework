@@ -224,12 +224,8 @@ class ModuleManager
                 return $this->mainModule->run(new ErrorController("Controller not found."));
             }
         } catch (\Exception $ex) {
-            try {
-                return $this->mainModule->run(new ExceptionController($ex));
+            return $this->mainModule->run(new ExceptionController($ex));
 
-            } catch (\Exception $ex) {
-//                print_debug($ex);
-            }
         }
         return false;
     }

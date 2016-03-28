@@ -21,3 +21,11 @@ database:
   username: root
   password:
   database: dbdemo
+  cache:
+    connector: GLFramework\Cache\MemoryCache
+    host: localhost
+
+
+modules:
+  internal:
+#    debugbar

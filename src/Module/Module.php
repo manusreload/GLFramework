@@ -310,7 +310,6 @@ class Module
 
         if($instance instanceof Controller)
         {
-            Events::fire('beforeControllerRun', array($instance));
             if($instance instanceof Controller\AuthController)
             {
                 if($instance->user)
@@ -321,7 +320,8 @@ class Module
                     }
                 }
             }
-            return $instance->call($params);
+            $response = $instance->call($params);
+            return $response;
         }
         return false;
     }

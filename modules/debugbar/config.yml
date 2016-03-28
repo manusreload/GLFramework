@@ -3,13 +3,6 @@ description: Barra para depurara aplicaciones con el framework
 version: 0.0.1
 
 app:
-  index: home
-
-  controllers: controller
-  model: model
-  views: views
-
-  resources: resources
 
   listeners:
     onCoreStartUp: GLFramework\Modules\Debugbar\Debugbar->onCoreStartUp

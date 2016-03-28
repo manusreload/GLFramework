@@ -55,15 +55,17 @@ class Debugbar
     public function beforeControllerRun($instance)
     {
         $db = new DatabaseManager();
-        $this->getDebugbar()->addCollector(new ConfigCollector(Bootstrap::getSingleton()->getConfig()));
+        if(!$this->getDebugbar()->hasCollector('config'))
+            $this->getDebugbar()->addCollector(new ConfigCollector(Bootstrap::getSingleton()->getConfig()));
         $this->time->startMeasure('controller', 'Controller process time');
     }
     /**
      * @param $instance Controller
      */
-    public function afterControllerRun($instance)
+    public function afterControllerRun($instance, $response)
     {
         $this->time->stopMeasure('controller');
+
     }
 
     public function onCoreStartUp($time)
@@ -105,6 +107,7 @@ class Debugbar
     public function onViewCreated(&$twig)
     {
         $twig = new TraceableTwigEnvironment($twig, $this->time);
-        $this->getDebugbar()->addCollector(new TwigCollector($twig));
+        if(!$this->getDebugbar()->hasCollector('twig'))
+            $this->getDebugbar()->addCollector(new TwigCollector($twig));
     }
 }

@@ -40,21 +40,26 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
     private $models_delete = array();
 
+    private $database;
+
     public function requireDatabase()
     {
-        $database = new DatabaseManager();
-        $this->assertTrue($database->connect(), "Can not connect to database for testing!");
+        if($this->database == null)
+        {
+            $this->database = new DatabaseManager();
+            $this->assertTrue($this->database->connect(), "Can not connect to database for testing!");
 
-        $models = Bootstrap::getSingleton()->getModels();
-        foreach ($models as $model) {
+            $models = Bootstrap::getSingleton()->getModels();
+            foreach ($models as $model) {
 
-            $instance = new $model(null);
-            if ($instance instanceof Model) {
-                $diff = $instance->getStructureDifferences();
-                foreach ($diff as $action) {
-                    $database->exec($action['sql']);
+                $instance = new $model(null);
+                if ($instance instanceof Model) {
+                    $diff = $instance->getStructureDifferences();
+                    foreach ($diff as $action) {
+                        $this->database->exec($action['sql']);
+                    }
+
                 }
-
             }
         }
     }
@@ -78,6 +83,15 @@ class TestCase extends \PHPUnit_Framework_TestCase
         foreach($model as $m)
             $this->models_delete[] = $m;
     }
+
+    /**
+     * @return DatabaseManager
+     */
+    public function getDatabase()
+    {
+        return $this->database;
+    }
+
 
     public function visit($url)
     {

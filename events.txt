@@ -9,6 +9,7 @@ afterControllerRun:
     Se ejecuta depues de ejecutar el controlador
     params:
         $instance:  Instancia del controlador
+        $response:  Respuesta generada por el controlador
     return excepted:
         [none]
 
@@ -42,7 +43,6 @@ onPDOCreated:
 onViewCreated:
     Al instanciar una vista
         &$view
-
 
 /////////// Eventos de la vista /////////////////
 

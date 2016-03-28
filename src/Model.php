@@ -79,7 +79,7 @@ class Model
             $index = $this->getIndex();
             $indexValue = $this->db->escape_string($this->getFieldValue($index, $data));
             if (!$indexValue) return false;
-            return $this->db->exec("UPDATE {$this->table_name} SET $sql1 WHERE $index = '$indexValue'");
+            return $this->db->exec("UPDATE {$this->table_name} SET $sql1 WHERE $index = '$indexValue'", $this->getCacheId($indexValue));
         }
         return false;
     }
@@ -89,11 +89,15 @@ class Model
         $index = $this->getIndex();
         $value = $this->getFieldValue($index);
         if ($value) {
-            return $this->db->exec("DELETE FROM {$this->table_name} WHERE $index = '$value'");
+            return $this->db->exec("DELETE FROM {$this->table_name} WHERE $index = '$value'", $this->getCacheId($indexValue));
         }
         return false;
     }
 
+    public function getCacheId($id)
+    {
+        return $this->table_name . "_" . $id;
+    }
     /**
      * @param $id
      * @return ModelResult
@@ -104,7 +108,7 @@ class Model
 
             $index = $this->getIndex();
             $id = $this->db->escape_string($id);
-            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $index = '$id' "));
+            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $index = '$id' ", $this->getCacheId($id)));
         } else if (is_array($id)) {
             $fieldsValue = $id;
             $fields = $this->getFields();
