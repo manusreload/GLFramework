@@ -114,6 +114,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
     public function call($method, $uri, $params = array(), $cookies = array(), $files = array())
     {
         $uri = str_replace($this->internal_host, "", $uri);
+        if(strpos($uri, "/") !== 0) $uri = "/" . $uri;
         $bs = Bootstrap::getSingleton();
         $_COOKIE = $cookies;
         $_REQUEST = $params;
@@ -122,7 +123,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
         $_SERVER['REQUEST_URI'] = $this->internal_host . $uri;
         $this->response = $bs->run($uri, $method);
         $this->followRedirects();
-        $this->crawler = new Crawler($this->response->getContent(), $this->internal_host . "/" . $uri);
+        $this->crawler = new Crawler($this->response->getContent(), $this->internal_host . $uri);
 
         return $this;
     }
