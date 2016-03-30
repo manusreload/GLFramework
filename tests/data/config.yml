@@ -1,0 +1,27 @@
+app:
+  basepath:
+  index: home
+  name: Test
+  banner: images/logo.jpg
+
+  controllers:
+    - pages
+  model: model
+  views:
+    - view
+    - view/includes
+
+  routes:
+    - MyNameSpace\home: ["/home/example/[i:id]", GET]
+    - home: ["/home/example/[i:id]", GET]
+    - sub_home: ["/home/sub/example/[i:id]", GET]
+
+database:
+  hostname: 127.0.0.1
+  username: root
+  password:
+  database: dbdemo
+  cache:
+    connector: GLFramework\Cache\MemoryCache
+    host: localhost
+

@@ -133,12 +133,22 @@ class ModuleManager
             $this->add($module);
             if(isset($this->config['modules']))
             {
-                foreach($this->config['modules'] as $key => $value)
+                $modules = $this->config['modules'];
+                if(!is_array($modules)) $modules = array($modules);
+                foreach($modules as $subsection => $value)
                 {
                     $dirbase = $this->directory;
-                    if($key == "internal")
+                    if((string) $subsection == "internal")
                     {
                         $dirbase = __DIR__ . "/../../modules";
+                    }
+                    else if(is_numeric($subsection))
+                    {
+                        $dirbase .= "modules";
+                    }
+                    else
+                    {
+                        $dirbase .= "$subsection";
                     }
                     if(!is_array($value)) $value = array($value);
                     foreach($value as $name => $extra)

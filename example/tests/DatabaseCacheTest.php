@@ -6,7 +6,7 @@
  * Date: 28/03/16
  * Time: 13:42
  */
-class CTest extends \GLFramework\Tests\TestCase
+class DatabaseCacheTest extends \GLFramework\Tests\TestCase
 {
 
     function testCache()

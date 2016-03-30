@@ -1,0 +1,18 @@
+title:  test
+description: Test module
+version: 0.0.1
+
+app:
+  index: home
+
+  controllers: controller
+  model: model
+  views: views
+
+  routes:
+    GLFramework\Modules\Admin\admin: /admin
+    GLFramework\Modules\Admin\users: /admin/users/[*:id]?/[*:controller]?/[allow|deny|delete:state]?
+  listeners:
+    isUserAllowed: GLFramework\Modules\Admin\admin::isUserAllowed
+
+

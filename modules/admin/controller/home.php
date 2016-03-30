@@ -43,7 +43,7 @@ class admin extends AuthController
                 return $pageUser->allowed?true:false;
             }
         }
-        return false;
+        return null;
     }
 
 }

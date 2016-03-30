@@ -25,7 +25,7 @@ class AuthController extends Controller
     public function __construct($base, $module)
     {
         parent::__construct($base, $module);
-        if(isset($_SESSION['auth_user']))
+        if(isset($_SESSION[$this->session_key]))
         {
             $username =  $_SESSION[$this->session_key][0];
             $password =  $_SESSION[$this->session_key][1];
@@ -36,7 +36,7 @@ class AuthController extends Controller
                 $this->user = $this->instanceUser($user);
             }
             else{
-                unset($_SESSION['user']);
+                unset($_SESSION[$this->session_key]);
             }
         }
     }

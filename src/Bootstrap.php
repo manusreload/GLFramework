@@ -28,13 +28,13 @@ class Bootstrap
     /**
      * Bootstrap constructor.
      */
-    public function __construct($directory)
+    public function __construct($directory, $config = "config.yml")
     {
         error_reporting(E_ERROR);
         $this->startTime = microtime(true);
         $this->events = new Events();
         $this->directory = $directory;
-        $this->config = Yaml::parse(file_get_contents($this->directory . "/config.yml"));
+        $this->config = Yaml::parse(file_get_contents($this->directory . "/{$config}"));
         self::$singelton = $this;
     }
 
@@ -77,10 +77,15 @@ class Bootstrap
         define("GL_TESTING", true);
         if(file_exists($this->directory . "/config.dev.yml"))
         {
-            $config = Yaml::parse(file_get_contents($this->directory . "/config.dev.yml"));
-            $this->config = array_merge($this->config, $config);
+            $this->overrideConfig($this->directory . "/config.dev.yml");
         }
         $this->init();
+    }
+
+    public function overrideConfig($file)
+    {
+        $config = Yaml::parse(file_get_contents($file));
+        $this->config = array_merge($this->config, $config);
     }
 
     public function run($url = null, $method = null)
