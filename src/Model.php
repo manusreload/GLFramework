@@ -385,7 +385,8 @@ class Model
                     }
                     else
                     {
-                        $json[$field] = new $modelTransform($this->getFieldValue($field));
+                        $name = $this->underescapeName($modelTransform);
+                        $json[$name] = new $modelTransform($this->getFieldValue($field));
                     }
                 }
                 else
@@ -397,6 +398,13 @@ class Model
         return $json;
     }
 
+    public function underescapeName($name)
+    {
+        if(preg_match_all("#([A-Z][a-z]*)#", $name, $matches))
+        {
+            return implode("_", array_map('strtolower', $matches[1]));
+        }
+    }
     public function isString($field)
     {
         $def = strtolower( $this->getFieldDefinition($field) );
