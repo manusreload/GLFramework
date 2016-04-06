@@ -31,6 +31,7 @@ class Model
      */
 
     protected $hidden = array();
+    protected $models = array();
 
     /**
      * Model constructor.
@@ -372,7 +373,25 @@ class Model
         {
             if(!in_array($field, $this->hidden))
             {
-                $json[$field] = $this->getFieldValue($field);
+                if(isset($this->models[$field]))
+                {
+                    $modelTransform = $this->models[$field];
+
+                    if(is_array($modelTransform))
+                    {
+                        $name = $modelTransform['name'];
+                        $model = $modelTransform['model'];
+                        $json[$name] = new $model($this->getFieldValue($field));
+                    }
+                    else
+                    {
+                        $json[$field] = new $modelTransform($this->getFieldValue($field));
+                    }
+                }
+                else
+                {
+                    $json[$field] = $this->getFieldValue($field);
+                }
             }
         }
         return $json;

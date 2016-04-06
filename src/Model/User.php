@@ -32,6 +32,8 @@ class User extends Model
         )
     );
 
+    protected $hidden = array('password');
+
     public function getByUserPassword($user, $password)
     {
         return $this->db->select_first("SELECT * FROM {$this->table_name} WHERE user_name = '$user' AND password = '$password'");
