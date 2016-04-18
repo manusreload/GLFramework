@@ -219,4 +219,16 @@ abstract class Controller
         Events::fire('onLog', array('message' => $message, 'level' => $level));
     }
 
+    public function csrf()
+    {
+        return Events::fire('validateCSRF');
+    }
+    public function generate_csrf()
+    {
+        if(is_module_enabled("csrf"))
+        {
+            return \CSRF::generate()->token;
+        }
+    }
+
 }

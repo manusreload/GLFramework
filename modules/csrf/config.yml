@@ -1,0 +1,10 @@
+title: csrf
+description: Proteccion a ataques CSRF
+version: 0.0.1
+
+app:
+
+  model: model
+  listeners:
+    beforeControllerRun: GLFramework\Modules\CSRF\CSRF->beforeControllerRun
+    validateCSRF: GLFramework\Modules\CSRF\CSRF->validateCSRF

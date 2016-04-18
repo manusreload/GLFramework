@@ -21,6 +21,9 @@
             </label>
         </div>
         <button class="btn btn-lg btn-primary btn-block" name="login" type="submit">Sign in</button>
+
+        <input type="hidden"  name="_token" value="{{ this.generate_csrf() }}">
+
     </form>
 {% endblock %}
 {% block scripts %}{% endblock %}

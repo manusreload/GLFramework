@@ -75,6 +75,7 @@ class AuthController extends Controller
             $password = $_POST['password'];
         if(isset($username) && isset($password))
         {
+            $this->csrf();
             $user = $this->instanceUser(null);
             $db = $this->getDb();
             $username = $db->escape_string($username); // Para evitar inyecciones SQL
@@ -82,14 +83,13 @@ class AuthController extends Controller
             $user = $user->getByUserPassword($username, $password);
             if($user)
             {
-                $this->user = $user;
+                $this->user = new User($user);
                 $_SESSION[$this->session_key] = array($username, $password);
                 $this->redirection("/home");
                 return true;
             }
             else{
                 $this->addMessage("Usuario o contraseña incorrecta", "danger");
-                return array("error" => true);
             }
         }
         return false;

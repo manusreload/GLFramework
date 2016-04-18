@@ -5,6 +5,7 @@ namespace GLFramework\Tests;
 use Exception;
 use GLFramework\DatabaseManager;
 use GLFramework\Model;
+use GLFramework\Module\ModuleManager;
 use GLFramework\Response;
 use InvalidArgumentException;
 use GLFramework\Bootstrap;

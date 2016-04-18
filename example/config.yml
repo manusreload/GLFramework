@@ -28,4 +28,4 @@ database:
 
 modules:
   internal:
-#    debugbar
+    - csrf
