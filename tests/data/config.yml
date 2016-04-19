@@ -1,3 +1,5 @@
+include: include.config.yml
+
 app:
   basepath:
   index: home

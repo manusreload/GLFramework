@@ -34,8 +34,24 @@ class Bootstrap
         $this->startTime = microtime(true);
         $this->events = new Events();
         $this->directory = $directory;
-        $this->config = Yaml::parse(file_get_contents($this->directory . "/{$config}"));
+        $this->config = $this->loadConfig($this->directory, $config);
         self::$singelton = $this;
+    }
+
+    public function loadConfig($folder, $file)
+    {
+        $config = Yaml::parse(file_get_contents($folder . "/{$file}"));
+        if(isset($config['include']))
+        {
+            $value = $config['include'];
+            if(!is_array($value)) $value = array($value);
+            foreach($value as $subfile)
+            {
+                $config = array_merge_recursive_ex($config, $this->loadConfig($folder, $subfile));
+            }
+            unset($config['include']);
+        }
+        return $config;
     }
 
     public static function dispatch($response)
