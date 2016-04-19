@@ -381,12 +381,14 @@ class Model
                     {
                         $name = $modelTransform['name'];
                         $model = $modelTransform['model'];
-                        $json[$name] = new $model($this->getFieldValue($field));
+                        $object =  new $model($this->getFieldValue($field));
+                        $json[$name] = $object->json();
                     }
                     else
                     {
                         $name = $this->underescapeName($modelTransform);
-                        $json[$name] = new $modelTransform($this->getFieldValue($field));
+                        $object = new $modelTransform($this->getFieldValue($field));
+                        $json[$name] = $object->json();
                     }
                 }
                 else

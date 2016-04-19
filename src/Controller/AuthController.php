@@ -67,7 +67,7 @@ class AuthController extends Controller
         return true;
     }
 
-    public function processLogin($username = null, $password = null)
+    public function processLogin($username = null, $password = null, $encrypt = true)
     {
         if($username === null)
             $username = $_POST['username'];
@@ -79,7 +79,8 @@ class AuthController extends Controller
             $user = $this->instanceUser(null);
             $db = $this->getDb();
             $username = $db->escape_string($username); // Para evitar inyecciones SQL
-            $password = $user->encrypt($password);
+            if($encrypt)
+                $password = $user->encrypt($password);
             $user = $user->getByUserPassword($username, $password);
             if($user)
             {
