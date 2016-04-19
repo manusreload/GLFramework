@@ -62,6 +62,9 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
                 }
             }
+
+            $db2 = new DBStructure();
+            $db2->setDatabaseUpdate();
         }
     }
 

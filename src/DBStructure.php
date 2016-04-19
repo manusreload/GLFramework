@@ -68,6 +68,37 @@ class DBStructure
         return $result;
     }
 
+
+    public function haveModelChanges()
+    {
+        $filename = "database_structure.md5";
+
+        if(file_exists($filename))
+        {
+            $md5 = "";
+            foreach(Bootstrap::getSingleton()->getModels() as $model)
+            {
+                $md5 .= md5(json_encode($this->getDefinition($model)));
+            }
+            $md5 = md5($md5);
+            if(file_get_contents($filename) == $md5) return false;
+        }
+
+        return true;
+
+    }
+    public function setDatabaseUpdate()
+    {
+        $filename = "database_structure.md5";
+        $md5 = "";
+        foreach(Bootstrap::getSingleton()->getModels() as $model)
+        {
+            $md5 .= md5(json_encode($this->getDefinition($model)));
+        }
+        $md5 = md5($md5);
+        file_put_contents($filename, $md5);
+    }
+
     public function getCurrentStructure($table = "")
     {
         $db = new DatabaseManager();
@@ -102,6 +133,7 @@ class DBStructure
         }
         return $result;
     }
+
 
     /**
      * @param $excepted

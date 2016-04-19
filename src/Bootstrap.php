@@ -9,7 +9,6 @@
 namespace GLFramework;
 
 
-use DebugBar\StandardDebugBar;
 use GLFramework\Module\ModuleManager;
 use Symfony\Component\Yaml\Yaml;
 
@@ -155,7 +154,8 @@ class Bootstrap
                 $this->log("Please <a href='?exec'>click here</a> to make this changes in the database.");
 
             } else {
-
+                $db2 = new DBStructure();
+                $db2->setDatabaseUpdate();
                 $this->log("All done site ready for develop/production!");
             }
         } else {

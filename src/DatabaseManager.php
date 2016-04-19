@@ -23,6 +23,7 @@ class DatabaseManager
      */
 //    private static $link;
     private static $selected;
+    private static $checked = false;
     /**
      * @var Connection
      */
@@ -135,8 +136,26 @@ class DatabaseManager
         return false;
     }
 
+    public function checkDatabaseStructure()
+    {
+
+        if(!self::$checked)
+        {
+            self::$checked = true;
+            $config = $this->getConfig();
+            if(!isset($config['database']['ignoreStructure']))
+            {
+                $manager = new DBStructure();
+                if($manager->haveModelChanges())
+                {
+                    throw new \Exception("Please, update database structure executing /install.php");
+                }
+            }
+        }
+    }
     public function select($query, $cache = null, $duration = null)
     {
+
         if (self::$connection) {
             if($this->pre_cache($result, $cache)) return $result;
             return $this->cache(self::$connection->select($query, true), $cache, $duration);
@@ -210,4 +229,5 @@ class DatabaseManager
     {
         return self::$cache;
     }
+
 }
