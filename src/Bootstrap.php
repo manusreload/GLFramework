@@ -74,6 +74,7 @@ class Bootstrap
     public static function start($directory)
     {
         define("GL_TESTING", false);
+        define("GL_INSTALL", false);
         $bootstrap = new Bootstrap($directory);
         $bootstrap->run()->display();
     }
@@ -90,6 +91,7 @@ class Bootstrap
     public function setupTest()
     {
         define("GL_TESTING", true);
+        define("GL_INSTALL", false);
         if(file_exists($this->directory . "/config.dev.yml"))
         {
             $this->overrideConfig($this->directory . "/config.dev.yml");
@@ -100,7 +102,7 @@ class Bootstrap
     public function overrideConfig($file)
     {
         $config = Yaml::parse(file_get_contents($file));
-        $this->config = array_merge($this->config, $config);
+        $this->config = array_merge_recursive_ex($this->config, $config);
     }
 
     public function run($url = null, $method = null)
@@ -116,6 +118,7 @@ class Bootstrap
 
     public function install()
     {
+        define("GL_INSTALL", true);
         $this->init();
         echo "<pre>";
         $db = new DatabaseManager();

@@ -39,9 +39,13 @@ class Filesystem
     private function getStorage()
     {
         $folder = $this->getFilesystemFolder();
-        if(!mkdir($folder, 0777, true))
+        if(!is_dir($folder))
         {
-            throw new Exception("Can not create Filesystem folder: '" . $folder . "'. Please verify permissions.");
+
+            if(!mkdir($folder, 0777, true))
+            {
+                throw new Exception("Can not create Filesystem folder: '" . $folder . "'. Please verify permissions.");
+            }
         }
 
         return $folder;
@@ -72,6 +76,10 @@ class Filesystem
     {
         return touch($this->getAbsolutePath());
     }
+    public function exists()
+    {
+        return file_exists($this->getAbsolutePath());
+    }
 
     public function url()
     {
@@ -88,6 +96,15 @@ class Filesystem
     public function close()
     {
         return fclose($this->pfile);
+    }
+
+    public function read()
+    {
+        return file_get_contents($this->getAbsolutePath());
+    }
+    public function write($content)
+    {
+        return file_put_contents($this->getAbsolutePath(), $content);
     }
 
 }

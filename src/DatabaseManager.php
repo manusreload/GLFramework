@@ -155,7 +155,10 @@ class DatabaseManager
     }
     public function select($query, $cache = null, $duration = null)
     {
-
+        if(!GL_INSTALL)
+        {
+            $this->checkDatabaseStructure();
+        }
         if (self::$connection) {
             if($this->pre_cache($result, $cache)) return $result;
             return $this->cache(self::$connection->select($query, true), $cache, $duration);

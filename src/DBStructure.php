@@ -68,20 +68,24 @@ class DBStructure
         return $result;
     }
 
-
+    public function getCurrentModelDefinitionHash()
+    {
+        $md5 = "";
+        foreach(Bootstrap::getSingleton()->getModels() as $model)
+        {
+            $instance = new $model();
+            $md5 .= md5(json_encode($this->getDefinition($instance)));
+        }
+        return md5($md5);
+    }
     public function haveModelChanges()
     {
-        $filename = "database_structure.md5";
+        $filename = new Filesystem("database_structure.md5");
 
-        if(file_exists($filename))
+        if($filename->exists())
         {
-            $md5 = "";
-            foreach(Bootstrap::getSingleton()->getModels() as $model)
-            {
-                $md5 .= md5(json_encode($this->getDefinition($model)));
-            }
-            $md5 = md5($md5);
-            if(file_get_contents($filename) == $md5) return false;
+            $md5 = $this->getCurrentModelDefinitionHash();
+            if($filename->read() == $md5) return false;
         }
 
         return true;
@@ -89,14 +93,9 @@ class DBStructure
     }
     public function setDatabaseUpdate()
     {
-        $filename = "database_structure.md5";
-        $md5 = "";
-        foreach(Bootstrap::getSingleton()->getModels() as $model)
-        {
-            $md5 .= md5(json_encode($this->getDefinition($model)));
-        }
-        $md5 = md5($md5);
-        file_put_contents($filename, $md5);
+        $filename = new Filesystem("database_structure.md5");
+        $md5 = $this->getCurrentModelDefinitionHash();
+        $filename->write($md5);
     }
 
     public function getCurrentStructure($table = "")

@@ -4,6 +4,7 @@ namespace GLFramework\Tests;
 
 use Exception;
 use GLFramework\DatabaseManager;
+use GLFramework\DBStructure;
 use GLFramework\Model;
 use GLFramework\Module\ModuleManager;
 use GLFramework\Response;
@@ -48,8 +49,11 @@ class TestCase extends \PHPUnit_Framework_TestCase
         if($this->database == null)
         {
             $this->database = new DatabaseManager();
+
             $this->assertTrue($this->database->connect(), "Can not connect to database for testing!");
 
+            $db2 = new DBStructure();
+            $db2->setDatabaseUpdate();
             $models = Bootstrap::getSingleton()->getModels();
             foreach ($models as $model) {
 
@@ -63,8 +67,6 @@ class TestCase extends \PHPUnit_Framework_TestCase
                 }
             }
 
-            $db2 = new DBStructure();
-            $db2->setDatabaseUpdate();
         }
     }
 

@@ -82,5 +82,7 @@ composer.lock
 .idea
 .DS_Store
 
-
 config.dev.yml
+
+database_structure.md5
+.~lock.*
