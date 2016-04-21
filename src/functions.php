@@ -18,6 +18,48 @@ function print_debug($info)
 
     die();
 }
+function print_brief_debug($info, $limit = 1)
+{
+    echo "<pre>";
+    print_array($info, $limit);
+
+//    die();
+}
+function print_array($array,$depth=1,$indentation=0){
+    if (is_array($array)){
+        echo "Array(\n";
+        foreach ($array as $key=>$value){
+            if(is_array($value)){
+                if($depth){
+                    echo "max depth reached.";
+                }
+                else{
+                    for($i=0;$i<$indentation;$i++){
+                        echo "&nbsp;&nbsp;&nbsp;&nbsp;";
+                    }
+                    echo $key."=Array(";
+                    print_array($value,$depth-1,$indentation+1);
+                    for($i=0;$i<$indentation;$i++){
+                        echo "&nbsp;&nbsp;&nbsp;&nbsp;";
+                    }
+                    echo ");";
+                }
+            }
+            else{
+                for($i=0;$i<$indentation;$i++){
+                    echo "&nbsp;&nbsp;&nbsp;&nbsp;";
+                }
+                echo $key."=>".$value."\n";
+            }
+        }
+        echo ");\n";
+    }
+    elseif(is_object($array)){
+        echo get_class($array) . "\n";
+    } else{
+        var_dump($array);
+    }
+}
 function fix_date($date)
 {
     if($date != "")

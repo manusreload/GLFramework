@@ -80,19 +80,24 @@ abstract class Controller
     {
         $request = new Request($params);
         $this->params = $params;
+        $this->middleware = array_reverse($this->middleware);
+        reset($this->middleware);
         $this->middleware($request, $this->response);
         return $this->response;
     }
 
-    private function middleware($request, $response, $i = -1)
+    public function middleware($request, &$response)
     {
-        if($i == -1) $i = count($this->middleware);
-        if($i == 0) return;
-        $middleware = $this->middleware[$i - 1];
-        $middleware->next($request, $response, function($rq, $rs) use($i)
+        $that = $this;
+        if($middleware = current($this->middleware))
         {
-            $this->middleware($rq, $rs, $i - 1);
-        });
+            next($this->middleware);
+            $middleware->next($request, $response, function($request, $response) use($that)
+            {
+                $that->middleware($request, $response);
+            });
+
+        }
     }
 
 

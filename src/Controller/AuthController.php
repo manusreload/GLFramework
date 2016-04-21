@@ -61,6 +61,7 @@ class AuthController extends Controller implements Middleware
             {
                 if(strpos($_SERVER['REQUEST_URI'], "/login") === FALSE)
                 {
+//                    die("LOL");
                     if(!isset($_GET['logout']))
                         $this->addMessage("Por favor acceda con su cuenta antes de continuar", "warning");
                     $this->quit($this->config['app']['basepath'] . "/login");
