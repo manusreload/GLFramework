@@ -9,6 +9,7 @@
 namespace GLFramework;
 
 
+use GLFramework\Middleware\ControllerMiddleware;
 use GLFramework\Module\Module;
 use GLFramework\Module\ModuleManager;
 use GLFramework\Upload\Uploads;
@@ -26,6 +27,11 @@ abstract class Controller
     var $config = array();
     var $description = "";
     var $directory;
+
+    /**
+     * @var Middleware[]
+     */
+    private $middleware = array();
     /**
      * @var Module
      */
@@ -60,6 +66,7 @@ abstract class Controller
 
         $this->view = new View($this);
         $this->response = new Response();
+        $this->addMiddleware(new ControllerMiddleware($this));
     }
 
     abstract public function run();
@@ -71,13 +78,24 @@ abstract class Controller
 
     public function call($params)
     {
+        $request = new Request($params);
         $this->params = $params;
-        Events::fire('beforeControllerRun', array($this));
-        $data = call_user_func_array(array($this, "run"), $params);
-        Events::fire('afterControllerRun', array($this, $this->response));
-        $this->response->setContent($this->display($data, $params));
+        $this->middleware($request, $this->response);
         return $this->response;
     }
+
+    private function middleware($request, $response, $i = -1)
+    {
+        if($i == -1) $i = count($this->middleware);
+        if($i == 0) return;
+        $middleware = $this->middleware[$i - 1];
+        $middleware->next($request, $response, function($rq, $rs) use($i)
+        {
+            $this->middleware($rq, $rs, $i - 1);
+        });
+    }
+
+
 
     public function getResponse()
     {
@@ -229,6 +247,11 @@ abstract class Controller
         {
             return \CSRF::generate()->token;
         }
+    }
+
+    public function addMiddleware(Middleware $middleware)
+    {
+        $this->middleware[] = $middleware;
     }
 
 }

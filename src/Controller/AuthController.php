@@ -10,9 +10,12 @@ namespace GLFramework\Controller;
 
 
 use GLFramework\Controller;
+use GLFramework\Middleware;
 use GLFramework\Model\User;
+use GLFramework\Request;
+use GLFramework\Response;
 
-class AuthController extends Controller
+class AuthController extends Controller implements Middleware
 {
 
     private $session_key = "auth_user";
@@ -39,10 +42,11 @@ class AuthController extends Controller
                 unset($_SESSION[$this->session_key]);
             }
         }
+        $this->addMiddleware($this);
     }
 
 
-    public function run()
+    public function login()
     {
         // TODO: Implement run() method.
 
@@ -123,7 +127,18 @@ class AuthController extends Controller
         return new User($data);
     }
 
+    public function next(Request $request, Response $response, $next)
+    {
+        if($this->login())
+        {
+            $next($request, $response);
+        }
+        // TODO: Implement next() method.
+    }
 
-
-
+    public function run()
+    {
+        // Por motivos de compativilidad.
+        // Lo ideal esque esta calse sea abstracta
+    }
 }
