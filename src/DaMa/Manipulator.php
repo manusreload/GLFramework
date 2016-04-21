@@ -82,7 +82,7 @@ class Manipulator
             $association->setParser($fn);
             $this->association[] = $association;
         }
-        return $this;
+        return $association;
     }
 
     private function getAssociation($nameInModel)
@@ -132,10 +132,13 @@ class Manipulator
         {
             while($next = $this->getCore()->next())
             {
-                $model = $this->build($header, $next);
-                if($model->save())
+                if(implode("", $next) != "")
                 {
-                    $count++;
+                    $model = $this->build($header, $next);
+                    if($model->save())
+                    {
+                        $count++;
+                    }
                 }
             }
             return $count;
@@ -157,6 +160,21 @@ class Manipulator
             $associative[$value] = $row[$key];
         }
         $model = new $this->modelName();
+        foreach($this->association as $association)
+        {
+            if($association->index)
+            {
+                if($association->fill($model, $associative))
+                {
+                    $value = $model->{$association->nameInModel};
+                    if($value && !empty($value))
+                    {
+                        $model = $model->get(array($association->nameInModel => $value))->getModel();
+                        break;
+                    }
+                }
+            }
+        }
         foreach($this->association as $association)
         {
             $association->fill($model, $associative);

@@ -235,7 +235,8 @@ class ModuleManager
             }
         } catch (\Exception $ex) {
             return $this->mainModule->run(new ExceptionController($ex));
-
+        } catch (\Throwable $ex) {
+            return $this->mainModule->run(new ExceptionController($ex));
         }
         return false;
     }

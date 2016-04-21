@@ -243,21 +243,24 @@ class Bootstrap
             $errfile = $error["file"];
             $errline = $error["line"];
             $errstr = $error["message"];
-
-            Log::getInstance()->error($errstr . " " . $errfile . " " . $errline);
-            if(isset($this->config['app']['ignore_errors']))
+            if($errno | E_ERROR)
             {
-                if(in_array($errno, $this->config['app']['ignore_errors'])) return;
-            }
+                Log::getInstance()->error($errstr . " " . $errfile . " " . $errline);
+                if(isset($this->config['app']['ignore_errors']))
+                {
+                    if(in_array($errno, $this->config['app']['ignore_errors'])) return;
+                }
 
-            if(isset($this->config['app']['debug']) && $this->config['app']['debug'])
-                ($this->format_error($errno, $errstr, $errfile, $errline));
+                if(isset($this->config['app']['debug']) && $this->config['app']['debug'])
+                    ($this->format_error($errno, $errstr, $errfile, $errline));
+            }
         }
 
     }
 
     private function register_error_handler()
     {
+        set_error_handler(array($this, "fatal_handler"));
         register_shutdown_function(array($this, "fatal_handler"));
     }
 

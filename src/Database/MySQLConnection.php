@@ -68,7 +68,15 @@ class MySQLConnection extends Connection
 
     public function select($query, $returnArray = true)
     {
-        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING);
+        if(!GL_TESTING && !GL_INSTALL)
+        {
+            $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+
+        }
+        else{
+            $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING);
+
+        }
         $result = $this->pdo->query($query);
         $list = array();
         if ($result) {
@@ -89,7 +97,9 @@ class MySQLConnection extends Connection
 
     public function getLastError()
     {
+        $e = error_get_last();
         $error = $this->pdo->errorInfo();
+        print_debug($e);
         return $error[2];
     }
 

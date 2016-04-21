@@ -9,9 +9,10 @@
 namespace GLFramework\DaMa\Manipulators;
 
 
+use GLFramework\Filesystem;
 use TijsVerkoyen\CssToInlineStyles\Exception;
 
-class XLSManipulator extends ManipulatorCore
+class XLSXManipulator extends ManipulatorCore
 {
 
     /**
@@ -20,7 +21,9 @@ class XLSManipulator extends ManipulatorCore
     var $reader;
     public function open($file, $config = array())
     {
-        $this->reader = new \SpreadsheetReader_XLS($file);
+        $fs = new Filesystem();
+        $config['TempDir'] = $fs->getAbsolutePath();
+        $this->reader = new \SpreadsheetReader_XLSX($file, $config);
     }
 
     public function next()
@@ -39,7 +42,7 @@ class XLSManipulator extends ManipulatorCore
 
     public function map($item)
     {
-        return utf8_encode($item);
+        return $item;
     }
 
 }

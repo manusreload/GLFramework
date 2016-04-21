@@ -9,12 +9,14 @@
 namespace GLFramework\DaMa;
 
 
+use GLFramework\Model;
+
 class Association
 {
     public $nameInFile = array();
     public $nameInModel;
     public $constant = false;
-
+    public $index = false;
     public $parser = null;
 
     /**
@@ -81,8 +83,11 @@ class Association
         $this->constant = $constant;
     }
 
-
-
+    /**
+     * @param $model Model
+     * @param $row
+     * @return bool
+     */
     public function fill($model, $row)
     {
         if(!$this->constant)
@@ -99,6 +104,7 @@ class Association
         else
         {
             $model->{$this->nameInModel} = $this->constant;
+            return true;
         }
         return false;
     }
@@ -110,6 +116,12 @@ class Association
             return call_user_func($this->parser, $value);
         }
         return $value;
+    }
+
+    public function index()
+    {
+        $this->index = true;
+        return $this;
     }
 
 }
