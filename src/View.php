@@ -97,12 +97,14 @@ class View
     }
     public function parseFecha($fecha)
     {
+        if(!$fecha) return "";
         $time = strtotime($fecha);
         return date("d-m-Y", $time);
     }
 
     public function parseHora($fecha)
     {
+        if(!$fecha) return "";
         $time = strtotime($fecha);
         return date("H:i:s", $time);
     }

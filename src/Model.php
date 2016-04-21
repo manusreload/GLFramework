@@ -289,7 +289,7 @@ class Model
     {
 
     }
-    public function setData($data, $allowEmpty = true)
+    public function setData($data, $allowEmpty = true, $allowUnset = false)
     {
         if ($data != null) {
             if(is_array($data))
@@ -313,12 +313,22 @@ class Model
                             $this->{$field} = $data[$field];
                         }
                     }
+                    else if($allowUnset)
+                    {
+                        $this->{$field} = false;
+                    }
                 }
             }
             else
             {
-                $this->setData($this->get($data)->model);
+                $result = $this->get($data);
+                $this->setData($result->model);
+                if(empty($result->model)) $this->asDefault();
             }
+        }
+        if(empty($data))
+        {
+            $this->asDefault();
         }
         return $this;
     }
@@ -414,6 +424,8 @@ class Model
         if(strpos($def, "text") !== FALSE) return true;
         return false;
     }
+
+    public function asDefault(){}
 
 
 }
