@@ -77,6 +77,16 @@ class Request
         $this->uri = $uri;
     }
 
+    public function getHeaders()
+    {
+        return http_get_request_headers();
+    }
+
+    public function getHeader($name)
+    {
+        $headers = $this->getHeaders();
+        return $headers[$name];
+    }
 
 
 }

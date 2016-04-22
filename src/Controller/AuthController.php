@@ -140,6 +140,6 @@ class AuthController extends Controller implements Middleware
     public function run()
     {
         // Por motivos de compativilidad.
-        // Lo ideal esque esta calse sea abstracta
+        // Lo ideal esque esta clase sea abstracta
     }
 }
