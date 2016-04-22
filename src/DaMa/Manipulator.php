@@ -135,7 +135,7 @@ class Manipulator
                 if(implode("", $next) != "")
                 {
                     $model = $this->build($header, $next);
-                    if($model->save())
+                    if($model->valid() && $model->save())
                     {
                         $count++;
                     }
