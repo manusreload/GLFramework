@@ -21,7 +21,7 @@ class APIAuthorizationMiddleware implements Middleware
         $auth = $request->getHeader("X-Authorization");
         if($auth = $request->getHeader("X-Authorization"))
         {
-
+            
         }
         else
         {
