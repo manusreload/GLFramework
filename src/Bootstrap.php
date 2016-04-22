@@ -84,7 +84,7 @@ class Bootstrap
     public function init()
     {
         $this->register_error_handler();
-        date_default_timezone_set('Europe/Berlin');
+        date_default_timezone_set('Europe/Madrid');
 
         $this->manager = new ModuleManager($this->config, $this->directory);
         $this->manager->init();

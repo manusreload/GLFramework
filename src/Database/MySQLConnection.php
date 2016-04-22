@@ -97,9 +97,7 @@ class MySQLConnection extends Connection
 
     public function getLastError()
     {
-        $e = error_get_last();
         $error = $this->pdo->errorInfo();
-        print_debug($e);
         return $error[2];
     }
 
