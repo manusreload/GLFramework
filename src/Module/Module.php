@@ -12,6 +12,7 @@ namespace GLFramework\Module;
 use GLFramework\Controller;
 use GLFramework\Events;
 use GLFramework\Model\UserPage;
+use GLFramework\Request;
 
 class Module
 {
@@ -293,11 +294,11 @@ class Module
 
     /**
      * @param $controller
-     * @param array $params
+     * @param $request Request
      * @return bool|\GLFramework\Response
      * @throws \Exception
      */
-    public function run($controller, $params = array())
+    public function run($controller, $request)
     {
         if(!is_object($controller)) {
             $folder = $this->controllers[$controller];
@@ -320,7 +321,7 @@ class Module
                     }
                 }
             }
-            $response = $instance->call($params);
+            $response = $instance->call($request);
             return $response;
         }
         return false;

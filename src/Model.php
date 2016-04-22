@@ -361,6 +361,7 @@ class Model
     }
 
     /**
+     * Nombre de la tabla asociada al modelo.
      * @return string
      */
     public function getTableName()
@@ -368,6 +369,11 @@ class Model
         return $this->table_name;
     }
 
+    /**
+     * Genera las diferencias entre este modelo y lo que hay
+     * en la base de datos.
+     * @return array
+     */
     public function getStructureDifferences()
     {
         $diff = new DBStructure();
@@ -375,6 +381,13 @@ class Model
         return $diff->getStructureDifferences($excepted);
     }
 
+    /**
+     * Construye un array asocativo con la infrmación en json del Modelo.
+     * Si se ha establecido en $this->models un modelo asociado, entonces
+     * se construye tambien de forma recursiva.
+     * @param array $fields
+     * @return array
+     */
     public function json($fields = array())
     {
         $json = array();
@@ -410,6 +423,11 @@ class Model
         return $json;
     }
 
+    /**
+     * Separa las palabras por barras bajas
+     * @param $name
+     * @return mixed
+     */
     public function underescapeName($name)
     {
         if(preg_match_all("#([A-Z][a-z]*)#", $name, $matches))
@@ -425,7 +443,31 @@ class Model
         return false;
     }
 
+    /**
+     * Se ejecuta cuando estamos estableciendo los datos
+     * al modelo y no hay ningun campo para rellenar.
+     */
     public function asDefault(){}
+
+    /**
+     * Comprueba que el modelo sea válido, es decir, que tenga datos en
+     * almenos un campo.
+     * @param array $fields
+     * @return bool
+     */
+    public function valid($fields = array())
+    {
+        if(empty($fields))
+        {
+            $fields = array_diff($this->getFields(), array($this->getIndex()));
+        }
+        foreach ($fields as $field)
+        {
+            $value = $this->getFieldValue($field);
+            if(!empty($value)) return true;
+        }
+        return false;
+    }
 
 
 }

@@ -12,6 +12,7 @@ namespace GLFramework\Module;
 use GLFramework\Controller\ErrorController;
 use GLFramework\Controller\ExceptionController;
 use GLFramework\Events;
+use GLFramework\Request;
 use Symfony\Component\Yaml\Yaml;
 
 class ModuleManager
@@ -215,6 +216,7 @@ class ModuleManager
      */
     public function run($url = null, $method = null)
     {
+        $request = new Request($method, $url);
         foreach($this->modules as $module)
         {
             $module->register_router($this->router);
@@ -226,17 +228,17 @@ class ModuleManager
                 $target = $match['target'];
                 $module = $target[0];
                 $controller = $target[1];
-
-                return $module->run($controller, $match['params']);
+                $request->setParams($match['params']);
+                return $module->run($controller, $request);
             }
             else
             {
-                return $this->mainModule->run(new ErrorController("Controller not found."));
+                return $this->mainModule->run(new ErrorController("Controller not found."), $request);
             }
         } catch (\Exception $ex) {
-            return $this->mainModule->run(new ExceptionController($ex));
+            return $this->mainModule->run(new ExceptionController($ex), $request);
         } catch (\Throwable $ex) {
-            return $this->mainModule->run(new ExceptionController($ex));
+            return $this->mainModule->run(new ExceptionController($ex), $request);
         }
         return false;
     }

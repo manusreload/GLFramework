@@ -98,6 +98,23 @@ function reArrayFiles(&$file_post) {
 
     return $file_ary;
 }
+function reArrayPost($array) {
+    $keys = array();
+    $result = array();
+    foreach ($array as $key => $value)
+    {
+        $keys[] = $key;
+    }
+    foreach ($keys as $key)
+    {
+        foreach ($array[$key] as $k => $v)
+        {
+            if(!isset($result[$k])) $result[$k] = array();
+            $result[$k][$key] = $v;
+        }
+    }
+    return $result;
+}
 
 function file_get_php_classes($filepath) {
     $php_code = file_get_contents($filepath);

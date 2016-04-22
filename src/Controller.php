@@ -76,10 +76,13 @@ abstract class Controller
         return $this->view->render($data, $params);
     }
 
-    public function call($params)
+    /**
+     * @param $request Request
+     * @return Response
+     */
+    public function call($request)
     {
-        $request = new Request($params);
-        $this->params = $params;
+        $this->params = $request->getParams();
         $this->middleware = array_reverse($this->middleware);
         reset($this->middleware);
         $this->middleware($request, $this->response);

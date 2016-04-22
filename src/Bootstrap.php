@@ -76,7 +76,9 @@ class Bootstrap
         define("GL_TESTING", false);
         define("GL_INSTALL", false);
         $bootstrap = new Bootstrap($directory);
-        $bootstrap->run()->display();
+        $url = $_SERVER['REQUEST_URI'];
+        $method = $_SERVER['REQUEST_METHOD'];
+        $bootstrap->run($url, $method)->display();
     }
 
     public function init()
