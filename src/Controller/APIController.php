@@ -11,6 +11,7 @@ namespace GLFramework\Controller;
 
 use GLFramework\Controller;
 use GLFramework\Middleware\APIAuthorizationMiddleware;
+use GLFramework\Model;
 
 class APIController extends Controller
 {
@@ -50,7 +51,14 @@ class APIController extends Controller
 //        $result['messages'] = $messages;
 
         $result['header'] = $header;
-        $result['data'] = $data;
+        if($data instanceof Model)
+        {
+            $result['data'] = $data->json();
+        }
+        else
+        {
+            $result['data'] = $data;
+        }
         return json_encode($result);
     }
 
