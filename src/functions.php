@@ -84,6 +84,14 @@ function fix_decimal($number)
     return $number;
 }
 
+function fix_date_format($date, $format = "d-m-Y")
+{
+    $res = date_create_from_format($format, $date);
+    if($res)
+        return $res->format("Y-m-d");
+    return $date;
+}
+
 function reArrayFiles(&$file_post) {
 
     $file_ary = array();
@@ -299,4 +307,45 @@ if (!function_exists('http_response_code')) {
         return $code;
 
     }
+}
+
+function post($url, $fields, $header = array())
+{
+    $fields_string = "";
+    foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
+    rtrim($fields_string, '&');
+//open connection
+    $ch = curl_init();
+
+//set the url, number of POST vars, POST data
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+    curl_setopt($ch,CURLOPT_URL, $url);
+    curl_setopt($ch,CURLOPT_POST, count($fields));
+    curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
+    curl_setopt($ch,CURLOPT_RETURNTRANSFER, 1);
+
+//execute post
+    $result = curl_exec($ch);
+
+//close connection
+    curl_close($ch);
+    return $result;
+}
+
+function get($url, $header = array())
+{
+//open connection
+    $ch = curl_init();
+
+//set the url, number of POST vars, POST data
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+    curl_setopt($ch,CURLOPT_URL, $url);
+    curl_setopt($ch,CURLOPT_RETURNTRANSFER, 1);
+
+//execute post
+    $result = curl_exec($ch);
+
+//close connection
+    curl_close($ch);
+    return $result;
 }
