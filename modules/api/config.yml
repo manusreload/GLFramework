@@ -1,0 +1,9 @@
+title: api
+description: Implementa las funciones para authorizar a las peticiones API
+version: 0.0.1
+
+app:
+
+  model: model
+  listeners:
+    beforeControllerRun: GLFramework\Modules\API\API->beforeControllerRun

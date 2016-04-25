@@ -48,7 +48,6 @@ abstract class Controller
      * Controller constructor.
      * @param $module Module
      * @param string $base
-     * @internal param array $config
      */
     public function __construct($base = "", $module = null)
     {
