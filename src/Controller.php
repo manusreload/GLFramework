@@ -66,6 +66,7 @@ abstract class Controller
         $this->view = new View($this);
         $this->response = new Response();
         $this->addMiddleware(new ControllerMiddleware($this));
+        Events::fire('afterControllerConstruct', array($this));
     }
 
     abstract public function run();
@@ -81,6 +82,7 @@ abstract class Controller
      */
     public function call($request)
     {
+
         $this->params = $request->getParams();
         $this->middleware = array_reverse($this->middleware);
         reset($this->middleware);
@@ -191,7 +193,7 @@ abstract class Controller
         if($controller instanceof Controller) $controller = get_class($controller);
         $controller = (string) $controller;
         $url = Bootstrap::getSingleton()->getManager()->getRouter()->generate($controller, $params);
-        if($fullPath)
+        if($fullPath) 
         {
             $protocol = "http";
             if(strpos($_SERVER['SCRIPT_URI'], "https") !== FALSE) $protocol = "https";

@@ -16,6 +16,7 @@ class Response
     private $contentType = null;
     private $redirection = null;
     private $ajax;
+    private $responseCode = 200;
     /**
      * @return mixed
      */
@@ -67,6 +68,7 @@ class Response
 
     public function display()
     {
+        \http_response_code($this->getResponseCode());
         if($this->contentType) header("Content-Type: " . $this->contentType);
         if($this->redirection) header("Location: " . $this->redirection);
         print $this->content;
@@ -106,6 +108,23 @@ class Response
         $this->ajax = $ajax;
     }
 
+    /**
+     * @return int
+     */
+    public function getResponseCode()
+    {
+        return $this->responseCode;
+    }
+
+    /**
+     * @param int $responseCode
+     */
+    public function setResponseCode($responseCode)
+    {
+        $this->responseCode = $responseCode;
+    }
+
+    
 
 
 }

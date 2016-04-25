@@ -38,7 +38,20 @@ class APIController extends Controller
      */
     public function display($data, $params)
     {
-        return json_encode($data);
+        $result = array();
+        $header = array();
+        $messages = array();
+        foreach ($this->messages as $message)
+        {
+            $result[$message['type']][] = $message['message'];
+        }
+        $header['date'] = date("Y-m-d H:i:s");
+        $header['controller'] = get_class($this);
+//        $result['messages'] = $messages;
+
+        $result['header'] = $header;
+        $result['data'] = $data;
+        return json_encode($result);
     }
 
 

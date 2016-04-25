@@ -18,7 +18,7 @@ use GLFramework\Response;
 class AuthController extends Controller implements Middleware
 {
 
-    private $session_key = "auth_user";
+    private static $session_key = "auth_user";
     /**
      * @var User
      */
@@ -28,18 +28,18 @@ class AuthController extends Controller implements Middleware
     public function __construct($base, $module)
     {
         parent::__construct($base, $module);
-        if(isset($_SESSION[$this->session_key]))
+        if(isset($_SESSION[self::$session_key]))
         {
-            $username =  $_SESSION[$this->session_key][0];
-            $password =  $_SESSION[$this->session_key][1];
-            $user = $this->instanceUser(null);
+            $username =  $_SESSION[self::$session_key][0];
+            $password =  $_SESSION[self::$session_key][1];
+            $user = self::instanceUser(null);
             $user = $user->getByUserPassword($username, $password);
             if($user)
             {
-                $this->user = $this->instanceUser($user);
+                $this->user = self::instanceUser($user);
             }
             else{
-                unset($_SESSION[$this->session_key]);
+                unset($_SESSION[self::$session_key]);
             }
         }
         $this->addMiddleware($this);
@@ -53,15 +53,14 @@ class AuthController extends Controller implements Middleware
         if(isset($_GET['logout']))
         {
             $this->addMessage("Se ha desconectado correctamente");
-            unset($_SESSION[$this->session_key]);
+            unset($_SESSION[self::$session_key]);
         }
         if($this->requireLogin)
         {
-            if(!isset($_SESSION[$this->session_key]))
+            if(!isset($_SESSION[self::$session_key]))
             {
                 if(strpos($_SERVER['REQUEST_URI'], "/login") === FALSE)
                 {
-//                    die("LOL");
                     if(!isset($_GET['logout']))
                         $this->addMessage("Por favor acceda con su cuenta antes de continuar", "warning");
                     $this->quit($this->config['app']['basepath'] . "/login");
@@ -81,7 +80,7 @@ class AuthController extends Controller implements Middleware
         if(isset($username) && isset($password))
         {
             $this->csrf();
-            $user = $this->instanceUser(null);
+            $user = self::instanceUser(null);
             $db = $this->getDb();
             $username = $db->escape_string($username); // Para evitar inyecciones SQL
             if($encrypt)
@@ -90,7 +89,7 @@ class AuthController extends Controller implements Middleware
             if($user)
             {
                 $this->user = new User($user);
-                $_SESSION[$this->session_key] = array($username, $password);
+                $_SESSION[self::$session_key] = array($username, $password);
                 $this->redirection("/home");
                 return true;
             }
@@ -121,7 +120,7 @@ class AuthController extends Controller implements Middleware
      * @param $data
      * @return User
      */
-    public function instanceUser($data = null)
+    public static function instanceUser($data = null)
     {
         if(class_exists("User"))
             return new \User($data);
@@ -142,5 +141,11 @@ class AuthController extends Controller implements Middleware
         // Por motivos de compativilidad.
         // Lo ideal es que esta clase sea abstracta
         return true;
+    }
+
+    public static function auth($user_id)
+    {
+        $user = self::instanceUser($user_id);
+        $_SESSION[self::$session_key] = array($user->user_name, $user->password);
     }
 }

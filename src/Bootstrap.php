@@ -46,7 +46,8 @@ class Bootstrap
             if(!is_array($value)) $value = array($value);
             foreach($value as $subfile)
             {
-                $config = array_merge_recursive_ex($config, $this->loadConfig($folder, $subfile));
+                $arr = $this->loadConfig($folder, $subfile);
+                $config = array_merge_recursive_ex($config, $arr);
             }
             unset($config['include']);
         }

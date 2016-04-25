@@ -25,6 +25,8 @@ class ErrorController extends Controller
     {
         parent::__construct();
         $this->error = $error;
+        $this->setTemplate("error.twig");
+        $this->response->setResponseCode(501);
     }
 
 
@@ -32,6 +34,5 @@ class ErrorController extends Controller
     {
         if(isset($_SERVER['HTTP_REFERER']))
             $this->refer = $_SERVER['HTTP_REFERER'];
-        $this->setTemplate("error.twig");
     }
 }

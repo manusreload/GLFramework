@@ -3,7 +3,13 @@ description: Implementa las funciones para authorizar a las peticiones API
 version: 0.0.1
 
 app:
+  index: home
 
+  controllers: controllers
   model: model
+  views: views
+  routes:
+      GLFramework\Modules\API\api_home: /api/manager
+
   listeners:
-    beforeControllerRun: GLFramework\Modules\API\API->beforeControllerRun
+    afterControllerConstruct: GLFramework\Modules\API\API->afterControllerConstruct

@@ -8,7 +8,7 @@
     <h1>Ha ocurrido algo inesperado :(</h1>
     <div class="alert alert-danger">
 
-        Se ha producido un error al cargar el contenido. <br><strong>{{ this.error }}</strong>
+        Se ha producido un error al cargar el contenido. <br><strong>{{ this.error | raw }}</strong>
     </div>
 
     <a href="{{ this.refer }}" class="btn btn-success"><i class="glyphicon glyphicon-chevron-left"></i> Volver</a>

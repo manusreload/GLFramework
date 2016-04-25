@@ -25,6 +25,7 @@ class Module
     private $controllers = array();
     private $controllers_map = array();
     private $controllers_routes = array();
+    private $controllers_url_routes = array();
 
     /**
      * Module constructor.
@@ -48,7 +49,8 @@ class Module
         if (!is_array($controllers)) $controllers = array($controllers);
         foreach($controllers as $controllerFolder)
         {
-            $this->load_controllers($this->directory . "/" . $controllerFolder);
+            if($controllerFolder)
+                $this->load_controllers($this->directory . "/" . $controllerFolder);
         }
         $this->register_autoload_controllers();
         $this->register_autoload_model();
@@ -262,6 +264,7 @@ class Module
         $name = isset($params[2])?$params[2]:$controller;
         if(in_array($name, $this->controllers_routes)) $name = null;
         else $this->controllers_routes[] = $name;
+        $this->controllers_url_routes[] = $controller . " " . $route . " [" . $method . "]";
         $router->map($method, $route, array($this, $controller), $name);
     }
 
@@ -335,6 +338,15 @@ class Module
     {
         return $this->config;
     }
+
+    /**
+     * @return array
+     */
+    public function getControllersUrlRoutes()
+    {
+        return $this->controllers_url_routes;
+    }
+
 
 
 

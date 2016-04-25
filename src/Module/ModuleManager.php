@@ -233,7 +233,7 @@ class ModuleManager
             }
             else
             {
-                return $this->mainModule->run(new ErrorController("Controller not found."), $request);
+                return $this->mainModule->run(new ErrorController("Controller not found. " . $this->getRoutes()), $request);
             }
         } catch (\Exception $ex) {
             return $this->mainModule->run(new ExceptionController($ex), $request);
@@ -241,6 +241,23 @@ class ModuleManager
             return $this->mainModule->run(new ExceptionController($ex), $request);
         }
         return false;
+    }
+    
+    public function getRoutes()
+    {
+        if($this->config['app']['debug'])
+        {
+            $html = "<pre>";
+            $result = array();
+            foreach($this->modules as $module)
+            {
+                $list = $module->getControllersUrlRoutes();
+                $result = array_merge($list, $result);
+            }
+            $html .= implode("\n", $result);
+            $html .= "</pre>";
+            return $html;
+        }
     }
 
 

@@ -87,7 +87,6 @@ class Request
                 $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
             }
         }
-        print_debug($headers);
         return $headers;
     }
 
