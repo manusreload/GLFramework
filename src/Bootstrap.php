@@ -84,11 +84,13 @@ class Bootstrap
 
     public function init()
     {
+        Log::getInstance()->debug("Initializing framework...");
         $this->register_error_handler();
         date_default_timezone_set('Europe/Madrid');
 
         $this->manager = new ModuleManager($this->config, $this->directory);
         $this->manager->init();
+        Log::getInstance()->debug("Modules initialized: " . count($this->manager->getModules()));
     }
 
     public function setupTest()
