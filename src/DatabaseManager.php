@@ -91,6 +91,11 @@ class DatabaseManager
                 {
                     self::$selected = true;
                     $this->createCache();
+
+                    if(!GL_INSTALL)
+                    {
+                        $this->checkDatabaseStructure();
+                    }
                     return true;
                 }
             }
@@ -148,17 +153,14 @@ class DatabaseManager
                 $manager = new DBStructure();
                 if($manager->haveModelChanges())
                 {
-                    throw new \Exception("Please, update database structure executing /install.php");
+//                    throw new \Exception("Please, update database structure executing /install.php");
+                    $manager->executeModelChanges($this);
                 }
             }
         }
     }
     public function select($query, $cache = null, $duration = null)
     {
-        if(!GL_INSTALL)
-        {
-            $this->checkDatabaseStructure();
-        }
         if (self::$connection) {
             if($this->pre_cache($result, $cache)) return $result;
             return $this->cache(self::$connection->select($query, true), $cache, $duration);

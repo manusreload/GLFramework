@@ -36,7 +36,7 @@ class CSRF
 
     public function validateCSRF()
     {
-        if(isset($_REQUEST['_token']))
+        if(isset($_REQUEST['_token']) && !empty($_REQUEST['_token']))
         {
             $csrf = new \CSRF();
             $model = $csrf->get(array('token' => $_REQUEST['_token']))->getModel();
@@ -59,13 +59,13 @@ class CSRF
         }
         else
         {
-            $this->throwException("No se encuentra el token de validación.");
+//            $this->throwException("No se encuentra el token de validación.");
         }
 
     }
 
     private function throwException($message = "")
     {
-        new CSRFTokenVerificationFailedException($message);
+        throw new CSRFTokenVerificationFailedException($message);
     }
 }

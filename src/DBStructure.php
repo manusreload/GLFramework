@@ -9,6 +9,8 @@
 namespace GLFramework;
 
 
+use TijsVerkoyen\CssToInlineStyles\Exception;
+
 class DBStructure
 {
 
@@ -91,6 +93,27 @@ class DBStructure
         return true;
 
     }
+    public function executeModelChanges($db)
+    {
+        $models = Bootstrap::getSingleton()->getModels();
+        foreach ($models as $model) {
+            $instance = new $model(null);
+            if ($instance instanceof Model) {
+                $diff = $instance->getStructureDifferences();
+                foreach ($diff as $action) {
+                    try{
+                        $db->exec($action['sql']);
+
+                    }catch (\Exception $ex)
+                    {
+
+                    }
+                }
+            }
+        }
+        $this->setDatabaseUpdate();
+    }
+    
     public function setDatabaseUpdate()
     {
         $filename = new Filesystem("database_structure.md5");

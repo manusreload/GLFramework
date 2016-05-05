@@ -68,6 +68,7 @@ class Response
 
     public function display()
     {
+        Events::fire('beforeResponseSend', array($this));
         \http_response_code($this->getResponseCode());
         if($this->contentType) header("Content-Type: " . $this->contentType);
         if($this->redirection) header("Location: " . $this->redirection);

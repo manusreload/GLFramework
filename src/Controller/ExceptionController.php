@@ -24,7 +24,6 @@ class ExceptionController extends ErrorController
         parent::__construct($exception->getMessage());
         $this->exception = $exception;
         $this->trace = $exception->getTraceAsString();
-        print_debug($this->exception->getMessage(), $this->trace);
     }
 
     public function run()

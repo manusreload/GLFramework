@@ -10,8 +10,10 @@ app:
     beforeControllerRun: GLFramework\Modules\Debugbar\Debugbar->beforeControllerRun
     afterControllerRun: GLFramework\Modules\Debugbar\Debugbar->afterControllerRun
     onLog: GLFramework\Modules\Debugbar\Debugbar->onLog
+
     onMessageDisplay: GLFramework\Modules\Debugbar\Debugbar->onMessageDisplay
     displayScripts: GLFramework\Modules\Debugbar\Debugbar->displayScripts
     displayStyle: GLFramework\Modules\Debugbar\Debugbar->displayStyle
     onPDOCreated: GLFramework\Modules\Debugbar\Debugbar->onPDOCreated
     onViewCreated: GLFramework\Modules\Debugbar\Debugbar->onViewCreated
+    beforeResponseSend: GLFramework\Modules\Debugbar\Debugbar->beforeResponseSend

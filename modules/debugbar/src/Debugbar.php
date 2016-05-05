@@ -4,6 +4,7 @@ namespace GLFramework\Modules\Debugbar;
 use DebugBar\Bridge\Twig\TraceableTwigEnvironment;
 use DebugBar\Bridge\Twig\TwigCollector;
 use DebugBar\DataCollector\ConfigCollector;
+use DebugBar\DataCollector\MessagesCollector;
 use DebugBar\DataCollector\PDO\PDOCollector;
 use DebugBar\DataCollector\PDO\TraceablePDO;
 use DebugBar\DataCollector\TimeDataCollector;
@@ -13,6 +14,7 @@ use GLFramework\Controller;
 use GLFramework\Database\MySQLConnection;
 use GLFramework\DatabaseManager;
 use GLFramework\Module\ModuleManager;
+use GLFramework\Response;
 use GLFramework\View;
 
 /**
@@ -31,6 +33,10 @@ class Debugbar
      * @var TimeDataCollector
      */
     private $time;
+    /**
+     * @var MessagesCollector
+     */
+    private $messages;
 
     /**
      * Debugbar constructor.
@@ -38,6 +44,7 @@ class Debugbar
     public function __construct()
     {
         $this->time = $this->getDebugbar()->getCollector('time');
+        $this->messages = $this->getDebugbar()->getCollector('messages');
     }
 
     public function getDebugbar()
@@ -66,6 +73,18 @@ class Debugbar
     {
         $this->time->stopMeasure('controller');
 
+    }
+
+    /**
+     * @param $response Response
+     */
+    public function beforeResponseSend($response)
+    {
+
+        if($response->getAjax())
+        {
+            $this->getDebugbar()->sendDataInHeaders();
+        }
     }
 
     public function onCoreStartUp($time)
@@ -109,5 +128,10 @@ class Debugbar
         $twig = new TraceableTwigEnvironment($twig, $this->time);
         if(!$this->getDebugbar()->hasCollector('twig'))
             $this->getDebugbar()->addCollector(new TwigCollector($twig));
+    }
+
+    public function onLog($message,  $level)
+    {
+        $this->messages->addMessage($message, $level);
     }
 }
