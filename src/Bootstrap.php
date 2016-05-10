@@ -54,6 +54,9 @@ class Bootstrap
         return $config;
     }
 
+    /**
+     * @param $response Response
+     */
     public static function dispatch($response)
     {
         $response->display();

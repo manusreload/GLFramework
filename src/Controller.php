@@ -147,17 +147,21 @@ abstract class Controller
 
     public function quit($redirection = null)
     {
-        if($redirection) $this->redirection($redirection);
-        $this->shareMessages();
-        if(!GL_TESTING)
+        if(!$this->response->getAjax())
         {
-            Bootstrap::dispatch($this->response);
-            exit;
+
+            if($redirection) $this->redirection($redirection);
+            $this->shareMessages();
+            if(!GL_TESTING)
+            {
+                Bootstrap::dispatch($this->response);
+                exit;
+            }
         }
     }
 
     /**
-     * @return DBConnection
+     * @return DatabaseManager
      */
     public function getDb()
     {
