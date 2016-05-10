@@ -17,3 +17,4 @@ app:
     onPDOCreated: GLFramework\Modules\Debugbar\Debugbar->onPDOCreated
     onViewCreated: GLFramework\Modules\Debugbar\Debugbar->onViewCreated
     beforeResponseSend: GLFramework\Modules\Debugbar\Debugbar->beforeResponseSend
+    onMailTransport: GLFramework\Modules\Debugbar\Debugbar->onMailTransport

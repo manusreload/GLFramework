@@ -1,6 +1,8 @@
 <?php
 
 namespace GLFramework\Modules\Debugbar;
+use DebugBar\Bridge\SwiftMailer\SwiftLogCollector;
+use DebugBar\Bridge\SwiftMailer\SwiftMailCollector;
 use DebugBar\Bridge\Twig\TraceableTwigEnvironment;
 use DebugBar\Bridge\Twig\TwigCollector;
 use DebugBar\DataCollector\ConfigCollector;
@@ -63,6 +65,7 @@ class Debugbar
     {
         if(!$this->getDebugbar()->hasCollector('config'))
             $this->getDebugbar()->addCollector(new ConfigCollector(Bootstrap::getSingleton()->getConfig()));
+
         $this->time->startMeasure('controller', 'Controller process time');
     }
     /**
@@ -144,5 +147,11 @@ class Debugbar
     public function onMessageDisplay($message, $type)
     {
         $this->messages->addMessage($message, $type);
+    }
+
+    public function onMailTransport($mailer)
+    {
+        $this->messages->aggregate(new SwiftLogCollector($mailer));
+        $this->getDebugbar()->addCollector(new SwiftMailCollector($mailer));
     }
 }
