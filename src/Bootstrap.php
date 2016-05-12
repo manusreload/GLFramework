@@ -37,6 +37,13 @@ class Bootstrap
         self::$singelton = $this;
     }
 
+    /**
+     *
+     * Cargar de forma recursiva una configuración
+     * @param $folder
+     * @param $file
+     * @return array|mixed
+     */
     public function loadConfig($folder, $file)
     {
         $config = Yaml::parse(file_get_contents($folder . "/{$file}"));
@@ -55,6 +62,8 @@ class Bootstrap
     }
 
     /**
+     *
+     * Procesa la peticion de respuesta
      * @param $response Response
      */
     public static function dispatch($response)
@@ -74,7 +83,10 @@ class Bootstrap
         return isset($config['app']['debug'])?$config['app']['debug']:false;
     }
 
-
+    /**
+     * Inicia la apliccion de forma estática
+     * @param $directory
+     */
     public static function start($directory)
     {
         define("GL_TESTING", false);
@@ -85,6 +97,10 @@ class Bootstrap
         $bootstrap->run($url, $method)->display();
     }
 
+    /**
+     * Inicializar la apliacion de forma interna
+     * @throws \Exception
+     */
     public function init()
     {
         Log::d("Initializing framework...");
@@ -96,6 +112,9 @@ class Bootstrap
         Log::d("Modules initialized: " . count($this->manager->getModules()));
     }
 
+    /**
+     * Prepara e inicia el entorno de testeo
+     */
     public function setupTest()
     {
         define("GL_TESTING", true);
@@ -107,12 +126,22 @@ class Bootstrap
         $this->init();
     }
 
+    /**
+     * Sobreescribe con el archivo de configuración indicado
+     * @param $file
+     */
     public function overrideConfig($file)
     {
         $config = Yaml::parse(file_get_contents($file));
         $this->config = array_merge_recursive_ex($this->config, $config);
     }
 
+    /**
+     * Ejecutar la petición mediante esa url y el método
+     * @param null $url
+     * @param null $method
+     * @return Response
+     */
     public function run($url = null, $method = null)
     {
         $this->init();
@@ -124,6 +153,11 @@ class Bootstrap
         return $response;
     }
 
+    /**
+     * Instala la base de datos con los modelos actualmente cargados en el init
+     * @deprecated Since 0.2.0
+     * @throws \Exception
+     */
     public function install()
     {
         define("GL_INSTALL", true);
@@ -188,12 +222,17 @@ class Bootstrap
         }
     }
 
+    /**
+     * Obtinene la configuración para este contexto
+     * @return array|mixed
+     */
     public function getConfig()
     {
         return $this->config;
     }
 
     /**
+     * Obtiene el directorio en el que se esta ejecutando el framework
      * @return mixed
      */
     public function getDirectory()
@@ -209,8 +248,10 @@ class Bootstrap
         return $this->manager;
     }
 
-
-
+    /**
+     * Obtiene los modelos que han registrado los módulos.
+     * @return array
+     */
     public function getModels()
     {
         $list = array();
@@ -231,6 +272,12 @@ class Bootstrap
     }
 
 
+    /**
+     * @param $message
+     * @param int $level
+     * @param bool $nl
+     * @deprecated Since 0.2.0
+     */
     public function log($message, $level = 1, $nl = true)
     {
         echo str_repeat("-", $level) . "> " . $message . ($nl?"\n":"");

@@ -69,14 +69,25 @@ abstract class Controller
         Events::fire('afterControllerConstruct', array($this));
     }
 
+    /**
+     * Implementar aqui el código que ejecutara nuestra aplicación
+     * @return mixed
+     */
     abstract public function run();
 
+    /**
+     * Renderiza la vista y devuelve el código.
+     * @param $data
+     * @param $params
+     * @return array|null|string
+     */
     public function display($data, $params)
     {
         return $this->view->render($data, $params);
     }
 
     /**
+     * Ejecuta la petición en cascada a través de los diferentes middlewares
      * @param $request Request
      * @return Response
      */
@@ -104,14 +115,17 @@ abstract class Controller
         }
     }
 
-
-
+    /**
+     * Obtiene la respuesta que ha dado el controlador
+     * @return Response
+     */
     public function getResponse()
     {
         return $this->response;
     }
 
     /**
+     * Archivo de la plantilla, se busca en los módulos en función de prioridad
      * @return null|string
      */
     public function getTemplate()
@@ -120,6 +134,7 @@ abstract class Controller
     }
 
     /**
+     * Establecer el archivo de plantilla para este controlador
      * @param null|string $template
      */
     public function setTemplate($template)
@@ -127,11 +142,18 @@ abstract class Controller
         $this->template = $template;
     }
 
+    /**
+     * Asigna a la respuesta una redirección web
+     * @param $url
+     */
     public function redirection($url)
     {
         $this->response->setRedirection($url);
     }
 
+    /**
+     * Recupera los mensajes de la sesión
+     */
     public function restoreMessages()
     {
         if(isset($_SESSION['messages']))
@@ -140,11 +162,19 @@ abstract class Controller
             unset($_SESSION['messages']);
         }
     }
+
+    /**
+     * Almacena en la sesion los mensajes
+     */
     public function shareMessages()
     {
         $_SESSION['messages'] = $this->messages;
     }
 
+    /**
+     * Redirige y despacha la respuesta
+     * @param null $redirection
+     */
     public function quit($redirection = null)
     {
         if(!$this->response->getAjax())
@@ -161,6 +191,7 @@ abstract class Controller
     }
 
     /**
+     *
      * @return DatabaseManager
      */
     public function getDb()
@@ -170,6 +201,11 @@ abstract class Controller
         return $this->db;
     }
 
+    /**
+     * Muestra un mesaje en pantalla, con el estilo indicado
+     * @param $message
+     * @param string $type
+     */
     public function addMessage($message, $type = "success")
     {
         Events::fire('onMessageDisplay', array('message' => $message, 'type' => $type));
@@ -192,6 +228,14 @@ abstract class Controller
         return $this->view;
     }
 
+    /**
+     * Genera un enlace al controlador indicado, puede ser un objeto un un string
+     * @param string|Controller $controller
+     * @param array $params
+     * @param bool $fullPath
+     * @return string
+     * @throws \Exception
+     */
     public function getLink($controller, $params = array(), $fullPath = false)
     {
         if($controller instanceof Controller) $controller = get_class($controller);
@@ -207,6 +251,7 @@ abstract class Controller
     }
 
     /**
+     * Obtener la ruta al recurso indicado en el módulo indicado
      * @param $name
      * @param null $module Module
      * @return string
@@ -235,11 +280,19 @@ abstract class Controller
         }
     }
 
+    /**
+     * Genera un objeto de subida para este módulo
+     * @return Uploads
+     */
     public function getUploads()
     {
         return new Uploads($this->module->getDirectory(), $this->config);
     }
 
+    /**
+     * Establece el tipo de contenido a la respuesta
+     * @param $type
+     */
     public function setContentType($type)
     {
         $this->response->setContentType($type);
@@ -250,10 +303,19 @@ abstract class Controller
         Events::fire('onLog', array('message' => $message, 'level' => $level));
     }
 
+    /**
+     * Validar la petición si es posible
+     * @return bool|int|string
+     */
     public function csrf()
     {
         return Events::fire('validateCSRF');
     }
+
+    /**
+     * Genera un token para validar la petición
+     * @return mixed
+     */
     public function generate_csrf()
     {
         if(is_module_enabled("csrf"))
@@ -262,6 +324,10 @@ abstract class Controller
         }
     }
 
+    /**
+     * Añade un nuevo middleware a la cabeza de la cola
+     * @param Middleware $middleware
+     */
     public function addMiddleware(Middleware $middleware)
     {
         $this->middleware[] = $middleware;

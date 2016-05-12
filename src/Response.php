@@ -18,6 +18,7 @@ class Response
     private $ajax;
     private $responseCode = 200;
     /**
+     * Obtener el contenid de la respuesta
      * @return mixed
      */
     public function getContent()
@@ -26,6 +27,7 @@ class Response
     }
 
     /**
+     * Establecer el contenido de la respuesta
      * @param mixed $content
      */
     public function setContent($content)
@@ -34,6 +36,7 @@ class Response
     }
 
     /**
+     * Obtener el tipo de contenido de la respuesta
      * @return string
      */
     public function getContentType()
@@ -42,6 +45,7 @@ class Response
     }
 
     /**
+     * Establece el tipo de contenido de la respuesta
      * @param string $contentType
      */
     public function setContentType($contentType)
@@ -50,6 +54,7 @@ class Response
     }
 
     /**
+     * Obtiene la url de la redireccion
      * @return mixed
      */
     public function getRedirection()
@@ -58,6 +63,7 @@ class Response
     }
 
     /**
+     * Establece la URI de la redireccion
      * @param mixed $redirection
      */
     public function setRedirection($redirection)
@@ -65,7 +71,9 @@ class Response
         $this->redirection = $redirection;
     }
 
-
+    /**
+     * Envia la respuesta al cliente
+     */
     public function display()
     {
         Events::fire('beforeResponseSend', array($this));
@@ -75,17 +83,26 @@ class Response
         print $this->content;
     }
 
+    /**
+     * true si la respueta tiene una redireccion
+     * @return bool
+     */
     public function isRedirect()
     {
         return $this->redirection !== null;
     }
 
+    /**
+     * Establecer la URI de respuesta
+     * @param $url
+     */
     public function setUri($url)
     {
         $this->uri = $url;
     }
 
     /**
+     * Obtener la URI de la respuesta
      * @return mixed
      */
     public function getUri()
@@ -94,6 +111,7 @@ class Response
     }
 
     /**
+     * Devuelve el estado de AJAX
      * @return mixed
      */
     public function getAjax()
@@ -102,6 +120,7 @@ class Response
     }
 
     /**
+     * Establece el estado de AJAX
      * @param mixed $ajax
      */
     public function setAjax($ajax)
@@ -110,6 +129,7 @@ class Response
     }
 
     /**
+     * Obtener el codigo de respuesta HTTP
      * @return int
      */
     public function getResponseCode()
@@ -118,6 +138,7 @@ class Response
     }
 
     /**
+     * Establece el codigo de respuesta HTTP
      * @param int $responseCode
      */
     public function setResponseCode($responseCode)

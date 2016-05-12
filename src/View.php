@@ -49,6 +49,12 @@ class View
         $this->twig->addFilter(new \Twig_SimpleFilter('implode', array($this, 'implode')));
     }
 
+    /**
+     * Devuelve la vista renderizada
+     * @param null $data
+     * @param array $params
+     * @return array|null|string
+     */
     public function render($data = null, $params = array())
     {
         if($this->controller->getTemplate() != null)
@@ -61,11 +67,24 @@ class View
         return $data;
     }
 
+    /**
+     * Devuelve la plantilla renderizada
+     * @param $template
+     * @param array $data
+     * @return string
+     */
     public function display($template, $data = array())
     {
         return $this->getTwig()->render($template, $data);
     }
 
+    /**
+     * Devulve una vista compatible con los clientes de correo
+     * @param $template
+     * @param array $data
+     * @param array $css
+     * @return string
+     */
     public function mail($template, $data = array(), &$css = array())
     {
         $this->twig->addFunction(new \Twig_SimpleFunction('css', function($file) use(&$css)

@@ -30,6 +30,7 @@ class Request
     }
 
     /**
+     * Obtiene los parametros de peticion
      * @return mixed
      */
     public function getParams()
@@ -38,6 +39,7 @@ class Request
     }
 
     /**
+     * Establecer los parametros de peticion
      * @param mixed $params
      */
     public function setParams($params)
@@ -46,6 +48,7 @@ class Request
     }
 
     /**
+     * Obtiene el metodo de peticion
      * @return mixed
      */
     public function getMethod()
@@ -54,6 +57,7 @@ class Request
     }
 
     /**
+     * Establece el metodo de la meticion (GET, POST, PUT ...)
      * @param mixed $method
      */
     public function setMethod($method)
@@ -62,6 +66,7 @@ class Request
     }
 
     /**
+     * Obtiene la url de la peticion
      * @return mixed
      */
     public function getUri()
@@ -70,6 +75,7 @@ class Request
     }
 
     /**
+     * Establecer la url de la peticion
      * @param mixed $uri
      */
     public function setUri($uri)
@@ -77,6 +83,10 @@ class Request
         $this->uri = $uri;
     }
 
+    /**
+     * Obtiene las cabeceras de la petición
+     * @return string
+     */
     public function getHeaders()
     {
         $headers = '';
@@ -90,6 +100,11 @@ class Request
         return $headers;
     }
 
+    /**
+     * Obtiene el header indicado
+     * @param $name
+     * @return mixed
+     */
     public function getHeader($name)
     {
         $headers = $this->getHeaders();

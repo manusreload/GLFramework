@@ -27,6 +27,7 @@ class ModelResult
 
 
     /**
+     * Obtiene el primer modelo disponible
      * @return Model
      */
     public function getModel()
@@ -66,11 +67,21 @@ class ModelResult
         return $instances;
     }
 
+    /**
+     * Obtener una lista con los modelos disponibles
+     * @param null $size
+     * @return Model[]
+     */
     public function getModels($size = null)
     {
         return $this->getModelsInstanced($size);
     }
 
+    /**
+     * Obtiene el modelo en la posicion $count
+     * @param $count
+     * @return null
+     */
     public function offset($count)
     {
         if(count($this->models) < $count)
@@ -80,11 +91,19 @@ class ModelResult
         return null;
     }
 
+    /**
+     * Devuelve el numero de elementos devueltos
+     * @return int
+     */
     public function count()
     {
         return count($this->models);
     }
 
+    /**
+     * Obtiene el ultimo modelo de la lista
+     * @return Model|null
+     */
     public function last()
     {
         if($this->count())
@@ -95,6 +114,10 @@ class ModelResult
         return null;
     }
 
+    /**
+     * Genera una array lista para usar con json_encode
+     * @return array
+     */
     public function json()
     {
         $list = array();
@@ -105,11 +128,21 @@ class ModelResult
         return $list;
     }
 
+    /**
+     * Devuelve la lista al reves
+     * @param null $size
+     * @return array
+     */
     public function reverse($size = null)
     {
-        return array_reverse($this->getModels($size));;
+        return array_reverse($this->getModels($size));
     }
 
+    /**
+     * Ordena de menor a mayor en funcion del campo indicado
+     * @param $field
+     * @return $this
+     */
     public function order($field)
     {
         usort($this->models, function($a, $b) use($field)
