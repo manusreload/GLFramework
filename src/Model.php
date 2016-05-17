@@ -16,8 +16,29 @@ class Model
      */
     var $db;
     protected $order = "";
+    /**
+     * Nombre de la tabla en la base de datos
+     * @var string
+     */
     protected $table_name = "";
+    /**
+     * Definicion del modelo
+     * @var array
+     */
     protected $definition = array();
+    /*  Ejemplo de definicion
+
+    protected $definition = array(
+        'index' => 'id',
+        'fields' => array(
+            'controller' => "varchar(255)",
+            'title' => "varchar(64)",
+            'description' => "varchar(255)",
+            'admin' => "int(11)",
+        )
+    );
+
+     */
     /*
      * Reglas para sacar variables (desde array definicion):
      *  "'([a-z_]+)' => .*" -> "var \$$1;"
@@ -29,8 +50,21 @@ class Model
      * Reglas para sacar definicion (desde DESCRIBE <table>):
      *  "([a-z_]+)\t([a-z0-9(),]+).*" -> "'$1' => '$2',"
      */
-
+    /**
+     * Lista de columnas que no se muestran a la funcion json()
+     * @var array
+     */
     protected $hidden = array();
+    /**
+     * Traducir las columnas en modelos en si.
+     * array(
+     *  'id_asp' => array('name' => 'asp', 'model' => 'User'),
+     *   'id_operario' => array('name' => 'operario', 'model' => 'User'),
+     *   'id_taller' => 'Taller',
+     *   'id_taller_from' => array('name' => 'from', 'model' => 'Taller'),
+     * )
+     * @var array
+     */
     protected $models = array();
 
     /**
@@ -42,6 +76,11 @@ class Model
         $this->setData($data);
     }
 
+    /**
+     * Inserta el modelo en la tabla
+     * @param null $data
+     * @return bool
+     */
     public function insert($data = null)
     {
         $fields = $this->getFields();
@@ -64,6 +103,12 @@ class Model
         return false;
     }
 
+    /**
+     * Si el modelo tiene indice actualiza el modelo con los datos
+     * @param null $data
+     * @return bool
+     * @throws \Exception
+     */
     public function update($data = null)
     {
         $fields = $this->getFields();
@@ -85,6 +130,11 @@ class Model
         return false;
     }
 
+    /**
+     * Eliminar el modelo de la base de datos
+     * @return bool
+     * @throws \Exception
+     */
     public function delete()
     {
         $index = $this->getIndex();
@@ -100,7 +150,9 @@ class Model
         return $this->table_name . "_" . $id;
     }
     /**
-     * @param $id
+     * Obtener el modelo de la base de datos. Puede ser el id, o una lista con el nombre de las columnas
+     *  y el valor esperado. Es una condición conjuntiva.
+     * @param int|array $id
      * @return ModelResult
      */
     public function get($id)
@@ -128,6 +180,12 @@ class Model
         return $this->build(array());
     }
 
+    /**
+     * Obtener el modelo de la base de datos con condiciones disyuntivas
+     * @param $fields
+     * @return ModelResult
+     * @throws \Exception
+     */
     public function get_or($fields)
     {
         $fieldsValue = $fields;
@@ -157,6 +215,7 @@ class Model
     }
 
     /**
+     * Obtener todos los modelos de la tabla
      * @return ModelResult
      */
     public function get_all()
@@ -164,6 +223,11 @@ class Model
         return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE 1"));
     }
 
+    /**
+     * Obtener los modelos que no sean este.
+     * @return ModelResult
+     * @throws \Exception
+     */
     public function get_others()
     {
         $index = $this->getIndex();
@@ -174,6 +238,12 @@ class Model
 
     }
 
+    /**
+     * Busca en forma de texto en la tabla
+     * @param $fields
+     * @return ModelResult
+     * @throws \Exception
+     */
     public function search($fields)
     {
         if(!is_array($fields)) $fields = array($this->getIndex() => $fields);
@@ -198,7 +268,11 @@ class Model
         return $this->build(array());
     }
 
-
+    /**
+     * Actliza si ya existe, en otro caso inserta
+     * @param bool $updateIndex
+     * @return bool
+     */
     public function save($updateIndex = false)
     {
         if($this->exists())
@@ -212,6 +286,10 @@ class Model
         return $result;
     }
 
+    /**
+     * Devuelve true si existe el modelo en la tabla
+     * @return bool
+     */
     public function exists()
     {
         $indexValue = $this->getFieldValue($this->getIndex());
@@ -221,6 +299,12 @@ class Model
         return false;
     }
 
+    /**
+     * Obtiene el valor del campo especificado, null si no existe el campo
+     * @param $field
+     * @param null $data
+     * @return null
+     */
     public function getFieldValue($field, $data = null)
     {
         if ($data != null && isset($data[$field])) {
@@ -232,6 +316,10 @@ class Model
         return null;
     }
 
+    /**
+     * Apartir de la definicion devuelve los campos disponibles para el modelo
+     * @return array
+     */
     public function getFields()
     {
         $fields = array();
@@ -249,6 +337,10 @@ class Model
         return $fields;
     }
 
+    /**
+     * Obtiene el nombre del indice para esta tabla
+     * @return null
+     */
     public function getIndex()
     {
         if (isset($this->definition['index'])) {
@@ -258,6 +350,11 @@ class Model
         }
         return null;
     }
+
+    /**
+     * Asigna este valor al indice del modelo
+     * @param $value
+     */
     public function setToIndex($value)
     {
         $field = $this->getIndex();
@@ -265,12 +362,18 @@ class Model
             $this->{$field} = $value;
     }
 
+    /**
+     * Devuelve true si es el indice del modelo
+     * @param $field
+     * @return bool
+     */
     public function isIndex($field)
     {
         return $this->getIndex() == $field;
     }
 
     /**
+     * Genera un resultado de modelos a partir de la lista develta por la consulta
      * @param $result
      * @return ModelResult
      */
@@ -289,6 +392,15 @@ class Model
     {
 
     }
+
+    /**
+     * Establecer estos datos al modelo, en funcion de la definicion, si no esta en la definicion no
+     * se asigna al modelo.
+     * @param $data
+     * @param bool $allowEmpty
+     * @param bool $allowUnset
+     * @return $this
+     */
     public function setData($data, $allowEmpty = true, $allowUnset = false)
     {
         if ($data != null) {
@@ -334,6 +446,7 @@ class Model
     }
 
     /**
+     * Devuelve la definicion original del modelo
      * @return array
      */
     public function getDefinition()
@@ -341,6 +454,7 @@ class Model
         return $this->definition;
     }
     /**
+     * Obtiene la definicion para este campo
      * @return array
      */
     public function getFieldDefinition($field)
@@ -351,6 +465,12 @@ class Model
             return $this->definition['fields'][$field];
         return null;
     }
+
+    /**
+     * Obtiene el tipo para el campo
+     * @param $field
+     * @return mixed
+     */
     public function getFieldType($field)
     {
         $definition = $this->getFieldDefinition($field);

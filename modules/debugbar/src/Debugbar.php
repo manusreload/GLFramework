@@ -1,13 +1,12 @@
 <?php
 
 namespace GLFramework\Modules\Debugbar;
-use DebugBar\Bridge\SwiftMailer\SwiftLogCollector;
-use DebugBar\Bridge\SwiftMailer\SwiftMailCollector;
 use DebugBar\Bridge\Twig\TraceableTwigEnvironment;
 use DebugBar\Bridge\Twig\TwigCollector;
 use DebugBar\DataCollector\ConfigCollector;
 use DebugBar\DataCollector\MessagesCollector;
 use DebugBar\DataCollector\PDO\PDOCollector;
+use DebugBar\DataCollector\PDO\TraceablePDO;
 use DebugBar\DataCollector\TimeDataCollector;
 use DebugBar\StandardDebugBar;
 use GLFramework\Bootstrap;
@@ -15,7 +14,6 @@ use GLFramework\Controller;
 use GLFramework\Database\MySQLConnection;
 use GLFramework\DatabaseManager;
 use GLFramework\Module\ModuleManager;
-use GLFramework\Modules\Debugbar\Collectors\TraceablePDO;
 use GLFramework\Response;
 use GLFramework\View;
 
@@ -63,9 +61,9 @@ class Debugbar
      */
     public function beforeControllerRun($instance)
     {
+        $db = new DatabaseManager();
         if(!$this->getDebugbar()->hasCollector('config'))
             $this->getDebugbar()->addCollector(new ConfigCollector(Bootstrap::getSingleton()->getConfig()));
-
         $this->time->startMeasure('controller', 'Controller process time');
     }
     /**
@@ -87,16 +85,12 @@ class Debugbar
         {
             $this->getDebugbar()->sendDataInHeaders();
         }
-        if($response->isRedirect())
-        {
-            $this->getDebugbar()->stackData();
-        }
     }
 
     public function onCoreStartUp($time)
     {
         $this->time->addMeasure('Core start up', $time, microtime(true));
-//        $this->time->startMeasure('run', 'Core run finished');
+        $this->time->startMeasure('run', 'Core run finished');
     }
 
     /**
@@ -105,7 +99,7 @@ class Debugbar
     public function displayStyle($render)
     {
         $render = $this->getDebugbar()->getJavascriptRenderer();
-//        $this->time->stopMeasure('run');
+        $this->time->stopMeasure('run');
         if(Bootstrap::isDebug())
         {
             echo $render->renderHead();
@@ -125,11 +119,8 @@ class Debugbar
 
     public function onPDOCreated(&$pdo)
     {
-        $config = Bootstrap::getSingleton()->getConfig();
-        $pdo = new TraceablePDO($pdo, $this->time);
-        $collector = new PDOCollector(null, $this->time);
-        $collector->addConnection($pdo, $config['database']['database']);
-        $this->getDebugbar()->addCollector($collector);
+        $pdo = new TraceablePDO($pdo);
+        $this->getDebugbar()->addCollector(new PDOCollector($pdo, $this->time));
     }
 
     public function onViewCreated(&$twig)
@@ -142,16 +133,5 @@ class Debugbar
     public function onLog($message,  $level)
     {
         $this->messages->addMessage($message, $level);
-    }
-
-    public function onMessageDisplay($message, $type)
-    {
-        $this->messages->addMessage($message, $type);
-    }
-
-    public function onMailTransport($mailer)
-    {
-        $this->messages->aggregate(new SwiftLogCollector($mailer));
-        $this->getDebugbar()->addCollector(new SwiftMailCollector($mailer));
     }
 }

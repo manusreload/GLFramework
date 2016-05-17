@@ -6,7 +6,10 @@
  * Time: 17:40
  */
 
-
+/**
+ * Muestra la información pasada como argumentos, y termina la ejecución del programa
+ * @param $info
+ */
 function print_debug($info)
 {
     echo "<pre>";

@@ -30,6 +30,12 @@ class Events
         return self::$instance;
     }
 
+    /**
+     * Se pone a la escucha de un evento, se puede añadir en la configuración del módulo
+     *  dentro de *app:listeners*
+     * @param $event
+     * @param $fn
+     */
     public function listen($event, $fn)
     {
         if(!isset($this->handlers[$event]))
@@ -40,6 +46,16 @@ class Events
 
     }
 
+    /**
+     *
+     * Publica un evento al sistema, devuelve
+     *      0 si no hay nadie que lo procese,
+     *      true si almenos alguien devuelve true
+     *      false si todos devuelven false
+     * @param $event
+     * @param array $args
+     * @return bool|int|string
+     */
     public static function fire($event, $args = array())
     {
         return self::getInstance()->_fire($event, $args);
