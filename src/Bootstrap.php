@@ -14,6 +14,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class Bootstrap
 {
+    public static $VERSION = "0.1.0";
     private static $singelton;
     /**
      * @var ModuleManager
@@ -116,6 +117,12 @@ class Bootstrap
     public function run($url = null, $method = null)
     {
         $this->init();
+        Log::i("Welcome to GLFramework v" . $this->getVersion() . "");
+        Log::i("· PHP Version: " . phpversion());
+        Log::i("· Server Type: " . $_SERVER['SERVER_SOFTWARE']);
+        Log::i("· Server IP: " . $_SERVER['SERVER_ADDR'] . ":" . $_SERVER['SERVER_PORT']);
+        Log::i("· Extensiones de PHP: ");
+        Log::i(get_loaded_extensions());
         session_start();
         Events::fire('onCoreStartUp', $this->startTime);
         $response = $this->manager->run($url, $method);
@@ -307,5 +314,9 @@ class Bootstrap
 //        return $content;
     }
 
+    public function getVersion()
+    {
+        return self::$VERSION;
+    }
 
 }

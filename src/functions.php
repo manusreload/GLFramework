@@ -189,9 +189,10 @@ function array_merge_recursive_ex(array & $array1, array & $array2)
  * Syntax: SpaceName\ClassName->method
  * Syntax: SpaceName\ClassName::staticMethod
  * @param array $cache
+ * @param array $instanceParams
  * @return array
  */
-function instance_method($name, &$cache = array())
+function instance_method($name, &$cache = array(), $instanceParams = array())
 {
     if(!$cache) $cache = array();
     if(strpos($name, "->") !== FALSE)
@@ -200,7 +201,9 @@ function instance_method($name, &$cache = array())
         $instance = null;
         if(!isset($cache[$split[0]]))
         {
-            $instance = new $split[0]();
+            $rf = new ReflectionClass($split[0]);
+            $instance = $rf->getConstructor()?$rf->newInstanceArgs($instanceParams):$rf->newInstance();
+//            $instance = new $split[0]();
             $cache[$split[0]] = $instance;
         }
         $instance = $cache[$split[0]];

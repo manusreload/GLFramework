@@ -10,6 +10,7 @@ namespace GLFramework\Controller;
 
 
 use GLFramework\Controller;
+use GLFramework\Events;
 
 class ErrorController extends Controller
 {
@@ -34,5 +35,6 @@ class ErrorController extends Controller
     {
         if(isset($_SERVER['HTTP_REFERER']))
             $this->refer = $_SERVER['HTTP_REFERER'];
+        Events::fire('onError', array('error' => $this->error, 'refer' => $this->refer));
     }
 }

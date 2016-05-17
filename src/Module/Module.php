@@ -289,7 +289,7 @@ class Module
                 if(!is_array($listener)) $listener = array($listener);
                 foreach($listener as $fn)
                 {
-                    Events::getInstance()->listen($event, instance_method($fn, $context));
+                    Events::getInstance()->listen($event, instance_method($fn, $context, array($this)));
                 }
             }
         }

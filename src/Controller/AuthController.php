@@ -10,6 +10,7 @@ namespace GLFramework\Controller;
 
 
 use GLFramework\Controller;
+use GLFramework\Events;
 use GLFramework\Middleware;
 use GLFramework\Model\User;
 use GLFramework\Request;
@@ -90,6 +91,7 @@ class AuthController extends Controller implements Middleware
             {
                 $this->user = new User($user);
                 $_SESSION[self::$session_key] = array($username, $password);
+                Events::fire('onLoginSuccess', array('user' => $this->user));
                 $this->redirection("/home");
                 return true;
             }

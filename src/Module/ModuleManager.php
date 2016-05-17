@@ -155,6 +155,11 @@ class ModuleManager
                     foreach($value as $name => $extra)
                     {
                         if(is_integer($name)) $name = $extra;
+                        if(is_array($extra))
+                        {
+                            $name = key($extra);
+                            $extra = current($extra);
+                        }
                         $module = $this->load($dirbase . "/" . $name, $extra);
                         if($module)
                             $this->add($module);
