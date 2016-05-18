@@ -14,7 +14,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class Bootstrap
 {
-    public static $VERSION = "0.1.0";
+    public static $VERSION = "0.2.1";
     private static $singelton;
     /**
      * @var ModuleManager
