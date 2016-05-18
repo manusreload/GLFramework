@@ -9,6 +9,7 @@
 class CSRF extends \GLFramework\Model
 {
     private static $clean = false;
+    private static $generated = null;
     var $id;
     var $token;
     var $used;
@@ -25,16 +26,17 @@ class CSRF extends \GLFramework\Model
 
     public static function generate()
     {
-        $csrf = new CSRF();
-        if(!self::$clean)
+        if(!self::$generated)
         {
+            $csrf = new CSRF();
             $csrf->db->exec("DELETE FROM {$csrf->getTableName()} WHERE `time` < " . (time() - 60 * 60));
-            self::$clean = true;
+            $csrf->token = random_str(32);
+            $csrf->used = 0;
+            $csrf->time = time();
+            $csrf->save(true);
+            self::$generated = $csrf;
         }
-        $csrf->token = random_str(32);
-        $csrf->used = 0;
-        $csrf->time = time();
-        $csrf->save(true);
-        return $csrf;
+
+        return self::$generated;
     }
 }
