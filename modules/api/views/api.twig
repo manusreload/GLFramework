@@ -1,0 +1,64 @@
+{% extends "templates/base.twig" %}
+{# 
+ # Created by PhpStorm.
+ # User: manus
+ # Date: 25/04/16
+ # Time: 10:55
+ #}
+{% block title %}API Token{% endblock %}
+{% block body %}
+
+    <div class="row">
+        <div class="col-lg-12">
+            {% embed "templates/box.twig" %}
+                {% block title %}
+                    Listado de Acceso a API
+                {% endblock %}
+                {% block content %}
+                    <a href="/admin" class="btn btn-default"><i class="fa fa-chevron-left"></i> Volver</a>
+                    <div class="pull-right">
+                        <a href="{{ this.getLink(this, {id: "add"}) }}" class="btn btn-success">Nuevo Token</a>
+                    </div>
+                    <div class="clearfix"></div>
+                    <br>
+                    <table class="table table-responsive">
+                        <tr>
+                            <th>#</th>
+                            <th>Usuario</th>
+                            <th>Titulo</th>
+                            <th>Token</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+
+                        {% for api in this.apiAuthorization.get_all() %}
+                            <tr>
+                                <td><a href="{{ this.getLink(this, { id: api.id}) }}">{{ api.id }}</a></td>
+                                <td>{{ api.getUser().nombre }}</td>
+                                <td>{{  api.title }}</td>
+                                <td><code>{{ api.token }}</code></td>
+                                <td>{{ api.date }}</td>
+                                <td>
+                                    <a href="{{ this.getLink(this, { id: api.id}) }}">Editar</a>
+                                    <a data-confirm-a="¿Realmente deseas eliminar esta entrada?" href="{{ this.getLink(this) }}?remove={{ api.id }}">Eliminar</a></td>
+
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endblock %}
+            {% endembed %}
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+<script>
+    $("[data-confirm-a]").click(function(ev)
+    {
+        if(!confirm($(this).data("confirm-a")))
+        {
+            ev.preventDefault();
+        }
+    });
+</script>
+{% endblock %}
+{% block styles %}{% endblock %}

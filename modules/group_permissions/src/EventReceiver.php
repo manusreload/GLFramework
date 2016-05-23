@@ -50,4 +50,9 @@ class EventReceiver
         }
         return false;
     }
+
+    public function getAdminControllers()
+    {
+        return 'GLFramework\Modules\GroupPermissions\groups';
+    }
 }

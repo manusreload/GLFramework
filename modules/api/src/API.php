@@ -66,4 +66,9 @@ class API implements Middleware
         }
         return false;
     }
+
+    public function getAdminControllers()
+    {
+        return 'GLFramework\Modules\Controller\API\api';
+    }
 }

@@ -590,4 +590,14 @@ class Model
     }
 
 
+    /**
+     * @param $baseclass
+     * @param array $args
+     */
+    public static function newInstance($baseclass, $args = array())
+    {
+        print_debug($baseclass, get_class());
+    }
+
+
 }

@@ -17,6 +17,7 @@ use GLFramework\Upload\Uploads;
 abstract class Controller
 {
 
+    var $title = false;
     var $name = null;
     var $admin = false;
 

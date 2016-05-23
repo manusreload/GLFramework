@@ -289,12 +289,21 @@ class Module
                 if(!is_array($listener)) $listener = array($listener);
                 foreach($listener as $fn)
                 {
-                    Events::getInstance()->listen($event, instance_method($fn, $context, array($this)));
+                    Events::getInstance()->listen($event, instance_method($fn, $context, array($this)), $this);
                 }
             }
         }
     }
 
+    /**
+     * @param $controller
+     * @return Controller
+     */
+    public function instanceController($controller)
+    {
+        $folder = $this->controllers[$controller];
+        return new $controller($folder, $this);
+    }
     /**
      * @param $controller
      * @param $request Request
@@ -304,8 +313,7 @@ class Module
     public function run($controller, $request)
     {
         if(!is_object($controller)) {
-            $folder = $this->controllers[$controller];
-            $instance = new $controller($folder, $this);
+            $instance = $this->instanceController($controller);
         }
         else
         {
@@ -318,7 +326,7 @@ class Module
             {
                 if($instance->user)
                 {
-                    if(Events::fire('isUserAllowed', array($instance, $instance->user)) === false)
+                    if(Events::anyFalse(Events::fire('isUserAllowed', array($instance, $instance->user))))
                     {
                         throw new \Exception('El usuario no tiene permisos para acceder a este sitio');
                     }

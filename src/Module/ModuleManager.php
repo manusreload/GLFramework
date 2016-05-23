@@ -12,6 +12,7 @@ namespace GLFramework\Module;
 use GLFramework\Controller\ErrorController;
 use GLFramework\Controller\ExceptionController;
 use GLFramework\Events;
+use GLFramework\Log;
 use GLFramework\Request;
 use Symfony\Component\Yaml\Yaml;
 
@@ -75,6 +76,26 @@ class ModuleManager
             foreach($module->getControllers() as $controller => $file)
             {
                 if($key == $controller) return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param $key
+     * @return bool|\GLFramework\Controller
+     */
+    public static function instanceController($key)
+    {
+        $instance = self::getInstance();
+        foreach($instance->getModules() as $module)
+        {
+            foreach($module->getControllers() as $controller => $file)
+            {
+                if($key == $controller)
+                {
+                    return $module->instanceController($controller);
+                }
             }
         }
         return false;

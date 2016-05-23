@@ -15,4 +15,5 @@ app:
   listeners:
     beforeControllerRun: GLFrameworkModules\EventReceiver->beforeControllerRun
     isUserAllowed: GLFrameworkModules\EventReceiver->isUserAllowed
+    getAdminControllers: GLFrameworkModules\EventReceiver->getAdminControllers
 
