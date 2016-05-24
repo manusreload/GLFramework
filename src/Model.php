@@ -115,11 +115,12 @@ class Model
     {
         $fields = $this->getFields();
         $sql1 = "";
+        $args = array();
         foreach ($fields as $field) {
             $value = $this->getFieldValue($field, $data);
             if (isset($value) && $value !== '' && !$this->isIndex($field)) {
-                $value = $this->db->escape_string($value);
-                $sql1 .= "$field = '$value', ";
+                $args[] = $value;
+                $sql1 .= "$field = ?, ";
             }
         }
         if (!empty($sql1)) {
@@ -127,7 +128,8 @@ class Model
             $index = $this->getIndex();
             $indexValue = $this->db->escape_string($this->getFieldValue($index, $data));
             if (!$indexValue) return false;
-            return $this->db->exec("UPDATE {$this->table_name} SET $sql1 WHERE $index = '$indexValue'", $this->getCacheId($indexValue));
+            $args[] = $indexValue;
+            return $this->db->exec("UPDATE {$this->table_name} SET $sql1 WHERE $index = ?",$args, $this->getCacheId($indexValue));
         }
         return false;
     }
@@ -142,7 +144,7 @@ class Model
         $index = $this->getIndex();
         $value = $this->getFieldValue($index);
         if ($value) {
-            return $this->db->exec("DELETE FROM {$this->table_name} WHERE $index = '$value'", $this->getCacheId($value));
+            return $this->db->exec("DELETE FROM {$this->table_name} WHERE $index = ?", array($value), $this->getCacheId($value));
         }
         return false;
     }
@@ -168,15 +170,16 @@ class Model
             $fieldsValue = $id;
             $fields = $this->getFields();
             $sql = "";
+            $args = array();
             foreach ($fields as $field) {
                 if (isset($fieldsValue[$field])) {
-                    $value = $fieldsValue[$field];
+                    $args[$field] = $fieldsValue[$field];
                     $sql .= $field . "= :$field AND ";
                 }
             }
             if (!empty($sql)) {
                 $sql = substr($sql, 0, -5);
-                return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $sql", $fieldsValue));
+                return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $sql", $args));
             }
         }
         return $this->build(array());

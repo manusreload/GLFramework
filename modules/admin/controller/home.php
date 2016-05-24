@@ -69,6 +69,7 @@ class admin extends AuthController
             }
         }
         if($controller->admin) return false;
+        if($controller->allowed) return true;
         return $config['allowDefault']?:null;
     }
 
