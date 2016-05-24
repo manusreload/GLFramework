@@ -1,0 +1,15 @@
+title:  scripts
+description: Soporte para creacion de scripts php usando el Framework
+version: 0.0.1
+
+app:
+  index: home
+
+  controllers: controller
+  model: model
+  views: views
+
+  routes:
+    GLFramework\Modules\Scripts\scripts: /scripts/[*:script]
+
+
