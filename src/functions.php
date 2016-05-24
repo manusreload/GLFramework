@@ -355,3 +355,12 @@ function get($url, $header = array())
     curl_close($ch);
     return $result;
 }
+
+function fix_url($url)
+{
+    if(strpos($url, "http") === FALSE)
+    {
+        $url = "http://" . $_SERVER['HTTP_HOST'] . $url;
+    }
+    return $url;
+}
