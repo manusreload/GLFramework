@@ -20,8 +20,16 @@ class scripts extends Controller
      */
     public function run()
     {
+        global $controller;
+        $controller = $this;
         // TODO: Implement run() method.
+        $this->getResponse()->setContentType("text/plain");
         $script = $this->params['script'];
-        print_debug($script);
+        $filename = __DIR__ . "/../scripts/" . $script . ".php";
+        ob_start();
+        include $filename;
+        ob_end_flush();
+        $this->getResponse()->setContent(ob_get_contents());
+        $this->setTemplate(null);
     }
 }

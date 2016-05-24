@@ -13,7 +13,7 @@ abstract class Connection
     abstract public function connect($hostname, $username, $password);
     abstract public function select_database($database);
     abstract public function escape_string($value);
-    abstract public function select($query, $returnArray = true);
+    abstract public function select($query, $arguments = array(), $returnArray = true);
     abstract public function getLastInsertId();
     abstract public function getLastError();
     abstract public function getPDO();

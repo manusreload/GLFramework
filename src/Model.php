@@ -86,19 +86,21 @@ class Model
         $fields = $this->getFields();
         $sql1 = "";
         $sql2 = "";
+        $args = array();
         foreach ($fields as $field) {
 //            if($this->getFieldValue($field, $data) !== NULL)
             {
                 $value = $this->db->escape_string($this->getFieldValue($field, $data));
+                $args[$field] = $value;
                 $sql1 .= "$field, ";
-                $sql2 .= "'$value', ";
+                $sql2 .= ":$field, ";
             }
         }
         if (!empty($sql1)) {
             $sql1 = substr($sql1, 0, -2);
             $sql2 = substr($sql2, 0, -2);
 
-            return $this->db->insert("INSERT INTO {$this->table_name} ($sql1) VALUES ($sql2)");
+            return $this->db->insert("INSERT INTO {$this->table_name} ($sql1) VALUES ($sql2)", $args);
         }
         return false;
     }
@@ -161,7 +163,7 @@ class Model
 
             $index = $this->getIndex();
             $id = $this->db->escape_string($id);
-            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $index = '$id' ", $this->getCacheId($id)));
+            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $index = ? ", array($id), $this->getCacheId($id)));
         } else if (is_array($id)) {
             $fieldsValue = $id;
             $fields = $this->getFields();
@@ -169,12 +171,12 @@ class Model
             foreach ($fields as $field) {
                 if (isset($fieldsValue[$field])) {
                     $value = $fieldsValue[$field];
-                    $sql .= $field . "= '" . $this->db->escape_string($value) . "' AND ";
+                    $sql .= $field . "= :$field AND ";
                 }
             }
             if (!empty($sql)) {
                 $sql = substr($sql, 0, -5);
-                return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $sql"));
+                return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $sql", $fieldsValue));
             }
         }
         return $this->build(array());
@@ -188,6 +190,7 @@ class Model
      */
     public function get_or($fields)
     {
+        $args = array();
         $fieldsValue = $fields;
         $fields = $this->getFields();
         $sql = "";
@@ -198,18 +201,20 @@ class Model
                 {
                     foreach($value as $subvalue)
                     {
-                        $sql .= $field . "= '" . $this->db->escape_string($subvalue) . "' OR ";
+                        $sql .= $field . "= ? OR ";
+                        $args[] = $subvalue;
                     }
                 }
                 else
                 {
-                    $sql .= $field . "= '" . $this->db->escape_string($value) . "' OR ";
+                    $sql .= $field . "= ? OR ";
+                    $args[] = $value;
                 }
             }
         }
         if (!empty($sql)) {
             $sql = substr($sql, 0, -4);
-            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $sql"));
+            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $sql", $args));
         }
         return $this->build(array());
     }
@@ -233,7 +238,7 @@ class Model
         $index = $this->getIndex();
         $value = $this->getFieldValue($index);
         if ($value)
-            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $index != '$value'"));
+            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $index != ?", array($index)));
         return $this->get_all();
 
     }
@@ -251,19 +256,24 @@ class Model
         $fieldsValue = $fields;
         $fields = $this->getFields();
         $sql = "";
+        $args = array();
         foreach ($fields as $field) {
             if (isset($fieldsValue[$field])) {
                 $value = $fieldsValue[$field];
-                if($this->isString($field))
-                    $sql .= $field . " LIKE '%" . $this->db->escape_string($value) . "%' OR ";
-                else
-                    $sql .= $field . " = '" . $this->db->escape_string($value) . "' OR ";
+                if($this->isString($field)) {
+                    $sql .= $field . " LIKE ? OR ";
+                    $args[] = '%' . $value . '%';
+                }
+                else {
+                    $sql .= $field . " = ? OR ";
+                    $args[] = $value;
+                }
 
             }
         }
         if (!empty($sql)) {
             $sql = substr($sql, 0, -4);
-            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $sql"));
+            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $sql", $args));
         }
         return $this->build(array());
     }

@@ -66,7 +66,7 @@ class MySQLConnection extends Connection
         return $value;
     }
 
-    public function select($query, $returnArray = true)
+    public function select($query, $args = array(), $returnArray = true)
     {
         if(!GL_TESTING && !GL_INSTALL)
         {
@@ -77,12 +77,13 @@ class MySQLConnection extends Connection
             $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING);
 
         }
-        $result = $this->pdo->query($query);
+        $stmt = $this->pdo->prepare($query);
+        $result = $stmt->execute($args);
         $list = array();
         if ($result) {
             if($returnArray)
             {
-                return $result->fetchAll();
+                return $stmt->fetchAll();
             }
             return true;
         } else {

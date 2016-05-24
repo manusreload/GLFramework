@@ -159,35 +159,35 @@ class DatabaseManager
             }
         }
     }
-    public function select($query, $cache = null, $duration = null)
+    public function select($query, $args = array(), $cache = null, $duration = null)
     {
         if (self::$connection) {
             if($this->pre_cache($result, $cache)) return $result;
-            return $this->cache(self::$connection->select($query, true), $cache, $duration);
+            return $this->cache(self::$connection->select($query, $args, true), $cache, $duration);
         } else {
             throw new \Exception("Database connection is not open!");
         }
     }
 
-    public function select_first($query, $cache = null)
+    public function select_first($query, $args = array(), $cache = null)
     {
-        $result = $this->select($query, $cache);
+        $result = $this->select($query, $args, $cache);
         if ($result && count($result) > 0) return $result[0];
         return $result;
     }
 
-    public function select_count($query, $cache = null)
+    public function select_count($query, $args = array(), $cache = null)
     {
-        $result = $this->select_first($query, $cache);
+        $result = $this->select_first($query, $args, $cache);
         if ($result) return current($result);
         return 0;
     }
 
-    public function exec($query, $removeCache = null)
+    public function exec($query, $args = array(), $removeCache = null)
     {
         if (self::$connection) {
             if($this->getCache() && $removeCache) $this->getCache()->remove($removeCache);
-            return self::$connection->select($query, false);
+            return self::$connection->select($query, $args, false);
         } else {
             throw new \Exception("Database connection is not open!");
         }
@@ -196,9 +196,9 @@ class DatabaseManager
     }
 
 
-    public function insert($query)
+    public function insert($query, $args = array())
     {
-        if($this->exec($query))
+        if($this->exec($query, $args))
             return $this->getLastInsertId();
         return false;
 
