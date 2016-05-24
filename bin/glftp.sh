@@ -25,12 +25,21 @@ source "${SCRIPTS}/${1}.sh"
 
 
 curl "${WEB_HOST}/scripts/toggle_maintenance.php?token=${DEPLOY_TOKEN}&mode=1"
-
+echo ""
+action=${2}
 git config git-ftp.user "${FTP_USER}"
 git config git-ftp.password "${FTP_PASSWORD}"
 git config git-ftp.url "${FTP_HOST}/$FTP_PATH"
-git ftp push ${2}
+git ftp "$action" ${3} || exit $?
 
+url="$(git config git-ftp.url)"
+git submodule foreach 'echo "$path"' | grep -v '^Entering ' | while read submodule
+do
+    echo "catching up submodule $submodule (because git-ftp fails to)"
+    git ftp "$action" "$url/$submodule" ${3} || exit $?
+done
+
+echo "OK"
 ## Despues ejecutar el install.php:
 
 curl "${WEB_HOST}/install.php?exec"
