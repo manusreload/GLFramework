@@ -9,14 +9,24 @@
 class ControllerTest extends PHPUnit_Framework_TestCase
 {
 
-
-    /**
-     *
-     */
-    public function testCreateController()
+    public function testCreateBootstrap()
     {
         $bootstrap = BootstrapTest::testCreateBootstrap();
+        $bootstrap->overrideConfig(__DIR__ . "/data/config.modules.yml");
         $bootstrap->init();
+        return $bootstrap;
+    }
+
+    /**
+     * @depends testCreateBootstrap
+     * @param $bootstrap \GLFramework\Bootstrap
+     */
+    public function testCreateController($bootstrap)
+    {
+        $this->assertTrue($bootstrap->getManager()->exists("test"));
+        $controller = \GLFramework\Module\ModuleManager::instanceController("controller_test");
+        $this->assertEquals('this is a test', $controller->run());
 
     }
+    
 }

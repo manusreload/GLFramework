@@ -24,6 +24,7 @@ class Bootstrap
     private $config;
     private $directory;
     private $startTime;
+    private $init = false;
 
     /**
      * Bootstrap constructor.
@@ -104,6 +105,7 @@ class Bootstrap
      */
     public function init()
     {
+        $this->init = true;
         Log::d("Initializing framework...");
         $this->register_error_handler();
         date_default_timezone_set('Europe/Madrid');
@@ -130,11 +132,19 @@ class Bootstrap
     /**
      * Sobreescribe con el archivo de configuración indicado
      * @param $file
+     * @throws \Exception
      */
     public function overrideConfig($file)
     {
-        $config = Yaml::parse(file_get_contents($file));
-        $this->config = array_merge_recursive_ex($this->config, $config);
+        if(!$this->init)
+        {
+            $config = Yaml::parse(file_get_contents($file));
+            $this->config = array_merge_recursive_ex($this->config, $config);
+        }
+        else
+        {
+            throw new \Exception("Trying to override configuration after init()");
+        }
     }
 
     /**
