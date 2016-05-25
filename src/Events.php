@@ -9,6 +9,8 @@
 namespace GLFramework;
 
 
+use GLFramework\Module\Module;
+
 class Events
 {
     private static $instance;
@@ -35,14 +37,15 @@ class Events
      *  dentro de *app:listeners*
      * @param $event
      * @param $fn
+     * @param array $context
      */
-    public function listen($event, $fn)
+    public function listen($event, $fn, $context = array())
     {
         if(!isset($this->handlers[$event]))
         {
             $this->handlers[$event] = array();
         }
-        $this->handlers[$event][] = $fn;
+        $this->handlers[$event][] = array('fn' => $fn, 'context' => $context);
 
     }
 
@@ -63,13 +66,16 @@ class Events
 
     public function _fire($event, $args = array())
     {
-        $buffer = false;
+        global $context;
+        $buffer = array();
         if(!is_array($args)) $args = array($args);
         if(isset($this->handlers[$event]) && count(($this->handlers[$event])) > 0)
         {
             $handlers = $this->handlers[$event];
-            foreach($handlers as $fn)
+            foreach($handlers as $item)
             {
+                $fn = $item['fn'];
+                $context = $item['context'];
                 if(is_callable($fn))
                 {
                     $result = call_user_func_array($fn, $args);
@@ -77,9 +83,9 @@ class Events
                     {
                         return true;
                     }
-                    else if(is_string($result))
+                    else
                     {
-                        $buffer .= $result;
+                        $buffer[] = $result;
                     }
                 }
                 else
@@ -90,5 +96,21 @@ class Events
             return $buffer;
         }
         return 0;
+    }
+
+    public static function anyFalse($result)
+    {
+        foreach ($result as $item)
+            if($item === false) return true;
+        return false;
+    }
+
+    /**
+     * @return Module
+     */
+    public static function getContext()
+    {
+        global $context;
+        return $context;
     }
 }

@@ -19,6 +19,8 @@ use GLFramework\Module\ModuleManager;
 class users extends AuthController
 {
     var $controllers = array();
+    var $admin = true;
+
     /**
      * @var Page
      */

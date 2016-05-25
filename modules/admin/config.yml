@@ -15,4 +15,17 @@ app:
   listeners:
     isUserAllowed: GLFramework\Modules\Admin\admin::isUserAllowed
 
+  events: # Declared events in the module
+    getAdminControllers:
+      info: Obtener un o una lista de los nombres de los modulos que pueden ser administrados
+      params:
+          [none]
+      return:
+          string|array: Nombre o lista de nombres de los controladores, el titulo sera la variable $name
+
+  settings:
+    # Name and description about the possible configuration override by the main config
+    allowDefault: >
+        Especifica si cuando no se a definido el acceso a una pagina se permite el acesso.
+        Valores: 1 para indicar que se permite el acceso, 0 para que tome la configuracion por defecto.
 

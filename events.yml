@@ -1,0 +1,70 @@
+###
+#
+# Definicion de los eventos del framework, registrar aqui los eventos
+#  antes de usar el Events::fire().
+#
+###
+
+events:
+  beforeControllerRun:
+      info: Se ejecuta antes de iniciar el controlador
+      params:
+          $instance:  Instancia del controlador
+      return:
+          [none]
+
+  afterControllerRun:
+      info: Se ejecuta depues de ejecutar el controlador
+      params:
+          $instance:  GLFramework\Controller  Instancia del controlador
+          $response:  GLFramework\Response  Respuesta generada por el controlador
+      return:
+          [none]
+
+  isUserAllowed:
+      info: Comprueba que el usuario tenga permisos para visualizar el controlador correspondiente.
+      params:
+          $instance:  GLFramework\Controller      Instancia del controlador
+          $user:      GLFramework\Model\User      Usuario logeado
+      return:
+           boolean:   true si tiene permisos, false en otro caso.
+
+  onLog:
+      info: Logea un item en el log
+      params:
+          $message: Mensaje
+          $level: Nivel de logeo
+      return:
+          [none]
+
+  onMessageDisplay:
+      info: Cuando se muesta un mensaje en pantalla.
+      params:
+          $message: Mensaje
+          $type: Tipo de mensaje: success, danger...
+      return:
+          [none]
+  onPDOCreated:
+      info: Al instanciar la conexion con la base de datos.
+      params:
+          &$pdo: Connexión PDO
+  onViewCreated:
+      info: Al instanciar una vista
+      params:
+          &$view
+  onLoginSuccess:
+      info: Al inicial la session un usuario
+      params:
+          $user: Usuario logeado User
+
+  onError:
+      info: Ha ocurrido un error
+      params:
+          $error: string  Cadena con el error ocurrido
+          $refer: string  URL de la url del error
+# /////////// Eventos de la vista /////////////////
+
+  displayStyle:
+      info: Se llama despues de mostrar el bloque de estilos css
+  displayScripts:
+      info: Se llama despues de mostrar el bloque de scripts javascript

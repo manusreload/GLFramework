@@ -10,9 +10,10 @@
 
     <div>
         <a class="btn btn-default btn-lg" href="{{ this.getLink('GLFramework\\Modules\\Admin\\users') }}">Adminsitrar usuarios</a>
-        {% if manager.isEnabled("group_permissions") %}
-        <a class="btn btn-default btn-lg" href="{{ this.getLink('GLFramework\\Modules\\GroupPermissions\\groups') }}">Adminsitrar grupos</a>
-        {% endif %}
+
+        {% for controller in this.controllers %}
+        <a class="btn btn-default btn-lg" href="{{ this.getLink(controller) }}">{{ controller.title }}</a>
+        {% endfor %}
     </div>
 {% endblock %}
 {% block scripts %}{% endblock %}

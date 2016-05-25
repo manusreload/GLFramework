@@ -17,7 +17,7 @@ class groups extends AuthController
 {
 
     var $admin = true;
-
+    var $title = "Administrar grupos";
     var $groups;
     var $group;
 

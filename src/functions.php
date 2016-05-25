@@ -139,8 +139,8 @@ function get_php_classes($php_code) {
     $namespaceBool = false;
     $tokens = token_get_all($php_code);
     $count = count($tokens);
-    for ($i = 2; $i < $count; $i++) {
-        if (   $tokens[$i - 2][0] == T_CLASS
+    for ($i = 0; $i < $count; $i++) {
+        if ( $i >= 2 &&   $tokens[$i - 2][0] == T_CLASS
             && $tokens[$i - 1][0] == T_WHITESPACE
             && $tokens[$i][0] == T_STRING) {
 
@@ -192,9 +192,10 @@ function array_merge_recursive_ex(array & $array1, array & $array2)
  * Syntax: SpaceName\ClassName->method
  * Syntax: SpaceName\ClassName::staticMethod
  * @param array $cache
+ * @param array $instanceParams
  * @return array
  */
-function instance_method($name, &$cache = array())
+function instance_method($name, &$cache = array(), $instanceParams = array())
 {
     if(!$cache) $cache = array();
     if(strpos($name, "->") !== FALSE)
@@ -203,7 +204,9 @@ function instance_method($name, &$cache = array())
         $instance = null;
         if(!isset($cache[$split[0]]))
         {
-            $instance = new $split[0]();
+            $rf = new ReflectionClass($split[0]);
+            $instance = $rf->getConstructor()?$rf->newInstanceArgs($instanceParams):$rf->newInstance();
+//            $instance = new $split[0]();
             $cache[$split[0]] = $instance;
         }
         $instance = $cache[$split[0]];
@@ -351,4 +354,13 @@ function get($url, $header = array())
 //close connection
     curl_close($ch);
     return $result;
+}
+
+function fix_url($url)
+{
+    if(strpos($url, "http") === FALSE)
+    {
+        $url = "http://" . $_SERVER['HTTP_HOST'] . $url;
+    }
+    return $url;
 }

@@ -1,0 +1,95 @@
+{% extends "templates/base.twig" %}
+{# 
+ # Created by PhpStorm.
+ # User: manus
+ # Date: 25/04/16
+ # Time: 10:55
+ #}
+{% block title %}API Token{% endblock %}
+{% block body %}
+
+    <div class="row">
+        <div class="col-lg-6">
+            {% embed "templates/box.twig" %}
+                {% block title %}
+                    Editar acceso a la API
+                {% endblock %}
+                {% block content %}
+                    <div class=" form">
+                        <form class="cmxform form-horizontal tasi-form" id="commentForm" method="post"
+                              action="{{ this.getLink(this, {id: this.apiAuthorization.id?:"add"}) }}">
+
+                            <div class="form-group ">
+                                <label for="cemail" class="control-label col-lg-2">Titulo</label>
+                                <div class="col-lg-10">
+                                    <input class="form-control " name="title"
+                                           value="{{ this.apiAuthorization.title }}" required/>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label for="cemail" class="control-label col-lg-2">Descripcion</label>
+                                <div class="col-lg-10">
+                                    <textarea class="form-control" name="description">{{ this.apiAuthorization.description }}</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label class="control-label col-lg-2">Usuario</label>
+                                <div class="col-lg-10">
+                                    <select class="form-control" name="id_user">
+                                        {% for user in this.users.get_all() %}
+                                            <option value="{{ user.id }}" {{ this.apiAuthorization.id_user == user.id?"selected":"" }}>{{ user.nombre }}</option>
+
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label for="cemail" class="control-label col-lg-2">Token</label>
+                                <div class="col-lg-10">
+                                    <div class="input-group">
+                                        <input  aria-label="..." type="text" name="token" class="form-control" value="{{ this.apiAuthorization.token }}" required>
+
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default" type="button" onclick="form.token.value = makeid(64)">Random</button>
+                                        </span>
+                                    </div><!-- /input-group -->
+                                </div>
+                            </div>
+
+                            <div class="form-group ">
+                                <label for="cemail" class="control-label col-lg-2">Fecha</label>
+                                <div class="col-lg-10">
+                                    <input class="form-control "
+                                           value="{{ this.apiAuthorization.date }}"/>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-lg-offset-2 col-lg-10">
+                                    <button class="btn btn-danger" type="submit" name="save">Guardar</button>
+                                    <a class="btn btn-default" href="{{ this.getLink(this) }}">Cancelar</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                {% endblock %}
+            {% endembed %}
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+
+<script>
+    function makeid(l)
+    {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        for( var i=0; i < l; i++ )
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return text;
+    }
+</script>
+{% endblock %}
+{% block styles %}{% endblock %}

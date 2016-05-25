@@ -5,11 +5,13 @@ version: 0.0.1
 app:
   index: home
 
-  controllers: controllers
+  controllers: controller
   model: model
   views: views
   routes:
-      GLFramework\Modules\API\api_home: /api/manager
+      GLFramework\Modules\Controller\API\api: /api/manager/[*:id]?
 
   listeners:
     afterControllerConstruct: GLFramework\Modules\API\API->afterControllerConstruct
+    getAdminControllers: GLFramework\Modules\API\API->getAdminControllers
+

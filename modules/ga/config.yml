@@ -1,0 +1,20 @@
+###
+##  Installation:
+##    edit config.yml, in modules section add - ga
+##
+#
+#modules:
+#    internal:
+#      - ga:
+#          tracker: [Google analytics tracker]
+###
+
+title: Google Analytics
+description: Implementacion de evetos para Google Analytics
+version: 0.0.1
+
+app:
+
+  listeners:
+    onMessageDisplay: GLFramework\Modules\GoogleAnalytics\GA->onMessageDisplay
+    onLoginSuccess: GLFramework\Modules\GoogleAnalytics\GA->onLoginSuccess

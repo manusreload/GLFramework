@@ -511,6 +511,10 @@ class Model
     public function json($fields = array())
     {
         $json = array();
+        if($url = $this->url())
+        {
+            $json['url'] = fix_url($url);
+        }
         if(empty($fields)) $fields = $this->getFields();
         foreach($fields as $field)
         {
@@ -540,6 +544,7 @@ class Model
                 }
             }
         }
+
         return $json;
     }
 
@@ -587,6 +592,21 @@ class Model
             if(!empty($value)) return true;
         }
         return false;
+    }
+
+
+    /**
+     * @param $baseclass
+     * @param array $args
+     */
+    public static function newInstance($baseclass, $args = array())
+    {
+        print_debug($baseclass, get_class());
+    }
+
+    public function url()
+    {
+        return null;
     }
 
 
