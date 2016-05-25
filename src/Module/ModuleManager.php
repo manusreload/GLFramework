@@ -149,7 +149,7 @@ class ModuleManager
                     }
                     else
                     {
-                        $dirbase .= "$subsection";
+                        $dirbase .= "/$subsection";
                     }
                     if(!is_array($value)) $value = array($value);
                     foreach($value as $name => $extra)
