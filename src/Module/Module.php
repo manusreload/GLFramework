@@ -130,6 +130,7 @@ class Module
     {
         $list = array();
         $models = $this->config['app']['model'];
+        if(empty($models)) return $list;
         if (!is_array($models)) $models = array($models);
         foreach ($models as $model) {
             $folder = $this->directory . "/$model";
@@ -217,7 +218,6 @@ class Module
     public function getControllerDefaultRoutes($controller, $file)
     {
         $array = array();
-
         if(isset($this->config['app']['routes']))
         {
             $routes = $this->config['app']['routes'];

@@ -12,6 +12,7 @@ namespace GLFramework\Controller;
 use GLFramework\Controller;
 use GLFramework\Middleware\APIAuthorizationMiddleware;
 use GLFramework\Model;
+use GLFramework\ModelResult;
 
 class APIController extends Controller
 {
@@ -30,6 +31,17 @@ class APIController extends Controller
     public function run()
     {
         // TODO: Implement run() method.
+        switch ($_SERVER['REQUEST_METHOD'])
+        {
+            case 'GET':
+                return $this->get($this->params);
+            case 'POST':
+                return $this->post($this->params);
+            case 'PUT':
+                return $this->put($this->params);
+            case 'DELETE':
+                return $this->delete($this->params);
+        }
     }
 
     /**
@@ -51,7 +63,7 @@ class APIController extends Controller
 //        $result['messages'] = $messages;
 
         $result['header'] = $header;
-        if($data instanceof Model)
+        if($data instanceof Model or $data instanceof ModelResult)
         {
             $result['data'] = $data->json();
         }
@@ -60,6 +72,25 @@ class APIController extends Controller
             $result['data'] = $data;
         }
         return json_encode($result);
+    }
+
+    public function post($params)
+    {
+        return false;
+    }
+
+    public function get($params)
+    {
+        return false;
+    }
+
+    public function put($params)
+    {
+        return false;
+    }
+    public function delete($params)
+    {
+        return false;
     }
 
 

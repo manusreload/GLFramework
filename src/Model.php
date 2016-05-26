@@ -60,13 +60,14 @@ class Model
      * array(
      *  'id_asp' => array('name' => 'asp', 'model' => 'User'),
      *   'id_operario' => array('name' => 'operario', 'model' => 'User'),
+     *   'id' => array('name' => 'tareas', 'model' => 'VehiculoTareas', 'field' => 'id_vehiculo'),
      *   'id_taller' => 'Taller',
      *   'id_taller_from' => array('name' => 'from', 'model' => 'Taller'),
      * )
      * @var array
      */
     protected $models = array();
-
+    
     /**
      * Model constructor.
      */
@@ -524,6 +525,10 @@ class Model
     public function json($fields = array())
     {
         $json = array();
+        if($url = $this->url())
+        {
+            $json['url'] = fix_url($url);
+        }
         if(empty($fields)) $fields = $this->getFields();
         foreach($fields as $field)
         {
@@ -537,8 +542,14 @@ class Model
                     {
                         $name = $modelTransform['name'];
                         $model = $modelTransform['model'];
-                        $object =  new $model($this->getFieldValue($field));
-                        $json[$name] = $object->json();
+                        $object =  new $model();
+                        if(isset($modelTransform['field']))
+                        {
+                            $json[$name] = $object->get(array($modelTransform['field'] => $this->getFieldValue($field)))->json();
+                        }
+                        else{
+                            $json[$name] = $object->get($this->getFieldValue($field))->json();
+                        }
                     }
                     else
                     {
@@ -551,8 +562,10 @@ class Model
                 {
                     $json[$field] = $this->getFieldValue($field);
                 }
+
             }
         }
+
         return $json;
     }
 
@@ -610,6 +623,11 @@ class Model
     public static function newInstance($baseclass, $args = array())
     {
         print_debug($baseclass, get_class());
+    }
+
+    public function url()
+    {
+        return null;
     }
 
 

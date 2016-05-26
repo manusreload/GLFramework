@@ -24,6 +24,7 @@ class Bootstrap
     private $config;
     private $directory;
     private $startTime;
+    private $init = false;
 
     /**
      * Bootstrap constructor.
@@ -34,7 +35,7 @@ class Bootstrap
         $this->startTime = microtime(true);
         $this->events = new Events();
         $this->directory = $directory;
-        $this->config = $this->loadConfig($this->directory, $config);
+        $this->config = self::loadConfig($this->directory, $config);
         self::$singelton = $this;
     }
 
@@ -45,7 +46,7 @@ class Bootstrap
      * @param $file
      * @return array|mixed
      */
-    public function loadConfig($folder, $file)
+    public static function loadConfig($folder, $file)
     {
         $config = Yaml::parse(file_get_contents($folder . "/{$file}"));
         if(isset($config['include']))
@@ -54,7 +55,7 @@ class Bootstrap
             if(!is_array($value)) $value = array($value);
             foreach($value as $subfile)
             {
-                $arr = $this->loadConfig($folder, $subfile);
+                $arr = self::loadConfig($folder, $subfile);
                 $config = array_merge_recursive_ex($config, $arr);
             }
             unset($config['include']);
@@ -104,6 +105,7 @@ class Bootstrap
      */
     public function init()
     {
+        $this->init = true;
         Log::d("Initializing framework...");
         $this->register_error_handler();
         date_default_timezone_set('Europe/Madrid');
@@ -130,11 +132,19 @@ class Bootstrap
     /**
      * Sobreescribe con el archivo de configuración indicado
      * @param $file
+     * @throws \Exception
      */
     public function overrideConfig($file)
     {
-        $config = Yaml::parse(file_get_contents($file));
-        $this->config = array_merge_recursive_ex($this->config, $config);
+        if(!$this->init)
+        {
+            $config = Yaml::parse(file_get_contents($file));
+            $this->config = array_merge_recursive_ex($this->config, $config);
+        }
+        else
+        {
+            throw new \Exception("Trying to override configuration after init()");
+        }
     }
 
     /**

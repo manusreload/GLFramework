@@ -61,7 +61,11 @@ class Debugbar
      */
     public function beforeControllerRun($instance)
     {
-        $db = new DatabaseManager();
+        $config = Bootstrap::getSingleton()->getConfig();
+        if(isset($config['database']['database']))
+        {
+            $db = new DatabaseManager();
+        }
         if(!$this->getDebugbar()->hasCollector('config'))
             $this->getDebugbar()->addCollector(new ConfigCollector(Bootstrap::getSingleton()->getConfig()));
         $this->time->startMeasure('controller', 'Controller process time');

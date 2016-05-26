@@ -9,6 +9,7 @@
 namespace GLFramework\Module;
 
 
+use GLFramework\Bootstrap;
 use GLFramework\Controller\ErrorController;
 use GLFramework\Controller\ExceptionController;
 use GLFramework\Events;
@@ -170,7 +171,7 @@ class ModuleManager
                     }
                     else
                     {
-                        $dirbase .= "$subsection";
+                        $dirbase .= "/$subsection";
                     }
                     if(!is_array($value)) $value = array($value);
                     foreach($value as $name => $extra)
@@ -192,6 +193,7 @@ class ModuleManager
             foreach($this->modules as $module)
             {
                 $module->init();
+                $module->register_router($this->router);
             }
         }
         else
@@ -205,8 +207,7 @@ class ModuleManager
         $configFile = $folder . "/config.yml";
         if(file_exists($configFile))
         {
-            $config = Yaml::parse(file_get_contents($configFile));
-            $config = array_merge($this->config, $config);
+            $config = Bootstrap::loadConfig($folder, "config.yml");
             if(is_array($extra))
             {
                 $config = array_merge_recursive_ex($config, $extra);
@@ -243,10 +244,6 @@ class ModuleManager
     public function run($url = null, $method = null)
     {
         $request = new Request($method, $url);
-        foreach($this->modules as $module)
-        {
-            $module->register_router($this->router);
-        }
         try {
 
             if($match = $this->router->match($url, $method))
