@@ -97,16 +97,19 @@ class DBStructure
     {
         $models = Bootstrap::getSingleton()->getModels();
         foreach ($models as $model) {
-            $instance = new $model(null);
-            if ($instance instanceof Model) {
-                $diff = $instance->getStructureDifferences();
-                foreach ($diff as $action) {
-                    try{
-                        $db->exec($action['sql']);
+            if(class_exists($model))
+            {
+                $instance = new $model(null);
+                if ($instance instanceof Model) {
+                    $diff = $instance->getStructureDifferences();
+                    foreach ($diff as $action) {
+                        try{
+                            $db->exec($action['sql']);
 
-                    }catch (\Exception $ex)
-                    {
+                        }catch (\Exception $ex)
+                        {
 
+                        }
                     }
                 }
             }
