@@ -24,7 +24,9 @@ fi
 source "${SCRIPTS}/${1}.sh"
 
 
-curl "${WEB_HOST}/scripts/toggle_maintenance.php?token=${DEPLOY_TOKEN}&mode=1"
+if [ ! ${WEB_HOST} = "" ]; then
+    curl "${WEB_HOST}/scripts/toggle_maintenance.php?token=${DEPLOY_TOKEN}&mode=1"
+fi
 echo ""
 action=${2}
 git config git-ftp.user "${FTP_USER}"
@@ -46,5 +48,7 @@ cd "$base"
 echo "OK"
 ## Despues ejecutar el install.php:
 
-curl "${WEB_HOST}/install.php?exec"
-curl "${WEB_HOST}/scripts/toggle_maintenance.php?token=${DEPLOY_TOKEN}&mode=0"
+if [ ! ${WEB_HOST} = "" ]; then
+    curl "${WEB_HOST}/install.php?exec"
+    curl "${WEB_HOST}/scripts/toggle_maintenance.php?token=${DEPLOY_TOKEN}&mode=0"
+fi
