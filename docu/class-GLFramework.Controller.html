@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<title>Class GLFramework\Controller</title>
+
+	<link rel="stylesheet" href="resources/style.css?e99947befd7bf673c6b43ff75e9e0f170c88a60e">
+
+</head>
+
+<body>
+<div id="left">
+	<div id="menu">
+		<a href="index.html" title="Overview"><span>Overview</span></a>
+
+
+		<div id="groups">
+				<h3>Namespaces</h3>
+			<ul>
+				<li class="active">
+					<a href="namespace-GLFramework.html">
+						GLFramework<span></span>
+					</a>
+
+						<ul>
+				<li>
+					<a href="namespace-GLFramework.Cache.html">
+						Cache					</a>
+
+						</li>
+				<li>
+					<a href="namespace-GLFramework.Controller.html">
+						Controller					</a>
+
+						</li>
+				<li>
+					<a href="namespace-GLFramework.DaMa.html">
+						DaMa<span></span>
+					</a>
+
+						<ul>
+				<li>
+					<a href="namespace-GLFramework.DaMa.Manipulators.html">
+						Manipulators					</a>
+
+						</li>
+							</ul></li>
+				<li>
+					<a href="namespace-GLFramework.Database.html">
+						Database					</a>
+
+						</li>
+				<li>
+					<a href="namespace-GLFramework.HTTP.html">
+						HTTP					</a>
+
+						</li>
+				<li>
+					<a href="namespace-GLFramework.Mail.html">
+						Mail					</a>
+
+						</li>
+				<li>
+					<a href="namespace-GLFramework.Middleware.html">
+						Middleware					</a>
+
+						</li>
+				<li>
+					<a href="namespace-GLFramework.Model.html">
+						Model					</a>
+
+						</li>
+				<li>
+					<a href="namespace-GLFramework.Module.html">
+						Module					</a>
+
+						</li>
+				<li>
+					<a href="namespace-GLFramework.Tests.html">
+						Tests					</a>
+
+						</li>
+				<li>
+					<a href="namespace-GLFramework.Upload.html">
+						Upload					</a>
+
+						</li>
+				<li>
+					<a href="namespace-GLFramework.Utils.html">
+						Utils					</a>
+
+						</li>
+							</ul></li>
+				<li>
+					<a href="namespace-None.html">
+						None					</a>
+
+						</li>
+			</ul>
+		</div>
+
+		<hr>
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li><a href="class-GLFramework.Bootstrap.html">Bootstrap</a></li>
+				<li class="active"><a href="class-GLFramework.Controller.html">Controller</a></li>
+				<li><a href="class-GLFramework.DatabaseManager.html">DatabaseManager</a></li>
+				<li><a href="class-GLFramework.DBStructure.html">DBStructure</a></li>
+				<li><a href="class-GLFramework.Events.html">Events</a></li>
+				<li><a href="class-GLFramework.Filesystem.html">Filesystem</a></li>
+				<li><a href="class-GLFramework.Log.html">Log</a></li>
+				<li><a href="class-GLFramework.Mail.html">Mail</a></li>
+				<li><a href="class-GLFramework.MailView.html">MailView</a></li>
+				<li><a href="class-GLFramework.Model.html">Model</a></li>
+				<li><a href="class-GLFramework.ModelResult.html">ModelResult</a></li>
+				<li><a href="class-GLFramework.Request.html">Request</a></li>
+				<li><a href="class-GLFramework.Response.html">Response</a></li>
+				<li><a href="class-GLFramework.Versions.html">Versions</a></li>
+				<li><a href="class-GLFramework.View.html">View</a></li>
+			</ul>
+
+			<h3>Interfaces</h3>
+			<ul>
+				<li><a href="class-GLFramework.Middleware.html">Middleware</a></li>
+			</ul>
+
+
+
+
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+<div id="rightInner">
+	<form id="search">
+		<input type="hidden" name="cx" value="">
+		<input type="hidden" name="ie" value="UTF-8">
+		<input type="text" name="q" class="text" placeholder="Search">
+	</form>
+
+	<div id="navigation">
+		<ul>
+			<li>
+				<a href="index.html" title="Overview"><span>Overview</span></a>
+			</li>
+			<li>
+				<a href="namespace-GLFramework.html" title="Summary of GLFramework"><span>Namespace</span></a>
+			</li>
+			<li class="active">
+<span>Class</span>			</li>
+		</ul>
+		<ul>
+		</ul>
+		<ul>
+		</ul>
+	</div>
+
+<div id="content" class="class">
+	<h1>Class Controller</h1>
+
+
+
+
+
+	<div>
+		<h4>Direct known subclasses</h4>
+			<a href="class-GLFramework.Controller.APIController.html">GLFramework\Controller\APIController</a>, 
+			<a href="class-GLFramework.Controller.AuthController.html">GLFramework\Controller\AuthController</a>, 
+			<a href="class-GLFramework.Controller.ErrorController.html">GLFramework\Controller\ErrorController</a>
+	</div>
+
+	<div>
+		<h4>Indirect known subclasses</h4>
+			<a href="class-GLFramework.Controller.AdminController.html">GLFramework\Controller\AdminController</a>, 
+			<a href="class-GLFramework.Controller.ExceptionController.html">GLFramework\Controller\ExceptionController</a>
+	</div>
+
+
+
+
+
+	<div class="info">
+		<b>Abstract</b><br>
+		
+		<b>Namespace:</b> <a href="namespace-GLFramework.html">GLFramework</a><br>
+		
+
+			<b>Located at</b> <a href="source-class-GLFramework.Controller.html#17-337" title="Go to source code">Controller.php</a>
+		<br>
+	</div>
+
+
+
+	<table class="summary methods" id="methods">
+	<caption>Methods summary</caption>
+	<tr data-order="__construct" id="___construct">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#___construct">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#48-71" title="Go to source code">__construct</a>( <span> <var>$base</var> = <span class="php-quote">&quot;&quot;</span></span>, <span>string <var>$module</var> = <span class="php-keyword1">null</span></span> )</code>
+
+		<div class="description short">
+			<p>Controller constructor.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Controller constructor.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$base</var></dt>
+					<dd>Module</dd>
+					<dt><var>$module</var></dt>
+					<dd>$base</dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="run" id="_run">
+
+		<td class="attributes"><code>
+			abstract public 
+
+			mixed
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_run">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#73-77" title="Go to source code">run</a>( )</code>
+
+		<div class="description short">
+			<p>Implementar aqui el código que ejecutara nuestra aplicación</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Implementar aqui el código que ejecutara nuestra aplicación</p>
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					mixed
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="display" id="_display">
+
+		<td class="attributes"><code>
+			 public 
+
+			array|null|string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_display">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#79-88" title="Go to source code">display</a>( <span> <var>$data</var></span>, <span> <var>$params</var></span> )</code>
+
+		<div class="description short">
+			<p>Renderiza la vista y devuelve el código.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Renderiza la vista y devuelve el código.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$data</var></dt>
+					<dd></dd>
+					<dt><var>$params</var></dt>
+					<dd></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					array|null|string
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="call" id="_call">
+
+		<td class="attributes"><code>
+			 public 
+
+			<code><a href="class-GLFramework.Response.html">GLFramework\Response</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_call">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#90-103" title="Go to source code">call</a>( <span> <var>$request</var></span> )</code>
+
+		<div class="description short">
+			<p>Ejecuta la petición en cascada a través de los diferentes middlewares</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Ejecuta la petición en cascada a través de los diferentes middlewares</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$request</var></dt>
+					<dd>Request</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><a href="class-GLFramework.Response.html">GLFramework\Response</a></code>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="middleware" id="_middleware">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_middleware">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#105-117" title="Go to source code">middleware</a>( <span> <var>$request</var></span>, <span> <var>&amp; $response</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getResponse" id="_getResponse">
+
+		<td class="attributes"><code>
+			 public 
+
+			<code><a href="class-GLFramework.Response.html">GLFramework\Response</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getResponse">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#119-126" title="Go to source code">getResponse</a>( )</code>
+
+		<div class="description short">
+			<p>Obtiene la respuesta que ha dado el controlador</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Obtiene la respuesta que ha dado el controlador</p>
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><a href="class-GLFramework.Response.html">GLFramework\Response</a></code>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getTemplate" id="_getTemplate">
+
+		<td class="attributes"><code>
+			 public 
+
+			null|string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getTemplate">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#128-135" title="Go to source code">getTemplate</a>( )</code>
+
+		<div class="description short">
+			<p>Archivo de la plantilla, se busca en los módulos en función de prioridad</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Archivo de la plantilla, se busca en los módulos en función de prioridad</p>
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					null|string
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="setTemplate" id="_setTemplate">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_setTemplate">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#137-144" title="Go to source code">setTemplate</a>( <span>null|string <var>$template</var></span> )</code>
+
+		<div class="description short">
+			<p>Establecer el archivo de plantilla para este controlador</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Establecer el archivo de plantilla para este controlador</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$template</var></dt>
+					<dd></dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="redirection" id="_redirection">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_redirection">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#146-153" title="Go to source code">redirection</a>( <span> <var>$url</var></span> )</code>
+
+		<div class="description short">
+			<p>Asigna a la respuesta una redirección web</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Asigna a la respuesta una redirección web</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$url</var></dt>
+					<dd></dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="restoreMessages" id="_restoreMessages">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_restoreMessages">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#155-165" title="Go to source code">restoreMessages</a>( )</code>
+
+		<div class="description short">
+			<p>Recupera los mensajes de la sesión</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Recupera los mensajes de la sesión</p>
+
+
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="shareMessages" id="_shareMessages">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_shareMessages">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#167-173" title="Go to source code">shareMessages</a>( )</code>
+
+		<div class="description short">
+			<p>Almacena en la sesion los mensajes</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Almacena en la sesion los mensajes</p>
+
+
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="quit" id="_quit">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_quit">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#175-192" title="Go to source code">quit</a>( <span>null <var>$redirection</var> = <span class="php-keyword1">null</span></span> )</code>
+
+		<div class="description short">
+			<p>Redirige y despacha la respuesta</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Redirige y despacha la respuesta</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$redirection</var></dt>
+					<dd></dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDb" id="_getDb">
+
+		<td class="attributes"><code>
+			 public 
+
+			<code><a href="class-GLFramework.DatabaseManager.html">GLFramework\DatabaseManager</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDb">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#194-203" title="Go to source code">getDb</a>( )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><a href="class-GLFramework.DatabaseManager.html">GLFramework\DatabaseManager</a></code>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="addMessage" id="_addMessage">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_addMessage">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#205-214" title="Go to source code">addMessage</a>( <span> <var>$message</var></span>, <span>string <var>$type</var> = <span class="php-quote">&quot;success&quot;</span></span> )</code>
+
+		<div class="description short">
+			<p>Muestra un mesaje en pantalla, con el estilo indicado</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Muestra un mesaje en pantalla, con el estilo indicado</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$message</var></dt>
+					<dd></dd>
+					<dt><var>$type</var></dt>
+					<dd></dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getMessages" id="_getMessages">
+
+		<td class="attributes"><code>
+			 public 
+
+			array
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getMessages">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#216-222" title="Go to source code">getMessages</a>( )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					array
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getView" id="_getView">
+
+		<td class="attributes"><code>
+			 public 
+
+			<code><a href="class-GLFramework.View.html">GLFramework\View</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getView">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#224-230" title="Go to source code">getView</a>( )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><a href="class-GLFramework.View.html">GLFramework\View</a></code>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getLink" id="_getLink">
+
+		<td class="attributes"><code>
+			 public 
+
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getLink">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#232-252" title="Go to source code">getLink</a>( <span>string|<code><a href="class-GLFramework.Controller.html">GLFramework\Controller</a></code> <var>$controller</var></span>, <span>array <var>$params</var> = <span class="php-keyword1">array</span>()</span>, <span>boolean <var>$fullPath</var> = <span class="php-keyword1">false</span></span> )</code>
+
+		<div class="description short">
+			<p>Genera un enlace al controlador indicado, puede ser un objeto un un string</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Genera un enlace al controlador indicado, puede ser un objeto un un string</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$controller</var></dt>
+					<dd></dd>
+					<dt><var>$params</var></dt>
+					<dd></dd>
+					<dt><var>$fullPath</var></dt>
+					<dd></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					string
+				</div>
+
+				<h4>Throws</h4>
+				<div class="list">
+					Exception
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getResource" id="_getResource">
+
+		<td class="attributes"><code>
+			 public 
+
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getResource">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#254-282" title="Go to source code">getResource</a>( <span> <var>$name</var></span>, <span>null <var>$module</var> = <span class="php-keyword1">null</span></span> )</code>
+
+		<div class="description short">
+			<p>Obtener la ruta al recurso indicado en el módulo indicado</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Obtener la ruta al recurso indicado en el módulo indicado</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$name</var></dt>
+					<dd></dd>
+					<dt><var>$module</var></dt>
+					<dd>Module</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					string
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getUploads" id="_getUploads">
+
+		<td class="attributes"><code>
+			 public 
+
+			<code><a href="class-GLFramework.Upload.Uploads.html">GLFramework\Upload\Uploads</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getUploads">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#284-291" title="Go to source code">getUploads</a>( )</code>
+
+		<div class="description short">
+			<p>Genera un objeto de subida para este módulo</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Genera un objeto de subida para este módulo</p>
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><a href="class-GLFramework.Upload.Uploads.html">GLFramework\Upload\Uploads</a></code>
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="setContentType" id="_setContentType">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_setContentType">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#293-300" title="Go to source code">setContentType</a>( <span> <var>$type</var></span> )</code>
+
+		<div class="description short">
+			<p>Establece el tipo de contenido a la respuesta</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Establece el tipo de contenido a la respuesta</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$type</var></dt>
+					<dd></dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="log" id="_log">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_log">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#302-305" title="Go to source code">log</a>( <span> <var>$message</var></span>, <span> <var>$level</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="csrf" id="_csrf">
+
+		<td class="attributes"><code>
+			 public 
+
+			boolean|integer|string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_csrf">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#307-314" title="Go to source code">csrf</a>( )</code>
+
+		<div class="description short">
+			<p>Validar la petición si es posible</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Validar la petición si es posible</p>
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					boolean|integer|string
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="generate_csrf" id="_generate_csrf">
+
+		<td class="attributes"><code>
+			 public 
+
+			mixed
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_generate_csrf">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#316-326" title="Go to source code">generate_csrf</a>( )</code>
+
+		<div class="description short">
+			<p>Genera un token para validar la petición</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Genera un token para validar la petición</p>
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					mixed
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="addMiddleware" id="_addMiddleware">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_addMiddleware">#</a>
+		<code><a href="source-class-GLFramework.Controller.html#328-335" title="Go to source code">addMiddleware</a>( <span><code><a href="class-GLFramework.Middleware.html">GLFramework\Middleware</a></code> <var>$middleware</var></span> )</code>
+
+		<div class="description short">
+			<p>Añade un nuevo middleware a la cabeza de la cola</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Añade un nuevo middleware a la cabeza de la cola</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$middleware</var></dt>
+					<dd></dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	</table>
+
+
+
+
+
+
+
+
+
+
+
+
+	<table class="summary properties" id="properties">
+	<caption>Properties summary</caption>
+	<tr data-order="title" id="$title">
+		<td class="attributes"><code>
+			public  
+			boolean
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-GLFramework.Controller.html#20" title="Go to source code"><var>$title</var></a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</td>
+		<td class="value">
+			<div>
+				<a href="#$title" class="anchor">#</a>
+				<code><span class="php-keyword1">false</span></code>
+			</div>
+		</td>
+	</tr>
+	<tr data-order="name" id="$name">
+		<td class="attributes"><code>
+			public  
+			
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-GLFramework.Controller.html#21" title="Go to source code"><var>$name</var></a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</td>
+		<td class="value">
+			<div>
+				<a href="#$name" class="anchor">#</a>
+				<code><span class="php-keyword1">null</span></code>
+			</div>
+		</td>
+	</tr>
+	<tr data-order="admin" id="$admin">
+		<td class="attributes"><code>
+			public  
+			boolean
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-GLFramework.Controller.html#22" title="Go to source code"><var>$admin</var></a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</td>
+		<td class="value">
+			<div>
+				<a href="#$admin" class="anchor">#</a>
+				<code><span class="php-keyword1">false</span></code>
+			</div>
+		</td>
+	</tr>
+	<tr data-order="messages" id="$messages">
+		<td class="attributes"><code>
+			public  
+			array
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-GLFramework.Controller.html#27" title="Go to source code"><var>$messages</var></a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</td>
+		<td class="value">
+			<div>
+				<a href="#$messages" class="anchor">#</a>
+				<code><span class="php-keyword1">array</span>()</code>
+			</div>
+		</td>
+	</tr>
+	<tr data-order="config" id="$config">
+		<td class="attributes"><code>
+			public  
+			array
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-GLFramework.Controller.html#28" title="Go to source code"><var>$config</var></a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</td>
+		<td class="value">
+			<div>
+				<a href="#$config" class="anchor">#</a>
+				<code><span class="php-keyword1">array</span>()</code>
+			</div>
+		</td>
+	</tr>
+	<tr data-order="description" id="$description">
+		<td class="attributes"><code>
+			public  
+			string
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-GLFramework.Controller.html#29" title="Go to source code"><var>$description</var></a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</td>
+		<td class="value">
+			<div>
+				<a href="#$description" class="anchor">#</a>
+				<code><span class="php-quote">&quot;&quot;</span></code>
+			</div>
+		</td>
+	</tr>
+	<tr data-order="directory" id="$directory">
+		<td class="attributes"><code>
+			public  
+			
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-GLFramework.Controller.html#30" title="Go to source code"><var>$directory</var></a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</td>
+		<td class="value">
+			<div>
+				<a href="#$directory" class="anchor">#</a>
+				<code></code>
+			</div>
+		</td>
+	</tr>
+	<tr data-order="module" id="$module">
+		<td class="attributes"><code>
+			public  
+			<code><a href="class-GLFramework.Module.Module.html">GLFramework\Module\Module</a></code>
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-GLFramework.Controller.html#36-39" title="Go to source code"><var>$module</var></a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</td>
+		<td class="value">
+			<div>
+				<a href="#$module" class="anchor">#</a>
+				<code></code>
+			</div>
+		</td>
+	</tr>
+	<tr data-order="params" id="$params">
+		<td class="attributes"><code>
+			public  
+			array
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-GLFramework.Controller.html#40" title="Go to source code"><var>$params</var></a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</td>
+		<td class="value">
+			<div>
+				<a href="#$params" class="anchor">#</a>
+				<code><span class="php-keyword1">array</span>()</code>
+			</div>
+		</td>
+	</tr>
+	<tr data-order="redirect" id="$redirect">
+		<td class="attributes"><code>
+			public  
+			boolean
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-GLFramework.Controller.html#42" title="Go to source code"><var>$redirect</var></a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</td>
+		<td class="value">
+			<div>
+				<a href="#$redirect" class="anchor">#</a>
+				<code><span class="php-keyword1">false</span></code>
+			</div>
+		</td>
+	</tr>
+	<tr data-order="response" id="$response">
+		<td class="attributes"><code>
+			public  
+			<code><a href="class-GLFramework.Response.html">GLFramework\Response</a></code>
+		</code></td>
+
+		<td class="name">
+				<a href="source-class-GLFramework.Controller.html#43-46" title="Go to source code"><var>$response</var></a>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+			</div>
+		</td>
+		<td class="value">
+			<div>
+				<a href="#$response" class="anchor">#</a>
+				<code></code>
+			</div>
+		</td>
+	</tr>
+	</table>
+
+
+
+
+
+
+</div>
+
+	<div id="footer">
+		 API documentation generated by <a href="http://apigen.org">ApiGen</a>
+	</div>
+</div>
+</div>
+<script src="resources/combined.js"></script>
+<script src="elementlist.js"></script>
+</body>
+</html>
