@@ -40,9 +40,9 @@ git submodule foreach 'echo "$path"' | grep -v '^Entering ' | while read submodu
 do
     cd "$base/$submodule"
     echo "$base/$submodule"
-    echo "catching up submodule $submodule (because git-ftp fails to)"
-    echo "git ftp \"$action\" \"$url/$submodule\" ${3}"
-    git ftp "$action" "$url/$submodule" ${3} || exit $?
+    echo "catching up submodule ${submodule} (because git-ftp fails to)"
+    echo "git ftp \"$action\" \"${url}${submodule}\" ${3}"
+    git ftp "$action" "${url}${submodule}" ${3} || exit $?
 done
 cd "$base"
 echo "OK"
