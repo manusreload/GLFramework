@@ -60,13 +60,14 @@ class Model
      * array(
      *  'id_asp' => array('name' => 'asp', 'model' => 'User'),
      *   'id_operario' => array('name' => 'operario', 'model' => 'User'),
+     *   'id' => array('name' => 'tareas', 'model' => 'VehiculoTareas', 'field' => 'id_vehiculo'),
      *   'id_taller' => 'Taller',
      *   'id_taller_from' => array('name' => 'from', 'model' => 'Taller'),
      * )
      * @var array
      */
     protected $models = array();
-
+    
     /**
      * Model constructor.
      */
@@ -528,8 +529,14 @@ class Model
                     {
                         $name = $modelTransform['name'];
                         $model = $modelTransform['model'];
-                        $object =  new $model($this->getFieldValue($field));
-                        $json[$name] = $object->json();
+                        $object =  new $model();
+                        if(isset($modelTransform['field']))
+                        {
+                            $json[$name] = $object->get(array($modelTransform['field'] => $this->getFieldValue($field)))->json();
+                        }
+                        else{
+                            $json[$name] = $object->get($this->getFieldValue($field))->json();
+                        }
                     }
                     else
                     {
@@ -542,6 +549,7 @@ class Model
                 {
                     $json[$field] = $this->getFieldValue($field);
                 }
+
             }
         }
 

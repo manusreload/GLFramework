@@ -217,7 +217,6 @@ class Module
     public function getControllerDefaultRoutes($controller, $file)
     {
         $array = array();
-
         if(isset($this->config['app']['routes']))
         {
             $routes = $this->config['app']['routes'];

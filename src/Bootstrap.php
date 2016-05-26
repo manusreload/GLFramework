@@ -34,7 +34,7 @@ class Bootstrap
         $this->startTime = microtime(true);
         $this->events = new Events();
         $this->directory = $directory;
-        $this->config = $this->loadConfig($this->directory, $config);
+        $this->config = self::loadConfig($this->directory, $config);
         self::$singelton = $this;
     }
 
@@ -45,7 +45,7 @@ class Bootstrap
      * @param $file
      * @return array|mixed
      */
-    public function loadConfig($folder, $file)
+    public static function loadConfig($folder, $file)
     {
         $config = Yaml::parse(file_get_contents($folder . "/{$file}"));
         if(isset($config['include']))
@@ -54,7 +54,7 @@ class Bootstrap
             if(!is_array($value)) $value = array($value);
             foreach($value as $subfile)
             {
-                $arr = $this->loadConfig($folder, $subfile);
+                $arr = self::loadConfig($folder, $subfile);
                 $config = array_merge_recursive_ex($config, $arr);
             }
             unset($config['include']);
