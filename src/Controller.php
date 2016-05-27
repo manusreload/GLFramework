@@ -37,6 +37,10 @@ abstract class Controller
      * @var Module
      */
     var $module;
+    /**
+     * Parametros de la url que pasa el Router definidos en routes:
+     * @var array
+     */
     var $params = array();
 
     var $redirect = false;

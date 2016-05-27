@@ -24,23 +24,31 @@ fi
 source "${SCRIPTS}/${1}.sh"
 
 
-curl "${WEB_HOST}/scripts/toggle_maintenance.php?token=${DEPLOY_TOKEN}&mode=1"
+if [ ! ${WEB_HOST} = "" ]; then
+    curl "${WEB_HOST}/scripts/toggle_maintenance.php?token=${DEPLOY_TOKEN}&mode=1"
+fi
 echo ""
 action=${2}
 git config git-ftp.user "${FTP_USER}"
 git config git-ftp.password "${FTP_PASSWORD}"
 git config git-ftp.url "${FTP_HOST}/$FTP_PATH"
-git ftp "$action" ${3} || exit $?
+git ftp "$action" ${3}
 
+base=$(pwd)
 url="$(git config git-ftp.url)"
 git submodule foreach 'echo "$path"' | grep -v '^Entering ' | while read submodule
 do
-    echo "catching up submodule $submodule (because git-ftp fails to)"
-    git ftp "$action" "$url/$submodule" ${3} || exit $?
+    cd "$base/$submodule"
+    echo "$base/$submodule"
+    echo "catching up submodule ${submodule} (because git-ftp fails to)"
+    echo "git ftp \"$action\" \"${url}${submodule}\" ${3}"
+    git ftp "$action" "${url}${submodule}" ${3} || exit $?
 done
-
+cd "$base"
 echo "OK"
 ## Despues ejecutar el install.php:
 
-curl "${WEB_HOST}/install.php?exec"
-curl "${WEB_HOST}/scripts/toggle_maintenance.php?token=${DEPLOY_TOKEN}&mode=0"
+if [ ! ${WEB_HOST} = "" ]; then
+    curl "${WEB_HOST}/install.php?exec"
+    curl "${WEB_HOST}/scripts/toggle_maintenance.php?token=${DEPLOY_TOKEN}&mode=0"
+fi
