@@ -149,5 +149,6 @@ class AuthController extends Controller implements Middleware
     {
         $user = self::instanceUser($user_id);
         $_SESSION[self::$session_key] = array($user->user_name, $user->password);
+        return $user;
     }
 }

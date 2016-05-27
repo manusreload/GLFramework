@@ -8,6 +8,9 @@
 
 namespace GLFramework;
 
+define("MODEL_FIELD_TYPE_STRING", 1);
+define("MODEL_FIELD_TYPE_INT", 2);
+define("MODEL_FIELD_TYPE_DOUBLE", 3);
 
 class Model
 {
@@ -67,13 +70,20 @@ class Model
      * @var array
      */
     protected $models = array();
-    
+
+    protected $updated_at_fileds = array('updated_at');
+    protected $created_at_fileds = array('created_at');
+
     /**
      * Model constructor.
      */
     public function __construct($data = null)
     {
         $this->db = new DatabaseManager();
+        foreach ($this->getFields() as $field)
+        {
+            $this->{$field} = false;
+        }
         $this->setData($data);
     }
 
@@ -91,7 +101,11 @@ class Model
         foreach ($fields as $field) {
 //            if($this->getFieldValue($field, $data) !== NULL)
             {
-                $value = $this->db->escape_string($this->getFieldValue($field, $data));
+                if(in_array($field, $this->created_at_fileds))
+                {
+                    $this->{$field} = now();
+                }
+                $value = $this->getFieldValue($field, $data);
                 $args[$field] = $value;
                 $sql1 .= "$field, ";
                 $sql2 .= ":$field, ";
@@ -118,6 +132,10 @@ class Model
         $sql1 = "";
         $args = array();
         foreach ($fields as $field) {
+            if(in_array($field, $this->updated_at_fileds))
+            {
+                $this->{$field} = now();
+            }
             $value = $this->getFieldValue($field, $data);
             if (isset($value) && $value !== '' && !$this->isIndex($field)) {
                 $args[] = $value;
@@ -558,10 +576,8 @@ class Model
                         $json[$name] = $object->json();
                     }
                 }
-                else
-                {
-                    $json[$field] = $this->getFieldValue($field);
-                }
+
+                $json[$field] = $this->getFieldValue($field);
 
             }
         }

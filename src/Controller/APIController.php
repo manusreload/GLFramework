@@ -17,6 +17,10 @@ use GLFramework\ModelResult;
 class APIController extends Controller
 {
     /**
+     * @var \User
+     */
+    var $user;
+    /**
      * APIController constructor.
      * @param string $base
      * @param Module|null $module
@@ -91,6 +95,13 @@ class APIController extends Controller
     public function delete($params)
     {
         return false;
+    }
+
+    public function getData($json = true, $assoc = false)
+    {
+        $data =  file_get_contents("php://input");
+        if(!$json) return $data;
+        return json_decode($data, $assoc);
     }
 
 

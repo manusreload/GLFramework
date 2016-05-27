@@ -111,5 +111,10 @@ class Request
         return $headers[$name];
     }
 
+    public function isAjax()
+    {
+        return strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == "xmlhttprequest";
+    }
+
 
 }
