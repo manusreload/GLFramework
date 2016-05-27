@@ -47,6 +47,13 @@ class API
         $url = $this->getURI($uri);
         return post($url, $fields, $this->getAuth());
     }
+
+    public function delete($uri, $fields)
+    {
+        $url = $this->getURI($uri);
+        return custom_http_request("DELETE", $url, $fields, $this->getAuth());
+    }
+
     public function get($uri, $fields = array())
     {
         $fields_string = "";

@@ -315,6 +315,24 @@ if (!function_exists('http_response_code')) {
     }
 }
 
+function custom_http_request($method, $uri, $fields = array(), $header = array())
+{
+
+    $fields_string = "";
+    foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
+    rtrim($fields_string, '&');
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL,$uri);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $result = curl_exec($ch);
+    curl_close($ch);
+
+    return $result;
+
+}
 function post($url, $fields, $header = array())
 {
     $fields_string = "";
