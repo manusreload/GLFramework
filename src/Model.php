@@ -132,12 +132,12 @@ class Model
         $sql1 = "";
         $args = array();
         foreach ($fields as $field) {
+            if(in_array($field, $this->updated_at_fileds))
+            {
+                $this->{$field} = now();
+            }
+            $value = $this->getFieldValue($field, $data);
             if (isset($value) && $value !== '' && !$this->isIndex($field)) {
-                if(in_array($field, $this->updated_at_fileds))
-                {
-                    $this->{$field} = now();
-                }
-                $value = $this->getFieldValue($field, $data);
                 $args[] = $value;
                 $sql1 .= "$field = ?, ";
             }

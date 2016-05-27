@@ -9,7 +9,6 @@
 namespace GLFramework\Module;
 
 
-use GLFramework\Bootstrap;
 use GLFramework\Controller;
 use GLFramework\Events;
 use GLFramework\Model\UserPage;
@@ -41,7 +40,6 @@ class Module
             $this->title = $this->config['title'];
         if(isset($this->config['description']))
             $this->description = $this->config['description'];
-        $this->config = array_merge_recursive_ex($this->config, Bootstrap::getSingleton()->getConfig());
     }
 
     public function init()

@@ -37,10 +37,6 @@ abstract class Controller
      * @var Module
      */
     var $module;
-    /**
-     * Parametros de la url que pasa el Router definidos en routes:
-     * @var array
-     */
     var $params = array();
 
     var $redirect = false;
@@ -100,6 +96,7 @@ abstract class Controller
     {
 
         $this->params = $request->getParams();
+        $this->response->setAjax($request->isAjax());
         $this->middleware = array_reverse($this->middleware);
         reset($this->middleware);
         $this->middleware($request, $this->response);
