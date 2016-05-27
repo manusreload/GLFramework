@@ -39,13 +39,10 @@ url="$(git config git-ftp.url)"
 git submodule foreach 'echo "$path"' | grep -v '^Entering ' | while read submodule
 do
     cd "$base/$submodule"
-    echo "$base/$submodule"
-    echo "catching up submodule ${submodule} (because git-ftp fails to)"
-    echo "git ftp \"$action\" \"${url}${submodule}\" ${3}"
-    git ftp "$action" "${url}${submodule}" ${3} || exit $?
+    echo "Entering ${submodule} ('${url}/${submodule}')..."
+    git ftp "$action" "${url}/${submodule}" ${3} || exit $?
 done
 cd "$base"
-echo "OK"
 ## Despues ejecutar el install.php:
 
 if [ ! ${WEB_HOST} = "" ]; then
