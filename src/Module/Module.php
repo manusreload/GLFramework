@@ -164,11 +164,11 @@ class Module
             }
         }
         // Add main module views
-        $mainModule = ModuleManager::getInstance()->getMainModule();
-        if($this != $mainModule) $this->addFolder($directories, $mainModule->getViews());
-        // Add framework views
-        $this->addFolder($directories, realpath(__DIR__ . "/../..") . "/views");
-        $this->addFolder($directories, realpath(__DIR__ . "/../..") . "/modules");
+//        $mainModule = ModuleManager::getInstance()->getMainModule();
+//        if($this != $mainModule) $this->addFolder($directories, $mainModule->getViews());
+//        // Add framework views
+//        $this->addFolder($directories, realpath(__DIR__ . "/../..") . "/views");
+//        $this->addFolder($directories, realpath(__DIR__ . "/../..") . "/modules");
         return $directories;
     }
 

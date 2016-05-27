@@ -64,6 +64,7 @@ class AuthController extends Controller implements Middleware
                 {
                     if(!isset($_GET['logout']))
                         $this->addMessage("Por favor acceda con su cuenta antes de continuar", "warning");
+                    $_SESSION[self::$session_key]['return'] = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                     $this->quit($this->config['app']['basepath'] . "/login");
                     return false;
                 }

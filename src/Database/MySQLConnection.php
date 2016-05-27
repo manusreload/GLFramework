@@ -36,7 +36,7 @@ class MySQLConnection extends Connection
             }
         }catch(\Exception $ex)
         {
-
+            Events::fire('onException', $ex);
         }
         return false;
     }

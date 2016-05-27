@@ -143,6 +143,11 @@ class ModuleManager
                 }
             }
         }
+        $mainModule = ModuleManager::getInstance()->getMainModule();
+        if($module != $mainModule) $module->addFolder($views, $mainModule->getViews());
+        // Add framework views
+        $module->addFolder($views, realpath(__DIR__ . "/../..") . "/views");
+        $module->addFolder($views, realpath(__DIR__ . "/../..") . "/modules");
         return $views;
     }
 
@@ -259,6 +264,7 @@ class ModuleManager
                 return $this->mainModule->run(new ErrorController("Controller not found. " . $this->getRoutes()), $request);
             }
         } catch (\Exception $ex) {
+            Events::fire('onException', $ex);
             return $this->mainModule->run(new ExceptionController($ex), $request);
         } catch (\Throwable $ex) {
             return $this->mainModule->run(new ExceptionController($ex), $request);

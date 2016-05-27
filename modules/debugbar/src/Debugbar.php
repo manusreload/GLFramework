@@ -182,7 +182,10 @@ class Debugbar
     public function onPDOCreated(&$pdo)
     {
         $pdo = new TraceablePDO($pdo);
-        $this->getDebugbar()->addCollector(new PDOCollector($pdo, $this->time));
+        if(!$this->getDebugbar()->hasCollector('pdo'))
+        {
+            $this->getDebugbar()->addCollector(new PDOCollector($pdo, $this->time));
+        }
     }
 
     public function onViewCreated(&$twig)

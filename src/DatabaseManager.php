@@ -241,4 +241,10 @@ class DatabaseManager
         return self::$cache;
     }
 
+    public function reset()
+    {
+        self::$connection = null;
+        self::$selected = false;
+    }
+
 }
