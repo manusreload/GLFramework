@@ -48,7 +48,9 @@ class Bootstrap
      */
     public static function loadConfig($folder, $file)
     {
-        $config = Yaml::parse(file_get_contents($folder . "/{$file}"));
+        $filename = $folder . "/{$file}";
+        if(!file_exists($filename)) return array();
+        $config = Yaml::parse(file_get_contents($filename));
         if(isset($config['include']))
         {
             $value = $config['include'];
@@ -333,7 +335,7 @@ class Bootstrap
     private function register_error_handler()
     {
         set_error_handler(array($this, "fatal_handler"));
-        register_shutdown_function(array($this, "fatal_handler"));
+//        register_shutdown_function(array($this, "fatal_handler"));
     }
 
     function format_error($errno, $errstr, $errfile, $errline)

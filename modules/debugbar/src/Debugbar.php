@@ -11,6 +11,7 @@ use DebugBar\DataCollector\TimeDataCollector;
 use DebugBar\Storage\FileStorage;
 use GLFramework\Events;
 use GLFramework\Filesystem;
+use GLFramework\Modules\Debugbar\Collectors\ErrorCollector;
 use GLFramework\Modules\Debugbar\Collectors\RequestDataCollector;
 use GLFramework\Modules\Debugbar\Collectors\ResponseCollector;
 use DebugBar\DataCollector\PhpInfoCollector;
@@ -59,6 +60,15 @@ class Debugbar
     private $response;
 
     /**
+     * @var ExceptionsCollector
+     */
+    private $exceptions;
+    /**
+     * @var ErrorCollector
+     */
+    private $errors;
+
+    /**
      * Debugbar constructor.
      * @param null|Module $args
      * @throws \DebugBar\DebugBarException
@@ -78,6 +88,11 @@ class Debugbar
         $this->messages = $debugbar->getCollector('messages');
         $this->request = $debugbar->getCollector('request');
         $this->response = $debugbar->getCollector('response');
+        $this->exceptions = $debugbar->getCollector('exceptions');
+        $this->errors = $debugbar->getCollector('errors');
+
+        set_exception_handler(array($this, 'exceptionHandler'));
+        set_error_handler(array($this, 'errorHandler'));
     }
 
     public function getDebugbar()
@@ -93,6 +108,7 @@ class Debugbar
             self::$debugbar->addCollector(new TimeDataCollector());
             self::$debugbar->addCollector(new MemoryCollector());
             self::$debugbar->addCollector(new ExceptionsCollector());
+            self::$debugbar->addCollector(new ErrorCollector());
         }
         return self::$debugbar;
     }
@@ -180,4 +196,19 @@ class Debugbar
     {
         $this->messages->addMessage($message, $level);
     }
+
+    public function errorHandler($errno, $errstr, $errfile, $errline)
+    {
+        $this->errors->addError(new GeneratedError($errstr, $errno, $errfile, $errline));
+
+    }
+
+    /**
+     * @param $exception \Exception|\Error
+     */
+    public function exceptionHandler($exception)
+    {
+        $this->exceptions->addException($exception);
+    }
+
 }
