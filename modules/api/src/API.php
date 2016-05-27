@@ -17,11 +17,13 @@ use GLFramework\Response;
 class API implements Middleware
 {
     
+    var $controller;
     /**
      * @param $controller Controller
      */
     public function afterControllerConstruct($controller)
     {
+        $this->controller = $controller;
         if($controller instanceof Controller\APIController)
         {
             $controller->addMiddleware($this);
@@ -44,7 +46,20 @@ class API implements Middleware
         }
         else
         {
-            $response->setContent(json_encode(array('error' => "Please provide an X-Authorization header!")));
+            if($request->isAjax())
+            {
+                $login = new Controller\AuthController();
+                if($login->login())
+                {
+                    $this->controller->user = $login->user;
+                    $next($request, $response);
+                }
+            }
+            else
+            {
+
+                $response->setContent(json_encode(array('error' => "Please provide an X-Authorization header!")));
+            }
         }
     }
     
@@ -59,7 +74,7 @@ class API implements Middleware
             {
                 if($apiAuth->id_user)
                 {
-                    Controller\AuthController::auth($apiAuth->id_user);
+                    $this->controller->user = Controller\AuthController::auth($apiAuth->id_user);
                 }
             }
             return true;
