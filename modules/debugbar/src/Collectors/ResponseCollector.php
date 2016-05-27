@@ -10,10 +10,16 @@ namespace GLFramework\Modules\Debugbar\Collectors;
 
 
 use DebugBar\DataCollector\DataCollector;
+use DebugBar\DataCollector\Renderable;
+use GLFramework\Response;
 
-class ResponseCollector extends DataCollector
+class ResponseCollector extends DataCollector implements Renderable
 {
 
+    /**
+     * @var Response
+     */
+    var $response;
     /**
      * Called by the DebugBar when data needs to be collected
      *
@@ -22,6 +28,11 @@ class ResponseCollector extends DataCollector
     function collect()
     {
         // TODO: Implement collect() method.
+        return array(
+            'contentType' => $this->response->getContentType(),
+            'responseCode' => $this->response->getResponseCode(),
+            'redirection' => $this->response->getRedirection()
+        );
     }
 
     /**
@@ -34,4 +45,40 @@ class ResponseCollector extends DataCollector
         // TODO: Implement getName() method.
         return "response";
     }
+
+    /**
+     * Returns a hash where keys are control names and their values
+     * an array of options as defined in {@see DebugBar\JavascriptRenderer::addControl()}
+     *
+     * @return array
+     */
+    public function getWidgets()
+    {
+        return array(
+            "response" => array(
+                "icon" => "tags",
+                "widget" => "PhpDebugBar.Widgets.VariableListWidget",
+                "map" => "response",
+                "default" => "{}"
+            )
+        );
+    }
+
+    /**
+     * @return Response
+     */
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
+    /**
+     * @param Response $response
+     */
+    public function setResponse($response)
+    {
+        $this->response = $response;
+    }
+    
+    
 }

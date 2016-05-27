@@ -159,4 +159,12 @@ class Filesystem
         return file_put_contents($this->getAbsolutePath(), $content);
     }
 
+    /**
+     * Considera que este archivo es una carpeta
+     */
+    public function mkdir()
+    {
+        mkdir($this->getAbsolutePath());
+    }
+
 }

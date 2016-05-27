@@ -8,6 +8,14 @@ use DebugBar\DataCollector\MessagesCollector;
 use DebugBar\DataCollector\PDO\PDOCollector;
 use DebugBar\DataCollector\PDO\TraceablePDO;
 use DebugBar\DataCollector\TimeDataCollector;
+use DebugBar\Storage\FileStorage;
+use GLFramework\Events;
+use GLFramework\Filesystem;
+use GLFramework\Modules\Debugbar\Collectors\RequestDataCollector;
+use GLFramework\Modules\Debugbar\Collectors\ResponseCollector;
+use DebugBar\DataCollector\PhpInfoCollector;
+use DebugBar\DataCollector\MemoryCollector;
+use DebugBar\DataCollector\ExceptionsCollector;
 use DebugBar\StandardDebugBar;
 use GLFramework\Bootstrap;
 use GLFramework\Controller;
@@ -16,6 +24,7 @@ use GLFramework\DatabaseManager;
 use GLFramework\Module\ModuleManager;
 use GLFramework\Response;
 use GLFramework\View;
+use GLFramework\Module\Module;
 
 /**
  * Created by PhpStorm.
@@ -25,6 +34,8 @@ use GLFramework\View;
  */
 class Debugbar
 {
+
+    private static $instance;
     /**
      * @var \DebugBar\DebugBar
      */
@@ -39,19 +50,49 @@ class Debugbar
     private $messages;
 
     /**
-     * Debugbar constructor.
+     * @var RequestDataCollector
      */
-    public function __construct()
+    private $request;
+    /**
+     * @var ResponseCollector
+     */
+    private $response;
+
+    /**
+     * Debugbar constructor.
+     * @param null|Module $args
+     * @throws \DebugBar\DebugBarException
+     */
+    public function __construct($args = null)
     {
-        $this->time = $this->getDebugbar()->getCollector('time');
-        $this->messages = $this->getDebugbar()->getCollector('messages');
+        $debugbar = $this->getDebugbar();
+        $config = $args->getConfig();
+        if($config['filesystem'])
+        {
+            $fs = new Filesystem("debugbar");
+            $fs->mkdir();
+            $debugbar->setStorage(new FileStorage($fs->getAbsolutePath()));
+        }
+
+        $this->time = $debugbar->getCollector('time');
+        $this->messages = $debugbar->getCollector('messages');
+        $this->request = $debugbar->getCollector('request');
+        $this->response = $debugbar->getCollector('response');
     }
 
     public function getDebugbar()
     {
         if(self::$debugbar == null)
         {
-            self::$debugbar = new StandardDebugBar();
+            self::$debugbar = new \DebugBar\DebugBar();
+
+            self::$debugbar->addCollector(new PhpInfoCollector());
+            self::$debugbar->addCollector(new MessagesCollector());
+            self::$debugbar->addCollector(new RequestDataCollector());
+            self::$debugbar->addCollector(new ResponseCollector());
+            self::$debugbar->addCollector(new TimeDataCollector());
+            self::$debugbar->addCollector(new MemoryCollector());
+            self::$debugbar->addCollector(new ExceptionsCollector());
         }
         return self::$debugbar;
     }
@@ -61,6 +102,7 @@ class Debugbar
      */
     public function beforeControllerRun($instance)
     {
+        $this->request->addRequestData('params', $instance->params);
         $config = Bootstrap::getSingleton()->getConfig();
         if(isset($config['database']['database']))
         {
@@ -75,6 +117,7 @@ class Debugbar
      */
     public function afterControllerRun($instance, $response)
     {
+        $this->response->setResponse($instance->response);
         $this->time->stopMeasure('controller');
 
     }
@@ -84,7 +127,6 @@ class Debugbar
      */
     public function beforeResponseSend($response)
     {
-
         if($response->getAjax())
         {
             $this->getDebugbar()->sendDataInHeaders();
