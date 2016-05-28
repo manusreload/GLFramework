@@ -203,15 +203,29 @@ class Debugbar
     public function errorHandler($errno, $errstr, $errfile, $errline)
     {
         $this->errors->addError(new GeneratedError($errstr, $errno, $errfile, $errline));
-
     }
 
     /**
-     * @param $exception \Exception|\Error
+     * @param $throwlable \Throwable
+     */
+    public function throwlableHandler($throwlable)
+    {
+        echo $throwlable->getMessage() . " at " . $throwlable->getFile() . ":" . $throwlable->getLine() . "\n";
+        echo $throwlable->getTraceAsString();
+
+        $this->errors->addError(new GeneratedError($throwlable->getMessage(), $throwlable->getCode(),
+            $throwlable->getFile(), $throwlable->getLine()));
+    }
+
+    /**
+     * @param $exception \Exception
      */
     public function exceptionHandler($exception)
     {
-        $this->exceptions->addException($exception);
+        if($exception instanceof \Exception)
+            $this->exceptions->addException($exception);
+        elseif($exception instanceof \Throwable)
+            $this->throwlableHandler($exception);
     }
 
 }

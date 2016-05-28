@@ -267,6 +267,7 @@ class ModuleManager
             Events::fire('onException', $ex);
             return $this->mainModule->run(new ExceptionController($ex), $request);
         } catch (\Throwable $ex) {
+            Events::fire('onError', $ex);
             return $this->mainModule->run(new ExceptionController($ex), $request);
         }
         return false;

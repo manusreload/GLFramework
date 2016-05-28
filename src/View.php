@@ -29,8 +29,14 @@ class View
         $this->controller = $controller;
         $directories = ModuleManager::getInstance()->getViews($controller->module);
         $loader = new \Twig_Loader_Filesystem($directories);
+        $fs = new Filesystem("twig_cache");
+        $fs->mkdir();
+        $config = array();
+        $config['cache'] = $fs->getAbsolutePath();
+//        print_debug($config);
         $this->twig = new \Twig_Environment($loader, array());
         Events::fire('onViewCreated', array(&$this->twig));
+//        $this->twig->setCache($fs->getAbsolutePath());
         $this->twig->addGlobal('config', $this->controller->config);
         $this->twig->addGlobal('_GET', $_GET);
         $this->twig->addGlobal('_POST', $_POST);
