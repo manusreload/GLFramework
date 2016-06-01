@@ -1,6 +1,8 @@
 <?php
 
 namespace GLFramework\Modules\Debugbar;
+use DebugBar\Bridge\SwiftMailer\SwiftLogCollector;
+use DebugBar\Bridge\SwiftMailer\SwiftMailCollector;
 use DebugBar\Bridge\Twig\TraceableTwigEnvironment;
 use DebugBar\Bridge\Twig\TwigCollector;
 use DebugBar\DataCollector\ConfigCollector;
@@ -109,6 +111,7 @@ class Debugbar
             self::$debugbar->addCollector(new MemoryCollector());
             self::$debugbar->addCollector(new ExceptionsCollector());
             self::$debugbar->addCollector(new ErrorCollector());
+//            self::$debugbar->addCollector(new SwiftMailCollector());
         }
         return self::$debugbar;
     }
@@ -193,6 +196,14 @@ class Debugbar
         $twig = new TraceableTwigEnvironment($twig, $this->time);
         if(!$this->getDebugbar()->hasCollector('twig'))
             $this->getDebugbar()->addCollector(new TwigCollector($twig));
+    }
+
+    public function onMailTransport($mailer)
+    {
+//        die("OK");
+        $m = \Swift_Mailer::newInstance($mailer);
+        $this->messages->aggregate(new SwiftLogCollector($m));
+        $this->getDebugbar()->addCollector(new SwiftMailCollector($m));
     }
 
     public function onLog($message,  $level)

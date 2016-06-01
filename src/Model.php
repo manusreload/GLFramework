@@ -79,6 +79,7 @@ class Model
      */
     public function __construct($data = null)
     {
+        if($this->table_name == "") throw new \Exception("El nombre de la tabla para el modelo '" . get_class($this) . "' no puede estar vacío!");
         $this->db = new DatabaseManager();
         foreach ($this->getFields() as $field)
         {

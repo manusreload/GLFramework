@@ -1,0 +1,9 @@
+title: installer
+description: Allow to the users easy content setup
+
+app:
+  controllers: controller
+  views: view
+
+  routes:
+    Core\Installer\setup: /step/[i:step]?

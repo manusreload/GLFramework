@@ -1,0 +1,77 @@
+
+<div class="row">
+    <div class="col-lg-8">
+    {% embed "templates/box.twig" %}
+        {% block title %}
+            Configuracion del correo
+        {% endblock %}
+        {% block content %}
+
+            <form class="form-horizontal" method="post" action="{{ this.getLink(this, {step: this.step}) }}">
+                <h3>SMTP</h3>
+                <div class="form-group">
+                    <label class="control-label col-lg-4">Dominio</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" name="hostname" value="{{ _POST.hostname | default(config.mail.hostname | default("localhost")) }}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-lg-4">Puerto</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" name="port" value="{{ _POST.port | default(config.mail.port | default("25")) }}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-lg-4">Usuario</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" name="username" value="{{  _POST.username | default(config.mail.username | default("")) }}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-lg-4">Contraseña</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" name="password" value="{{  _POST.password | default(config.mail.password )}}">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-4 col-sm-8">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="noconfig" value="true"> Prefiero configurar esto más adelante
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-lg-8 col-lg-offset-4">
+                        <input type="submit" class="btn btn-success" name="save" value="Siguiente Paso">
+                    </div>
+                </div>
+            </form>
+
+        {% endblock %}
+    {% endembed %}
+    </div>
+    <div class="col-lg-4">
+        <h3>Ayuda</h3>
+        <ul>
+            <li><b>Nombre del Host</b>: Es una direccion de internet, a donde se conectará para almacenar los datos</li>
+            <li><b>Usuario</b>: Usuario para acceder a la base de datos</li>
+            <li><b>Contraseña</b>: Contraseña para acceder a la base de datos</li>
+            <li><b>Dase de datos</b>: Es el nombre de la base de datos donde se conectará</li>
+        </ul>
+        <hr>
+        <p>
+
+            <b>Crear base de datos MySQL</b>
+            <pre>CREATE DATABASE factumol;</pre>
+        </p>
+        <p>
+
+            <b>Crear usuario MySQL</b>
+            <pre>CREATE USER user_factumol;
+GRANT ALL ON factumol.* TO 'user_factumol'@'localhost' IDENTIFIED BY '&lt;password&gt;';</pre>
+        </p>
+    </div>
+</div>

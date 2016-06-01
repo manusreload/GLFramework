@@ -85,8 +85,8 @@ class Mail
     public function send($to, $subject, $message, $attachments = array())
     {
         $config = Bootstrap::getSingleton()->getConfig();
-        $mailsystem = $this->getMailSystem();
-        $transport = $mailsystem->getTransport();
+//        $mailsystem = $this->getMailSystem();
+        $transport = $this->getTransport();
         Events::fire('onEmail', array( 'emails' => $to, 'subject' => $subject, 'message' => $message, 'transport' => $transport));
 
         $mail = new \Swift_Message($subject, $message, "text/html", "UTF-8");

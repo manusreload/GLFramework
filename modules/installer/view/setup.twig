@@ -1,0 +1,9 @@
+{% extends "templates/base.twig" %}
+{% block title %}Configurar{% endblock %}
+{% block body %}
+
+    {% include "steps/" ~ this.step ~ ".twig" %}
+
+{% endblock %}
+{% block scripts %}{% endblock %}
+{% block styles %}{% endblock %}
