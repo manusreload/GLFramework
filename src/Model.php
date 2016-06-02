@@ -46,14 +46,14 @@ class Model
      */
     /*
      * Reglas para sacar variables (desde array definicion):
-     *  "'([a-z_]+)' => .*" -> "var \$$1;"
+     *  "'([a-z0-9_]+)' => .*" -> "var \$$1;"
      *  - Desde DESCRIBE...
-     * "([a-z_]+)\t.*" -> "var \$$1;"
+     * "([a-z0-9_]+)\t.*" -> "var \$$1;"
      */
 
     /*
      * Reglas para sacar definicion (desde DESCRIBE <table>):
-     *  "([a-z_]+)\t([a-z0-9(),]+).*" -> "'$1' => '$2',"
+     *  "([a-z0-9_]+)\t([a-z0-9(),]+).*" -> "'$1' => '$2',"
      */
     /**
      * Lista de columnas que no se muestran a la funcion json()
