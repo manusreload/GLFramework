@@ -164,7 +164,8 @@ class Debugbar
     public function displayStyle($render)
     {
         $render = $this->getDebugbar()->getJavascriptRenderer();
-        $this->time->stopMeasure('run');
+        if($this->time->hasStartedMeasure('run'))
+            $this->time->stopMeasure('run');
         if(Bootstrap::isDebug())
         {
             echo $render->renderHead();

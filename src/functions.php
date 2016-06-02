@@ -204,10 +204,16 @@ function instance_method($name, &$cache = array(), $instanceParams = array())
         $instance = null;
         if(!isset($cache[$split[0]]))
         {
-            $rf = new ReflectionClass($split[0]);
-            $instance = $rf->getConstructor()?$rf->newInstanceArgs($instanceParams):$rf->newInstance();
-//            $instance = new $split[0]();
-            $cache[$split[0]] = $instance;
+            if(class_exists($split[0])){
+                $rf = new ReflectionClass($split[0]);
+                $instance = $rf->getConstructor()?$rf->newInstanceArgs($instanceParams):$rf->newInstance();
+    //            $instance = new $split[0]();
+                $cache[$split[0]] = $instance;
+            }
+            else
+            {
+                \GLFramework\Log::d("Class {$split[0]} not found! While try to instance $name ");
+            }
         }
         $instance = $cache[$split[0]];
         return array($instance, $split[1]);
@@ -381,4 +387,15 @@ function fix_url($url)
         $url = "http://" . $_SERVER['HTTP_HOST'] . $url;
     }
     return $url;
+}
+
+function display_exception(Exception $ex, $i = 1)
+{
+    echo "<h3>($i) " . $ex->getMessage() . "</h3> at " . $ex->getFile() . ":" . $ex->getLine();
+    echo "<pre>" . $ex->getTraceAsString() . "</pre><br>";
+
+    if($ex->getPrevious())
+    {
+        display_exception($ex->getPrevious(), $i + 1);
+    }
 }
