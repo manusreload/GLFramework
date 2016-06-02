@@ -8,6 +8,8 @@
 
 namespace GLFramework;
 
+use GLFramework\Module\ModuleManager;
+
 define("MODEL_FIELD_TYPE_STRING", 1);
 define("MODEL_FIELD_TYPE_INT", 2);
 define("MODEL_FIELD_TYPE_DOUBLE", 3);
@@ -636,10 +638,28 @@ class Model
     /**
      * @param $baseclass
      * @param array $args
+     * @return Model
      */
     public static function newInstance($baseclass, $args = array())
     {
-        print_debug($baseclass, get_class());
+        $modules = ModuleManager::getInstance()->getModules();
+        foreach ($modules as $module)
+        {
+            if(in_array($baseclass, $module->getModels()))
+            {
+                $classes = array("\\" . $module->title . "\\" . $baseclass, $baseclass);
+                foreach ($classes as $class)
+                {
+                    if(class_exists($class))
+                    {
+                        return new $class($args);
+                    }
+                }
+            }
+        }
+        $class = "\\GLFramework\\Model\\$baseclass";
+        return new $class($args);
+
     }
 
     public function url()

@@ -162,6 +162,8 @@ class Bootstrap
         Log::i("· PHP Version: " . phpversion());
         Log::i("· Server Type: " . $_SERVER['SERVER_SOFTWARE']);
         Log::i("· Server IP: " . $_SERVER['SERVER_ADDR'] . ":" . $_SERVER['SERVER_PORT']);
+        Log::i("· Current User: " . get_current_user());
+        Log::i("· Current Folder: " . realpath("."));
         Log::i("· Extensiones de PHP: ");
         Log::i(get_loaded_extensions());
         session_start();

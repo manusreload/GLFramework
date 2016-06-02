@@ -17,7 +17,7 @@
                 <div class="form-group">
                         <label class="control-label col-lg-4">Usuario</label>
                     <div class="col-lg-8">
-                        <input class="form-control" name="username" value="{{  _POST.username | default(config.database.username | default("factumol")) }}">
+                        <input class="form-control" name="username" value="{{  _POST.username | default(config.database.username) }}">
                     </div>
                 </div>
                 <div class="form-group">
@@ -29,7 +29,7 @@
                 <div class="form-group">
                         <label class="control-label col-lg-4">Dase de datos</label>
                     <div class="col-lg-8">
-                        <input class="form-control" name="database" value="{{  _POST.database | default(config.database.database | default("factumol")) }}">
+                        <input class="form-control" name="database" value="{{  _POST.database | default(config.database.database ) }}">
                     </div>
                 </div>
                 <div class="form-group">
@@ -57,13 +57,13 @@
         <p>
 
             <b>Crear base de datos MySQL</b>
-            <pre>CREATE DATABASE factumol;</pre>
+            <pre>CREATE DATABASE &lt;databasename&gt;;</pre>
         </p>
         <p>
 
             <b>Crear usuario MySQL</b>
-            <pre>CREATE USER user_factumol;
-GRANT ALL ON factumol.* TO 'user_factumol'@'localhost' IDENTIFIED BY '&lt;password&gt;';</pre>
+            <pre>CREATE USER &lt;username&gt;;
+GRANT ALL ON &lt;databasename&gt;.* TO '&lt;username&gt;'@'localhost' IDENTIFIED BY '&lt;password&gt;';</pre>
         </p>
     </div>
 </div>

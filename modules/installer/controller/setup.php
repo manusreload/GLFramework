@@ -110,7 +110,7 @@ class setup extends Controller
         }
         if($this->step == "4")
         {
-            $user = new User();
+            $user = \User::newInstance('User');
             $this->hasAdmin = $user->get(array('admin' => '1'))->count() > 0;
             if(!$this->hasAdmin)
             {

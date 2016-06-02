@@ -12,6 +12,7 @@ namespace GLFramework\Module;
 use GLFramework\Bootstrap;
 use GLFramework\Controller;
 use GLFramework\Events;
+use GLFramework\Log;
 use GLFramework\Model\UserPage;
 use GLFramework\Request;
 
@@ -41,11 +42,12 @@ class Module
             $this->title = $this->config['title'];
         if(isset($this->config['description']))
             $this->description = $this->config['description'];
-        $this->config = array_merge_recursive_ex($this->config, Bootstrap::getSingleton()->getConfig());
+//        $this->config = array_merge_recursive_ex($this->config, Bootstrap::getSingleton()->getConfig());
     }
 
     public function init()
     {
+        Log::d($this->config);
 //        $this->register_composer();
         $controllers = $this->config['app']['controllers'];
         if (!is_array($controllers)) $controllers = array($controllers);
@@ -136,10 +138,13 @@ class Module
         if (!is_array($models)) $models = array($models);
         foreach ($models as $model) {
             $folder = $this->directory . "/$model";
-            $files = scandir($folder);
-            foreach ($files as $file) {
-                if (strpos($file, ".php") !== FALSE) {
-                    $list[] = substr($file, 0, -4);
+            if(is_dir($folder))
+            {
+                $files = scandir($folder);
+                foreach ($files as $file) {
+                    if (strpos($file, ".php") !== FALSE) {
+                        $list[] = substr($file, 0, -4);
+                    }
                 }
             }
         }
