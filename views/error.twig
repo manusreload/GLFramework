@@ -16,10 +16,20 @@
     <a href="/" class="btn btn-default"> Inicio</a>
 
     {{ fire('displayExtraErrorView',[render ]) }}
-{% if this.trace %}
-    <h1>Stacktrace</h1>
-    <pre>{{ this.trace }}</pre>
-{% endif %}
+
+    {% set current = this.exception %}
+
+    {% if this.exceptions %}
+        {% for i in 0..this.exceptions| length - 1 %}
+            {% set exception = this.exceptions[i] %}
+            <h3>({{ i + 1 }}/{{ this.exceptions | length }}) {{ exception.getMessage() }} <small><i>{{ exception.getFile() }}:{{ exception.getLine() }}</i></small></h3>
+
+        {% endfor %}
+    {% endif %}
+    {% if this.trace %}
+        <h1>Stacktrace</h1>
+        <pre>{{ this.trace }}</pre>
+    {% endif %}
 {% endblock %}
 {% block scripts %}{% endblock %}
 {% block styles %}

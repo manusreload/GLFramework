@@ -188,7 +188,7 @@ class ModuleManager
                             $extra = current($extra);
                         }
                         $module = $this->load($dirbase . "/" . $name, $extra);
-                        if($module)
+                        if($module && !$this->exists($module->title))
                             $this->add($module);
 
                     }

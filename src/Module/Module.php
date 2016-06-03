@@ -12,6 +12,7 @@ namespace GLFramework\Module;
 use GLFramework\Bootstrap;
 use GLFramework\Controller;
 use GLFramework\Events;
+use GLFramework\Log;
 use GLFramework\Model\UserPage;
 use GLFramework\Request;
 
@@ -41,12 +42,14 @@ class Module
             $this->title = $this->config['title'];
         if(isset($this->config['description']))
             $this->description = $this->config['description'];
-        $this->config = array_merge_recursive_ex($this->config, Bootstrap::getSingleton()->getConfig());
+//        $this->config = array_merge_recursive_ex($this->config, Bootstrap::getSingleton()->getConfig());
     }
 
     public function init()
     {
-//        $this->register_composer();
+
+        Log::d($this->config);
+        $this->register_composer();
         $controllers = $this->config['app']['controllers'];
         if (!is_array($controllers)) $controllers = array($controllers);
         foreach($controllers as $controllerFolder)

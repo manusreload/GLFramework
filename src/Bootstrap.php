@@ -93,6 +93,12 @@ class Bootstrap
      */
     public static function start($directory)
     {
+        try{
+            
+        } catch (\Exception $ex)
+        {
+//            display_exception($ex);
+        }
         define("GL_TESTING", false);
         define("GL_INSTALL", false);
         $bootstrap = new Bootstrap($directory);

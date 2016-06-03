@@ -1,0 +1,14 @@
+title: login
+description: Se utiliza para dar login al sitio
+
+depends:
+  - admin
+
+app:
+  controllers: controller
+  views: view
+  model: model
+
+  routes:
+    GLFramework\Modules\Login\login: /login
+    GLFramework\Modules\Login\recovery: /recovery/[*:token]?

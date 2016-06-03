@@ -1,0 +1,71 @@
+{% set simple = "true" %}
+{% extends "templates/base.twig" %}
+
+{% block title %}Recuperar cuenta{% endblock %}
+{% block body %}
+    <form class="form-signin" name="form1" method="post" action="{{ this.getLink(this) }}">
+
+        {% if this.result.error %}
+            <div class="alert alert-danger">
+                Ha ocurrido un error al intentar recuperar su cuenta
+            </div>
+        {% endif %}
+        <h3 class="form-signin-heading">Recuperar cuenta</h3>
+        <p>
+            Para poder recuperar su cuenta introduzca su nombre de usuario
+        </p>
+        <input name="username" id="myusername" type="text" class="form-control" placeholder="Usuario" autofocus>
+        <p>Si no recuerdas el usuario intruce tu email:</p>
+        <input name="email" type="email" class="form-control" placeholder="Email">
+        <p></p>
+        {#<div class="pull-right"><a href="#">Recuperar contraseña</a></div>#}
+
+
+        <!-- The checkbox remember me is not implemented yet...
+        <label class="checkbox">
+          <input type="checkbox" value="remember-me"> Remember me
+        </label>
+        -->
+        <button name="save" id="submit" class="btn btn-lg btn-primary btn-block" type="submit">Entrar</button>
+
+        <div id="message"></div>
+    </form>
+{% endblock %}
+{% block scripts %}{% endblock %}
+{% block styles %}
+    <style>
+        body {
+            padding-top: 40px;
+            padding-bottom: 40px;
+            background-color: #fff;
+        }
+
+        .form-signin {
+            max-width: 330px;
+            padding: 15px;
+            margin: 0 auto;
+        }
+        .form-signin .form-signin-heading,
+        .form-signin .checkbox {
+            margin-bottom: 10px;
+        }
+        .form-signin .checkbox {
+            font-weight: normal;
+        }
+        .form-signin .form-control {
+            position: relative;
+            font-size: 16px;
+            height: auto;
+            padding: 10px;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+        .form-signin .form-control:focus {
+            z-index: 2;
+        }
+        .form-signin .btn {
+            margin-bottom: 10px;
+        }
+    </style>
+{% endblock %}
