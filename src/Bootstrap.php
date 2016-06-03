@@ -158,7 +158,8 @@ class Bootstrap
     public function run($url = null, $method = null)
     {
         $this->init();
-        Log::i("Welcome to GLFramework v" . $this->getVersion() . "");
+        Log::i("Welcome to GLFramework");
+        Log::i("· Version: " . $this->getVersion());
         Log::i("· PHP Version: " . phpversion());
         Log::i("· Server Type: " . $_SERVER['SERVER_SOFTWARE']);
         Log::i("· Server IP: " . $_SERVER['SERVER_ADDR'] . ":" . $_SERVER['SERVER_PORT']);
@@ -377,7 +378,34 @@ class Bootstrap
 
     public function getVersion()
     {
-        return self::$VERSION;
+//
+        if($package = $this->getComposerInstall())
+        {
+            if($package->version == "dev-master")
+            {
+                return "dev-master (" . substr($package->source->reference, 0, 8) . ")";
+            }
+            return "v" . $package->version;
+        }
+        return "v" . self::$VERSION;
+    }
+
+
+    public function getComposerInstall()
+    {
+        if(file_exists("composer.lock"))
+        {
+            $json = json_decode(file_get_contents("composer.lock"));
+            foreach ($json->packages as $package)
+            {
+                if($package->name == "gestionlan/framework")
+                {
+                    return $package;
+                }
+            }
+        }
+
+        return false;
     }
 
 }
