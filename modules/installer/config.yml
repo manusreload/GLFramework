@@ -7,3 +7,11 @@ app:
 
   routes:
     Core\Installer\setup: /step/[i:step]?
+
+  events:  # Declared events in the module
+    getInstallersControllers:
+      info: Obtener un o una lista de los nombres de los modulos que pueden ser instalados
+      params:
+          [none]
+      return:
+          string|array: Nombre o lista de nombres de los controladores, el titulo sera la variable $name definida en el controlador

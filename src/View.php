@@ -45,6 +45,7 @@ class View
         $this->twig->addGlobal('this', $this->controller);
         $this->twig->addGlobal('render', $this);
         $this->twig->addGlobal('manager', ModuleManager::getInstance());
+        $this->twig->addGlobal('mainconfig', Bootstrap::getSingleton()->getConfig());
         $this->twig->addFunction(new \Twig_SimpleFunction('fire', array($this, 'fireEvent')));
         $this->twig->addFilter(new \Twig_SimpleFilter('active', array($this, 'isHrefActive')));
         $this->twig->addFilter(new \Twig_SimpleFilter('fecha_hora', array($this, 'parseFechaHora')));

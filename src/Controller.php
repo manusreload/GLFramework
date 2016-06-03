@@ -176,6 +176,7 @@ abstract class Controller
     /**
      * Redirige y despacha la respuesta
      * @param null $redirection
+     * @return bool
      */
     public function quit($redirection = null)
     {
@@ -190,6 +191,7 @@ abstract class Controller
                 exit;
             }
         }
+        return true;
     }
 
     /**

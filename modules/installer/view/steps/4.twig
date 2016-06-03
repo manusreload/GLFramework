@@ -1,7 +1,7 @@
 
 <div class="row">
     <div class="col-lg-8">
-    {% embed "templates/box.twig" %}
+    {% embed "views/templates/box.twig" %}
         {% block title %}
             Configuracion de la cuenta de administrador
         {% endblock %}
@@ -54,7 +54,7 @@
 
                     <div class="form-group">
                         <div class="col-lg-8 col-lg-offset-0">
-                            <a href="{{ this.getLink(this, {step: "5"}) }}" class="btn btn-success">Siguiente</a>
+                            <a href="{{ this.next() }}" class="btn btn-success">Siguiente</a>
                         </div>
                     </div>
                 {% endif %}
