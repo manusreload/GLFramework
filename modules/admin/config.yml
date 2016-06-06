@@ -21,9 +21,7 @@ app:
       params:
           [none]
       return:
-          string|array: >
-            Nombre o lista de nombres de los controladores,
-            el titulo sera la variable $name definida en el controlador
+          string|array: Nombre o lista de nombres de los controladores, el titulo sera la variable $name
 
   settings:
     # Name and description about the possible configuration override by the main config
