@@ -34,18 +34,24 @@ class DatabaseManager
      */
     private static $cache;
 
+    private $config;
+
     /**
      * DBConnection constructor.
      */
-    public function __construct()
+    public function __construct($config = null)
     {
-
+        if(!$config)
+        {
+            $config = Bootstrap::getSingleton()->getConfig();
+        }
+        $this->config = $config;
         $this->connect();
     }
 
     public function getConfig()
     {
-        return Bootstrap::getSingleton()->getConfig();
+        return $this->config;
     }
 
     /**
@@ -233,6 +239,12 @@ class DatabaseManager
     public function getCache()
     {
         return self::$cache;
+    }
+
+    public function reset()
+    {
+        self::$connection = null;
+        self::$selected = false;
     }
 
 }

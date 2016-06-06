@@ -18,8 +18,9 @@ app:
     onViewCreated: GLFramework\Modules\Debugbar\Debugbar->onViewCreated
     beforeResponseSend: GLFramework\Modules\Debugbar\Debugbar->beforeResponseSend
     onMailTransport: GLFramework\Modules\Debugbar\Debugbar->onMailTransport
+    onException: GLFramework\Modules\Debugbar\Debugbar->exceptionHandler
 
-    settings:
-        # Name and description about the possible configuration override by the main config
-        filesystem: >
-            true o false para que DebugBar almacene todas la peticiones para que se pueda depurar en un futuro.
+  settings:
+      # Name and description about the possible configuration override by the main config
+      filesystem: >
+          true o false para que DebugBar almacene todas la peticiones para que se pueda depurar en un futuro.

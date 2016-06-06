@@ -1,0 +1,69 @@
+
+<div class="row">
+    <div class="col-lg-8">
+    {% embed "views/templates/box.twig" %}
+        {% block title %}
+            Base de datos MySQL
+        {% endblock %}
+        {% block content %}
+
+            <form class="form-horizontal" method="post" action="{{ this.getLink(this, {step: this.step}) }}">
+                <div class="form-group">
+                        <label class="control-label col-lg-4">Nombre del Host</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" name="hostname" value="{{ _POST.hostname | default(mainconfig.database.hostname | default("localhost")) }}">
+                    </div>
+                </div>
+                <div class="form-group">
+                        <label class="control-label col-lg-4">Usuario</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" name="username" value="{{  _POST.username | default(mainconfig.database.username) }}">
+                    </div>
+                </div>
+                <div class="form-group">
+                        <label class="control-label col-lg-4">Contraseña</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" name="password" value="{{  _POST.password | default(mainconfig.database.password )}}">
+                    </div>
+                </div>
+                <div class="form-group">
+                        <label class="control-label col-lg-4">Dase de datos</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" name="database" value="{{  _POST.database | default(mainconfig.database.database ) }}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-lg-8 col-lg-offset-4">
+                        <input type="submit" class="btn btn-success" name="save" value="Siguiente Paso">
+                        {% if this.db_config and not this.db_config.isSelected %}
+                            <input type="submit" class="btn btn-warning" name="create_database" value="Intentar crear base de datos">
+                        {% endif %}
+                    </div>
+                </div>
+            </form>
+
+        {% endblock %}
+    {% endembed %}
+    </div>
+    <div class="col-lg-4">
+        <h3>Ayuda</h3>
+        <ul>
+            <li><b>Nombre del Host</b>: Es una direccion de internet, a donde se conectará para almacenar los datos</li>
+            <li><b>Usuario</b>: Usuario para acceder a la base de datos</li>
+            <li><b>Contraseña</b>: Contraseña para acceder a la base de datos</li>
+            <li><b>Dase de datos</b>: Es el nombre de la base de datos donde se conectará</li>
+        </ul>
+        <hr>
+        <p>
+
+            <b>Crear base de datos MySQL</b>
+            <pre>CREATE DATABASE &lt;databasename&gt;;</pre>
+        </p>
+        <p>
+
+            <b>Crear usuario MySQL</b>
+            <pre>CREATE USER &lt;username&gt;;
+GRANT ALL ON &lt;databasename&gt;.* TO '&lt;username&gt;'@'localhost' IDENTIFIED BY '&lt;password&gt;';</pre>
+        </p>
+    </div>
+</div>

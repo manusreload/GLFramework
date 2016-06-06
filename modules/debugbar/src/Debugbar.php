@@ -1,6 +1,8 @@
 <?php
 
 namespace GLFramework\Modules\Debugbar;
+use DebugBar\Bridge\SwiftMailer\SwiftLogCollector;
+use DebugBar\Bridge\SwiftMailer\SwiftMailCollector;
 use DebugBar\Bridge\Twig\TraceableTwigEnvironment;
 use DebugBar\Bridge\Twig\TwigCollector;
 use DebugBar\DataCollector\ConfigCollector;
@@ -11,6 +13,7 @@ use DebugBar\DataCollector\TimeDataCollector;
 use DebugBar\Storage\FileStorage;
 use GLFramework\Events;
 use GLFramework\Filesystem;
+use GLFramework\Modules\Debugbar\Collectors\ErrorCollector;
 use GLFramework\Modules\Debugbar\Collectors\RequestDataCollector;
 use GLFramework\Modules\Debugbar\Collectors\ResponseCollector;
 use DebugBar\DataCollector\PhpInfoCollector;
@@ -59,6 +62,15 @@ class Debugbar
     private $response;
 
     /**
+     * @var ExceptionsCollector
+     */
+    private $exceptions;
+    /**
+     * @var ErrorCollector
+     */
+    private $errors;
+
+    /**
      * Debugbar constructor.
      * @param null|Module $args
      * @throws \DebugBar\DebugBarException
@@ -78,6 +90,11 @@ class Debugbar
         $this->messages = $debugbar->getCollector('messages');
         $this->request = $debugbar->getCollector('request');
         $this->response = $debugbar->getCollector('response');
+        $this->exceptions = $debugbar->getCollector('exceptions');
+        $this->errors = $debugbar->getCollector('errors');
+
+        set_exception_handler(array($this, 'exceptionHandler'));
+        set_error_handler(array($this, 'errorHandler'));
     }
 
     public function getDebugbar()
@@ -93,6 +110,8 @@ class Debugbar
             self::$debugbar->addCollector(new TimeDataCollector());
             self::$debugbar->addCollector(new MemoryCollector());
             self::$debugbar->addCollector(new ExceptionsCollector());
+            self::$debugbar->addCollector(new ErrorCollector());
+//            self::$debugbar->addCollector(new SwiftMailCollector());
         }
         return self::$debugbar;
     }
@@ -145,7 +164,8 @@ class Debugbar
     public function displayStyle($render)
     {
         $render = $this->getDebugbar()->getJavascriptRenderer();
-        $this->time->stopMeasure('run');
+        if($this->time->hasStartedMeasure('run'))
+            $this->time->stopMeasure('run');
         if(Bootstrap::isDebug())
         {
             echo $render->renderHead();
@@ -166,7 +186,10 @@ class Debugbar
     public function onPDOCreated(&$pdo)
     {
         $pdo = new TraceablePDO($pdo);
-        $this->getDebugbar()->addCollector(new PDOCollector($pdo, $this->time));
+        if(!$this->getDebugbar()->hasCollector('pdo'))
+        {
+            $this->getDebugbar()->addCollector(new PDOCollector($pdo, $this->time));
+        }
     }
 
     public function onViewCreated(&$twig)
@@ -176,8 +199,45 @@ class Debugbar
             $this->getDebugbar()->addCollector(new TwigCollector($twig));
     }
 
+    public function onMailTransport($mailer)
+    {
+//        die("OK");
+        $m = \Swift_Mailer::newInstance($mailer);
+        $this->messages->aggregate(new SwiftLogCollector($m));
+        $this->getDebugbar()->addCollector(new SwiftMailCollector($m));
+    }
+
     public function onLog($message,  $level)
     {
         $this->messages->addMessage($message, $level);
     }
+
+    public function errorHandler($errno, $errstr, $errfile, $errline)
+    {
+        $this->errors->addError(new GeneratedError($errstr, $errno, $errfile, $errline));
+    }
+
+    /**
+     * @param $throwlable \Throwable
+     */
+    public function throwlableHandler($throwlable)
+    {
+        echo $throwlable->getMessage() . " at " . $throwlable->getFile() . ":" . $throwlable->getLine() . "\n";
+        echo $throwlable->getTraceAsString();
+
+        $this->errors->addError(new GeneratedError($throwlable->getMessage(), $throwlable->getCode(),
+            $throwlable->getFile(), $throwlable->getLine()));
+    }
+
+    /**
+     * @param $exception \Exception
+     */
+    public function exceptionHandler($exception)
+    {
+        if($exception instanceof \Exception)
+            $this->exceptions->addException($exception);
+        elseif($exception instanceof \Throwable)
+            $this->throwlableHandler($exception);
+    }
+
 }

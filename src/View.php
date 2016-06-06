@@ -29,8 +29,14 @@ class View
         $this->controller = $controller;
         $directories = ModuleManager::getInstance()->getViews($controller->module);
         $loader = new \Twig_Loader_Filesystem($directories);
+        $fs = new Filesystem("twig_cache");
+        $fs->mkdir();
+        $config = array();
+        $config['cache'] = $fs->getAbsolutePath();
+//        print_debug($config);
         $this->twig = new \Twig_Environment($loader, array());
         Events::fire('onViewCreated', array(&$this->twig));
+//        $this->twig->setCache($fs->getAbsolutePath());
         $this->twig->addGlobal('config', $this->controller->config);
         $this->twig->addGlobal('_GET', $_GET);
         $this->twig->addGlobal('_POST', $_POST);
@@ -39,6 +45,7 @@ class View
         $this->twig->addGlobal('this', $this->controller);
         $this->twig->addGlobal('render', $this);
         $this->twig->addGlobal('manager', ModuleManager::getInstance());
+        $this->twig->addGlobal('mainconfig', Bootstrap::getSingleton()->getConfig());
         $this->twig->addFunction(new \Twig_SimpleFunction('fire', array($this, 'fireEvent')));
         $this->twig->addFilter(new \Twig_SimpleFilter('active', array($this, 'isHrefActive')));
         $this->twig->addFilter(new \Twig_SimpleFilter('fecha_hora', array($this, 'parseFechaHora')));

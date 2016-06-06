@@ -143,6 +143,13 @@ class ModuleManager
                 }
             }
         }
+        $mainModule = ModuleManager::getInstance()->getMainModule();
+        if($module != $mainModule) $module->addFolder($views, $mainModule->getViews());
+        // Add framework views
+        $module->addFolder($views, realpath(__DIR__ . "/../../..") . "/");
+        $module->addFolder($views, realpath(__DIR__ . "/../..") . "/");
+        $module->addFolder($views, realpath(__DIR__ . "/../..") . "/views");
+        $module->addFolder($views, realpath(__DIR__ . "/../..") . "/modules");
         return $views;
     }
 
@@ -183,7 +190,7 @@ class ModuleManager
                             $extra = current($extra);
                         }
                         $module = $this->load($dirbase . "/" . $name, $extra);
-                        if($module)
+                        if($module && !$this->exists($module->title))
                             $this->add($module);
 
                     }
@@ -259,8 +266,10 @@ class ModuleManager
                 return $this->mainModule->run(new ErrorController("Controller not found. " . $this->getRoutes()), $request);
             }
         } catch (\Exception $ex) {
+            Events::fire('onException', $ex);
             return $this->mainModule->run(new ExceptionController($ex), $request);
         } catch (\Throwable $ex) {
+            Events::fire('onError', $ex);
             return $this->mainModule->run(new ExceptionController($ex), $request);
         }
         return false;

@@ -42,15 +42,6 @@
                                 <input class="form-control privilegios" type="text" name="privilegios" value="{{ this.users.privilegios }}" required />
                             </div>
                         </div>
-                        <div class="form-group ">
-                            <label class="control-label col-lg-2">Administrador</label>
-                            <div class="col-lg-10">
-                                <select class="form-control" name="admin">
-                                    <option value="0">Usuario normal</option>
-                                    <option value="1" {{ this.users.admin?"selected":"" }}>Administrador</option>
-                                </select>
-                            </div>
-                        </div>
 
                         <div class="form-group ">
                             <label class="control-label col-lg-2">Contraseña</label>
@@ -58,6 +49,15 @@
                                 <input class="form-control " type="password" name="password" value="" placeholder="(Sin cambiar)"  />
                                 <br>
                                 <input class="form-control " type="password" name="password_validation" value="" placeholder="(Repetir)"  />
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="control-label col-lg-2"></label>
+                            <div class="col-lg-10 col-lg-offset-2">
+                                <label>
+                                    <input type="checkbox" value="1" name="admin" {{ this.users.admin?"checked":"" }}>
+                                    Administrador
+                                </label>
                             </div>
                         </div>
                         <div class="form-group">

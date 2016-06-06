@@ -204,10 +204,16 @@ function instance_method($name, &$cache = array(), $instanceParams = array())
         $instance = null;
         if(!isset($cache[$split[0]]))
         {
-            $rf = new ReflectionClass($split[0]);
-            $instance = $rf->getConstructor()?$rf->newInstanceArgs($instanceParams):$rf->newInstance();
-//            $instance = new $split[0]();
-            $cache[$split[0]] = $instance;
+            if(class_exists($split[0])){
+                $rf = new ReflectionClass($split[0]);
+                $instance = $rf->getConstructor()?$rf->newInstanceArgs($instanceParams):$rf->newInstance();
+    //            $instance = new $split[0]();
+                $cache[$split[0]] = $instance;
+            }
+            else
+            {
+                \GLFramework\Log::d("Class {$split[0]} not found! While try to instance $name ");
+            }
         }
         $instance = $cache[$split[0]];
         return array($instance, $split[1]);
@@ -315,6 +321,24 @@ if (!function_exists('http_response_code')) {
     }
 }
 
+function custom_http_request($method, $uri, $fields = array(), $header = array())
+{
+
+    $fields_string = "";
+    foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
+    rtrim($fields_string, '&');
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL,$uri);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $result = curl_exec($ch);
+    curl_close($ch);
+
+    return $result;
+
+}
 function post($url, $fields, $header = array())
 {
     $fields_string = "";
@@ -363,4 +387,15 @@ function fix_url($url)
         $url = "http://" . $_SERVER['HTTP_HOST'] . $url;
     }
     return $url;
+}
+
+function display_exception(Exception $ex, $i = 1)
+{
+    echo "<h3>($i) " . $ex->getMessage() . "</h3> at " . $ex->getFile() . ":" . $ex->getLine();
+    echo "<pre>" . $ex->getTraceAsString() . "</pre><br>";
+
+    if($ex->getPrevious())
+    {
+        display_exception($ex->getPrevious(), $i + 1);
+    }
 }

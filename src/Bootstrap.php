@@ -48,7 +48,9 @@ class Bootstrap
      */
     public static function loadConfig($folder, $file)
     {
-        $config = Yaml::parse(file_get_contents($folder . "/{$file}"));
+        $filename = $folder . "/{$file}";
+        if(!file_exists($filename)) return array();
+        $config = Yaml::parse(file_get_contents($filename));
         if(isset($config['include']))
         {
             $value = $config['include'];
@@ -91,6 +93,12 @@ class Bootstrap
      */
     public static function start($directory)
     {
+        try{
+            
+        } catch (\Exception $ex)
+        {
+//            display_exception($ex);
+        }
         define("GL_TESTING", false);
         define("GL_INSTALL", false);
         $bootstrap = new Bootstrap($directory);
@@ -156,10 +164,13 @@ class Bootstrap
     public function run($url = null, $method = null)
     {
         $this->init();
-        Log::i("Welcome to GLFramework v" . $this->getVersion() . "");
+        Log::i("Welcome to GLFramework");
+        Log::i("· Version: " . $this->getVersion());
         Log::i("· PHP Version: " . phpversion());
         Log::i("· Server Type: " . $_SERVER['SERVER_SOFTWARE']);
         Log::i("· Server IP: " . $_SERVER['SERVER_ADDR'] . ":" . $_SERVER['SERVER_PORT']);
+        Log::i("· Current User: " . get_current_user());
+        Log::i("· Current Folder: " . realpath("."));
         Log::i("· Extensiones de PHP: ");
         Log::i(get_loaded_extensions());
         session_start();
@@ -333,7 +344,7 @@ class Bootstrap
     private function register_error_handler()
     {
         set_error_handler(array($this, "fatal_handler"));
-        register_shutdown_function(array($this, "fatal_handler"));
+//        register_shutdown_function(array($this, "fatal_handler"));
     }
 
     function format_error($errno, $errstr, $errfile, $errline)
@@ -373,7 +384,34 @@ class Bootstrap
 
     public function getVersion()
     {
-        return self::$VERSION;
+//
+        if($package = $this->getComposerInstall())
+        {
+            if($package->version == "dev-master")
+            {
+                return "dev-master (" . substr($package->source->reference, 0, 8) . ")";
+            }
+            return "v" . $package->version;
+        }
+        return "v" . self::$VERSION;
+    }
+
+
+    public function getComposerInstall()
+    {
+        if(file_exists("composer.lock"))
+        {
+            $json = json_decode(file_get_contents("composer.lock"));
+            foreach ($json->packages as $package)
+            {
+                if($package->name == "gestionlan/framework")
+                {
+                    return $package;
+                }
+            }
+        }
+
+        return false;
     }
 
 }

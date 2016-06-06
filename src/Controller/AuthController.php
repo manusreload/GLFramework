@@ -64,6 +64,8 @@ class AuthController extends Controller implements Middleware
                 {
                     if(!isset($_GET['logout']))
                         $this->addMessage("Por favor acceda con su cuenta antes de continuar", "warning");
+                    if(!isset($_GET['logout']))
+                        $_SESSION['return'] = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                     $this->quit($this->config['app']['basepath'] . "/login");
                     return false;
                 }
@@ -92,7 +94,15 @@ class AuthController extends Controller implements Middleware
                 $this->user = new User($user);
                 $_SESSION[self::$session_key] = array($username, $password);
                 Events::fire('onLoginSuccess', array('user' => $this->user));
-                $this->redirection("/home");
+                if(isset($_SESSION['return']))
+                {
+                    $this->redirection($_SESSION['return']);
+                }
+                else
+                {
+                    $this->redirection("/home");
+                }
+                unset($_SESSION['return']);
                 return true;
             }
             else{
@@ -124,9 +134,7 @@ class AuthController extends Controller implements Middleware
      */
     public static function instanceUser($data = null)
     {
-        if(class_exists("User"))
-            return new \User($data);
-        return new User($data);
+        return User::newInstance('User', $data);
     }
 
     public function next(Request $request, Response $response, $next)
