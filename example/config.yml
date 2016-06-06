@@ -1,0 +1,31 @@
+include:
+  - include.config.yml
+  - config.dev.yml
+
+app:
+  basepath:
+  index: home
+  name: Demo
+  banner: images/logo.jpg
+
+  controllers:
+    - pages
+  model: model
+  views:
+    - view
+    - view/includes
+
+  routes:
+    - MyNameSpace\home: ["/home/example/[i:id]", GET]
+    - home: ["/home/example/[i:id]", GET]
+    - sub_home: ["/home/sub/example/[i:id]", GET]
+
+database:
+  cache:
+    connector: GLFramework\Cache\MemoryCache
+    host: localhost
+
+
+modules:
+  internal:
+    - csrf

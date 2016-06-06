@@ -1,0 +1,138 @@
+{% extends "templates/base.twig" %}
+{# 
+ # Created by PhpStorm.
+ # User: manus
+ # Date: 1/03/16
+ # Time: 15:57
+ #}
+{% block title %}Grupos de usuarios{% endblock %}
+{% block body %}
+    <div class="row">
+        {% if this.group.id == 0 %}
+            <div class="col-lg-6">
+                {% embed "templates/box.twig" %}
+                    {% block title %}
+                        Listado de grupos
+                    {% endblock %}
+                    {% block content %}
+                        <div class="pull-right">
+                            <a href="{{ this.getLink(this, {id: "add"}) }}" class="btn btn-success">Nuevo grupo</a>
+                        </div>
+                        <div class="clearfix"></div>
+                        <br>
+                        <table class="table table-responsive">
+                            <tr>
+                                <th>#</th>
+                                <th>Permiso</th>
+                                <th>Titulo</th>
+                                <th>Nº Páginas</th>
+                            </tr>
+
+                            {% for group in this.groups %}
+                                <tr>
+                                    <td><a href="{{ this.getLink(this, { id: group.id}) }}">{{ group.id }}</a></td>
+                                    <td>{{ group.permissions }}</td>
+                                    <td>{{ group.title }}</td>
+                                    <td>{{ group.count_pages() }}</td>
+
+
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% endblock %}
+                {% endembed %}
+            </div>
+        {% endif %}
+        <div class="col-lg-6">
+            {% embed "templates/box.twig" %}
+                {% block title %}
+                    {% if this.group.id > 0 %}
+                        Editar grupo de usuarios
+                    {% else %}
+                        Nuevo grupo de usuarios
+                    {% endif %}
+                {% endblock %}
+                {% block content %}
+
+                    <div class=" form">
+                        <form class="cmxform form-horizontal tasi-form" method="post" action="{{ this.getLink(this) }}">
+                            <div class="form-group ">
+                                <label class="control-label col-lg-2">Título del grupo</label>
+                                <div class="col-lg-10">
+                                    <input class="form-control " type="text" name="title" value="{{ this.group.title }}" required />
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label class="control-label col-lg-2">Permisos</label>
+                                <div class="col-lg-10">
+                                    <input class="form-control" type="text" name="permissions" value="{{ this.group.permissions }}" required />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-lg-offset-2 col-lg-10">
+                                    <button class="btn btn-danger" type="submit" name="save">Guardar</button>
+                                    <a class="btn btn-default" href="{{ this.getLink(this) }}">Cancelar</a>
+                                </div>
+                            </div>
+                            <input type="hidden" name="id" value="{{ this.group.id }}">
+                        </form>
+                    </div>
+                {% endblock %}
+            {% endembed %}
+        </div>
+
+        {% if this.group.id > 0 %}
+            <div class="col-lg-6">
+                {% embed "templates/box.twig" %}
+                    {% block title %}
+                        Paginas concedidas a este grupo
+                    {% endblock %}
+                    {% block content %}
+                        <div class=" form">
+                            <form class="cmxform form-horizontal tasi-form" method="post" action="{{ this.getLink(this, {id: this.group.id}) }}">
+                                <div class="form-group ">
+                                    <label class="control-label col-lg-2">Paginas disponibles</label>
+                                    <div class="col-lg-10">
+                                        <select name="controller" class="form-control">
+                                            {% for page in this.controllers %}
+                                                <option value="{{ page }}">{{ page }} - {{ this.getLink(page) }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div class="col-lg-offset-2 col-lg-10">
+                                        <table class="table">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Pagina</th>
+                                                <th></th>
+                                            </tr>
+                                            {% for page in this.groupPage %}
+                                            <tr>
+                                                <td>{{ page.id }}</td>
+                                                <td>{{ this.page.get(page.id_page).getModel().controller }}</td>
+                                                <td><a href="{{ this.getLink(this, {id: this.params.id, a: 'remove', page: page.id}) }}"><i class="glyphicon glyphicon-remove"></i></a></td>
+                                            </tr>
+                                            {% endfor %}
+                                        </table>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button class="btn btn-danger" type="submit" name="addLink">Añadir</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <input type="hidden" name="id" value="{{ this.group.id }}">
+                            </form>
+                        </div>
+                    {% endblock %}
+                {% endembed %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+{% block scripts %}{% endblock %}
+{% block styles %}{% endblock %}

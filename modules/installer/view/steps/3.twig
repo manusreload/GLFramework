@@ -1,7 +1,7 @@
 
 <div class="row">
     <div class="col-lg-8">
-    {% embed "templates/box.twig" %}
+    {% embed "views/templates/box.twig" %}
         {% block title %}
             Configuracion del correo
         {% endblock %}
@@ -12,25 +12,25 @@
                 <div class="form-group">
                     <label class="control-label col-lg-4">Dominio</label>
                     <div class="col-lg-8">
-                        <input class="form-control" name="hostname" value="{{ _POST.hostname | default(config.mail.hostname | default("localhost")) }}">
+                        <input class="form-control" name="hostname" value="{{ _POST.hostname | default(mainconfig.mail.hostname | default("localhost")) }}">
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="control-label col-lg-4">Puerto</label>
                     <div class="col-lg-8">
-                        <input class="form-control" name="port" value="{{ _POST.port | default(config.mail.port | default("25")) }}">
+                        <input class="form-control" name="port" value="{{ _POST.port | default(mainconfig.mail.port | default("25")) }}">
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="control-label col-lg-4">Usuario</label>
                     <div class="col-lg-8">
-                        <input class="form-control" name="username" value="{{  _POST.username | default(config.mail.username | default("")) }}">
+                        <input class="form-control" name="username" value="{{  _POST.username | default(mainconfig.mail.username | default("")) }}">
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="control-label col-lg-4">Contraseña</label>
                     <div class="col-lg-8">
-                        <input class="form-control" name="password" value="{{  _POST.password | default(config.mail.password )}}">
+                        <input class="form-control" name="password" value="{{  _POST.password | default(mainconfig.mail.password )}}">
                     </div>
                 </div>
 

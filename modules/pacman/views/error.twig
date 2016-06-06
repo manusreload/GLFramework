@@ -1,0 +1,31 @@
+
+<div class="pull-right">
+    <a href="#" class="btn btn-success btn-sm" onclick="$('#pacman').attr('style', '') && init();"><i class="glyphicon glyphicon-remove"></i> eliminar error</a>
+</div>
+<br>
+<div class="row pull-right">
+    <div class="col-md-2">
+
+        <div style="display: none;" id="pacman"></div>
+    </div>
+
+</div>
+<script src="{{ this.getResource("pacman.js", 'pacman') }}"></script>
+<script src="{{ this.getResource("modernizr-1.5.min.js", 'pacman') }}"></script>
+
+<script>
+
+    function init()
+    {
+
+        var el = document.getElementById("pacman");
+
+        if (Modernizr.canvas && Modernizr.localstorage &&
+                Modernizr.audio && (Modernizr.audio.ogg || Modernizr.audio.mp3)) {
+            window.setTimeout(function () { PACMAN.init(el, '{{ this.getResource("", 'pacman') }}/'); }, 0);
+        } else {
+            el.innerHTML = "Sorry, needs a decent browser<br /><small>" +
+                    "(firefox 3.6+, Chrome 4+, Opera 10+ and Safari 4+)</small>";
+        }
+    }
+</script>

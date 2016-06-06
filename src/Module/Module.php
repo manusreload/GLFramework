@@ -47,8 +47,7 @@ class Module
 
     public function init()
     {
-
-        Log::d($this->config);
+//        Log::d($this->config);
         $this->register_composer();
         $controllers = $this->config['app']['controllers'];
         if (!is_array($controllers)) $controllers = array($controllers);
@@ -139,10 +138,13 @@ class Module
         if (!is_array($models)) $models = array($models);
         foreach ($models as $model) {
             $folder = $this->directory . "/$model";
-            $files = scandir($folder);
-            foreach ($files as $file) {
-                if (strpos($file, ".php") !== FALSE) {
-                    $list[] = substr($file, 0, -4);
+            if(is_dir($folder))
+            {
+                $files = scandir($folder);
+                foreach ($files as $file) {
+                    if (strpos($file, ".php") !== FALSE) {
+                        $list[] = substr($file, 0, -4);
+                    }
                 }
             }
         }

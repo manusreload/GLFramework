@@ -5,7 +5,6 @@
 #
 ###
 
-
 events:
   beforeControllerRun:
       info: Se ejecuta antes de iniciar el controlador

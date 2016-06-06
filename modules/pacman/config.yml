@@ -1,0 +1,20 @@
+title: pacman
+description: Pantalla de error con el Juego pacman
+version: 0.0.3
+
+app:
+  index: home
+
+  controllers: controller
+  model: model
+  views: views
+
+  resources: resources
+
+
+  routes:
+      - GLFramework\Modules\Pacman\pacman: /pacman
+
+  listeners:
+    displayExtraErrorView: GLFramework\Modules\Pacman\pacman::displayExtraErrorView
+    displayStyle: GLFramework\Modules\Pacman\pacman::displayStyle
