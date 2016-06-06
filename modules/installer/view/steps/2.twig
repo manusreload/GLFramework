@@ -1,7 +1,7 @@
 
 <div class="row">
     <div class="col-lg-8">
-    {% embed "views/templates/box.twig" %}
+    {% embed "templates/box.twig" %}
         {% block title %}
             Base de datos MySQL
         {% endblock %}
@@ -11,25 +11,25 @@
                 <div class="form-group">
                         <label class="control-label col-lg-4">Nombre del Host</label>
                     <div class="col-lg-8">
-                        <input class="form-control" name="hostname" value="{{ _POST.hostname | default(mainconfig.database.hostname | default("localhost")) }}">
+                        <input class="form-control" name="hostname" value="{{ _POST.hostname | default(config.database.hostname | default("localhost")) }}">
                     </div>
                 </div>
                 <div class="form-group">
                         <label class="control-label col-lg-4">Usuario</label>
                     <div class="col-lg-8">
-                        <input class="form-control" name="username" value="{{  _POST.username | default(mainconfig.database.username) }}">
+                        <input class="form-control" name="username" value="{{  _POST.username | default(config.database.username | default("factumol")) }}">
                     </div>
                 </div>
                 <div class="form-group">
                         <label class="control-label col-lg-4">Contraseña</label>
                     <div class="col-lg-8">
-                        <input class="form-control" name="password" value="{{  _POST.password | default(mainconfig.database.password )}}">
+                        <input class="form-control" name="password" value="{{  _POST.password | default(config.database.password )}}">
                     </div>
                 </div>
                 <div class="form-group">
                         <label class="control-label col-lg-4">Dase de datos</label>
                     <div class="col-lg-8">
-                        <input class="form-control" name="database" value="{{  _POST.database | default(mainconfig.database.database ) }}">
+                        <input class="form-control" name="database" value="{{  _POST.database | default(config.database.database | default("factumol")) }}">
                     </div>
                 </div>
                 <div class="form-group">
@@ -57,13 +57,13 @@
         <p>
 
             <b>Crear base de datos MySQL</b>
-            <pre>CREATE DATABASE &lt;databasename&gt;;</pre>
+            <pre>CREATE DATABASE factumol;</pre>
         </p>
         <p>
 
             <b>Crear usuario MySQL</b>
-            <pre>CREATE USER &lt;username&gt;;
-GRANT ALL ON &lt;databasename&gt;.* TO '&lt;username&gt;'@'localhost' IDENTIFIED BY '&lt;password&gt;';</pre>
+            <pre>CREATE USER user_factumol;
+GRANT ALL ON factumol.* TO 'user_factumol'@'localhost' IDENTIFIED BY '&lt;password&gt;';</pre>
         </p>
     </div>
 </div>

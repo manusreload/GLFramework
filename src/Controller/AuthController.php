@@ -134,7 +134,9 @@ class AuthController extends Controller implements Middleware
      */
     public static function instanceUser($data = null)
     {
-        return User::newInstance('User', $data);
+        if(class_exists("User"))
+            return new \User($data);
+        return new User($data);
     }
 
     public function next(Request $request, Response $response, $next)

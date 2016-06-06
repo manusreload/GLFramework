@@ -8,8 +8,6 @@
 
 namespace GLFramework;
 
-use GLFramework\Module\ModuleManager;
-
 define("MODEL_FIELD_TYPE_STRING", 1);
 define("MODEL_FIELD_TYPE_INT", 2);
 define("MODEL_FIELD_TYPE_DOUBLE", 3);
@@ -46,14 +44,14 @@ class Model
      */
     /*
      * Reglas para sacar variables (desde array definicion):
-     *  "'([a-z0-9_]+)' => .*" -> "var \$$1;"
+     *  "'([a-z_]+)' => .*" -> "var \$$1;"
      *  - Desde DESCRIBE...
-     * "([a-z0-9_]+)\t.*" -> "var \$$1;"
+     * "([a-z_]+)\t.*" -> "var \$$1;"
      */
 
     /*
      * Reglas para sacar definicion (desde DESCRIBE <table>):
-     *  "([a-z0-9_]+)\t([a-z0-9(),]+).*" -> "'$1' => '$2',"
+     *  "([a-z_]+)\t([a-z0-9(),]+).*" -> "'$1' => '$2',"
      */
     /**
      * Lista de columnas que no se muestran a la funcion json()
@@ -638,28 +636,10 @@ class Model
     /**
      * @param $baseclass
      * @param array $args
-     * @return Model
      */
     public static function newInstance($baseclass, $args = array())
     {
-        $modules = ModuleManager::getInstance()->getModules();
-        foreach ($modules as $module)
-        {
-            if(in_array($baseclass, $module->getModels()))
-            {
-                $classes = array("\\" . $module->title . "\\" . $baseclass, $baseclass);
-                foreach ($classes as $class)
-                {
-                    if(class_exists($class))
-                    {
-                        return new $class($args);
-                    }
-                }
-            }
-        }
-        $class = "\\GLFramework\\Model\\$baseclass";
-        return new $class($args);
-
+        print_debug($baseclass, get_class());
     }
 
     public function url()
