@@ -1,7 +1,0 @@
-modules:
-  internal:
-    admin
-  modules:
-    test
-  extra_modules:
-    test
