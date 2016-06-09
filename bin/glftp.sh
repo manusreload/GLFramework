@@ -40,7 +40,7 @@ git submodule foreach 'echo "$path"' | grep -v '^Entering ' | while read submodu
 do
     cd "$base/$submodule"
     echo "Entering ${submodule} ('${url}/${submodule}')..."
-    git ftp "$action" "${url}/${submodule}" ${3} || exit $?
+    git ftp "$action" "${url}/${submodule}" ${3}
 done
 cd "$base"
 ## Despues ejecutar el install.php:
