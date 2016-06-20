@@ -141,7 +141,7 @@ class View
     }
     public function parseFecha($fecha)
     {
-        if(!$fecha) return "";
+        if(!$fecha || strpos($fecha, "0000-00") !== FALSE) return "";
         $time = strtotime($fecha);
         return date("d-m-Y", $time);
     }
