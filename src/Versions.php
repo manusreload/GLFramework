@@ -40,4 +40,10 @@ class Versions
         $versions = $this->getVersions();
         return $versions[0];
     }
+
+    public function getVersion($index = 0)
+    {
+        $versions = $this->getVersions();
+        return $versions[$index];
+    }
 }
