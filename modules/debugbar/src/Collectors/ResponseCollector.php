@@ -28,11 +28,14 @@ class ResponseCollector extends DataCollector implements Renderable
     function collect()
     {
         // TODO: Implement collect() method.
-        return array(
-            'contentType' => $this->response->getContentType(),
-            'responseCode' => $this->response->getResponseCode(),
-            'redirection' => $this->response->getRedirection()
-        );
+        if($this->response)
+        {
+            return array(
+                'contentType' => $this->response->getContentType(),
+                'responseCode' => $this->response->getResponseCode(),
+                'redirection' => $this->response->getRedirection()
+            );
+        }
     }
 
     /**

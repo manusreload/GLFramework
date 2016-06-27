@@ -343,8 +343,16 @@ function custom_http_request($method, $uri, $fields = array(), $header = array()
 {
 
     $fields_string = "";
-    foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
-    rtrim($fields_string, '&');
+    if(is_array($fields))
+    {
+
+        foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
+        rtrim($fields_string, '&');
+    }
+    else
+    {
+        $fields_string = $fields;
+    }
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL,$uri);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
