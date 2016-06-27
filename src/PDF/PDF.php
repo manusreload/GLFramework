@@ -15,19 +15,37 @@ use GLFramework\View;
 class PDF
 {
 
+
+    /**
+     * @var \TCPDF
+     */
+    var $pdf;
+
+    /**
+     * PDF constructor.
+     */
+    public function __construct()
+    {
+        $this->pdf = new \TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $this->pdf->SetFont('helvetica', '', 10);
+    }
+
     public function render($controller, $template, $data = array())
     {
         $view = new View($controller);
-        return $view->display($template, $data);
+        $data = $view->display($template, $data);
+        $this->pdf->AddPage();
+        $this->pdf->writeHTML($data, true, false, true, false, '');
     }
 
-    /**
-     * @param $response Response
-     * @param $data
-     */
-    public function sendAsPDF($response, $data)
+    public function sendAsPDF($title = null)
     {
-        
+
+
+// set font
+
+        $this->pdf->Output($title, 'I');
+        die();
         $response->setContentType("application/pdf");
         $response->setContent($data);
     }
