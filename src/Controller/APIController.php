@@ -73,6 +73,7 @@ class APIController extends Controller
      */
     public function display($data, $params)
     {
+        $this->getResponse()->setContentType("application/json; charset=utf-8;");
         $result = array();
         $header = array();
         $messages = array();
@@ -82,8 +83,6 @@ class APIController extends Controller
         }
         $header['date'] = date("Y-m-d H:i:s");
         $header['controller'] = get_class($this);
-//        $result['messages'] = $messages;
-
         $result['header'] = $header;
         if($data instanceof Model or $data instanceof ModelResult)
         {
@@ -93,7 +92,12 @@ class APIController extends Controller
         {
             $result['data'] = $data;
         }
-        return json_encode($result);
+        $options = 0;
+        if(isset($_GET['pretty']))
+        {
+            $options = 128;
+        }
+        return json_encode($result, $options);
     }
 
     public function post($params)

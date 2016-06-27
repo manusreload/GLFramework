@@ -417,3 +417,21 @@ function display_exception(Exception $ex, $i = 1)
         display_exception($ex->getPrevious(), $i + 1);
     }
 }
+function time_elapsed_default_translation()
+{
+    return array(
+        'few' => 'unos segundos',
+        'plural' => 's',
+        'seconds' => '%d segundo%s',
+        'minutes' => '%d minuto%s',
+        'hours' => '%d hora%s',
+    );
+}
+function time_elapsed($start, $end = null, $translation = array())
+{
+    if(empty($translation)) $translation = time_elapsed_default_translation();
+    if(!$end) $end = time();
+    $seconds = $end - $start;
+    if($seconds <= 15) $key = 'few';
+
+}

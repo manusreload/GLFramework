@@ -573,29 +573,43 @@ class Model
         {
             if(!in_array($field, $this->hidden))
             {
-                if(isset($this->models[$field]))
+                $found = false;
+                $list = array();
+                foreach ($this->models as $item)
                 {
-                    $modelTransform = $this->models[$field];
-
-                    if(is_array($modelTransform))
+                    if(isset($item['from']) && $item['from'] == $field)
                     {
-                        $name = $modelTransform['name'];
-                        $model = $modelTransform['model'];
-                        $object =  new $model();
-                        if(isset($modelTransform['field']))
+                        $list[] = $item;
+                        $found = true;
+                    }
+                }
+                if($found || isset($this->models[$field]))
+                {
+                    if(!$found) $modelTransform[] = $this->models[$field];
+                    else $modelTransform = $list;
+                    foreach ($modelTransform as $mt)
+                    {
+                        if(is_array($mt))
                         {
-                            $json[$name] = $object->get(array($modelTransform['field'] => $this->getFieldValue($field)))->json();
+                            $name = $mt['name'];
+                            $model = $mt['model'];
+                            $object =  new $model();
+                            if(isset($mt['field']))
+                            {
+                                $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))->json();
+                            }
+                            else{
+                                $json[$name] = $object->get($this->getFieldValue($field))->json();
+                            }
                         }
-                        else{
-                            $json[$name] = $object->get($this->getFieldValue($field))->json();
+                        else
+                        {
+                            $name = $this->underescapeName($mt);
+                            $object = new $mt($this->getFieldValue($field));
+                            $json[$name] = $object->json();
                         }
                     }
-                    else
-                    {
-                        $name = $this->underescapeName($modelTransform);
-                        $object = new $modelTransform($this->getFieldValue($field));
-                        $json[$name] = $object->json();
-                    }
+
                 }
 
                 $json[$field] = $this->getFieldValue($field);
