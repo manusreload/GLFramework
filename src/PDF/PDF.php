@@ -30,12 +30,19 @@ class PDF
         $this->pdf->SetFont('helvetica', '', 10);
     }
 
+    public function image($url)
+    {
+        list($width, $height) = getimagesize($url);
+        $this->pdf->Image($url, '', '', 100);
+
+    }
     public function render($controller, $template, $data = array())
     {
         $view = new View($controller);
         $data = $view->display($template, $data);
         $this->pdf->AddPage();
         $this->pdf->writeHTML($data, true, false, true, false, '');
+        return $data;
     }
 
     public function sendAsPDF($title = null)

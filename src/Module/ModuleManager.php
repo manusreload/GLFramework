@@ -61,6 +61,9 @@ class ModuleManager
         $this->config = $config;
         $this->directory = $directory;
         $this->router = new \AltoRouter(array(), $this->config['app']['basepath']);
+        $this->router->addMatchTypes(array(
+            'idd' => '([0-9]+|add)?',
+        ));
     }
 
     public static function getInstance()
