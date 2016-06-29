@@ -48,6 +48,7 @@ class DBStructure
             if(is_array($definition['index']))
             {
                 $definitionFields = array( $definition['index']['field'] => $definition['index']) + $definitionFields;
+                $definitionFields[$definition['index']['field']]['primary'] = true;
             }
             else{
                 $definitionFields = array( $definition['index']  => array('type' => "int(11)", 'autoincrement' => true)) + $definitionFields;
@@ -69,6 +70,8 @@ class DBStructure
                         $fields[$field]['default'] = "";
                     if(isset($props['autoincrement']))
                         $fields[$field]['autoincrement'] = $props['autoincrement'];
+                    if(isset($props['primary']))
+                        $fields[$field]['primary'] = $props['primary'];
 
                 }
                 else{
@@ -166,6 +169,10 @@ class DBStructure
                 if($row['Extra'] == 'auto_increment')
                 {
                     $field['autoincrement'] = true;
+                }
+                else if($row['Key'] == "PRI")
+                {
+                    $field['primary'] = true;
                 }
                 $fields[ $field['field'] ] = $field;
             }
@@ -280,7 +287,7 @@ class DBStructure
             $type .= " AUTO_INCREMENT";
         }
 
-        return "ALTER TABLE $table CHANGE {$name} {$name} {$type}";
+        return "ALTER TABLE $table CHANGE `{$name}` `{$name}` {$type}";
     }
 
     public function getAlterAdd($table, $field)
@@ -292,7 +299,7 @@ class DBStructure
         {
             $type .= " DEFAULT '" . $field['default']. "'";
         }
-        return "ALTER TABLE $table ADD {$name} {$type}";
+        return "ALTER TABLE $table ADD `{$name}` {$type}";
     }
 
     public function getAlterDrop($table, $field, $name = null)
@@ -302,7 +309,7 @@ class DBStructure
         {
             $name = $field['field'];
         }
-        return "ALTER TABLE $table DROP COLUMN {$name}";
+        return "ALTER TABLE $table DROP COLUMN `{$name}`";
     }
 
     public function getHash($table)
@@ -329,10 +336,14 @@ class DBStructure
         $sql = "";
         foreach ($table['fields'] as $field => $value) {
             $sql .= ($sql == "")?"":", ";
-            $sql .= $field . " " . $value['type'];
+            $sql .= "`" . $field . "` " . $value['type'];
             if(isset($value['autoincrement']) && $value['autoincrement'])
             {
                 $sql .= " AUTO_INCREMENT PRIMARY KEY";
+            }
+            if(isset($value['primary']) && $value['primary'])
+            {
+                $sql .= " PRIMARY KEY";
             }
         }
 
