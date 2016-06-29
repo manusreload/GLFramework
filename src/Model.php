@@ -565,7 +565,6 @@ class Model
      */
     public function json($fields = array())
     {
-        echo "<pre>";
         $json = array();
         if($url = $this->url())
         {
