@@ -565,12 +565,14 @@ class Model
      */
     public function json($fields = array())
     {
+        echo "<pre>";
         $json = array();
         if($url = $this->url())
         {
             $json['url'] = fix_url($url);
         }
         if(empty($fields)) $fields = $this->getFields();
+        $it = 2;
         foreach($fields as $field)
         {
             if(!in_array($field, $this->hidden))
@@ -587,7 +589,7 @@ class Model
                 }
                 if($found || isset($this->models[$field]))
                 {
-                    if(!$found) $modelTransform[] = $this->models[$field];
+                    if(!$found) $modelTransform = array($this->models[$field]);
                     else $modelTransform = $list;
                     foreach ($modelTransform as $mt)
                     {
@@ -599,6 +601,7 @@ class Model
                             if(isset($mt['field']))
                             {
                                 $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))->json();
+
                             }
                             else{
                                 $json[$name] = $object->get($this->getFieldValue($field))->json();
