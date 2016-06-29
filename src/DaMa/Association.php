@@ -108,7 +108,7 @@ class Association
      */
     public function fill($model, $row)
     {
-        if(!$this->constant)
+        if($this->constant === FALSE)
         {
             foreach($this->nameInFile as $subkey)
             {

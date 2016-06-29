@@ -186,12 +186,6 @@ class Module
                 $this->addFolder($directories, $dir . "/" . $directory);
             }
         }
-        // Add main module views
-//        $mainModule = ModuleManager::getInstance()->getMainModule();
-//        if($this != $mainModule) $this->addFolder($directories, $mainModule->getViews());
-//        // Add framework views
-//        $this->addFolder($directories, realpath(__DIR__ . "/../..") . "/views");
-//        $this->addFolder($directories, realpath(__DIR__ . "/../..") . "/modules");
         return $directories;
     }
 
@@ -282,7 +276,6 @@ class Module
      */
     public function register_router_controller($router, $params, $controller)
     {
-
         if(!is_array($params)) $params = array($params);
         $route = $params[0];
         $method = isset($params[1])?$params[1]:"GET|POST";
