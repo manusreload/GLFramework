@@ -39,6 +39,18 @@ function print_debug($info)
 
     die();
 }
+function print_debug_iters($n_iters, $info)
+{
+    echo "<pre>";
+    foreach(func_get_args() as $arg)
+    {
+        print_r($arg);
+        echo "\n";
+    }
+
+    if($n_iters == 0)
+        die();
+}
 function print_brief_debug($info, $limit = 1)
 {
     echo "<pre>";
