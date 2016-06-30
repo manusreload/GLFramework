@@ -63,7 +63,7 @@ class API
         return get($url, $this->getAuth());
     }
 
-    /**
+   /**
      * @return array|mixed|null
      */
     public function getConfig()
@@ -71,5 +71,5 @@ class API
         return $this->config;
     }
 
-    
+
 }
