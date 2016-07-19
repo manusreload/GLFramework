@@ -1,0 +1,20 @@
+title: userpanel
+description: Panel Para que el usuario configure sus preferencias
+version: 0.0.1
+
+app:
+  index: home
+
+  controllers: controller
+  model: model
+  views: views
+
+  resources: resources
+
+
+  routes:
+      - GLFramework\Modules\UserPanel\userpanel: /user/panel
+
+  listeners:
+    displayExtraErrorView: GLFramework\Modules\Pacman\pacman::displayExtraErrorView
+    displayStyle: GLFramework\Modules\Pacman\pacman::displayStyle

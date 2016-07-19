@@ -27,6 +27,7 @@
 namespace GLFramework\DaMa;
 
 
+use GLFramework\Controller;
 use GLFramework\DaMa\Manipulators\ManipulatorCore;
 use GLFramework\Model;
 
@@ -162,6 +163,56 @@ class Manipulator
             return $count;
         }
 
+        return false;
+    }
+
+    /**
+     * @param $controller Controller
+     * @param array $config
+     * @return bool|int
+     */
+    public function preview($controller, $config = array())
+    {
+        $buffer = "";
+        $count = 0;
+        $this->init($config);
+        if($header = $this->getCore()->next())
+        {
+            $buffer .= "<table class='table table-bordered'>";
+            while($next = $this->getCore()->next())
+            {
+                if(implode("", $next) != "")
+                {
+                    $model = $this->build($header, $next);
+                    if($count == 0)
+                    {
+                        $buffer .= "<tr>";
+                        foreach ($model->getFields() as $item)
+                        {
+                            $buffer .= "<th>$item</th>";
+                        }
+                        $buffer .= "<th>Actualizar</th>";
+                        $buffer .= "</tr>";
+                    }
+                    if($model->valid() && $model->save())
+                    {
+                        $buffer .= "<tr>";
+                        foreach ($model->getFields() as $item)
+                        {
+                            $buffer .= "<td>{$model->getFieldValue($item)}</td>";
+                        }
+                        $buffer .= "<td>" . ($model->exists()?"Si":"No") ."</td>";
+                        $buffer .= "</tr>";
+                        $count ++;
+                    }
+                }
+            }
+            $buffer .= "</table>";
+            $controller->addMessage("Total Items: " . $count, "info");
+            return $buffer;
+        }
+
+        $controller->addMessage("Error reading headers!", "danger");
         return false;
     }
 
