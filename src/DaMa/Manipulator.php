@@ -264,7 +264,7 @@ class Manipulator
                 $tmp = $data;
                 $model = $this->build($header, $data);
                 $number--;
-                if($number >= 0)
+                if($number >= 0 && $model->valid())
                     $list[] = $model;
             }
         }

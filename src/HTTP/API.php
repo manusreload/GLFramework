@@ -66,9 +66,12 @@ class API
    /**
      * @return array|mixed|null
      */
-    public function getConfig()
+    public function getConfig($key = null)
     {
-        return $this->config;
+        if($key == null)
+            return $this->config['api'];
+        return $this->config['api'][$key];
+
     }
 
 
