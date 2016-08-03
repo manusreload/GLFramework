@@ -177,7 +177,7 @@ class View
 
     public function fireEvent($name, $args = array())
     {
-        Events::fire($name, $args);
+        return implode("\n", Events::fire($name, $args));
     }
 
     /**

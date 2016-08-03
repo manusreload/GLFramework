@@ -96,6 +96,8 @@ class Model
 
     /**
      * Model constructor.
+     * @param null $data
+     * @throws \Exception
      */
     public function __construct($data = null)
     {
@@ -128,7 +130,7 @@ class Model
                 }
                 $value = $this->getFieldValue($field, $data);
                 $args[$field] = $value;
-                $sql1 .= "$field, ";
+                $sql1 .= "`$field`, ";
                 $sql2 .= ":$field, ";
             }
         }
@@ -160,7 +162,7 @@ class Model
             $value = $this->getFieldValue($field, $data);
             if (isset($value) && $value !== '' && !$this->isIndex($field)) {
                 $args[] = $value;
-                $sql1 .= "$field = ?, ";
+                $sql1 .= "`$field` = ?, ";
             }
         }
         if (!empty($sql1)) {
@@ -169,7 +171,7 @@ class Model
             $indexValue = $this->db->escape_string($this->getFieldValue($index, $data));
             if (!$indexValue) return false;
             $args[] = $indexValue;
-            return $this->db->exec("UPDATE {$this->table_name} SET $sql1 WHERE $index = ?",$args, $this->getCacheId($indexValue));
+            return $this->db->exec("UPDATE {$this->table_name} SET $sql1 WHERE `$index` = ?",$args, $this->getCacheId($indexValue));
         }
         return false;
     }
@@ -184,7 +186,7 @@ class Model
         $index = $this->getIndex();
         $value = $this->getFieldValue($index);
         if ($value) {
-            return $this->db->exec("DELETE FROM {$this->table_name} WHERE $index = ?", array($value), $this->getCacheId($value));
+            return $this->db->exec("DELETE FROM {$this->table_name} WHERE `$index` = ?", array($value), $this->getCacheId($value));
         }
         return false;
     }
@@ -205,7 +207,7 @@ class Model
 
             $index = $this->getIndex();
             $id = $this->db->escape_string($id);
-            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $index = ? ", array($id), $this->getCacheId($id)));
+            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE `$index` = ? ", array($id), $this->getCacheId($id)));
         } else if (is_array($id)) {
             $fieldsValue = $id;
             $fields = $this->getFields();
@@ -214,7 +216,7 @@ class Model
             foreach ($fields as $field) {
                 if (isset($fieldsValue[$field])) {
                     $args[$field] = $fieldsValue[$field];
-                    $sql .= $field . "= :$field AND ";
+                    $sql .= "`" . $field . "` = :$field AND ";
                 }
             }
             if (!empty($sql)) {
@@ -244,13 +246,13 @@ class Model
                 {
                     foreach($value as $subvalue)
                     {
-                        $sql .= $field . "= ? OR ";
+                        $sql .= "`" . $field . "` = ? OR ";
                         $args[] = $subvalue;
                     }
                 }
                 else
                 {
-                    $sql .= $field . "= ? OR ";
+                    $sql .= "`" . $field . "` = ? OR ";
                     $args[] = $value;
                 }
             }
@@ -281,7 +283,7 @@ class Model
         $index = $this->getIndex();
         $value = $this->getFieldValue($index);
         if ($value)
-            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $index != ?", array($index)));
+            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE `$index` != ?", array($index)));
         return $this->get_all();
 
     }
@@ -304,11 +306,11 @@ class Model
             if (isset($fieldsValue[$field])) {
                 $value = $fieldsValue[$field];
                 if($this->isString($field)) {
-                    $sql .= $field . " LIKE ? OR ";
+                    $sql .= "`" . $field . "` LIKE ? OR ";
                     $args[] = '%' . $value . '%';
                 }
                 else {
-                    $sql .= $field . " = ? OR ";
+                    $sql .= "`" . $field . "` = ? OR ";
                     $args[] = $value;
                 }
 
@@ -569,6 +571,7 @@ class Model
             $json['url'] = fix_url($url);
         }
         if(empty($fields)) $fields = $this->getFields();
+        $it = 2;
         foreach($fields as $field)
         {
             if(!in_array($field, $this->hidden))
@@ -585,7 +588,7 @@ class Model
                 }
                 if($found || isset($this->models[$field]))
                 {
-                    if(!$found) $modelTransform[] = $this->models[$field];
+                    if(!$found) $modelTransform = array($this->models[$field]);
                     else $modelTransform = $list;
                     foreach ($modelTransform as $mt)
                     {
@@ -597,6 +600,7 @@ class Model
                             if(isset($mt['field']))
                             {
                                 $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))->json();
+
                             }
                             else{
                                 $json[$name] = $object->get($this->getFieldValue($field))->json();
