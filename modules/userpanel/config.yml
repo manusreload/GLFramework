@@ -14,7 +14,3 @@ app:
 
   routes:
       - GLFramework\Modules\UserPanel\userpanel: /user/panel
-
-  listeners:
-    displayExtraErrorView: GLFramework\Modules\Pacman\pacman::displayExtraErrorView
-    displayStyle: GLFramework\Modules\Pacman\pacman::displayStyle
