@@ -39,6 +39,7 @@ class Mail
         {
             if(file_exists($file)) $css .= file_get_contents($file) . "\n";
         }
+        return $css;
     }
 
     /**

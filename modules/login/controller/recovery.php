@@ -11,7 +11,6 @@ namespace GLFramework\Modules\Login;
 
 use GLFramework\Controller;
 use GLFramework\Mail;
-use GLFramework\Model\User;
 
 class recovery extends Controller
 {
@@ -25,7 +24,7 @@ class recovery extends Controller
         // TODO: Implement run() method.
         if(isset($_POST['save']))
         {
-            $user = new User();
+            $user = new \User();
             $result = null;
             if(!empty($_POST['username']))
             {
@@ -33,17 +32,19 @@ class recovery extends Controller
             }
             else if(!empty($_POST['email']))
             {
-                $result = $user->get(array('user_name' => $_POST['username']));
+                $result = $user->get(array('email' => $_POST['email']));
             }
             if($result)
             {
                 if($result->count() > 0)
                 {
                     $user = $result->getModel();
-                    if($user instanceof User)
+                    if($user instanceof \User)
                     {
                         $recovery = new \UserRecovery();
-                        $recovery = $recovery->generateNew($user)->save(true);
+                        $recovery = $recovery->generateNew($user);
+                        $recovery->save(true);
+//                        print_debug($recovery);
                         $mail = new Mail();
                         $message = $mail->render($this, "mail/recover_account.twig", array('user' => $user, 'recovery' => $recovery));
                         if($mail->send($user->email, "Contraseña perdida", $message))
