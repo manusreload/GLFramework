@@ -139,22 +139,24 @@ class View
         return "";
     }
 
-    public function parseFechaHora($fecha)
+    public function parseFechaHora($fecha, $formatFecha = false, $formatHora = false)
     {
-        return $this->parseFecha($fecha) . " " . $this->parseHora($fecha);
+        return $this->parseFecha($fecha, $formatFecha) . " " . $this->parseHora($fecha, $formatHora);
     }
-    public function parseFecha($fecha)
+    public function parseFecha($fecha, $formatFecha = false)
     {
+        if(!$formatFecha) $formatFecha = "d-m-Y";
         if(!$fecha || strpos($fecha, "0000-00") !== FALSE) return "";
         $time = strtotime($fecha);
-        return date("d-m-Y", $time);
+        return date($formatFecha, $time);
     }
 
-    public function parseHora($fecha)
+    public function parseHora($fecha, $formatHora = false)
     {
+        if(!$formatHora) $formatHora = "H:i:s";
         if(!$fecha) return "";
         $time = strtotime($fecha);
-        return date("H:i:s", $time);
+        return date($formatHora, $time);
     }
 
     public function debug($data)

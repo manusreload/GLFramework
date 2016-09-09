@@ -154,7 +154,7 @@ class Manipulator
                 if(implode("", $next) != "")
                 {
                     $model = $this->build($header, $next);
-                    if($model->valid() && $model->save())
+                    if($model && $model->valid() && $model->save())
                     {
                         $count++;
                     }
@@ -244,9 +244,18 @@ class Manipulator
                 }
             }
         }
+
         foreach($this->association as $association)
         {
             $association->fill($model, $associative);
+        }
+        foreach($this->association as $association)
+        {
+            if($association->required)
+            {
+                $value = $model->{$association->nameInModel};
+                if(empty($value)) return false;
+            }
         }
         return $model;
     }

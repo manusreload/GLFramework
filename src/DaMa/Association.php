@@ -35,6 +35,7 @@ class Association
     public $nameInModel;
     public $constant = false;
     public $index = false;
+    public $required = false;
     public $parser = null;
 
     /**
@@ -139,6 +140,11 @@ class Association
     public function index()
     {
         $this->index = true;
+        return $this;
+    }
+    public function required()
+    {
+        $this->required = true;
         return $this;
     }
 
