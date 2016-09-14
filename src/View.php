@@ -1,5 +1,23 @@
 <?php
 /**
+ *     GLFramework, small web application framework.
+ *     Copyright (C) 2016.  Manuel Muñoz Rosa
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
  * Created by PhpStorm.
  * User: manus
  * Date: 13/1/16
@@ -67,6 +85,10 @@ class View
         if($this->controller->getTemplate() != null)
         {
             $data = $data == null?array():$data;
+            foreach ($this->controller->filters as $filter)
+            {
+                $this->twig->addFilter($filter);
+            }
             $this->twig->addGlobal('params', $params);
             $template = $this->twig->loadTemplate($this->controller->getTemplate());
             return $template->render($data);
@@ -117,22 +139,24 @@ class View
         return "";
     }
 
-    public function parseFechaHora($fecha)
+    public function parseFechaHora($fecha, $formatFecha = false, $formatHora = false)
     {
-        return $this->parseFecha($fecha) . " " . $this->parseHora($fecha);
+        return $this->parseFecha($fecha, $formatFecha) . " " . $this->parseHora($fecha, $formatHora);
     }
-    public function parseFecha($fecha)
+    public function parseFecha($fecha, $formatFecha = false)
     {
-        if(!$fecha) return "";
+        if(!$formatFecha) $formatFecha = "d-m-Y";
+        if(!$fecha || strpos($fecha, "0000-00") !== FALSE) return "";
         $time = strtotime($fecha);
-        return date("d-m-Y", $time);
+        return date($formatFecha, $time);
     }
 
-    public function parseHora($fecha)
+    public function parseHora($fecha, $formatHora = false)
     {
+        if(!$formatHora) $formatHora = "H:i:s";
         if(!$fecha) return "";
         $time = strtotime($fecha);
-        return date("H:i:s", $time);
+        return date($formatHora, $time);
     }
 
     public function debug($data)
@@ -159,7 +183,7 @@ class View
 
     public function fireEvent($name, $args = array())
     {
-        Events::fire($name, $args);
+        return implode("\n", Events::fire($name, $args));
     }
 
     /**

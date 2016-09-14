@@ -1,5 +1,23 @@
 <?php
 /**
+ *     GLFramework, small web application framework.
+ *     Copyright (C) 2016.  Manuel Muñoz Rosa
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
  * Created by PhpStorm.
  * User: manus
  * Date: 13/1/16
@@ -20,6 +38,18 @@ function print_debug($info)
     }
 
     die();
+}
+function print_debug_iters($n_iters, $info)
+{
+    echo "<pre>";
+    foreach(func_get_args() as $arg)
+    {
+        print_r($arg);
+        echo "\n";
+    }
+
+    if($n_iters == 0)
+        die();
 }
 function print_brief_debug($info, $limit = 1)
 {
@@ -325,8 +355,16 @@ function custom_http_request($method, $uri, $fields = array(), $header = array()
 {
 
     $fields_string = "";
-    foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
-    rtrim($fields_string, '&');
+    if(is_array($fields))
+    {
+
+        foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
+        rtrim($fields_string, '&');
+    }
+    else
+    {
+        $fields_string = $fields;
+    }
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL,$uri);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
@@ -398,4 +436,22 @@ function display_exception(Exception $ex, $i = 1)
     {
         display_exception($ex->getPrevious(), $i + 1);
     }
+}
+function time_elapsed_default_translation()
+{
+    return array(
+        'few' => 'unos segundos',
+        'plural' => 's',
+        'seconds' => '%d segundo%s',
+        'minutes' => '%d minuto%s',
+        'hours' => '%d hora%s',
+    );
+}
+function time_elapsed($start, $end = null, $translation = array())
+{
+    if(empty($translation)) $translation = time_elapsed_default_translation();
+    if(!$end) $end = time();
+    $seconds = $end - $start;
+    if($seconds <= 15) $key = 'few';
+
 }

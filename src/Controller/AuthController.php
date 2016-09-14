@@ -1,5 +1,23 @@
 <?php
 /**
+ *     GLFramework, small web application framework.
+ *     Copyright (C) 2016.  Manuel Muñoz Rosa
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
  * Created by PhpStorm.
  * User: manus
  * Date: 13/1/16
@@ -29,6 +47,10 @@ class AuthController extends Controller implements Middleware
     public function __construct($base, $module)
     {
         parent::__construct($base, $module);
+        if(isset($_COOKIE[self::$session_key]))
+        {
+            $_SESSION[self::$session_key] = unserialize($_COOKIE[self::$session_key]);
+        }
         if(isset($_SESSION[self::$session_key]))
         {
             $username =  $_SESSION[self::$session_key][0];
@@ -55,6 +77,7 @@ class AuthController extends Controller implements Middleware
         {
             $this->addMessage("Se ha desconectado correctamente");
             unset($_SESSION[self::$session_key]);
+            setcookie(self::$session_key, "", 0);
         }
         if($this->requireLogin)
         {
@@ -94,6 +117,10 @@ class AuthController extends Controller implements Middleware
                 $this->user = new User($user);
                 $_SESSION[self::$session_key] = array($username, $password);
                 Events::fire('onLoginSuccess', array('user' => $this->user));
+                if(isset($_REQUEST['remember']) && $_REQUEST['remember'])
+                {
+                    setcookie(self::$session_key, serialize($_SESSION[self::$session_key]), time() + 60 * 60 * 24 * 30);
+                }
                 if(isset($_SESSION['return']))
                 {
                     $this->redirection($_SESSION['return']);

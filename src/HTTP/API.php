@@ -62,4 +62,17 @@ class API
         $url = $this->getURI($uri) . "?" . $fields_string;
         return get($url, $this->getAuth());
     }
+
+   /**
+     * @return array|mixed|null
+     */
+    public function getConfig($key = null)
+    {
+        if($key == null)
+            return $this->config['api'];
+        return $this->config['api'][$key];
+
+    }
+
+
 }

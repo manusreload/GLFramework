@@ -116,6 +116,19 @@ class Debugbar
         return self::$debugbar;
     }
 
+    private function protectConfig(&$config)
+    {
+        if(isset($config['password']))
+        {
+            $config['password'] = "******";
+        }
+        foreach ($config as & $item)
+        {
+            if(is_array($item)) $this->protectConfig($item);
+
+        }
+        return $config;
+    }
     /**
      * @param $instance Controller
      */
@@ -128,7 +141,7 @@ class Debugbar
             $db = new DatabaseManager();
         }
         if(!$this->getDebugbar()->hasCollector('config'))
-            $this->getDebugbar()->addCollector(new ConfigCollector(Bootstrap::getSingleton()->getConfig()));
+            $this->getDebugbar()->addCollector(new ConfigCollector($this->protectConfig($config)));
         $this->time->startMeasure('controller', 'Controller process time');
     }
     /**

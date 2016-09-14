@@ -1,5 +1,23 @@
 <?php
 /**
+ *     GLFramework, small web application framework.
+ *     Copyright (C) 2016.  Manuel Muñoz Rosa
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
  * Created by PhpStorm.
  * User: manus
  * Date: 1/03/16
@@ -9,6 +27,7 @@
 namespace GLFramework\DaMa;
 
 
+use GLFramework\Controller;
 use GLFramework\DaMa\Manipulators\ManipulatorCore;
 use GLFramework\Model;
 
@@ -135,7 +154,7 @@ class Manipulator
                 if(implode("", $next) != "")
                 {
                     $model = $this->build($header, $next);
-                    if($model->valid() && $model->save())
+                    if($model && $model->valid() && $model->save())
                     {
                         $count++;
                     }
@@ -144,6 +163,56 @@ class Manipulator
             return $count;
         }
 
+        return false;
+    }
+
+    /**
+     * @param $controller Controller
+     * @param array $config
+     * @return bool|int
+     */
+    public function preview($controller, $config = array())
+    {
+        $buffer = "";
+        $count = 0;
+        $this->init($config);
+        if($header = $this->getCore()->next())
+        {
+            $buffer .= "<table class='table table-bordered'>";
+            while($next = $this->getCore()->next())
+            {
+                if(implode("", $next) != "")
+                {
+                    $model = $this->build($header, $next);
+                    if($count == 0)
+                    {
+                        $buffer .= "<tr>";
+                        foreach ($model->getFields() as $item)
+                        {
+                            $buffer .= "<th>$item</th>";
+                        }
+                        $buffer .= "<th>Actualizar</th>";
+                        $buffer .= "</tr>";
+                    }
+                    if($model->valid() && $model->save())
+                    {
+                        $buffer .= "<tr>";
+                        foreach ($model->getFields() as $item)
+                        {
+                            $buffer .= "<td>{$model->getFieldValue($item)}</td>";
+                        }
+                        $buffer .= "<td>" . ($model->exists()?"Si":"No") ."</td>";
+                        $buffer .= "</tr>";
+                        $count ++;
+                    }
+                }
+            }
+            $buffer .= "</table>";
+            $controller->addMessage("Total Items: " . $count, "info");
+            return $buffer;
+        }
+
+        $controller->addMessage("Error reading headers!", "danger");
         return false;
     }
 
@@ -175,9 +244,18 @@ class Manipulator
                 }
             }
         }
+
         foreach($this->association as $association)
         {
             $association->fill($model, $associative);
+        }
+        foreach($this->association as $association)
+        {
+            if($association->required)
+            {
+                $value = $model->{$association->nameInModel};
+                if(empty($value)) return false;
+            }
         }
         return $model;
     }
@@ -195,7 +273,7 @@ class Manipulator
                 $tmp = $data;
                 $model = $this->build($header, $data);
                 $number--;
-                if($number >= 0)
+                if($number >= 0 && $model->valid())
                     $list[] = $model;
             }
         }

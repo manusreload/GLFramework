@@ -1,5 +1,23 @@
 <?php
 /**
+ *     GLFramework, small web application framework.
+ *     Copyright (C) 2016.  Manuel Muñoz Rosa
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
  * Created by PhpStorm.
  * User: manus
  * Date: 13/1/16
@@ -94,17 +112,17 @@ class Bootstrap
     public static function start($directory)
     {
         try{
-            
+                
+            define("GL_TESTING", false);
+            define("GL_INSTALL", false);
+            $bootstrap = new Bootstrap($directory);
+            $url = $_SERVER['REQUEST_URI'];
+            $method = $_SERVER['REQUEST_METHOD'];
+            $bootstrap->run($url, $method)->display();
         } catch (\Exception $ex)
         {
-//            display_exception($ex);
+            display_exception($ex);
         }
-        define("GL_TESTING", false);
-        define("GL_INSTALL", false);
-        $bootstrap = new Bootstrap($directory);
-        $url = $_SERVER['REQUEST_URI'];
-        $method = $_SERVER['REQUEST_METHOD'];
-        $bootstrap->run($url, $method)->display();
     }
 
     /**
@@ -326,7 +344,7 @@ class Bootstrap
             $errfile = $error["file"];
             $errline = $error["line"];
             $errstr = $error["message"];
-            if($errno | E_ERROR)
+            if($errno == E_ERROR)
             {
                 Log::getInstance()->error($errstr . " " . $errfile . " " . $errline);
                 if(isset($this->config['app']['ignore_errors']))
@@ -343,8 +361,8 @@ class Bootstrap
 
     private function register_error_handler()
     {
-        set_error_handler(array($this, "fatal_handler"));
-//        register_shutdown_function(array($this, "fatal_handler"));
+//        set_error_handler(array($this, "fatal_handler"));
+        register_shutdown_function(array($this, "fatal_handler"));
     }
 
     function format_error($errno, $errstr, $errfile, $errline)

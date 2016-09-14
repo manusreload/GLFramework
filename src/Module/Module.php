@@ -1,5 +1,23 @@
 <?php
 /**
+ *     GLFramework, small web application framework.
+ *     Copyright (C) 2016.  Manuel Muñoz Rosa
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
  * Created by PhpStorm.
  * User: manus
  * Date: 12/02/16
@@ -168,12 +186,6 @@ class Module
                 $this->addFolder($directories, $dir . "/" . $directory);
             }
         }
-        // Add main module views
-//        $mainModule = ModuleManager::getInstance()->getMainModule();
-//        if($this != $mainModule) $this->addFolder($directories, $mainModule->getViews());
-//        // Add framework views
-//        $this->addFolder($directories, realpath(__DIR__ . "/../..") . "/views");
-//        $this->addFolder($directories, realpath(__DIR__ . "/../..") . "/modules");
         return $directories;
     }
 
@@ -264,7 +276,6 @@ class Module
      */
     public function register_router_controller($router, $params, $controller)
     {
-
         if(!is_array($params)) $params = array($params);
         $route = $params[0];
         $method = isset($params[1])?$params[1]:"GET|POST";
