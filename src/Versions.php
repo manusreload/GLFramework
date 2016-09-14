@@ -22,4 +22,11 @@ class Versions
         $versions = $this->getVersions();
         return $versions[0];
     }
+
+    public function getVersion($id)
+    {
+
+        $versions = $this->getVersions();
+        return $versions[$id];
+    }
 }
