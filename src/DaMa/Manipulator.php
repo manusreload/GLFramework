@@ -194,7 +194,7 @@ class Manipulator
                         $buffer .= "<th>Actualizar</th>";
                         $buffer .= "</tr>";
                     }
-                    if($model->valid() && $model->save())
+                    if($model && $model->valid() && $model->save())
                     {
                         $buffer .= "<tr>";
                         foreach ($model->getFields() as $item)

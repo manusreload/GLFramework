@@ -49,13 +49,23 @@ class Filesystem
      * uno de forma aleatoria.
      * @param null $filename
      * @param string $extension
+     * @param null $folder
      * @return Filesystem
      */
-    public function allocate($filename = null, $extension = ".rnd")
+    public function allocate($filename = null, $extension = ".rnd", $folder = "")
     {
+        if($folder != "")
+        {
+            $f = new Filesystem($folder);
+            $f->mkdir();
+            if(strrpos($folder, "/") != strlen($folder) - 1)
+            {
+                $folder .= "/";
+            }
+        }
         if($filename == null)
             $filename = sha1(time() . "_" . microtime(true));
-        $file = new Filesystem("{$filename}{$extension}"); //$this->getStorage() . "/{$filename}{$extension}";
+        $file = new Filesystem("{$folder}{$filename}{$extension}"); //$this->getStorage() . "/{$filename}{$extension}";
         $file->touch();
         return $file;
     }
@@ -184,5 +194,11 @@ class Filesystem
     {
         mkdir($this->getAbsolutePath());
     }
+
+    function __toString()
+    {
+        return $this->getAbsolutePath();
+    }
+
 
 }
