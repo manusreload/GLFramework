@@ -28,7 +28,10 @@ namespace GLFramework\DaMa;
 
 
 use GLFramework\Controller;
+use GLFramework\DaMa\Manipulators\CSVManipulator;
 use GLFramework\DaMa\Manipulators\ManipulatorCore;
+use GLFramework\DaMa\Manipulators\XLSManipulator;
+use GLFramework\DaMa\Manipulators\XLSXManipulator;
 use GLFramework\Model;
 
 class Manipulator
@@ -278,5 +281,44 @@ class Manipulator
             }
         }
         print_debug($header, $tmp, $list);
+    }
+
+    public function example()
+    {
+        $csv = array();
+        $csv2 = array();
+        foreach($this->association as $association)
+        {
+            $csv[] = current($association->nameInFile);
+            $csv2[] = "";
+        }
+
+        echo implode(";", $csv) . "\n";
+        echo implode(";", $csv2) . "\n";
+    }
+
+    public function getModeByFile($file)
+    {
+        if(strpos($file, ".") !== FALSE)
+        {
+            $ext = substr($file, strrpos($file, "."));
+            if($ext == ".csv") return DATA_MANIPULATION_CREATE_MODE_CSV;
+            if($ext == ".xls") return DATA_MANIPULATION_CREATE_MODE_XLS;
+            if($ext == ".xlsx") return DATA_MANIPULATION_CREATE_MODE_XLSX;
+            if($ext == ".ods") return DATA_MANIPULATION_CREATE_MODE_ODS;
+        }
+    }
+
+    public function setFileInput($file, $mode = DATA_MANIPULATION_CREATE_MODE_AUTO)
+    {
+        $this->setFilename($file);
+        if($mode == DATA_MANIPULATION_CREATE_MODE_AUTO)
+        {
+            $mode = $this->getModeByFile($file);
+        }
+        if($mode == DATA_MANIPULATION_CREATE_MODE_ODS) $this->setCore(new CSVManipulator());
+        else if($mode == DATA_MANIPULATION_CREATE_MODE_XLS) $this->setCore(new XLSManipulator());
+        else if($mode == DATA_MANIPULATION_CREATE_MODE_XLSX) $this->setCore(new XLSXManipulator());
+        else $this->setCore(new CSVManipulator());
     }
 }
