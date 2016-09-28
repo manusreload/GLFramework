@@ -1,0 +1,17 @@
+title: debugbar
+description: Barra para depurara aplicaciones con el framework
+version: 0.0.1
+
+app:
+
+  listeners:
+    displayScripts: GLFramework\Modules\reCAPTCHA\reCAPTCHA->displayScripts
+
+  settings:
+      # Name and description about the possible configuration override by the main config
+      key: >
+          Clave del sitio
+      secret: >
+          Clave secreta
+          Úsala para las comunicaciones entre tu sitio y Google. Ten la precaución de no revelársela a nadie.
+
