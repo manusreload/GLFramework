@@ -1,2 +1,1 @@
-{{ manager.getModuleInstanceByName("recaptcha") | debug }}
-<div class="g-recaptcha" data-sitekey=""></div>
+<div class="g-recaptcha" data-sitekey="{{ manager.getModuleInstanceByName("recaptcha").config.key }}"></div>

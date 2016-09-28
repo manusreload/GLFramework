@@ -1,4 +1,4 @@
-title: debugbar
+title: recaptcha
 description: Barra para depurara aplicaciones con el framework
 version: 0.0.1
 
@@ -6,9 +6,10 @@ app:
 
   listeners:
     displayScripts: GLFramework\Modules\reCAPTCHA\reCAPTCHA->displayScripts
-
+    validateCaptha: GLFramework\Modules\reCAPTCHA\reCAPTCHA->validateCaptha
   settings:
       # Name and description about the possible configuration override by the main config
+      # https://www.google.com/recaptcha/admin#list
       key: >
           Clave del sitio
       secret: >
