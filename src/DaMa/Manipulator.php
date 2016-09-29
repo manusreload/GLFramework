@@ -260,6 +260,16 @@ class Manipulator
                 if(empty($value)) return false;
             }
         }
+        foreach($this->association as $association)
+        {
+            if($association->filter && is_callable($association->filter))
+            {
+                if(!call_user_func($association->filter, $model))
+                {
+                    return false;
+                }
+            }
+        }
         return $model;
     }
 
