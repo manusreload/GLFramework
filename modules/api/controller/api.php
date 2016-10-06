@@ -5,6 +5,7 @@
 
 namespace GLFramework\Modules\Controller\API;
 use GLFramework\Controller\AuthController;
+use GLFramework\Model;
 
 /**
  * Created by PhpStorm.
@@ -41,6 +42,7 @@ class api extends AuthController
             $this->apiAuthorization = new \APIAuthorization($this->params['id']);
             if(isset($_POST['save']))
             {
+                if(!$this->apiAuthorization->id) $this->apiAuthorization->id = null;
                 $_POST['date'] = now();
                 $this->apiAuthorization->setData($_POST);
                 if($this->apiAuthorization->save(true))
@@ -52,7 +54,7 @@ class api extends AuthController
 
                 }
             }
-            $this->users = new \User();
+            $this->users = Model::newInstance("User");
             if($this->apiAuthorization->id || $this->params['id'] == "add")
             {
                $this->setTemplate("api_edit.twig");

@@ -30,6 +30,6 @@ class APIAuthorization extends \GLFramework\Model
 
     public function getUser()
     {
-        return new User($this->id_user);
+        return \GLFramework\Model::newInstance("User", $this->id_user);
     }
 }
