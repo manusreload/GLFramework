@@ -32,6 +32,24 @@ class Mail
 {
 
     private static $mailer;
+    private $from;
+    private $fromName;
+
+    /**
+     * Mail constructor.
+     * @param $from
+     * @param $fromName
+     */
+    public function __construct($from = null, $fromName = null)
+    {
+        $config = Bootstrap::getSingleton()->getConfig();
+        if(!$from) $from = $config['mail']['from']['email'];
+        if(!$fromName) $fromName = $config['mail']['from']['title'];
+        $this->from = $from;
+        $this->fromName = $fromName;
+    }
+
+
     private function getCss($cssFiles = array())
     {
         $css = "";
@@ -99,18 +117,18 @@ class Mail
      * @param $subject
      * @param $message
      * @param array $attachments Use the array key to set the attachment file name in the email
-     *
+     * @param array $cc
+     * @return int
      */
-    public function send($to, $subject, $message, $attachments = array())
+    public function send($to, $subject, $message, $attachments = array(), $cc = array())
     {
-        $config = Bootstrap::getSingleton()->getConfig();
-//        $mailsystem = $this->getMailSystem();
         $transport = $this->getTransport();
         Events::fire('onEmail', array( 'emails' => $to, 'subject' => $subject, 'message' => $message, 'transport' => $transport));
 
         $mail = new \Swift_Message($subject, $message, "text/html", "UTF-8");
-        $mail->setFrom($config['mail']['from']['email'], $config['mail']['from']['title']);
+        $mail->setFrom($this->from, $this->fromName);
         $mail->setTo($to);
+        $mail->setCc($cc);
         foreach ($attachments as $key => $attachment)
         {
             $atta = \Swift_Attachment::fromPath($attachment);
@@ -119,6 +137,5 @@ class Mail
         }
 
         return $transport->send($mail);
-
     }
 }

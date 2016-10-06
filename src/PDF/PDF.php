@@ -14,7 +14,7 @@ use GLFramework\View;
 
 define("PDF_ORIENTATION_VERTICAL", "P");
 define("PDF_ORIENTATION_HORIZONTAL", "L");
-
+define('K_TCPDF_THROW_EXCEPTION_ERROR', true);
 class PDF
 {
 
@@ -51,13 +51,19 @@ class PDF
 
     public function sendAsPDF($title = null)
     {
+        return $this->output($title, 'I');
+    }
+    public function sendAsDownload($title = null)
+    {
+        return $this->output($title, 'D');
+    }
+    public function saveToFile($file)
+    {
+        return $this->output($file, 'F');
+    }
 
-
-// set font
-
-        $this->pdf->Output($title, 'I');
-        die();
-        $response->setContentType("application/pdf");
-        $response->setContent($data);
+    public function output($name, $type)
+    {
+        return $this->pdf->Output($name, $type);
     }
 }
