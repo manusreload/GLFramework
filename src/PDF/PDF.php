@@ -11,6 +11,9 @@ namespace GLFramework\PDF;
 
 use GLFramework\Response;
 use GLFramework\View;
+
+define("PDF_ORIENTATION_VERTICAL", "P");
+define("PDF_ORIENTATION_HORIZONTAL", "L");
 define('K_TCPDF_THROW_EXCEPTION_ERROR', true);
 class PDF
 {
@@ -23,10 +26,11 @@ class PDF
 
     /**
      * PDF constructor.
+     * @param string $orientation
      */
-    public function __construct()
+    public function __construct($orientation = "P")
     {
-        $this->pdf = new \TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $this->pdf = new \TCPDF($orientation, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $this->pdf->SetFont('helvetica', '', 10);
     }
 

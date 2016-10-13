@@ -361,7 +361,7 @@ class Bootstrap
 
     private function register_error_handler()
     {
-//        set_error_handler(array($this, "fatal_handler"));
+        set_error_handler(array($this, "fatal_handler"));
         register_shutdown_function(array($this, "fatal_handler"));
     }
 

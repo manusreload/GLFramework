@@ -4,6 +4,7 @@ namespace Core\Installer;
 use GLFramework\Controller;
 use GLFramework\DatabaseManager;
 use GLFramework\Events;
+use GLFramework\Model;
 use GLFramework\Model\User;
 use GLFramework\Module\ModuleManager;
 use Symfony\Component\Yaml\Yaml;
@@ -130,7 +131,7 @@ class setup extends Controller
 
     private function step4()
     {
-        $user = \User::newInstance('User'); // Allow Model Override
+        $user = Model::newInstance('User'); // Allow Model Override
         $this->hasAdmin = $user->get(array('admin' => '1'))->count() > 0;
         if(!$this->hasAdmin)
         {
@@ -143,6 +144,7 @@ class setup extends Controller
                     $user->nombre = $_POST['nombre'];
                     $user->password = $user->encrypt($_POST['password']);
                     $user->email = $_POST['email'];
+                    $user->id = null;
                     if($user->save())
                     {
                         $this->addMessage("Se ha creado la cuenta correctamente. Login: " . $user->user_name);

@@ -46,5 +46,5 @@ class Versions
         $versions = $this->getVersions();
         return $versions[$index];
     }
-    
+
 }
