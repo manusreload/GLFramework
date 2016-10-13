@@ -49,7 +49,7 @@ class Bootstrap
      */
     public function __construct($directory, $config = "config.yml")
     {
-        error_reporting(E_ERROR);
+        error_reporting(E_ERROR | E_PARSE);
         $this->startTime = microtime(true);
         $this->events = new Events();
         $this->directory = $directory;
@@ -361,7 +361,7 @@ class Bootstrap
 
     private function register_error_handler()
     {
-//        set_error_handler(array($this, "fatal_handler"));
+        set_error_handler(array($this, "fatal_handler"));
         register_shutdown_function(array($this, "fatal_handler"));
     }
 

@@ -72,4 +72,9 @@ class User extends Model
 
         return $this->db->select($sql);
     }
+
+    public function validPassword($password)
+    {
+        return strlen($password) >= 6;
+    }
 }

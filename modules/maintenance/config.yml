@@ -1,0 +1,16 @@
+title: maintenance
+description: Permite establecer la web en modo mantenimiento.
+version: 0.0.1
+
+app:
+  index: home
+
+  controllers: controller
+  model: model
+  views: views
+
+  resources: resources
+
+
+  routes:
+      - GLFramework\Modules\UserPanel\userpanel: /user/panel
