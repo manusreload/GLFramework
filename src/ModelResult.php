@@ -26,23 +26,30 @@
 
 namespace GLFramework;
 
-
 use Traversable;
+
 
 class ModelResult implements \IteratorAggregate
 {
     var $model_class;
+    var $reflection;
     var $models;
     var $model;
 
     /**
      * ModelResult constructor.
      * @param $model_class
+     * @param array $models
      */
-    public function __construct($model_class)
+    public function __construct($model_class, $models = array())
     {
-        $rf = new \ReflectionClass($model_class);
-        $this->model_class = $rf;
+        $this->reflection = new \ReflectionClass($model_class);
+        $this->model_class = $model_class;
+        if(!empty($models))
+        {
+            $this->models = $models;
+            $this->model = $models[0];
+        }
     }
 
 
@@ -52,7 +59,7 @@ class ModelResult implements \IteratorAggregate
      */
     public function getModel()
     {
-        return $this->model_class->newInstance($this->model);
+        return $this->reflection->newInstance($this->model);
     }
 
     /**
@@ -67,7 +74,7 @@ class ModelResult implements \IteratorAggregate
         {
             foreach($this->models as $model)
             {
-                $instances[] = $this->model_class->newInstance($model);
+                $instances[] = $this->reflection->newInstance($model);
             }
         }
         else
@@ -76,11 +83,11 @@ class ModelResult implements \IteratorAggregate
             {
                 if(isset($this->models[$i]))
                 {
-                    $instances[] = $this->model_class->newInstance($this->models[$i]);
+                    $instances[] = $this->reflection->newInstance($this->models[$i]);
                 }
                 else
                 {
-                    $instances[] = $this->model_class->newInstance();
+                    $instances[] = $this->reflection->newInstance();
                 }
             }
         }
@@ -183,5 +190,10 @@ class ModelResult implements \IteratorAggregate
     public function getIterator()
     {
         return new \ArrayIterator( $this->getModels());
+    }
+
+    public function limit($length, $start = null)
+    {
+        return new ModelResult($this->model_class, array_slice($this->models, $start, $length));
     }
 }

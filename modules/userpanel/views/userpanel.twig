@@ -1,0 +1,44 @@
+{% extends "templates/base.twig" %}
+{# 
+ # Created by PhpStorm.
+ # User: mmuno
+ # Date: 03/08/2016
+ # Time: 10:54
+ #}
+{% block title %}Panel de usuario{% endblock %}
+{% block body %}
+    {% embed "views/templates/box.twig" %}
+        {% block title %}
+            Perfil del usuario
+        {% endblock %}
+        {% block content %}
+
+            <form class="form-horizontal" method="post" action="{{ this.getLink(this) }}">
+                <div class="form-group">
+                    <label class="control-label col-lg-4">Nombre: </label>
+                    <div class="col-lg-8">
+                        <input class="form-control" type="text" name="nombre" value="{{ this.user.user_name }}">
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-lg-4">Correo Electronico: </label>
+                    <div class="col-lg-8">
+                        <input class="form-control" type="text" name="nombre" value="{{ this.user.nombre }}">
+
+                    </div>
+                </div>
+
+            </form>
+
+        {% endblock %}
+    {% endembed %}
+
+       
+{% endblock %}
+{% block scripts %}
+    
+{% endblock %}
+{% block styles %}
+ 
+{% endblock %}

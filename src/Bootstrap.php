@@ -112,17 +112,17 @@ class Bootstrap
     public static function start($directory)
     {
         try{
-            
+                
+            define("GL_TESTING", false);
+            define("GL_INSTALL", false);
+            $bootstrap = new Bootstrap($directory);
+            $url = $_SERVER['REQUEST_URI'];
+            $method = $_SERVER['REQUEST_METHOD'];
+            $bootstrap->run($url, $method)->display();
         } catch (\Exception $ex)
         {
-//            display_exception($ex);
+            display_exception($ex);
         }
-        define("GL_TESTING", false);
-        define("GL_INSTALL", false);
-        $bootstrap = new Bootstrap($directory);
-        $url = $_SERVER['REQUEST_URI'];
-        $method = $_SERVER['REQUEST_METHOD'];
-        $bootstrap->run($url, $method)->display();
     }
 
     /**
@@ -344,7 +344,7 @@ class Bootstrap
             $errfile = $error["file"];
             $errline = $error["line"];
             $errstr = $error["message"];
-            if($errno | E_ERROR)
+            if($errno == E_ERROR)
             {
                 Log::getInstance()->error($errstr . " " . $errfile . " " . $errline);
                 if(isset($this->config['app']['ignore_errors']))
@@ -361,8 +361,8 @@ class Bootstrap
 
     private function register_error_handler()
     {
-        set_error_handler(array($this, "fatal_handler"));
-//        register_shutdown_function(array($this, "fatal_handler"));
+//        set_error_handler(array($this, "fatal_handler"));
+        register_shutdown_function(array($this, "fatal_handler"));
     }
 
     function format_error($errno, $errstr, $errfile, $errline)

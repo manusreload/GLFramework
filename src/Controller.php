@@ -63,6 +63,8 @@ abstract class Controller
      */
     var $response;
 
+    var $filters = array();
+
     /**
      * Controller constructor.
      * @param $module Module
@@ -355,4 +357,9 @@ abstract class Controller
         $this->middleware[] = $middleware;
     }
 
+
+    public function addFilter($filter)
+    {
+        $this->filters[] = $filter;
+    }
 }

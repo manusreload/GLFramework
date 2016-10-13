@@ -40,6 +40,8 @@ git submodule foreach 'echo "$path"' | grep -v '^Entering ' | while read submodu
 do
     cd "$base/$submodule"
     echo "Entering ${submodule} ('${url}/${submodule}')..."
+    echo "git ftp "$action" "${url}/${submodule}" ${3}"
+    pwd
     git ftp "$action" "${url}/${submodule}" ${3}
 done
 cd "$base"
