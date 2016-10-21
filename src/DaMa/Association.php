@@ -37,7 +37,7 @@ class Association
     public $index = false;
     public $required = false;
     public $parser = null;
-    public $filter = null;
+    public $filterObject = null;
 
     /**
      * @return mixed
@@ -151,7 +151,7 @@ class Association
 
     public function filter($callable)
     {
-        $this->filter = $callable;
+        $this->filterObject = $callable;
         return $this;
     }
 }

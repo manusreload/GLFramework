@@ -262,9 +262,9 @@ class Manipulator
         }
         foreach($this->association as $association)
         {
-            if($association->filter && is_callable($association->filter))
+            if($association->filterObject)
             {
-                if(!call_user_func($association->filter, $model))
+                if(!call_user_func($association->filterObject, $model))
                 {
                     return false;
                 }
@@ -293,18 +293,21 @@ class Manipulator
         print_debug($header, $tmp, $list);
     }
 
+    /**
+     * @return DataExample
+     * 
+     */
     public function example()
     {
-        $csv = array();
-        $csv2 = array();
+        $example = new DataExample();
         foreach($this->association as $association)
         {
-            $csv[] = current($association->nameInFile);
-            $csv2[] = "";
+            foreach ($association->nameInFile as $item)
+            {
+                $example->addColumn($association->nameInModel, $item);
+            }
         }
-
-        echo implode(";", $csv) . "\n";
-        echo implode(";", $csv2) . "\n";
+        return $example;
     }
 
     public function getModeByFile($file)
