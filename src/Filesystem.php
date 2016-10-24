@@ -52,7 +52,7 @@ class Filesystem
      * @param null $folder
      * @return Filesystem
      */
-    public function allocate($filename = null, $extension = ".rnd", $folder = "")
+    public static function allocate($filename = null, $extension = ".rnd", $folder = "")
     {
         if($folder != "")
         {
@@ -192,7 +192,7 @@ class Filesystem
      */
     public function mkdir()
     {
-        mkdir($this->getAbsolutePath());
+        mkdir($this->getAbsolutePath(), 0777, true);
     }
 
     function __toString()

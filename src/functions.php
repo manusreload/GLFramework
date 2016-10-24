@@ -93,6 +93,7 @@ function print_array($array,$depth=1,$indentation=0){
         var_dump($array);
     }
 }
+
 function fix_date($date)
 {
     if($date != "")
@@ -100,6 +101,11 @@ function fix_date($date)
         if(preg_match("#([0-9]{2})/([0-9]{2})/([0-9]{4})#", $date, $matches))
         {
             return $matches[3] . "-" . $matches[2] . "-" . $matches[1];
+        }
+
+        if(preg_match("#([0-9]{2})-([0-9]{2})-([0-9]{2})#", $date, $matches))
+        {
+            return "20" . $matches[3] . "-" . $matches[1] . "-" . $matches[2];
         }
         $date = str_replace("/", "-", $date);
         return date("Y-m-d", strtotime($date));

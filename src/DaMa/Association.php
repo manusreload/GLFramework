@@ -46,6 +46,13 @@ class Association
     {
         return $this->nameInFile;
     }
+    /**
+     * @return mixed
+     */
+    public function getFirstNameInFile()
+    {
+        return current($this->nameInFile);
+    }
 
     /**
      * @param mixed $nameInFile
@@ -153,5 +160,16 @@ class Association
     {
         $this->filterObject = $callable;
         return $this;
+    }
+
+    /**
+     * @param $model Model
+     * @param $field
+     * @return mixed
+     */
+    public function get($model, $field)
+    {
+        $value = $model->getFieldValue($field);
+        return $this->parse($value);
     }
 }

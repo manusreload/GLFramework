@@ -146,7 +146,7 @@ class Manipulator
             $this->getCore()->setSheet($this->currentSheet);
     }
 
-    public function exec($config = array())
+    public function exec($config = array(), &$models = array())
     {
         $count = 0;
         $this->init($config);
@@ -157,8 +157,9 @@ class Manipulator
                 if(implode("", $next) != "")
                 {
                     $model = $this->build($header, $next);
-                    if($model && $model->valid() && $model->save())
+                    if($model && $model->valid() && $model->save(true))
                     {
+                        $models[] = $model;
                         $count++;
                     }
                 }
@@ -172,9 +173,10 @@ class Manipulator
     /**
      * @param $controller Controller
      * @param array $config
+     * @param array $models
      * @return bool|int
      */
-    public function preview($controller, $config = array())
+    public function preview($controller, $config = array(), &$models = array())
     {
         $buffer = "";
         $count = 0;
@@ -197,8 +199,9 @@ class Manipulator
                         $buffer .= "<th>Actualizar</th>";
                         $buffer .= "</tr>";
                     }
-                    if($model && $model->valid() && $model->save())
+                    if($model && $model->valid() && $model->save(true))
                     {
+                        $models[] = $model;
                         $buffer .= "<tr>";
                         foreach ($model->getFields() as $item)
                         {
