@@ -24,15 +24,17 @@ class FixedLengthFile extends WriterBase
         $line = "";
         foreach ($map as $key => $assoc)
         {
-            $size = $assoc->getFirstNameInFile();
+            $params = $assoc->getFirstNameInFile();
             $value = $assoc->get($model, $key);
-            $line .= $this->fixed_size($value, $size);
+            $line .= $this->fixed_size($value, $params);
         }
         fwrite($this->fp, $line . "\n");
     }
     
-    private function fixed_size($line, $length)
+    private function fixed_size($line, $params)
     {
+        $length = $params['size'];
+
         $strlen = strlen($line);
         if($strlen > $length)
         {
@@ -40,7 +42,8 @@ class FixedLengthFile extends WriterBase
         }
         if($strlen < $length)
         {
-            return str_repeat(" ", $length - $strlen) . $line;
+            if($params['align'] == "rigth")     return str_repeat(" ", $length - $strlen) . $line;
+            if($params['align'] == "left")     return $line . str_repeat(" ", $length - $strlen);
         }
         return $line;
     }
