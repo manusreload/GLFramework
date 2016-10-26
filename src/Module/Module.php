@@ -76,7 +76,7 @@ class Module
         }
         $this->register_autoload_controllers();
         $this->register_autoload_model();
-        $this->register_events();
+//        $this->register_events();
     }
 
     public function register_autoload_model()
@@ -295,7 +295,7 @@ class Module
         }
     }
 
-    private function register_events()
+    public function register_events()
     {
         $context = array();
         if(isset($this->config['app']['listeners']))
