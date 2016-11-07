@@ -223,6 +223,10 @@ class ModuleManager
                 $module->init();
                 $module->register_router($this->router);
             }
+            foreach($this->modules as $module)
+            {
+                $module->register_events();
+            }
         }
         else
         {

@@ -76,10 +76,25 @@ class Events
      * @param $event
      * @param array $args
      * @return bool|int|string
+     * @deprecated Usar Events::dispatch
      */
     public static function fire($event, $args = array())
     {
         return self::getInstance()->_fire($event, $args);
+    }
+
+    /**
+     * Publica un evento al sistema, devuelve
+     *      0 si no hay nadie que lo procese,
+     *      true si almenos alguien devuelve true
+     *      false si todos devuelven false
+     * @param $event
+     * @param array $args
+     * @return Event
+     */
+    public static function dispatch($event, $args = array())
+    {
+        return new Event(self::getInstance()->_fire($event, $args));
     }
 
     public function _fire($event, $args = array())

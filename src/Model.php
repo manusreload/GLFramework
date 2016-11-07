@@ -709,6 +709,11 @@ class Model
 
     }
 
+    public function select($query, $params = array())
+    {
+        return $this->build($this->db->select($query, $params));
+    }
+
     public function url()
     {
         return null;

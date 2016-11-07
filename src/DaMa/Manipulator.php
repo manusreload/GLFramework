@@ -28,7 +28,10 @@ namespace GLFramework\DaMa;
 
 
 use GLFramework\Controller;
+use GLFramework\DaMa\Manipulators\CSVManipulator;
 use GLFramework\DaMa\Manipulators\ManipulatorCore;
+use GLFramework\DaMa\Manipulators\XLSManipulator;
+use GLFramework\DaMa\Manipulators\XLSXManipulator;
 use GLFramework\Model;
 
 class Manipulator
@@ -143,7 +146,7 @@ class Manipulator
             $this->getCore()->setSheet($this->currentSheet);
     }
 
-    public function exec($config = array())
+    public function exec($config = array(), &$models = array())
     {
         $count = 0;
         $this->init($config);
@@ -154,8 +157,9 @@ class Manipulator
                 if(implode("", $next) != "")
                 {
                     $model = $this->build($header, $next);
-                    if($model->valid() && $model->save())
+                    if($model && $model->valid() && $model->save(true))
                     {
+                        $models[] = $model;
                         $count++;
                     }
                 }
@@ -169,9 +173,10 @@ class Manipulator
     /**
      * @param $controller Controller
      * @param array $config
+     * @param array $models
      * @return bool|int
      */
-    public function preview($controller, $config = array())
+    public function preview($controller, $config = array(), &$models = array())
     {
         $buffer = "";
         $count = 0;
@@ -194,8 +199,9 @@ class Manipulator
                         $buffer .= "<th>Actualizar</th>";
                         $buffer .= "</tr>";
                     }
-                    if($model->valid() && $model->save())
+                    if($model && $model->valid() && $model->save(true))
                     {
+                        $models[] = $model;
                         $buffer .= "<tr>";
                         foreach ($model->getFields() as $item)
                         {
@@ -244,9 +250,28 @@ class Manipulator
                 }
             }
         }
+
         foreach($this->association as $association)
         {
             $association->fill($model, $associative);
+        }
+        foreach($this->association as $association)
+        {
+            if($association->required)
+            {
+                $value = $model->{$association->nameInModel};
+                if(empty($value)) return false;
+            }
+        }
+        foreach($this->association as $association)
+        {
+            if($association->filterObject)
+            {
+                if(!call_user_func($association->filterObject, $model))
+                {
+                    return false;
+                }
+            }
         }
         return $model;
     }
@@ -264,10 +289,52 @@ class Manipulator
                 $tmp = $data;
                 $model = $this->build($header, $data);
                 $number--;
-                if($number >= 0)
+                if($number >= 0 && $model->valid())
                     $list[] = $model;
             }
         }
         print_debug($header, $tmp, $list);
+    }
+
+    /**
+     * @return DataExample
+     * 
+     */
+    public function example()
+    {
+        $example = new DataExample();
+        foreach($this->association as $association)
+        {
+            foreach ($association->nameInFile as $item)
+            {
+                $example->addColumn($association->nameInModel, $item);
+            }
+        }
+        return $example;
+    }
+
+    public function getModeByFile($file)
+    {
+        if(strpos($file, ".") !== FALSE)
+        {
+            $ext = substr($file, strrpos($file, "."));
+            if($ext == ".csv") return DATA_MANIPULATION_CREATE_MODE_CSV;
+            if($ext == ".xls") return DATA_MANIPULATION_CREATE_MODE_XLS;
+            if($ext == ".xlsx") return DATA_MANIPULATION_CREATE_MODE_XLSX;
+            if($ext == ".ods") return DATA_MANIPULATION_CREATE_MODE_ODS;
+        }
+    }
+
+    public function setFileInput($file, $mode = DATA_MANIPULATION_CREATE_MODE_AUTO)
+    {
+        $this->setFilename($file);
+        if($mode == DATA_MANIPULATION_CREATE_MODE_AUTO)
+        {
+            $mode = $this->getModeByFile($file);
+        }
+        if($mode == DATA_MANIPULATION_CREATE_MODE_ODS) $this->setCore(new CSVManipulator());
+        else if($mode == DATA_MANIPULATION_CREATE_MODE_XLS) $this->setCore(new XLSManipulator());
+        else if($mode == DATA_MANIPULATION_CREATE_MODE_XLSX) $this->setCore(new XLSXManipulator());
+        else $this->setCore(new CSVManipulator());
     }
 }

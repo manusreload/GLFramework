@@ -20,31 +20,23 @@
 /**
  * Created by PhpStorm.
  * User: manus
- * Date: 13/1/16
- * Time: 19:38
+ * Date: 13/10/16
+ * Time: 17:28
  */
 
-namespace GLFramework;
+namespace GLFramework\Excel;
 
 
-class Versions
+class ExcelDocument
 {
-    private $filename = "versions.json";
-    public function getVersions()
-    {
-        return json_decode(file_get_contents($this->filename));
-    }
 
-    public function getLastVersion()
-    {
-        $versions = $this->getVersions();
-        return $versions[0];
-    }
+    public $excel;
 
-    public function getVersion($index = 0)
+    /**
+     * ExcelDocument constructor.
+     */
+    public function __construct()
     {
-        $versions = $this->getVersions();
-        return $versions[$index];
+        $this->excel = new \PHPExcel();
     }
-
 }

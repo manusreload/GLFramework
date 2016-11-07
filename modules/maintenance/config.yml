@@ -1,5 +1,5 @@
-title: userpanel
-description: Panel Para que el usuario configure sus preferencias
+title: maintenance
+description: Permite establecer la web en modo mantenimiento.
 version: 0.0.1
 
 app:

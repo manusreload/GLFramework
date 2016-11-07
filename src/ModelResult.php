@@ -196,4 +196,12 @@ class ModelResult implements \IteratorAggregate
     {
         return new ModelResult($this->model_class, array_slice($this->models, $start, $length));
     }
+
+    public function delete()
+    {
+        foreach ($this->getModels() as $model)
+        {
+            $model->delete();
+        }
+    }
 }
