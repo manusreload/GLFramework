@@ -98,6 +98,7 @@ class Response
         \http_response_code($this->getResponseCode());
         if($this->contentType) header("Content-Type: " . $this->contentType);
         if($this->redirection) header("Location: " . $this->redirection);
+        header("Content-Length: " . strlen($this->content));
         print $this->content;
     }
 

@@ -191,6 +191,17 @@ class Model
         return false;
     }
 
+    /**
+     * @param $sql
+     * @param array $args
+     * @return ModelResult
+     * @throws \Exception
+     */
+    public function select($sql, $args = array())
+    {
+        return $this->build($this->db->select($sql, $args));
+    }
+
     public function getCacheId($id)
     {
         return $this->table_name . "_" . $id;
