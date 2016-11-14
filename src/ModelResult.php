@@ -204,4 +204,9 @@ class ModelResult implements \IteratorAggregate
             $model->delete();
         }
     }
+
+    public function copy($items)
+    {
+        return new ModelResult($this->model_class, $items);
+    }
 }
