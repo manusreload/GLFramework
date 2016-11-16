@@ -97,7 +97,7 @@
         data += "\n";
         data += "AppName: {{ config.app.name }} " + "\n";
         data += "Host: {{ _SERVER.HTTP_HOST }} " + "\n";
-        data += "URI: {{ _SERVER.SCRIPT_URI }} " + "\n";
+        data += "URI: " + document.location.href + "\n";
         data += "Framework version: {{ bootstrap.getVersion() }} " + "\n";
         data += "PHP version: {{ phpversion() }} " + "\n";
 

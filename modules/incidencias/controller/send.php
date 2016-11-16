@@ -28,7 +28,7 @@ class send extends Controller
         $this->setTemplate("json.twig");
         $mail = new Mail();
         $content = $mail->render($this, "mail_template.twig", array('post' => $_POST));
-        $mail->send('mmunoz@gestionlan.com', 'Incidencia de ' . $appName, $content);
+        $mail->send('soporte@gestionlan.com', 'Incidencia de ' . $appName, $content);
 
         return array('json' => array('ok' => true));
     }
