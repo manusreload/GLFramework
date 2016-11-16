@@ -108,8 +108,8 @@ class DataTableProcessing
      */
     public function sort($data, $args)
     {
-//        $filed = $this->translateColumnId($args['order']['0'])
-//        $data->order()
+        $field = $this->translateColumnId($args['order']['0']['column']);
+        $data->order($field->name, $args['order']['0']['dir'] != 'asc');
     }
 
 
@@ -117,10 +117,22 @@ class DataTableProcessing
     {
         $result = array();
         $result['draw'] = $query['draw'];
-        $total = $this->data->count();
+        $result['recordsTotal'] = $this->data->count();
         $filtered = $this->filter($query);
         $this->sort($filtered, $query);
+        $result['recordsFiltered'] = $filtered->count();
+        $models = $filtered->limit($query['length'], $query['start']);
+        $result['data'] = array();
+        foreach ($models->getModels() as $model)
+        {
+            $item = array();
+            foreach ($this->columns as $index => $column)
+            {
+                $item[] = $this->getFiledValue($model, $index);
+            }
+            $result['data'][] = $item;
+        }
 
-        $filtered->limit($query['length'], $query['start']);
+        return $result;
     }
 }

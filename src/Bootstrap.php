@@ -317,6 +317,19 @@ class Bootstrap
         return $list;
     }
 
+    public function getTwigExtras()
+    {
+        $list = array();
+        foreach($this->getManager()->getModules() as $module)
+        {
+            foreach($module->getTwigExtras() as $extra)
+            {
+                $list[] = $extra;
+            }
+        }
+        return $list;
+    }
+
 
     /**
      * @param $message
