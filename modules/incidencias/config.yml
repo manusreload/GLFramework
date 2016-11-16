@@ -1,0 +1,10 @@
+title: incidencias
+description: Enviar incidencias
+
+
+app:
+  controllers: controller
+  views: view
+
+  routes:
+    GLFramework\Modules\Incidencias\send: /incidencia/send

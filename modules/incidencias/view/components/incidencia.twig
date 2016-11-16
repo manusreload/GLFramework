@@ -1,0 +1,126 @@
+{#
+ # Created by PhpStorm.
+ # User: mmunoz
+ # Date: 16/11/16
+ # Time: 9:14
+ #
+ #}
+
+<div class="modal fade" tabindex="-1" role="dialog" id="reportar-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Reportar incidencia</h4>
+            </div>
+            <form action="#" class="form-horizontal incidencia">
+                <div class="modal-body">
+                    <div class="form">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label col-sm-2">Su nombre</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" required name="nombre"  placeholder="Pepe Pérez">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label col-sm-2">E-Mail</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" required name="email" placeholder="pperez@domain.com">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label col-sm-2">Teléfono</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" required name="phone" placeholder="911 123 123">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label col-sm-2">Detalles de la incidencia</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" required name="detalles" rows="6"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label col-sm-2"></label>
+                            <div class="col-sm-10">
+                                <label class="form-control"><input name="allow" required type="checkbox"> Acepto los términos y condiciones.</label> <a class="pull-right show-extra-info" href="#">Ver datos enviados</a>
+                                <div>
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="extra-info hidden">
+                            <textarea class="form-control" style="font-family: monospace" disabled name="extra"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="send btn btn-primary">Enviar reporte</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script>
+    $(document).ready(function()
+    {
+        var $target = $("#reportar-modal");
+        var data = "";
+        data += "======== Browser Info ========\n";
+        data += "\n";
+        data += "platform: " + navigator.platform + "\n";
+        data += "oscpu: " + navigator.oscpu + "\n";
+        data += "appCodeName: " + navigator.appCodeName + "\n";
+        data += "language: " + navigator.language + "\n";
+        data += "vendor: " + navigator.vendor + "\n";
+        data += "vendorSub: " + navigator.vendorSub + "\n";
+        data += "product: " + navigator.product + "\n";
+        data += "productSub: " + navigator.productSub + "\n";
+        data += "userAgent: " + navigator.userAgent + "\n";
+        data += "cookieEnabled: " + navigator.cookieEnabled + "\n";
+        data += "cookies: " + document.cookie + "\n";
+        data += "\n";
+        data += "======== User Info ========\n";
+        data += "\n";
+        {% if this.user %}
+
+        data += "UserLogin: true\n";
+        data += "UserID: {{ this.user.id }} " + "\n";
+        data += "UserName: {{ this.user.user_name }} " + "\n";
+        data += "UserEmail: {{ this.user.email }} " + "\n";
+        {% else %}
+
+        data += "UserLogin: false\n";
+        {% endif %}
+
+        data += "\n";
+        data += "======== APP Info Info ========\n";
+        data += "\n";
+        data += "AppName: {{ config.app.name }} " + "\n";
+        data += "Host: {{ _SERVER.HTTP_HOST }} " + "\n";
+        data += "URI: {{ _SERVER.SCRIPT_URI }} " + "\n";
+        data += "Framework version: {{ bootstrap.getVersion() }} " + "\n";
+        data += "PHP version: {{ phpversion() }} " + "\n";
+
+        $("textarea[name='extra']", $target).html(data);
+
+        $(".show-extra-info", $target).click(function()
+        {
+            $(".extra-info").toggleClass("hidden");
+        });
+        $(".incidencia", $target).submit(function(ev)
+        {
+            ev.preventDefault();
+            var $this = $(".send", $target);
+            $this.attr('disabled', 'disabled');
+            var $form = $(".incidencia", $target);
+            var array = $form.serializeArray();
+            array.push({name: 'data',value: data});
+            $.post('/incidencia/send', array, function(json)
+            {
+                $this.removeAttr('disabled');
+                alert("Incidencia enviada correctamente. Gracias por ponerse en contacto con soporte. Le responderemos con la mayor brevedad posible.");
+                $target.modal('hide');
+            });
+        });
+    });
+</script>
