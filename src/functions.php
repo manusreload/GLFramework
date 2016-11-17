@@ -30,12 +30,7 @@
  */
 function print_debug($info)
 {
-    echo "<pre>";
-    foreach(func_get_args() as $arg)
-    {
-        print_r($arg);
-        echo "\n";
-    }
+    forward_static_call_array(array('Kint', 'dump'), func_get_args());
 
     die();
 }
