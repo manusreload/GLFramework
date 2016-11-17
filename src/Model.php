@@ -540,7 +540,7 @@ class Model
     public function getFieldType($field)
     {
         $definition = $this->getFieldDefinition($field);
-        if($definition)
+        if($definition && isset($definition['type']))
         {
             return $definition['type'];
         }

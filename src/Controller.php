@@ -299,7 +299,7 @@ abstract class Controller
                 $protocol = "http";
                 if(strpos($_SERVER['SCRIPT_URI'], "https") !== FALSE) $protocol = "https";
 
-                return $protocol . "://" . $_SERVER['SERVER_NAME'] . $url;
+                return $protocol . "://" . $_SERVER['HTTP_HOST'] . $url;
             }
         }
     }
