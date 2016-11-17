@@ -714,5 +714,6 @@ class Model
         return null;
     }
 
+    public function onCreate() { }
 
 }

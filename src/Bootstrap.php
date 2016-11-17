@@ -209,6 +209,7 @@ class Bootstrap
         define("GL_INSTALL", true);
         $this->init();
         echo "<pre>";
+        $fail = false;
         $db = new DatabaseManager();
         if ($db->connect()) {
             $this->log("Connection to database ok");
@@ -227,14 +228,14 @@ class Bootstrap
                         if (isset($_GET['exec']))
                         {
                             try{
-
-                                $db->exec($action['sql']);
+                                DBStructure::runAction($db, $instance, $action);
                                 $this->log("[OK]", 0);
                             }
                             catch(\Exception $ex)
                             {
 
                                 $this->log("[FAIL]", 0);
+                                $fail = true;
                             }
                         }
                         echo "\n";

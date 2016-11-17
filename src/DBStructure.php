@@ -125,17 +125,26 @@ class DBStructure
                     $diff = $instance->getStructureDifferences();
                     foreach ($diff as $action) {
                         try{
-                            $db->exec($action['sql']);
-
+                            $this->runAction($db, $instance, $action);
                         }catch (\Exception $ex)
                         {
-
+                            return $ex;
                         }
                     }
                 }
             }
         }
         $this->setDatabaseUpdate();
+    }
+
+    public static function runAction($db, $model, $action)
+    {
+            $res = $db->exec($action['sql']);
+            if($action['action'] == "create_table")
+            {
+                $model->onCreate();
+            }
+            return $res;
     }
     
     public function setDatabaseUpdate()
