@@ -31,8 +31,7 @@ echo ""
 action=${2}
 git config git-ftp.user "${FTP_USER}"
 git config git-ftp.password "${FTP_PASSWORD}"
-git config git-ftp.url "${FTP_HOST}/$FTP_PATH"
-git ftp "$action" ${3}
+git config git-ftp.url "${FTP_HOST}$FTP_PATH"
 
 base=$(pwd)
 url="$(git config git-ftp.url)"
@@ -40,11 +39,21 @@ git submodule foreach 'echo "$path"' | grep -v '^Entering ' | while read submodu
 do
     cd "$base/$submodule"
     echo "Entering ${submodule} ('${url}/${submodule}')..."
-    echo "git ftp "$action" "${url}/${submodule}" ${3}"
+    git config git-ftp.url "${url}/${submodule}"
+    git config git-ftp.user "${FTP_USER}"
+    git config git-ftp.password "${FTP_PASSWORD}"
     pwd
     git ftp "$action" "${url}/${submodule}" ${3}
 done
+if [ $? -ne 0 ]; then
+        echo "Error uploading git submodules!"
+        exit;
+fi
 cd "$base"
+
+git config git-ftp.url "${FTP_HOST}$FTP_PATH"
+git ftp "$action" ${3}
+
 ## Despues ejecutar el install.php:
 
 if [ ! ${WEB_HOST} = "" ]; then
