@@ -123,7 +123,7 @@ class Events
                 }
                 else
                 {
-                    Log::getInstance()->error("Can not call event: " . $event . " function: " . print_r($fn, true), array('events'));
+                    Log::getInstance()->error("Can not call event: " . $event . " function: " . function_dump($fn), array('events'));
                 }
             }
             return $buffer;

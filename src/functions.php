@@ -456,3 +456,45 @@ function time_elapsed($start, $end = null, $translation = array())
     if($seconds <= 15) $key = 'few';
 
 }
+
+function function_dump($function)
+{
+    if($function instanceof Closure)
+    {
+        return function_closure_dump($function);
+    }
+    else if(is_array($function))
+    {
+        return get_class($function[0]) . "::" . $function[1];
+    }
+}
+
+function function_closure_dump($closure)
+{
+    $str = 'function (';
+    $r = new ReflectionFunction($closure);
+    $params = array();
+    foreach($r->getParameters() as $p) {
+        $s = '';
+        if($p->isArray()) {
+            $s .= 'array ';
+        } else if($p->getClass()) {
+            $s .= $p->getClass()->name . ' ';
+        }
+        if($p->isPassedByReference()){
+            $s .= '&';
+        }
+        $s .= '$' . $p->name;
+        if($p->isOptional()) {
+            $s .= ' = ' . var_export($p->getDefaultValue(), TRUE);
+        }
+        $params []= $s;
+    }
+    $str .= implode(', ', $params);
+    $str .= '){' . PHP_EOL;
+    $lines = file($r->getFileName());
+    for($l = $r->getStartLine(); $l < $r->getEndLine(); $l++) {
+        $str .= $lines[$l];
+    }
+    return $str;
+}

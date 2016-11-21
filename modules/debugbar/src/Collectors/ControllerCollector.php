@@ -14,14 +14,13 @@ use DebugBar\DataCollector\Renderable;
 use GLFramework\Controller;
 use GLFramework\Response;
 
-class ResponseCollector extends DataCollector implements Renderable
+class ControllerCollector extends DataCollector implements Renderable
 {
 
-    /**
-     * @var Response
-     */
-    var $response;
 
+    /**
+     * @var Controller
+     */
     var $controller;
     /**
      * Called by the DebugBar when data needs to be collected
@@ -31,12 +30,11 @@ class ResponseCollector extends DataCollector implements Renderable
     function collect()
     {
         // TODO: Implement collect() method.
-        if($this->response)
+        if($this->controller)
         {
             return array(
-                'contentType' => $this->response->getContentType(),
-                'responseCode' => $this->response->getResponseCode(),
-                'redirection' => $this->response->getRedirection()
+                'name' => $this->controller->name,
+                'controller' => $this->controller
             );
         }
     }
@@ -49,7 +47,7 @@ class ResponseCollector extends DataCollector implements Renderable
     function getName()
     {
         // TODO: Implement getName() method.
-        return "response";
+        return "controller";
     }
 
     /**
@@ -61,29 +59,13 @@ class ResponseCollector extends DataCollector implements Renderable
     public function getWidgets()
     {
         return array(
-            "response" => array(
+            "controller" => array(
                 "icon" => "tags",
                 "widget" => "PhpDebugBar.Widgets.VariableListWidget",
-                "map" => "response",
+                "map" => "controller",
                 "default" => "{}"
             )
         );
-    }
-
-    /**
-     * @return Response
-     */
-    public function getResponse()
-    {
-        return $this->response;
-    }
-
-    /**
-     * @param Response $response
-     */
-    public function setResponse($response)
-    {
-        $this->response = $response;
     }
 
     /**
@@ -91,7 +73,7 @@ class ResponseCollector extends DataCollector implements Renderable
      */
     public function setController($controller)
     {
-
+        $this->controller = $controller;
     }
     
     

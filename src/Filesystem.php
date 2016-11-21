@@ -195,6 +195,14 @@ class Filesystem
         mkdir($this->getAbsolutePath(), 0777, true);
     }
 
+    /**
+     * @return null
+     */
+    public function getFile()
+    {
+        return $this->file;
+    }
+
     function __toString()
     {
         return $this->getAbsolutePath();

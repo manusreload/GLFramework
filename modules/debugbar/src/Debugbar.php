@@ -13,6 +13,7 @@ use DebugBar\DataCollector\TimeDataCollector;
 use DebugBar\Storage\FileStorage;
 use GLFramework\Events;
 use GLFramework\Filesystem;
+use GLFramework\Modules\Debugbar\Collectors\ControllerCollector;
 use GLFramework\Modules\Debugbar\Collectors\ErrorCollector;
 use GLFramework\Modules\Debugbar\Collectors\RequestDataCollector;
 use GLFramework\Modules\Debugbar\Collectors\ResponseCollector;
@@ -56,6 +57,11 @@ class Debugbar
      * @var RequestDataCollector
      */
     private $request;
+
+    /**
+     * @var ControllerCollector
+     */
+    private $controller;
     /**
      * @var ResponseCollector
      */
@@ -90,6 +96,7 @@ class Debugbar
         $this->messages = $debugbar->getCollector('messages');
         $this->request = $debugbar->getCollector('request');
         $this->response = $debugbar->getCollector('response');
+        $this->controller = $debugbar->getCollector('controller');
         $this->exceptions = $debugbar->getCollector('exceptions');
         $this->errors = $debugbar->getCollector('errors');
 
@@ -106,6 +113,7 @@ class Debugbar
             self::$debugbar->addCollector(new PhpInfoCollector());
             self::$debugbar->addCollector(new MessagesCollector());
             self::$debugbar->addCollector(new RequestDataCollector());
+            self::$debugbar->addCollector(new ControllerCollector());
             self::$debugbar->addCollector(new ResponseCollector());
             self::$debugbar->addCollector(new TimeDataCollector());
             self::$debugbar->addCollector(new MemoryCollector());
@@ -134,6 +142,7 @@ class Debugbar
      */
     public function beforeControllerRun($instance)
     {
+        $this->controller->setController($instance);
         $this->request->addRequestData('params', $instance->params);
         $config = Bootstrap::getSingleton()->getConfig();
         if(isset($config['database']['database']))
@@ -151,6 +160,7 @@ class Debugbar
     {
         $this->response->setResponse($instance->response);
         $this->time->stopMeasure('controller');
+        $this->time->startMeasure('run', 'Core run finished');
 
     }
 
@@ -168,7 +178,6 @@ class Debugbar
     public function onCoreStartUp($time)
     {
         $this->time->addMeasure('Core start up', $time, microtime(true));
-        $this->time->startMeasure('run', 'Core run finished');
     }
 
     /**
@@ -251,6 +260,11 @@ class Debugbar
             $this->exceptions->addException($exception);
         elseif($exception instanceof \Throwable)
             $this->throwlableHandler($exception);
+    }
+
+    public function onMessageDisplay($message, $type)
+    {
+        $this->messages->addMessage($message, $type);
     }
 
 }
