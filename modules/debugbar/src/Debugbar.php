@@ -76,6 +76,8 @@ class Debugbar
      */
     private $errors;
 
+    private $stop = false;
+
     /**
      * Debugbar constructor.
      * @param null|Module $args
@@ -83,6 +85,7 @@ class Debugbar
      */
     public function __construct($args = null)
     {
+        self::$instance = $this;
         $debugbar = $this->getDebugbar();
         $config = $args->getConfig();
         if($config['filesystem'])
@@ -171,7 +174,8 @@ class Debugbar
     {
         if($response->getAjax())
         {
-            $this->getDebugbar()->sendDataInHeaders();
+            if(!$this->stop)
+                $this->getDebugbar()->sendDataInHeaders();
         }
     }
 
@@ -190,7 +194,8 @@ class Debugbar
             $this->time->stopMeasure('run');
         if(Bootstrap::isDebug())
         {
-            echo $render->renderHead();
+            if(!$this->stop)
+                echo $render->renderHead();
         }
     }
     /**
@@ -201,7 +206,8 @@ class Debugbar
         $render = $this->getDebugbar()->getJavascriptRenderer();
         if(Bootstrap::isDebug())
         {
-            echo $render->render();
+            if(!$this->stop)
+                echo $render->render();
         }
     }
 
@@ -265,6 +271,11 @@ class Debugbar
     public function onMessageDisplay($message, $type)
     {
         $this->messages->addMessage($message, $type);
+    }
+
+    public static function stop()
+    {
+         self::$instance->stop = true;
     }
 
 }

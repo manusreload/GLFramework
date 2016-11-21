@@ -83,20 +83,6 @@ class Events
         return self::getInstance()->_fire($event, $args);
     }
 
-    /**
-     * Publica un evento al sistema, devuelve
-     *      0 si no hay nadie que lo procese,
-     *      true si almenos alguien devuelve true
-     *      false si todos devuelven false
-     * @param $event
-     * @param array $args
-     * @return Event
-     */
-    public static function dispatch($event, $args = array())
-    {
-        return new Event(self::getInstance()->_fire($event, $args));
-    }
-
     public function _fire($event, $args = array())
     {
         global $context;
@@ -112,6 +98,60 @@ class Events
                 if(is_callable($fn))
                 {
                     $result = call_user_func_array($fn, $args);
+                    if($result === true)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        $buffer[] = $result;
+                    }
+                }
+                else
+                {
+                    Log::getInstance()->error("Can not call event: " . $event . " function: " . function_dump($fn), array('events'));
+                }
+            }
+            return $buffer;
+        }
+        return 0;
+    }
+
+
+    /**
+     * Publica un evento al sistema, devuelve
+     *      0 si no hay nadie que lo procese,
+     *      true si almenos alguien devuelve true
+     *      false si todos devuelven false
+     * @param $event
+     * @param array $args
+     * @return Event
+     */
+    public static function dispatch($event, $args = array())
+    {
+        return self::getInstance()->_dispatch($event, $args);
+
+
+    }
+
+    public function _dispatch($event, $args = array())
+    {
+        $eventResult = new Event();
+        global $context;
+        $buffer = array();
+        if(!is_array($args)) $args = array($args);
+        if(isset($this->handlers[$event]) && count(($this->handlers[$event])) > 0)
+        {
+            $handlers = $this->handlers[$event];
+            foreach($handlers as $item)
+            {
+                $eventResult->addHandler($item);
+                $fn = $item['fn'];
+                $context = $item['context'];
+                if(is_callable($fn))
+                {
+                    $result = call_user_func_array($fn, $args);
+                    $eventResult->addResult($result);
                     if($result === true)
                     {
                         return true;
