@@ -168,15 +168,17 @@ class ModelResult implements \IteratorAggregate
     /**
      * Ordena de menor a mayor en funcion del campo indicado
      * @param $field
+     * @param bool $desc
      * @return $this
      */
-    public function order($field)
+    public function order($field, $desc = false)
     {
         usort($this->models, function($a, $b) use($field)
         {
             return $a[$field] - $b[$field];
 
         });
+        if($desc) $this->models = array_reverse($this->models);
         return $this;
     }
 
@@ -195,5 +197,18 @@ class ModelResult implements \IteratorAggregate
     public function limit($length, $start = null)
     {
         return new ModelResult($this->model_class, array_slice($this->models, $start, $length));
+    }
+
+    public function delete()
+    {
+        foreach ($this->getModels() as $model)
+        {
+            $model->delete();
+        }
+    }
+
+    public function copy($items)
+    {
+        return new ModelResult($this->model_class, $items);
     }
 }

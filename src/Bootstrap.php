@@ -209,6 +209,7 @@ class Bootstrap
         define("GL_INSTALL", true);
         $this->init();
         echo "<pre>";
+        $fail = false;
         $db = new DatabaseManager();
         if ($db->connect()) {
             $this->log("Connection to database ok");
@@ -227,14 +228,14 @@ class Bootstrap
                         if (isset($_GET['exec']))
                         {
                             try{
-
-                                $db->exec($action['sql']);
+                                DBStructure::runAction($db, $instance, $action);
                                 $this->log("[OK]", 0);
                             }
                             catch(\Exception $ex)
                             {
 
                                 $this->log("[FAIL]", 0);
+                                $fail = true;
                             }
                         }
                         echo "\n";
@@ -313,6 +314,19 @@ class Bootstrap
         {
             if($file == "." || $file == "..") continue;
             $list[] = "GLFramework\\Model\\" . substr($file, 0, -4);
+        }
+        return $list;
+    }
+
+    public function getTwigExtras()
+    {
+        $list = array();
+        foreach($this->getManager()->getModules() as $module)
+        {
+            foreach($module->getTwigExtras() as $extra)
+            {
+                $list[] = $extra;
+            }
         }
         return $list;
     }

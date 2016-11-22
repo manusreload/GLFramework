@@ -77,7 +77,7 @@ class AuthController extends Controller implements Middleware
         {
             $this->addMessage("Se ha desconectado correctamente");
             unset($_SESSION[self::$session_key]);
-            setcookie(self::$session_key, "", 0);
+            setcookie(self::$session_key, "", 0, "/");
         }
         if($this->requireLogin)
         {
@@ -119,7 +119,7 @@ class AuthController extends Controller implements Middleware
                 Events::fire('onLoginSuccess', array('user' => $this->user));
                 if(isset($_REQUEST['remember']) && $_REQUEST['remember'])
                 {
-                    setcookie(self::$session_key, serialize($_SESSION[self::$session_key]), time() + 60 * 60 * 24 * 30);
+                    setcookie(self::$session_key, serialize($_SESSION[self::$session_key]), time() + 60 * 60 * 24 * 30, "/");
                 }
                 if(isset($_SESSION['return']))
                 {

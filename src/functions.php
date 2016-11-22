@@ -30,12 +30,7 @@
  */
 function print_debug($info)
 {
-    echo "<pre>";
-    foreach(func_get_args() as $arg)
-    {
-        print_r($arg);
-        echo "\n";
-    }
+    forward_static_call_array(array('Kint', 'dump'), func_get_args());
 
     die();
 }
@@ -93,6 +88,7 @@ function print_array($array,$depth=1,$indentation=0){
         var_dump($array);
     }
 }
+
 function fix_date($date)
 {
     if($date != "")
@@ -100,6 +96,11 @@ function fix_date($date)
         if(preg_match("#([0-9]{2})/([0-9]{2})/([0-9]{4})#", $date, $matches))
         {
             return $matches[3] . "-" . $matches[2] . "-" . $matches[1];
+        }
+
+        if(preg_match("#([0-9]{2})-([0-9]{2})-([0-9]{2})#", $date, $matches))
+        {
+            return "20" . $matches[3] . "-" . $matches[1] . "-" . $matches[2];
         }
         $date = str_replace("/", "-", $date);
         return date("Y-m-d", strtotime($date));
@@ -454,4 +455,46 @@ function time_elapsed($start, $end = null, $translation = array())
     $seconds = $end - $start;
     if($seconds <= 15) $key = 'few';
 
+}
+
+function function_dump($function)
+{
+    if($function instanceof Closure)
+    {
+        return function_closure_dump($function);
+    }
+    else if(is_array($function))
+    {
+        return get_class($function[0]) . "::" . $function[1];
+    }
+}
+
+function function_closure_dump($closure)
+{
+    $str = 'function (';
+    $r = new ReflectionFunction($closure);
+    $params = array();
+    foreach($r->getParameters() as $p) {
+        $s = '';
+        if($p->isArray()) {
+            $s .= 'array ';
+        } else if($p->getClass()) {
+            $s .= $p->getClass()->name . ' ';
+        }
+        if($p->isPassedByReference()){
+            $s .= '&';
+        }
+        $s .= '$' . $p->name;
+        if($p->isOptional()) {
+            $s .= ' = ' . var_export($p->getDefaultValue(), TRUE);
+        }
+        $params []= $s;
+    }
+    $str .= implode(', ', $params);
+    $str .= '){' . PHP_EOL;
+    $lines = file($r->getFileName());
+    for($l = $r->getStartLine(); $l < $r->getEndLine(); $l++) {
+        $str .= $lines[$l];
+    }
+    return $str;
 }

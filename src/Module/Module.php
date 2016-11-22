@@ -76,7 +76,7 @@ class Module
         }
         $this->register_autoload_controllers();
         $this->register_autoload_model();
-        $this->register_events();
+//        $this->register_events();
     }
 
     public function register_autoload_model()
@@ -189,6 +189,14 @@ class Module
         return $directories;
     }
 
+    public function getTwigExtras()
+    {
+        if(!isset($this->config['twig']) or empty($this->config['twig'])) return array();
+        $array = $this->config['twig'];
+        if(!is_array($array)) $array = array($array);
+        return $array;
+    }
+
     public function addFolder(&$array, $folder)
     {
         if(is_array($folder))
@@ -295,7 +303,7 @@ class Module
         }
     }
 
-    private function register_events()
+    public function register_events()
     {
         $context = array();
         if(isset($this->config['app']['listeners']))

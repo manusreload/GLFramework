@@ -191,6 +191,17 @@ class Model
         return false;
     }
 
+    /**
+     * @param $sql
+     * @param array $args
+     * @return ModelResult
+     * @throws \Exception
+     */
+    public function select($sql, $args = array())
+    {
+        return $this->build($this->db->select($sql, $args));
+    }
+
     public function getCacheId($id)
     {
         return $this->table_name . "_" . $id;
@@ -529,7 +540,7 @@ class Model
     public function getFieldType($field)
     {
         $definition = $this->getFieldDefinition($field);
-        if($definition)
+        if($definition && isset($definition['type']))
         {
             return $definition['type'];
         }
@@ -698,15 +709,11 @@ class Model
 
     }
 
-    public function select($query, $params = array())
-    {
-        return $this->build($this->db->select($query, $params));
-    }
-
     public function url()
     {
         return null;
     }
 
+    public function onCreate() { }
 
 }

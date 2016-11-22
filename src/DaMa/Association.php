@@ -37,7 +37,7 @@ class Association
     public $index = false;
     public $required = false;
     public $parser = null;
-    public $filter = null;
+    public $filterObject = null;
 
     /**
      * @return mixed
@@ -45,6 +45,13 @@ class Association
     public function getNameInFile()
     {
         return $this->nameInFile;
+    }
+    /**
+     * @return mixed
+     */
+    public function getFirstNameInFile()
+    {
+        return current($this->nameInFile);
     }
 
     /**
@@ -151,7 +158,18 @@ class Association
 
     public function filter($callable)
     {
-        $this->filter = $callable;
+        $this->filterObject = $callable;
         return $this;
+    }
+
+    /**
+     * @param $model Model
+     * @param $field
+     * @return mixed
+     */
+    public function get($model, $field)
+    {
+        $value = $model->getFieldValue($field);
+        return $this->parse($value);
     }
 }

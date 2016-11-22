@@ -28,6 +28,8 @@ namespace GLFramework;
 
 
 use GLFramework\Module\ModuleManager;
+use GLFramework\Twig\FrameworkExtras;
+use GLFramework\Twig\IExtra;
 
 class View
 {
@@ -51,27 +53,9 @@ class View
         $fs->mkdir();
         $config = array();
         $config['cache'] = $fs->getAbsolutePath();
-//        print_debug($config);
         $this->twig = new \Twig_Environment($loader, array());
         Events::fire('onViewCreated', array(&$this->twig));
-//        $this->twig->setCache($fs->getAbsolutePath());
-        $this->twig->addGlobal('config', $this->controller->config);
-        $this->twig->addGlobal('_GET', $_GET);
-        $this->twig->addGlobal('_POST', $_POST);
-        $this->twig->addGlobal('_REQUEST', $_REQUEST);
-        $this->twig->addGlobal('_SERVER', $_SERVER);
-        $this->twig->addGlobal('this', $this->controller);
-        $this->twig->addGlobal('render', $this);
-        $this->twig->addGlobal('manager', ModuleManager::getInstance());
-        $this->twig->addGlobal('mainconfig', Bootstrap::getSingleton()->getConfig());
-        $this->twig->addFunction(new \Twig_SimpleFunction('fire', array($this, 'fireEvent')));
-        $this->twig->addFilter(new \Twig_SimpleFilter('active', array($this, 'isHrefActive')));
-        $this->twig->addFilter(new \Twig_SimpleFilter('fecha_hora', array($this, 'parseFechaHora')));
-        $this->twig->addFilter(new \Twig_SimpleFilter('fecha', array($this, 'parseFecha')));
-        $this->twig->addFilter(new \Twig_SimpleFilter('hora', array($this, 'parseHora')));
-        $this->twig->addFilter(new \Twig_SimpleFilter('debug', array($this, 'debug')));
-        $this->twig->addFilter(new \Twig_SimpleFilter('number', array($this, 'isNumber')));
-        $this->twig->addFilter(new \Twig_SimpleFilter('implode', array($this, 'implode')));
+        $this->addExtras();
     }
 
     /**
@@ -94,6 +78,46 @@ class View
             return $template->render($data);
         }
         return $data;
+    }
+    public function addExtras()
+    {
+        $this->addExtra(new FrameworkExtras($this));
+        $extras = Bootstrap::getSingleton()->getTwigExtras();
+        foreach ($extras as $extra)
+        {
+            $this->addExtra(new $extra($this));
+        }
+    }
+
+    /**
+     * @param $extra IExtra
+     */
+    public function addExtra($extra)
+    {
+        $functions = $extra->getFunctions();
+        if($functions && is_array($functions))
+        {
+            foreach ($functions as $function)
+            {
+                $this->twig->addFunction($function);
+            }
+        }
+        $filters = $extra->getFilters();
+        if($filters && is_array($filters))
+        {
+            foreach ($filters as $filter)
+            {
+                $this->twig->addFilter($filter);
+            }
+        }
+        $globals = $extra->getGlobals();
+        if($globals && is_array($globals))
+        {
+            foreach ($globals as $key => $value)
+            {
+                $this->twig->addGlobal($key, $value);
+            }
+        }
     }
 
     /**
@@ -129,61 +153,12 @@ class View
         $this->filters[] = $filter;
     }
 
-
-    public function isHrefActive($url)
-    {
-        if(strpos($_SERVER['REQUEST_URI'], $url) !== FALSE)
-        {
-            return 'active';
-        }
-        return "";
-    }
-
-    public function parseFechaHora($fecha, $formatFecha = false, $formatHora = false)
-    {
-        return $this->parseFecha($fecha, $formatFecha) . " " . $this->parseHora($fecha, $formatHora);
-    }
-    public function parseFecha($fecha, $formatFecha = false)
-    {
-        if(!$formatFecha) $formatFecha = "d-m-Y";
-        if(!$fecha || strpos($fecha, "0000-00") !== FALSE) return "";
-        $time = strtotime($fecha);
-        return date($formatFecha, $time);
-    }
-
-    public function parseHora($fecha, $formatHora = false)
-    {
-        if(!$formatHora) $formatHora = "H:i:s";
-        if(!$fecha) return "";
-        $time = strtotime($fecha);
-        return date($formatHora, $time);
-    }
-
-    public function debug($data)
-    {
-        print_debug($data);
-    }
-
-    public function isNumber($data)
-    {
-        return is_numeric($data);
-    }
-
-    public function implode($array, $separator)
-    {
-        return implode($separator, $array);
-    }
     /**
      * @return \Twig_Environment
      */
     public function getTwig()
     {
         return $this->twig;
-    }
-
-    public function fireEvent($name, $args = array())
-    {
-        return implode("\n", Events::fire($name, $args));
     }
 
     /**

@@ -1,0 +1,23 @@
+<p>{{ _POST.nombre }} ha enviado una incidencia</p>
+
+<table>
+    <tr>
+        <th>Nombre</th>
+        <td>{{ _POST.nombre }}</td>
+    </tr>
+    <tr>
+        <th>EMail</th>
+        <td>{{ _POST.email }}</td>
+    </tr>
+    <tr>
+        <th>Telefono</th>
+        <td>{{ _POST.phone }}</td>
+    </tr>
+</table>
+<h3>Mensaje</h3>
+<pre>
+    {{ _POST.detalles }}
+</pre>
+<h3>Informacion del sistema</h3>
+<pre>{{ _POST.data }}</pre>
+<small>Incidencia generada por GLFramework el {{ "now" | date("d/m/Y") }} a las {{ "now" | date("H:i:s") }}</small>

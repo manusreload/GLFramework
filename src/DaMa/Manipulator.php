@@ -146,7 +146,7 @@ class Manipulator
             $this->getCore()->setSheet($this->currentSheet);
     }
 
-    public function exec($config = array())
+    public function exec($config = array(), &$models = array())
     {
         $count = 0;
         $this->init($config);
@@ -157,8 +157,9 @@ class Manipulator
                 if(implode("", $next) != "")
                 {
                     $model = $this->build($header, $next);
-                    if($model && $model->valid() && $model->save())
+                    if($model && $model->valid() && $model->save(true))
                     {
+                        $models[] = $model;
                         $count++;
                     }
                 }
@@ -172,9 +173,10 @@ class Manipulator
     /**
      * @param $controller Controller
      * @param array $config
+     * @param array $models
      * @return bool|int
      */
-    public function preview($controller, $config = array())
+    public function preview($controller, $config = array(), &$models = array())
     {
         $buffer = "";
         $count = 0;
@@ -197,8 +199,9 @@ class Manipulator
                         $buffer .= "<th>Actualizar</th>";
                         $buffer .= "</tr>";
                     }
-                    if($model && $model->valid() && $model->save())
+                    if($model && $model->valid() && $model->save(true))
                     {
+                        $models[] = $model;
                         $buffer .= "<tr>";
                         foreach ($model->getFields() as $item)
                         {
@@ -262,9 +265,9 @@ class Manipulator
         }
         foreach($this->association as $association)
         {
-            if($association->filter && is_callable($association->filter))
+            if($association->filterObject)
             {
-                if(!call_user_func($association->filter, $model))
+                if(!call_user_func($association->filterObject, $model))
                 {
                     return false;
                 }
@@ -293,18 +296,21 @@ class Manipulator
         print_debug($header, $tmp, $list);
     }
 
+    /**
+     * @return DataExample
+     * 
+     */
     public function example()
     {
-        $csv = array();
-        $csv2 = array();
+        $example = new DataExample();
         foreach($this->association as $association)
         {
-            $csv[] = current($association->nameInFile);
-            $csv2[] = "";
+            foreach ($association->nameInFile as $item)
+            {
+                $example->addColumn($association->nameInModel, $item);
+            }
         }
-
-        echo implode(";", $csv) . "\n";
-        echo implode(";", $csv2) . "\n";
+        return $example;
     }
 
     public function getModeByFile($file)
