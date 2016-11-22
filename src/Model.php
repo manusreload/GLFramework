@@ -283,7 +283,7 @@ class Model
         $index = $this->getIndex();
         $value = $this->getFieldValue($index);
         if ($value)
-            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE `$index` != ?", array($index)));
+            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE `$index` != ?", array(strval($value))));
         return $this->get_all();
 
     }

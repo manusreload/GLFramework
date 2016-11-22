@@ -39,7 +39,7 @@ class AuthController extends Controller implements Middleware
 
     private static $session_key = "auth_user";
     /**
-     * @var User
+     * @var User|\User
      */
     var $user;
     private $requireLogin = true;
