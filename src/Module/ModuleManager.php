@@ -213,6 +213,8 @@ class ModuleManager
                         $module = $this->load($dirbase . "/" . $name, $extra);
                         if($module && !$this->exists($module->title))
                             $this->add($module);
+                        else
+                            throw new \Exception("Can't not load module: " . $name);
 
                     }
                 }

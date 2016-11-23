@@ -15,6 +15,7 @@ use GLFramework\Mail;
 class recovery extends Controller
 {
 
+    var $email_send = false;
     /**
      * Implementar aqui el código que ejecutara nuestra aplicación
      * @return mixed
@@ -94,6 +95,7 @@ class recovery extends Controller
                             if($mail->send($user->email, "Contraseña perdida", $message))
                             {
                                 $this->addMessage("Se ha enviado un email al usuario. con los pasos que tiene que seguir para recuperar la cuenta");
+                                $this->email_send = true;
                             }
                             else
                             {
