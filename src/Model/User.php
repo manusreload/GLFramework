@@ -55,7 +55,7 @@ class User extends Model
 
     public function getByUserPassword($user, $password)
     {
-        return $this->db->select_first("SELECT * FROM {$this->table_name} WHERE user_name = '$user' AND password = '$password'");
+        return $this->db->select_first("SELECT * FROM {$this->table_name} WHERE (user_name = '$user' OR email = '$user') AND password = '$password'");
 
     }
 

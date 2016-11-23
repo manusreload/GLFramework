@@ -34,12 +34,16 @@ class Log extends AbstractLogger
 
     private static $instance;
 
+    private $debugMode = false;
+
     /**
      * Log constructor.
      */
     public function __construct()
     {
         self::$instance = $this;
+        $config = Bootstrap::getSingleton()->getConfig();
+        if($config['app']['debug']) $this->debugMode = true;
     }
 
     /**
@@ -66,6 +70,8 @@ class Log extends AbstractLogger
         // TODO: Implement log() method.
         if(!in_array('events', $context))
             Events::fire('onLog', array($message, $level));
+        else if($this->debugMode)
+            die($message);
     }
 
     public static function em($message, array $context = array())

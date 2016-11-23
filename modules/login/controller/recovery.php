@@ -11,6 +11,7 @@ namespace GLFramework\Modules\Login;
 
 use GLFramework\Controller;
 use GLFramework\Mail;
+use GLFramework\Model;
 
 class recovery extends Controller
 {
@@ -37,7 +38,8 @@ class recovery extends Controller
                         $recovery = $res->getModel();
                         if($recovery instanceof \UserRecovery);
 
-                        $user = new \User($recovery->id_user);
+
+                        $user = Model::newInstance("User", $recovery->id_user);
                         if($user->validPassword($_POST['password']))
                         {
                             $user->password = $user->encrypt($_POST['password']);
@@ -69,7 +71,7 @@ class recovery extends Controller
         {
             if(isset($_POST['save']))
             {
-                $user = new \User();
+                $user = Model::newInstance("User");
                 $result = null;
                 if(!empty($_POST['username']))
                 {
@@ -84,24 +86,21 @@ class recovery extends Controller
                     if($result->count() > 0)
                     {
                         $user = $result->getModel();
-                        if($user instanceof \User)
+                        $recovery = new \UserRecovery();
+                        $recovery = $recovery->generateNew($user);
+                        $recovery->save(true);
+//                        print_debug($recovery);
+                        $mail = new Mail();
+                        $message = $mail->render($this, "mail/recover_account.twig", array('user' => $user, 'recovery' => $recovery));
+                        if($mail->send($user->email, "Contraseña perdida", $message))
                         {
-                            $recovery = new \UserRecovery();
-                            $recovery = $recovery->generateNew($user);
-                            $recovery->save(true);
-    //                        print_debug($recovery);
-                            $mail = new Mail();
-                            $message = $mail->render($this, "mail/recover_account.twig", array('user' => $user, 'recovery' => $recovery));
-                            if($mail->send($user->email, "Contraseña perdida", $message))
-                            {
-                                $this->addMessage("Se ha enviado un email al usuario. con los pasos que tiene que seguir para recuperar la cuenta");
-                                $this->email_send = true;
-                            }
-                            else
-                            {
-                                $this->addMessage("Se ha producido un error al enviar el email, verifique los parametros de configuración.", "danger");
-                            }
+                            $this->addMessage("Se ha enviado un email al usuario. con los pasos que tiene que seguir para recuperar la cuenta");
                         }
+                        else
+                        {
+                            $this->addMessage("Se ha producido un error al enviar el email, verifique los parametros de configuración.", "danger");
+                        }
+
                     }
                     else
                     {
