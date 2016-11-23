@@ -75,6 +75,12 @@ class Filesystem
     {
         if($filename == null)
             $filename = sha1(time() . "_" . microtime(true));
+        if($folder)
+        {
+            $ffolder = new Filesystem($folder);
+            if(!$ffolder->exists())
+                $ffolder->mkdir();
+        }
         $file = new Filesystem("{$folder}/{$filename}{$extension}"); //$this->getStorage() . "/{$filename}{$extension}";
         return $file;
     }
