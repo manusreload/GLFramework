@@ -72,7 +72,6 @@ class AuthController extends Controller implements Middleware
     public function login()
     {
         // TODO: Implement run() method.
-
         if(isset($_GET['logout']))
         {
             $this->addMessage("Se ha desconectado correctamente");

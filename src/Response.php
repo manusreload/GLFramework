@@ -31,7 +31,7 @@ class Response
 {
     private $content;
     private $uri;
-    private $contentType = null;
+    private $contentType = "text/html";
     private $redirection = null;
     private $ajax;
     private $responseCode = 200;
@@ -97,8 +97,8 @@ class Response
         Events::fire('beforeResponseSend', array($this));
         \http_response_code($this->getResponseCode());
         if($this->contentType) header("Content-Type: " . $this->contentType);
+//        header("Content-Length: " . strlen($this->content));
         if($this->redirection) header("Location: " . $this->redirection);
-        header("Content-Length: " . strlen($this->content));
         print $this->content;
     }
 
