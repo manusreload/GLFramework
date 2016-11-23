@@ -3,26 +3,33 @@
 
 {% block title %}Recuperar cuenta{% endblock %}
 {% block body %}
-    <form class="form-signin" name="form1" method="post" action="{{ this.getLink(this) }}">
 
-        {% if this.result.error %}
-            <div class="alert alert-danger">
-                Ha ocurrido un error al intentar recuperar su cuenta
-            </div>
-        {% endif %}
-        <h3 class="form-signin-heading">Recuperar cuenta</h3>
-        <p>
-            Para poder recuperar su cuenta introduzca su nombre de usuario
-        </p>
-        <input name="username" id="myusername" type="text" class="form-control" placeholder="Usuario" autofocus>
-        <p>Si no recuerdas el usuario intruce tu email:</p>
-        <input name="email" type="email" class="form-control" placeholder="Email">
-        <p></p>
+        <form class="form-signin" name="form1" method="post" action="{{ this.getLink(this) }}">
 
-        <button name="save" id="submit" class="btn btn-lg btn-primary btn-block" type="submit">Entrar</button>
+            <h3 class="form-signin-heading">Recuperar cuenta</h3>
+            {% if this.email_send %}
+                <div class="alert alert-info">
+                    Verifique su buzón de entrada, le hemos enviado un enlace para restablecer su contraseña.
+                </div>
+                <a href="/login">Volver</a>
+            {% else %}
+                    {% if this.result.error %}
+                        <div class="alert alert-danger">
+                            Ha ocurrido un error al intentar recuperar su cuenta
+                        </div>
+                    {% endif %}
+                    <p>
+                        Para poder recuperar su cuenta introduzca su nombre de usuario
+                    </p>
+                    <input name="username" id="myusername" type="text" class="form-control" placeholder="Usuario" autofocus>
+                    <p>Si no recuerdas el usuario intruce tu email:</p>
+                    <input name="email" type="email" class="form-control" placeholder="Email">
+                    <p></p>
 
-        <div id="message"></div>
-    </form>
+                    <button name="save" id="submit" class="btn btn-lg btn-primary btn-block" type="submit">Recordar contraseña</button>
+
+            {% endif %}
+        </form>
 {% endblock %}
 {% block scripts %}{% endblock %}
 {% block styles %}
@@ -32,7 +39,9 @@
             padding-bottom: 40px;
             background-color: #fff;
         }
-
+        .form-signin p {
+            color: #333333;
+        }
         .form-signin {
             max-width: 330px;
             padding: 15px;

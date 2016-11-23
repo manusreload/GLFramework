@@ -7,32 +7,79 @@
  #}
 {% block title %}Panel de usuario{% endblock %}
 {% block body %}
-    {% embed "views/templates/box.twig" %}
-        {% block title %}
-            Perfil del usuario
-        {% endblock %}
-        {% block content %}
+    <div class="row">
+        <div class="col-md-6">
+            {% embed "views/templates/box.twig" %}
+                {% block title %}
+                    Perfil del usuario
+                {% endblock %}
+                {% block content %}
 
-            <form class="form-horizontal" method="post" action="{{ this.getLink(this) }}">
-                <div class="form-group">
-                    <label class="control-label col-lg-4">Nombre: </label>
-                    <div class="col-lg-8">
-                        <input class="form-control" type="text" name="nombre" value="{{ this.user.user_name }}">
+                    <form class="form-horizontal" method="post" action="{{ this.getLink(this) }}">
+                        <div class="form-group">
+                            <label class="control-label col-lg-4">Nombre de usuario: </label>
+                            <div class="col-lg-8">
+                                <input class="form-control" type="text" name="user_name" value="{{ this.user.user_name }}">
 
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-lg-4">Correo Electronico: </label>
-                    <div class="col-lg-8">
-                        <input class="form-control" type="text" name="nombre" value="{{ this.user.nombre }}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-lg-4">Nombre: </label>
+                            <div class="col-lg-8">
+                                <input class="form-control" type="text" name="nombre" value="{{ this.user.nombre }}">
 
-                    </div>
-                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-lg-4">Correo Electronico: </label>
+                            <div class="col-lg-8">
+                                <input class="form-control" type="text" name="nombre" value="{{ this.user.email }}">
 
-            </form>
+                            </div>
+                        </div>
 
-        {% endblock %}
-    {% endembed %}
+                    </form>
+
+                {% endblock %}
+            {% endembed %}
+
+
+            {% embed "views/templates/box.twig" %}
+                {% block title %}
+                    Cambiar contraseña
+                {% endblock %}
+                {% block content %}
+
+                    <form class="form-horizontal" method="post" action="{{ this.getLink(this) }}">
+                        <div class="form-group">
+                            <label class="control-label col-lg-4">Contraseña actual: </label>
+                            <div class="col-lg-8">
+                                <input class="form-control" type="text" name="user_name" value="{{ this.user.user_name }}">
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-lg-4">Nombre: </label>
+                            <div class="col-lg-8">
+                                <input class="form-control" type="text" name="nombre" value="{{ this.user.nombre }}">
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-lg-4">Correo Electronico: </label>
+                            <div class="col-lg-8">
+                                <input class="form-control" type="text" name="nombre" value="{{ this.user.email }}">
+
+                            </div>
+                        </div>
+
+                    </form>
+
+                {% endblock %}
+            {% endembed %}
+        </div>
+    </div>
+
 
        
 {% endblock %}

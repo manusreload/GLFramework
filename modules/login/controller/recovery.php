@@ -16,6 +16,7 @@ use GLFramework\Model;
 class recovery extends Controller
 {
 
+    var $email_send = false;
     /**
      * Implementar aqui el código que ejecutara nuestra aplicación
      * @return mixed

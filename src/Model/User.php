@@ -34,6 +34,7 @@ class User extends Model
     var $privilegios;
     var $nombre;
     var $email;
+    var $profile_image;
     var $admin;
 
     protected $table_name = "user";
@@ -46,6 +47,7 @@ class User extends Model
             'admin' => "int(11)",
             'nombre' => "text",
             'email' => "text",
+            'profile_image' => "varchar(256)",
         )
     );
 
