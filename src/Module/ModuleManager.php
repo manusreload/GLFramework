@@ -290,7 +290,7 @@ class ModuleManager
             }
             else
             {
-                return $this->mainModule->run(new ErrorController("Controller not found. " . $this->getRoutes()), $request);
+                return $this->mainModule->run(new ErrorController("Controller for '$url' not found. " . $this->getRoutes()), $request);
             }
         } catch (\Exception $ex) {
             Events::fire('onException', $ex);

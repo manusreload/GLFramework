@@ -32,7 +32,7 @@ class FrameworkExtras extends Extra
         $this->addGlobal('_REQUEST', $_REQUEST);
         $this->addGlobal('_SERVER', $_SERVER);
         $this->addGlobal('this', $view->getController());
-        $this->addGlobal('render', $this);
+        $this->addGlobal('render', $view);
         $this->addGlobal('manager', ModuleManager::getInstance());
         $this->addGlobal('mainconfig', Bootstrap::getSingleton()->getConfig());
         $this->addGlobal('bootstrap', Bootstrap::getSingleton());
