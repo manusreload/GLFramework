@@ -32,6 +32,7 @@ use TijsVerkoyen\CssToInlineStyles\Exception;
 class Filesystem
 {
 
+    private static $publicTable = "publicFiles.json";
     private $file;
     private $folder;
     private $pfile;
@@ -58,9 +59,9 @@ class Filesystem
         $config = Bootstrap::getSingleton()->getConfig();
         if(isset($config['app']['filesystem']))
         {
-            return $config['app']['filesystem'];
+            return Bootstrap::getSingleton()->getDirectory() . "/" . $config['app']['filesystem'];
         }
-        return "filesystem";
+        return Bootstrap::getSingleton()->getDirectory() . "/filesystem";
     }
 
     /**
@@ -103,11 +104,10 @@ class Filesystem
     /**
      * Obtiene la ruta relativa al archivo
      * @return string
-     * @throws Exception
      */
     public function getFilePath()
     {
-        return $this->getStorage() . "/" . $this->file;
+        return basename($this->getStorage()) . "/" . $this->file;
     }
 
     /**
@@ -140,13 +140,15 @@ class Filesystem
 
     /**
      * Obtiene una url accesible por el navegador
+     * @param null $expires
      * @return string
      */
-    public function url()
+    public function url($expires = null)
     {
+        $this->setPublic($expires);
         $scheme = "http://";
         if($_SERVER['HTTPS']) $scheme = "https://";
-        return $scheme . $_SERVER['HTTP_HOST'] . "/" . $this->getFilePath();
+        return $scheme . $_SERVER['HTTP_HOST'] . "/_raw/" . $this->file;
     }
 
     /**
@@ -177,6 +179,7 @@ class Filesystem
     {
         if($output)
         {
+
             $handle = $this->open();
             if ($handle) {
                 while (!feof($handle)) {
@@ -221,6 +224,50 @@ class Filesystem
     public function getFile()
     {
         return $this->file;
+    }
+
+    public function getPublicTableFile()
+    {
+        return new Filesystem(Filesystem::$publicTable);
+    }
+
+    public function setPublic($expires = null)
+    {
+        if($expires != null)
+        {
+            $expires = $expires + time();
+        }
+        $file = json_decode(file_get_contents($this->getPublicTableFile()));
+        $filename = $this->getAbsolutePath();
+        foreach ($file as &$item)
+        {
+            if($item->filename == $filename)
+            {
+                $item->expires = $expires;
+                file_put_contents($this->getPublicTableFile(), json_encode($file));
+                return true;
+            }
+        }
+        $item = new \stdClass();
+        $item->filename = $filename;
+        $item->expires = $expires;
+        $file[]  = $item;
+        file_put_contents($this->getPublicTableFile(), json_encode($file));
+        return true;
+    }
+
+    public function isPublic()
+    {
+        $file = json_decode(file_get_contents($this->getPublicTableFile()));
+        $filename = $this->getAbsolutePath();
+        foreach ($file as $item)
+        {
+            if($item->filename == $filename && $item->expires <= time())
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     function __toString()
