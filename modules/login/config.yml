@@ -10,5 +10,5 @@ app:
   model: model
 
   routes:
-    GLFramework\Modules\Login\login: /login2
+    GLFramework\Modules\Login\login: /signin
     GLFramework\Modules\Login\recovery: /recovery/[*:token]?

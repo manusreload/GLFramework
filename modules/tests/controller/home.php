@@ -11,6 +11,7 @@ namespace GLFramework\Modules\Tests;
 
 use GLFramework\Controller;
 use GLFramework\DaMa\DataManipulation;
+use GLFramework\Filesystem;
 
 class tests extends Controller
 {
@@ -19,27 +20,10 @@ class tests extends Controller
 
     public function run()
     {
-        if(isset($_POST['upload']))
-        {
-            $import = new DataManipulation();
-            $manipulator = $import->createFromFile($_FILES['xls']['tmp_name'], DATA_MANIPULATION_CREATE_MODE_XLS);
-            $manipulator->model('Vehiculo');
-            $manipulator->field('PEDIDO', 'pedido');
-            $manipulator->field('DIR CONCE', 'dir_envio');
-            $manipulator->field('TIPO', 'tipo');
-            $manipulator->field('ESTADO', 'estado');
-            $manipulator->field('SEMANA', 'semana');
-            $manipulator->field('TMAIMG', 'tmaimg');
-            $manipulator->field('MODELO', 'modelo');
-            $manipulator->field('DENOMINACION COMERCIAL', 'denominacion_comercial');
-            $manipulator->field('COL EXT', 'color_exterior');
-            $manipulator->field('COL INT', 'color_interior');
-            $manipulator->field('OPCIONALES', 'opcionales');
-            $manipulator->field('Nº FACTURA', 'n_factura_marca');
-            $manipulator->field('FECHA FACTURA', 'fecha_factura_marca', 'fix_date');
-            $manipulator->debug(5);
-
-        }
+        $filesystem = new Filesystem("testfile-no-extensions");
+        $filesystem->write("hello. Current time is: " . date("Y-m-d H:i:s"));
+        $url = $filesystem->url();
+        $this->addMessage("File: <a href=\"$url\">Download</a>");
     }
 
 }

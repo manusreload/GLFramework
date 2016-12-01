@@ -172,7 +172,7 @@ class Debugbar
      */
     public function beforeResponseSend($response)
     {
-        if($response->getAjax())
+        if($response->getAjax() && Bootstrap::isDebug())
         {
             if(!$this->stop)
                 $this->getDebugbar()->sendDataInHeaders();
