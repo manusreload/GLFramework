@@ -572,9 +572,10 @@ class Model
      * Si se ha establecido en $this->models un modelo asociado, entonces
      * se construye tambien de forma recursiva.
      * @param array $fields
+     * @param bool $recursive Especifica si devuelve las asociaciones con otros modelos
      * @return array
      */
-    public function json($fields = array())
+    public function json($fields = array(), $recursive = true)
     {
         $json = array();
         if($url = $this->url())
@@ -599,29 +600,37 @@ class Model
                 }
                 if($found || isset($this->models[$field]))
                 {
-                    if(!$found) $modelTransform = array($this->models[$field]);
-                    else $modelTransform = $list;
-                    foreach ($modelTransform as $mt)
+                    if($recursive)
                     {
-                        if(is_array($mt))
+                        if(!$found) $modelTransform = array($this->models[$field]);
+                        else $modelTransform = $list;
+                        foreach ($modelTransform as $mt)
                         {
-                            $name = $mt['name'];
-                            $model = $mt['model'];
-                            $object =  new $model();
-                            if(isset($mt['field']))
+                            $filter = array();
+                            if(is_array($mt))
                             {
-                                $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))->json();
+                                $name = $mt['name'];
+                                $model = $mt['model'];
+                                $object =  new $model();
+                                if(isset($fields[$name]))
+                                    $filter = $fields[$name];
+                                if(isset($mt['field']))
+                                {
+                                    $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))->json($filter);
 
+                                }
+                                else{
+                                    $json[$name] = $object->get($this->getFieldValue($field))->json($filter);
+                                }
                             }
-                            else{
-                                $json[$name] = $object->get($this->getFieldValue($field))->json();
+                            else
+                            {
+                                $name = $this->underescapeName($mt);
+                                if(isset($fields[$name]))
+                                    $filter = $fields[$name];
+                                $object = new $mt($this->getFieldValue($field));
+                                $json[$name] = $object->json($filter);
                             }
-                        }
-                        else
-                        {
-                            $name = $this->underescapeName($mt);
-                            $object = new $mt($this->getFieldValue($field));
-                            $json[$name] = $object->json();
                         }
                     }
 

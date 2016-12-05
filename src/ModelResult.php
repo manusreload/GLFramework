@@ -143,14 +143,16 @@ class ModelResult implements \IteratorAggregate
 
     /**
      * Genera una array lista para usar con json_encode
+     * @param array $fields
+     * @param bool $recursive
      * @return array
      */
-    public function json()
+    public function json($fields = array(), $recursive = true)
     {
         $list = array();
         foreach($this->getModels() as $model)
         {
-            $list[] = $model->json();
+            $list[] = $model->json($fields, $recursive);
         }
         return $list;
     }
