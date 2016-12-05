@@ -70,19 +70,8 @@ class TestCase extends \PHPUnit_Framework_TestCase
             $this->assertTrue($this->database->connect(), "Can not connect to database for testing!");
 
             $db2 = new DBStructure();
-            $db2->setDatabaseUpdate();
-            $models = Bootstrap::getSingleton()->getModels();
-            foreach ($models as $model) {
+            $db2->executeModelChanges($this->database);
 
-                $instance = new $model(null);
-                if ($instance instanceof Model) {
-                    $diff = $instance->getStructureDifferences();
-                    foreach ($diff as $action) {
-                        $this->database->exec($action['sql']);
-                    }
-
-                }
-            }
 
         }
     }
