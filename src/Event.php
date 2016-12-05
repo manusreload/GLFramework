@@ -12,13 +12,14 @@ namespace GLFramework;
 class Event
 {
 
-    private $result;
+    private $result = false;
+    private $handlers = array();
 
     /**
      * Event constructor.
      * @param $result
      */
-    public function __construct($result)
+    public function __construct($result = null)
     {
         $this->result = $result;
     }
@@ -45,6 +46,42 @@ class Event
         // TODO: Implement __toString() method.
         return implode("", $this->result);
     }
+
+    /**
+     * @return array
+     */
+    public function getHandlers()
+    {
+        return $this->handlers;
+    }
+
+    /**
+     * @param array $handler
+     */
+    public function addHandler($handler)
+    {
+        $this->handlers[] = $handler;
+    }
+
+    public function addResult($item)
+    {
+        if(!$this->result)
+        {
+            $this->result = $item;
+        }
+        else if(!is_array($this->result))
+        {
+            $this->result = array($this->result, $item);
+        }
+        else
+        {
+            $this->result[] = $item;
+        }
+    }
+
+
+
+
 
 
 }

@@ -143,14 +143,16 @@ class ModelResult implements \IteratorAggregate
 
     /**
      * Genera una array lista para usar con json_encode
+     * @param array $fields
+     * @param bool $recursive
      * @return array
      */
-    public function json()
+    public function json($fields = array(), $recursive = true)
     {
         $list = array();
         foreach($this->getModels() as $model)
         {
-            $list[] = $model->json();
+            $list[] = $model->json($fields, $recursive);
         }
         return $list;
     }
@@ -168,15 +170,17 @@ class ModelResult implements \IteratorAggregate
     /**
      * Ordena de menor a mayor en funcion del campo indicado
      * @param $field
+     * @param bool $desc
      * @return $this
      */
-    public function order($field)
+    public function order($field, $desc = false)
     {
         usort($this->models, function($a, $b) use($field)
         {
             return $a[$field] - $b[$field];
 
         });
+        if($desc) $this->models = array_reverse($this->models);
         return $this;
     }
 
@@ -203,5 +207,10 @@ class ModelResult implements \IteratorAggregate
         {
             $model->delete();
         }
+    }
+
+    public function copy($items)
+    {
+        return new ModelResult($this->model_class, $items);
     }
 }

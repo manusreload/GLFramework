@@ -28,6 +28,11 @@ class Writer
     private $parsers = array();
 
     /**
+     * @var IFilter
+     */
+    private $filter = false;
+
+    /**
      * Writer constructor.
      * @param \GLFramework\Model[]|ModelResult $models
      */
@@ -47,6 +52,14 @@ class Writer
            return $this->models->getModels();
        }
         return $this->models;
+    }
+
+    public function addModels($list)
+    {
+        foreach ($list as $item)
+        {
+            $this->models[] = $item;
+        }
     }
     
     public function field($nameInModel, $nameInFile, $fn = null)
@@ -72,9 +85,20 @@ class Writer
         $this->writer->open($output);
         foreach ($this->models as $model)
         {
-            $this->writer->write($model, $this->associations);
+            if($this->filter == false || $this->filter->filter($model))
+            {
+                $this->writer->write($model, $this->associations);
+            }
         }
         $this->writer->close();
+    }
+
+    /**
+     * @param bool|IFilter $filter IFilter
+     */
+    public function setFilter($filter = false)
+    {
+        $this->filter = $filter;
     }
     
     

@@ -55,7 +55,7 @@ class ControllerMiddleware implements Middleware
         Events::fire('beforeControllerRun', array($this->controller));
         $data = call_user_func_array(array($this->controller, "run"), $request->params);
         $next($request, $response);
-        Events::fire('afterControllerRun', array($this->controller, $this->response));
+        Events::fire('afterControllerRun', array($this->controller, $this->controller->response));
         $response->setContent($this->controller->display($data, $request->params));
     }
 }

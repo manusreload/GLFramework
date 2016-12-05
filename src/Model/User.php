@@ -34,6 +34,7 @@ class User extends Model
     var $privilegios;
     var $nombre;
     var $email;
+    var $profile_image;
     var $admin;
 
     protected $table_name = "user";
@@ -46,6 +47,7 @@ class User extends Model
             'admin' => "int(11)",
             'nombre' => "text",
             'email' => "text",
+            'profile_image' => "varchar(256)",
         )
     );
 
@@ -53,7 +55,7 @@ class User extends Model
 
     public function getByUserPassword($user, $password)
     {
-        return $this->db->select_first("SELECT * FROM {$this->table_name} WHERE user_name = '$user' AND password = '$password'");
+        return $this->db->select_first("SELECT * FROM {$this->table_name} WHERE (user_name = '$user' OR email = '$user') AND password = '$password'");
 
     }
 

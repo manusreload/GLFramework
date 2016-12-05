@@ -1,6 +1,7 @@
 title: maintenance
 description: Permite establecer la web en modo mantenimiento.
 version: 0.0.1
+indev: true
 
 app:
   index: home

@@ -191,6 +191,17 @@ class Model
         return false;
     }
 
+    /**
+     * @param $sql
+     * @param array $args
+     * @return ModelResult
+     * @throws \Exception
+     */
+    public function select($sql, $args = array())
+    {
+        return $this->build($this->db->select($sql, $args));
+    }
+
     public function getCacheId($id)
     {
         return $this->table_name . "_" . $id;
@@ -283,7 +294,7 @@ class Model
         $index = $this->getIndex();
         $value = $this->getFieldValue($index);
         if ($value)
-            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE `$index` != ?", array($index)));
+            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE `$index` != ?", array(strval($value))));
         return $this->get_all();
 
     }
@@ -529,7 +540,7 @@ class Model
     public function getFieldType($field)
     {
         $definition = $this->getFieldDefinition($field);
-        if($definition)
+        if($definition && isset($definition['type']))
         {
             return $definition['type'];
         }
@@ -547,13 +558,14 @@ class Model
     /**
      * Genera las diferencias entre este modelo y lo que hay
      * en la base de datos.
+     * @param bool $drop
      * @return array
      */
-    public function getStructureDifferences()
+    public function getStructureDifferences($drop = false)
     {
         $diff = new DBStructure();
         $excepted = $diff->getDefinition($this);
-        return $diff->getStructureDifferences($excepted);
+        return $diff->getStructureDifferences($excepted, $drop);
     }
 
     /**
@@ -561,9 +573,10 @@ class Model
      * Si se ha establecido en $this->models un modelo asociado, entonces
      * se construye tambien de forma recursiva.
      * @param array $fields
+     * @param bool $recursive Especifica si devuelve las asociaciones con otros modelos
      * @return array
      */
-    public function json($fields = array())
+    public function json($fields = array(), $recursive = true)
     {
         $json = array();
         if($url = $this->url())
@@ -588,29 +601,37 @@ class Model
                 }
                 if($found || isset($this->models[$field]))
                 {
-                    if(!$found) $modelTransform = array($this->models[$field]);
-                    else $modelTransform = $list;
-                    foreach ($modelTransform as $mt)
+                    if($recursive)
                     {
-                        if(is_array($mt))
+                        if(!$found) $modelTransform = array($this->models[$field]);
+                        else $modelTransform = $list;
+                        foreach ($modelTransform as $mt)
                         {
-                            $name = $mt['name'];
-                            $model = $mt['model'];
-                            $object =  new $model();
-                            if(isset($mt['field']))
+                            $filter = array();
+                            if(is_array($mt))
                             {
-                                $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))->json();
+                                $name = $mt['name'];
+                                $model = $mt['model'];
+                                $object =  new $model();
+                                if(isset($fields[$name]))
+                                    $filter = $fields[$name];
+                                if(isset($mt['field']))
+                                {
+                                    $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))->json($filter);
 
+                                }
+                                else{
+                                    $json[$name] = $object->get($this->getFieldValue($field))->json($filter);
+                                }
                             }
-                            else{
-                                $json[$name] = $object->get($this->getFieldValue($field))->json();
+                            else
+                            {
+                                $name = $this->underescapeName($mt);
+                                if(isset($fields[$name]))
+                                    $filter = $fields[$name];
+                                $object = new $mt($this->getFieldValue($field));
+                                $json[$name] = $object->json($filter);
                             }
-                        }
-                        else
-                        {
-                            $name = $this->underescapeName($mt);
-                            $object = new $mt($this->getFieldValue($field));
-                            $json[$name] = $object->json();
                         }
                     }
 
@@ -698,15 +719,11 @@ class Model
 
     }
 
-    public function select($query, $params = array())
-    {
-        return $this->build($this->db->select($query, $params));
-    }
-
     public function url()
     {
         return null;
     }
 
+    public function onCreate() { }
 
 }

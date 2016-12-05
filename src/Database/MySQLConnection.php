@@ -46,7 +46,7 @@ class MySQLConnection extends Connection
     {
         try{
             $this->pdo = new \PDO('mysql:host=' . $hostname . ';', $username, $password);
-            Events::fire('onPDOCreated', array(&$this->pdo));
+            Events::dispatch('onPDOCreated', array(&$this->pdo));
             if($this->pdo->errorCode() == 0)
             {
                 $this->pdo->exec("SET NAMES utf8");

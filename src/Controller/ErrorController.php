@@ -45,7 +45,7 @@ class ErrorController extends Controller
         parent::__construct();
         $this->error = $error;
         $this->setTemplate("error.twig");
-        $this->response->setResponseCode(501);
+        $this->response->setResponseCode(200);
     }
 
 

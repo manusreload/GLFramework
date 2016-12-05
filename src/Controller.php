@@ -171,6 +171,7 @@ abstract class Controller
     public function redirection($url)
     {
         $this->response->setRedirection($url);
+        $this->response->setContent("<a href='$url'>Moved here</a>");
     }
 
     /**
@@ -202,7 +203,6 @@ abstract class Controller
     {
         if(!$this->response->getAjax())
         {
-
             if($redirection) $this->redirection($redirection);
             $this->shareMessages();
             if(!GL_TESTING)
@@ -299,7 +299,7 @@ abstract class Controller
                 $protocol = "http";
                 if(strpos($_SERVER['SCRIPT_URI'], "https") !== FALSE) $protocol = "https";
 
-                return $protocol . "://" . $_SERVER['SERVER_NAME'] . $url;
+                return $protocol . "://" . $_SERVER['HTTP_HOST'] . $url;
             }
         }
     }

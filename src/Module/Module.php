@@ -189,6 +189,14 @@ class Module
         return $directories;
     }
 
+    public function getTwigExtras()
+    {
+        if(!isset($this->config['twig']) or empty($this->config['twig'])) return array();
+        $array = $this->config['twig'];
+        if(!is_array($array)) $array = array($array);
+        return $array;
+    }
+
     public function addFolder(&$array, $folder)
     {
         if(is_array($folder))

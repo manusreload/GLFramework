@@ -31,6 +31,7 @@ use GLFramework\Bootstrap;
 use GLFramework\Controller\ErrorController;
 use GLFramework\Controller\ExceptionController;
 use GLFramework\Events;
+use GLFramework\Filesystem;
 use GLFramework\Log;
 use GLFramework\Request;
 use Symfony\Component\Yaml\Yaml;
@@ -64,6 +65,7 @@ class ModuleManager
         $this->router->addMatchTypes(array(
             'idd' => '([0-9]+|add)?',
         ));
+        $this->router->map('GET', "/_raw/[*:name]", array($this, 'handleFilesystem'), 'handleFilesystem');
     }
 
     public static function getInstance()
@@ -213,6 +215,8 @@ class ModuleManager
                         $module = $this->load($dirbase . "/" . $name, $extra);
                         if($module && !$this->exists($module->title))
                             $this->add($module);
+                        else
+                            throw new \Exception("Can't not load module: " . $name);
 
                     }
                 }
@@ -288,15 +292,22 @@ class ModuleManager
 
             if($match = $this->router->match($url, $method))
             {
-                $target = $match['target'];
-                $module = $target[0];
-                $controller = $target[1];
-                $request->setParams($match['params']);
-                return $module->run($controller, $request);
+                if($match['name'] == "handleFilesystem")
+                {
+                    return $this->handleFilesystem($match['params'], $request);
+                }
+                else
+                {
+                    $target = $match['target'];
+                    $module = $target[0];
+                    $controller = $target[1];
+                    $request->setParams($match['params']);
+                    return $module->run($controller, $request);
+                }
             }
             else
             {
-                return $this->mainModule->run(new ErrorController("Controller not found. " . $this->getRoutes()), $request);
+                return $this->mainModule->run(new ErrorController("Controller for '$url' not found. " . $this->getRoutes()), $request);
             }
         } catch (\Exception $ex) {
             Events::fire('onException', $ex);
@@ -325,6 +336,20 @@ class ModuleManager
         }
     }
 
+
+    public function handleFilesystem($args, $request)
+    {
+        $filesystem = new Filesystem($args['name']);
+        if($filesystem->isPublic())
+        {
+            $filesystem->read(true);
+            die();
+        }
+        else
+        {
+            return $this->mainModule->run(new ErrorController("No se ha encontrado este archivo!"), $request);
+        }
+    }
 
 
 }
