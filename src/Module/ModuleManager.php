@@ -177,7 +177,7 @@ class ModuleManager
     public function init()
     {
         $time = microtime();
-        $module = $this->load($this->directory);
+        $module = $this->load($this->directory, array(), true);
         if($module)
         {
             $this->mainModule = $module;
@@ -234,19 +234,27 @@ class ModuleManager
         }
     }
 
-    public function load($folder, $extra = null)
+    public function load($folder, $extra = null, $main = false)
     {
         $configFile = $folder . "/config.yml";
         if(file_exists($configFile))
         {
             $config = Bootstrap::loadConfig($folder, "config.yml");
-            if(is_array($extra))
-            {
-                $config = array_merge_recursive_ex($config, $extra);
-            }
-            return new Module($config, $folder);
         }
-        return null;
+        else
+        {
+            if(!$main) return null;
+            $config = Bootstrap::getSingleton()->getConfig();
+            if(!$config)
+            {
+                return null;
+            }
+        }
+        if(is_array($extra))
+        {
+            $config = array_merge_recursive_ex($config, $extra);
+        }
+        return new Module($config, $folder);
     }
 
     /**
