@@ -137,6 +137,12 @@ class DBStructure
         $this->setDatabaseUpdate();
     }
 
+    /**
+     * @param $db DatabaseManager
+     * @param $model
+     * @param $action
+     * @return mixed
+     */
     public static function runAction($db, $model, $action)
     {
             $res = $db->exec($action['sql']);

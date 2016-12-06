@@ -86,10 +86,9 @@ class MySQLConnection extends Connection
 
     public function select($query, $args = array(), $returnArray = true)
     {
-        if(!GL_TESTING && !GL_INSTALL)
+        if(!GL_INSTALL)
         {
             $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-
         }
         else{
             $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING);
@@ -105,7 +104,8 @@ class MySQLConnection extends Connection
             }
             return true;
         } else {
-            throw new \Exception($query . "\n" . $this->getLastError());
+//            if($this->getLastError())
+                throw new \Exception($query . "\n" . $this->getLastError());
         }
     }
 
@@ -117,6 +117,8 @@ class MySQLConnection extends Connection
     public function getLastError()
     {
         $error = $this->pdo->errorInfo();
+        if($error[1])
+            print_debug($error);
         return $error[2];
     }
 

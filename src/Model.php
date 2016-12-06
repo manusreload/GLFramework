@@ -106,6 +106,8 @@ class Model
         foreach ($this->getFields() as $field)
         {
             $this->{$field} = false;
+            if($this->isIndex($field))
+                $this->{$field} = null;
         }
         $this->setData($data);
     }

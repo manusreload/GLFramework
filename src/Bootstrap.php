@@ -108,14 +108,15 @@ class Bootstrap
     /**
      * Inicia la apliccion de forma estática
      * @param $directory
+     * @param string $config
      */
-    public static function start($directory)
+    public static function start($directory, $config = "config.yml")
     {
         try{
                 
             define("GL_TESTING", false);
             define("GL_INSTALL", false);
-            $bootstrap = new Bootstrap($directory);
+            $bootstrap = new Bootstrap($directory, $config);
             $url = $_SERVER['REQUEST_URI'];
             $method = $_SERVER['REQUEST_METHOD'];
             $bootstrap->run($url, $method)->display();
@@ -148,10 +149,10 @@ class Bootstrap
     {
         define("GL_TESTING", true);
         define("GL_INSTALL", false);
-        if(file_exists($this->directory . "/config.dev.yml"))
-        {
-            $this->overrideConfig($this->directory . "/config.dev.yml");
-        }
+//        if(file_exists($this->directory . "/config.dev.yml"))
+//        {
+//            $this->overrideConfig($this->directory . "/config.dev.yml");
+//        }
         $this->init();
     }
 

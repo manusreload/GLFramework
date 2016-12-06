@@ -128,7 +128,7 @@ class DatabaseManager
                 throw new \Exception("Can not establish connection to database!");
             }
         }
-        return self::$selected;
+        return true;
     }
 
     public static function isSelected()

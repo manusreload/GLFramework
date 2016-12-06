@@ -66,12 +66,10 @@ class TestCase extends \PHPUnit_Framework_TestCase
         if($this->database == null)
         {
             $this->database = new DatabaseManager();
-
             $this->assertTrue($this->database->connect(), "Can not connect to database for testing!");
-
             $db2 = new DBStructure();
-            $db2->executeModelChanges($this->database);
-
+            $res = $db2->executeModelChanges($this->database);
+            $this->assertNotInstanceOf(\Exception::class, $res, "Error installing models");
 
         }
     }
