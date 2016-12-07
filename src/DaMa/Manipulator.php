@@ -199,7 +199,7 @@ class Manipulator
                         $buffer .= "<th>Actualizar</th>";
                         $buffer .= "</tr>";
                     }
-                    if($model && $model->valid() && $model->save(true))
+                    if($model && $model->valid())
                     {
                         $models[] = $model;
                         $buffer .= "<tr>";
