@@ -63,6 +63,12 @@ class API
         return get($url, $this->getAuth());
     }
 
+
+    public function put($uri, $fields)
+    {
+        $url = $this->getURI($uri);
+        return custom_http_request("PUT", $url, $fields, $this->getAuth());
+    }
    /**
      * @return array|mixed|null
      */
