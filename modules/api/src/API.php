@@ -23,9 +23,9 @@ class API implements Middleware
      */
     public function afterControllerConstruct($controller)
     {
-        $this->controller = $controller;
         if($controller instanceof Controller\APIController)
         {
+            $this->controller = $controller;
             $controller->addMiddleware($this);
         }
     }
