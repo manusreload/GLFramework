@@ -213,4 +213,15 @@ class ModelResult implements \IteratorAggregate
     {
         return new ModelResult($this->model_class, $items);
     }
+
+    public function join(ModelResult $modelResult)
+    {
+        foreach ($modelResult->models as $model)
+        {
+            $this->models[] = $model;
+        }
+
+        return $this;
+
+    }
 }
