@@ -48,6 +48,8 @@ class Manipulator
      * @var ManipulatorCore
      */
     private $core;
+    private $current = 0;
+    private $result = array();
 
     /**
      * @return mixed
@@ -107,6 +109,10 @@ class Manipulator
         return $association;
     }
 
+    /**
+     * @param $nameInModel
+     * @return Association|null
+     */
     private function getAssociation($nameInModel)
     {
         foreach($this->association as $association)
@@ -134,6 +140,24 @@ class Manipulator
         }
     }
 
+    public function manipulator($manipulator, $nameInModel, $nameInManipulator, $fn = null)
+    {
+        if($association = $this->getAssociation($nameInModel))
+        {
+            $association->setManipulator($manipulator);
+            $association->setNameInManipulator($nameInManipulator);
+        }
+        else
+        {
+            $association = new Association();
+            $association->setManipulator($manipulator);
+            $association->setNameInModel($nameInModel);
+            $association->setNameInManipulator($nameInManipulator);
+            $association->setManipulatorParser($fn);
+            $this->association[] = $association;
+        }
+    }
+
     public function sheet($index)
     {
         $this->currentSheet = $index;
@@ -148,21 +172,40 @@ class Manipulator
 
     public function exec($config = array(), &$models = array())
     {
+        $this->result = array();
+        $this->current = 0;
         $count = 0;
         $this->init($config);
+        $offset = $config['start'];
+        $size = $config['size'];
+        $total = 0;
         if($header = $this->getCore()->next())
         {
+            $this->current++;
             while($next = $this->getCore()->next())
             {
+                if($offset && $size)
+                {
+                    if($total >= $offset && $total < ($offset + $size))
+                    {
+                        $total++;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
                 if(implode("", $next) != "")
                 {
                     $model = $this->build($header, $next);
                     if($model && $model->valid() && $model->save(true))
                     {
                         $models[] = $model;
+                        $this->result[$this->current] = $model;
                         $count++;
                     }
                 }
+                $this->current++;
             }
             return $count;
         }
@@ -176,32 +219,38 @@ class Manipulator
      * @param array $models
      * @return bool|int
      */
-    public function preview($controller, $config = array(), &$models = array())
+    public function preview($controller, $config = array(), &$models = array(), $max = 0)
     {
+        $this->result = array();
+        $this->current = 0;
         $buffer = "";
         $count = 0;
         $this->init($config);
         if($header = $this->getCore()->next())
         {
+            $this->current++;
             $buffer .= "<table class='table table-bordered'>";
             while($next = $this->getCore()->next())
             {
                 if(implode("", $next) != "")
                 {
                     $model = $this->build($header, $next);
-                    if($count == 0)
-                    {
-                        $buffer .= "<tr>";
-                        foreach ($model->getFields() as $item)
-                        {
-                            $buffer .= "<th>$item</th>";
-                        }
-                        $buffer .= "<th>Actualizar</th>";
-                        $buffer .= "</tr>";
-                    }
+
                     if($model && $model->valid())
                     {
+                        if($count == 0)
+                        {
+                            $buffer .= "<tr>";
+                            foreach ($model->getFields() as $item)
+                            {
+                                $buffer .= "<th>$item</th>";
+                            }
+                            $buffer .= "<th>Actualizar</th>";
+                            $buffer .= "</tr>";
+                        }
+
                         $models[] = $model;
+                        $this->result[$this->current] = $model;
                         $buffer .= "<tr>";
                         foreach ($model->getFields() as $item)
                         {
@@ -212,6 +261,8 @@ class Manipulator
                         $count ++;
                     }
                 }
+                if($max && $count >= $max) break;
+                $this->current++;
             }
             $buffer .= "</table>";
             $controller->addMessage("Total Items: " . $count, "info");
@@ -271,6 +322,14 @@ class Manipulator
                 {
                     return false;
                 }
+            }
+        }
+        foreach($this->association as $association)
+        {
+            if($association->manipulator)
+            {
+                $current = $association->manipulator->result[$this->current];
+                $model->{$association->nameInModel} = $association->getManipulatorParser($current->{$association->nameInManipulator}, $current);
             }
         }
         return $model;
@@ -337,4 +396,5 @@ class Manipulator
         else if($mode == DATA_MANIPULATION_CREATE_MODE_XLSX) $this->setCore(new XLSXManipulator());
         else $this->setCore(new CSVManipulator());
     }
+
 }

@@ -37,7 +37,13 @@ class Association
     public $index = false;
     public $required = false;
     public $parser = null;
+    public $manipulatorParser = null;
     public $filterObject = null;
+    /**
+     * @var Manipulator
+     */
+    public $manipulator = null;
+    public $nameInManipulator = false;
 
     /**
      * @return mixed
@@ -77,6 +83,13 @@ class Association
     {
         $this->nameInModel = $nameInModel;
     }
+    /**
+     * @param mixed $nameInManipulator
+     */
+    public function setNameInManipulator($nameInManipulator)
+    {
+        $this->nameInManipulator = $nameInManipulator;
+    }
 
     /**
      * @return null
@@ -94,6 +107,17 @@ class Association
         $this->parser = $parser;
     }
 
+
+    /**
+     * @param null $manipulatorParser
+     */
+    public function setManipulatorParser($manipulatorParser)
+    {
+        $this->manipulatorParser = $manipulatorParser;
+    }
+
+
+
     /**
      * @return boolean
      */
@@ -110,6 +134,11 @@ class Association
         $this->constant = $constant;
     }
 
+    public function setManipulator($manipulator)
+    {
+        $this->manipulator = $manipulator;
+    }
+
     /**
      * @param $model Model
      * @param $row
@@ -123,7 +152,7 @@ class Association
             {
                 if(isset($row[$subkey]))
                 {
-                    $model->{$this->nameInModel} = $this->parse($row[$subkey]);
+                    $model->{$this->nameInModel} = $this->parse($row[$subkey], $row);
                     return true;
                 }
             }
@@ -136,15 +165,28 @@ class Association
         return false;
     }
 
-    private function parse($value)
+    public function parse($value, $row)
     {
         if($this->parser != null)
         {
-            return call_user_func($this->parser, $value);
+            return call_user_func($this->parser, $value, $row);
         }
         return $value;
     }
 
+    /**
+     * @param $value
+     * @param $row
+     * @return null
+     */
+    public function getManipulatorParser($value, $row)
+    {
+        if($this->manipulatorParser != null)
+        {
+            return call_user_func($this->manipulatorParser, $value, $row);
+        }
+        return $value;
+    }
     public function index()
     {
         $this->index = true;
