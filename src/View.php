@@ -27,6 +27,8 @@
 namespace GLFramework;
 
 
+use GLFramework\Media\JavascriptMedia;
+use GLFramework\Media\StylesheetMedia;
 use GLFramework\Module\ModuleManager;
 use GLFramework\Twig\FrameworkExtras;
 use GLFramework\Twig\IExtra;
@@ -39,6 +41,14 @@ class View
      * @var Controller
      */
     private $controller;
+    /**
+     * @var JavascriptMedia[]
+     */
+    private $javascriptMedia = array();
+    /**
+     * @var StylesheetMedia[]
+     */
+    private $stylesheetMedia = array();
 
     /**
      * View constructor.
@@ -55,6 +65,8 @@ class View
         $config['cache'] = $fs->getAbsolutePath();
         $this->twig = new \Twig_Environment($loader, array());
         Events::fire('onViewCreated', array(&$this->twig));
+        Events::getInstance()->listen('displayScripts', array($this, 'getJavascripts'));
+        Events::getInstance()->listen('displayStyle', array($this, 'getStylesheets'));
         $this->addExtras();
     }
 
@@ -175,6 +187,42 @@ class View
     public function setController($controller)
     {
         $this->controller = $controller;
+    }
+
+    public function addJS($js, $options = array())
+    {
+        $this->javascriptMedia[] = new JavascriptMedia($js, $options);
+    }
+    public function addCSS($css, $options = array())
+    {
+        $this->stylesheetMedia[] = new StylesheetMedia($css, $options);
+    }
+
+    /**
+     * @param $view View
+     * @return array|string
+     */
+    public function getJavascripts($view)
+    {
+        $result = "";
+        foreach ($view->javascriptMedia as $js)
+        {
+            $result .= $js->getBrowserCode();
+        }
+        return $result;
+    }
+    /**
+     * @param $view View
+     * @return array|string
+     */
+    public function getStylesheets($view)
+    {
+        $result = "";
+        foreach ($view->stylesheetMedia as $css)
+        {
+            $result .= $css->getBrowserCode();
+        }
+        return $result;
     }
 
     
