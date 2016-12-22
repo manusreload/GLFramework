@@ -11,6 +11,8 @@ namespace GLFramework\Twig;
 
 use GLFramework\Bootstrap;
 use GLFramework\Events;
+use GLFramework\Media\JavascriptMedia;
+use GLFramework\Media\StylesheetMedia;
 use GLFramework\Module\ModuleManager;
 use GLFramework\View;
 
@@ -39,6 +41,8 @@ class FrameworkExtras extends Extra
 
         $this->addFunction(new \Twig_SimpleFunction('fire', array($this, 'fireEvent')));
         $this->addFunction(new \Twig_SimpleFunction('phpversion', 'phpversion'));
+        $this->addFunction(new \Twig_SimpleFunction('js', array($this, 'js')));
+        $this->addFunction(new \Twig_SimpleFunction('css', array($this, 'css')));
         $this->addFilter(new \Twig_SimpleFilter('active', array($this, 'isHrefActive')));
         $this->addFilter(new \Twig_SimpleFilter('fecha_hora', array($this, 'parseFechaHora')));
         $this->addFilter(new \Twig_SimpleFilter('fecha', array($this, 'parseFecha')));
@@ -95,6 +99,17 @@ class FrameworkExtras extends Extra
     public function implode($array, $separator)
     {
         return implode($separator, $array);
+    }
+
+    public function js($src, $options = array())
+    {
+        $js = new JavascriptMedia($src, $options);
+        return $js->getBrowserCode();
+    }
+    public function css($src, $options = array())
+    {
+        $css = new StylesheetMedia($src, $options);
+        return $css->getBrowserCode();
     }
 
 }

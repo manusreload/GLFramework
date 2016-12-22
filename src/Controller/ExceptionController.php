@@ -42,7 +42,7 @@ class ExceptionController extends ErrorController
     {
         parent::__construct(get_class($exception) . " " . $exception->getMessage() . " at " . $exception->getFile() . ":" . $exception->getLine());
         $this->exception = $exception;
-
+        $this->trace = $exception->getTraceAsString();
 
     }
 
