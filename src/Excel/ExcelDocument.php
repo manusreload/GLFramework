@@ -27,10 +27,16 @@
 namespace GLFramework\Excel;
 
 
+use GLFramework\Filesystem;
+
 class ExcelDocument
 {
 
     public $excel;
+    /**
+     * @var \PHPExcel_Worksheet
+     */
+    private $sheet;
 
     /**
      * ExcelDocument constructor.
@@ -38,5 +44,92 @@ class ExcelDocument
     public function __construct()
     {
         $this->excel = new \PHPExcel();
+        $this->setActiveSheet(0);
+    }
+
+    public function setActiveSheet($index)
+    {
+        $this->sheet = $this->excel->setActiveSheetIndex($index);
+    }
+
+    /**
+     * @param $column
+     * @param $row
+     * @param $value
+     * @return \PHPExcel_Cell
+     */
+    public function setCellValue($column, $row, $value)
+    {
+        return $this->sheet->setCellValueByColumnAndRow($column, $row, $value, true);
+    }
+
+    public function setStyle($style, $column1, $row1, $column2 = null, $row2 = null)
+    {
+        $this->sheet->getStyleByColumnAndRow($column1, $row1, $column2, $row2)->applyFromArray($style);
+    }
+
+    public function fillModels($header, $models, $offset = 1)
+    {
+        $colum = 0;
+        $row = $offset;
+
+        $styleArray = array(
+            'font'  => array(
+                'bold'  => true,
+            ));
+        foreach ($header as $name => $item)
+        {
+            $this->setCellValue($colum++, $row, $name);
+        }
+        $this->setStyle($styleArray, 0, $row, $colum, $row);
+        $row++;
+        foreach ($models as $model)
+        {
+            $colum = 0;
+            foreach ($header as $name => $item)
+            {
+                $this->sheet->setCellValueByColumnAndRow($colum++, $row, $this->getValue($item, $model));
+            }
+            $row++;
+        }
+
+        return $row;
+    }
+
+
+    public function getValue($item, $model)
+    {
+        if(is_string($item))
+        {
+            if(isset($model->{$item}))
+                return $model->{$item};
+            return $item;
+        }
+        else if(is_callable($item))
+        {
+            return call_user_func($item, $model);
+        }
+        return "";
+    }
+
+    public function sendAsDownload($name)
+    {
+
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $name . '.xls"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+        // If you're serving to IE over SSL, then the following may be needed
+        header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+        header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header ('Pragma: public'); // HTTP/1.0
+        $objWriter = \PHPExcel_IOFactory::createWriter($this->excel, 'Excel2007');
+        $filePath = Filesystem::allocate(); // Crear un archivo temporal
+        $objWriter->save($filePath);
+        readfile($filePath);
+        unlink($filePath);
     }
 }

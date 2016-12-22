@@ -28,7 +28,7 @@ class FixedLengthFile extends WriterBase
             $value = $assoc->get($model, $key);
             $line .= $this->fixed_size($value, $params);
         }
-        fwrite($this->fp, $line . "\n");
+        fwrite($this->fp, $line . "\r\n");
     }
     
     private function fixed_size($line, $params)
