@@ -40,10 +40,20 @@ class ExcelDocument
 
     /**
      * ExcelDocument constructor.
+     * @param null $file
+     * @param string $type
      */
-    public function __construct()
+    public function __construct($file = null, $type = 'Excel2007')
     {
-        $this->excel = new \PHPExcel();
+        if($file != null)
+        {
+            $objReader = \PHPExcel_IOFactory::createReader($type);
+            $this->excel = $objReader->load($file);
+        }
+        else
+        {
+            $this->excel = new \PHPExcel();
+        }
         $this->setActiveSheet(0);
     }
 
@@ -52,6 +62,10 @@ class ExcelDocument
         $this->sheet = $this->excel->setActiveSheetIndex($index);
     }
 
+    public function getCellValue($column, $row = 1)
+    {
+        return $this->sheet->getCellByColumnAndRow($column, $row);
+    }
     /**
      * @param $column
      * @param $row
@@ -61,6 +75,10 @@ class ExcelDocument
     public function setCellValue($column, $row, $value)
     {
         return $this->sheet->setCellValueByColumnAndRow($column, $row, $value, true);
+    }
+    public function setCellValueByName($name, $value)
+    {
+        return $this->sheet->setCellValue($name, $value, true);
     }
 
     public function setStyle($style, $column1, $row1, $column2 = null, $row2 = null)
@@ -97,7 +115,7 @@ class ExcelDocument
     }
 
 
-    public function getValue($item, $model)
+    private function getValue($item, $model)
     {
         if(is_string($item))
         {
@@ -131,5 +149,11 @@ class ExcelDocument
         $objWriter->save($filePath);
         readfile($filePath);
         unlink($filePath);
+    }
+
+    public function executeFormula($cell)
+    {
+        $phpCell = $this->sheet->getCell($cell);
+        $phpCell->setValue($phpCell->getFormattedValue());
     }
 }
