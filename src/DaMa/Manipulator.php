@@ -138,6 +138,22 @@ class Manipulator
             $association->setConstant($value);
             $this->association[] = $association;
         }
+        return $association;
+    }
+    public function defaultValue($nameInModel, $def)
+    {
+        if($association = $this->getAssociation($nameInModel))
+        {
+            $association->setDefaultValue($def);
+        }
+        else
+        {
+            $association = new Association();
+            $association->setNameInModel($nameInModel);
+            $association->setDefaultValue($def);
+            $this->association[] = $association;
+        }
+        return $association;
     }
 
     public function manipulator($manipulator, $nameInModel, $nameInManipulator, $fn = null)
