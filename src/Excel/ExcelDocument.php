@@ -151,6 +151,11 @@ class ExcelDocument
         unlink($filePath);
     }
 
+    public function executeFormulas()
+    {
+
+    }
+
     public function executeFormula($cell)
     {
         $phpCell = $this->sheet->getCell($cell);
