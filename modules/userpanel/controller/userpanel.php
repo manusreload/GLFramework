@@ -37,6 +37,33 @@ class userpanel extends AuthController
             $this->user->save();
             $this->addMessage("Se ha actualizado correctamente la informacion de perfil");
         }
+        if(isset($_POST['change_password']))
+        {
+            if($this->user->password == $this->user->encrypt($_POST['password']))
+            {
+                if(strlen($_POST['password1']) >= 6)
+                {
+                    if($_POST['password1'] == $_POST['password2'])
+                    {
+                        $this->user->password = $this->user->encrypt($_POST['password1']);
+                        $this->user->save();
+                        $this->addMessage("Se ha cambiado la contraseña correctamente");
+                    }
+                    else
+                    {
+                        $this->addMessage("La contraseñas no coinciden", "danger");
+                    }
+                }
+                else
+                {
+                    $this->addMessage("La contraseñas nueva es damasiado corta, minimo 6 caracteres", "danger");
+                }
+            }
+            else
+            {
+                $this->addMessage("La contraseña actual no es válida", "danger");
+            }
+        }
     }
 
 
