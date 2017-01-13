@@ -15,7 +15,7 @@
                 {% endblock %}
                 {% block content %}
 
-                    <form class="form-horizontal" method="post" action="{{ this.getLink(this) }}">
+                    <form class="form-horizontal" method="post" action="{{ this.getLink(this) }}" enctype="multipart/form-data">
                         <div class="form-group">
                             <label class="control-label col-lg-4">Nombre de usuario: </label>
                             <div class="col-lg-8">
@@ -33,8 +33,28 @@
                         <div class="form-group">
                             <label class="control-label col-lg-4">Correo Electronico: </label>
                             <div class="col-lg-8">
-                                <input class="form-control" type="text" name="nombre" value="{{ this.user.email }}">
+                                <input class="form-control" type="text" name="email" value="{{ this.user.email }}">
 
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-lg-4">Imagen de perfil: </label>
+                            <div class="col-lg-8">
+                                <input class="form-control" type="file" name="picture">
+
+                                <div>
+                                    <img src="{{ this.user.profile_image }}">
+                                </div>
+
+                            </div>
+                        </div>
+
+                        {{ fire('widgetUserPanelForm', [render]) | raw }}
+
+                        <div class="form-group">
+                            <div class="col-lg-offset-2 col-lg-10">
+                                <button class="btn btn-danger" type="submit" name="save">Guardar</button>
+                                <a class="btn btn-default" href="{{ this.getLink(this) }}">Cancelar</a>
                             </div>
                         </div>
 
@@ -44,6 +64,9 @@
             {% endembed %}
 
 
+
+        </div>
+        <div class="col-md-6">
             {% embed "views/templates/box.twig" %}
                 {% block title %}
                     Cambiar contraseña
@@ -55,20 +78,6 @@
                             <label class="control-label col-lg-4">Contraseña actual: </label>
                             <div class="col-lg-8">
                                 <input class="form-control" type="text" name="user_name" value="{{ this.user.user_name }}">
-
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-lg-4">Nombre: </label>
-                            <div class="col-lg-8">
-                                <input class="form-control" type="text" name="nombre" value="{{ this.user.nombre }}">
-
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-lg-4">Correo Electronico: </label>
-                            <div class="col-lg-8">
-                                <input class="form-control" type="text" name="nombre" value="{{ this.user.email }}">
 
                             </div>
                         </div>
