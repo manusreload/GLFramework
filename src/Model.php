@@ -162,7 +162,7 @@ class Model
                 $this->{$field} = now();
             }
             $value = $this->getFieldValue($field, $data);
-            if (isset($value) && $value !== '' && !$this->isIndex($field)) {
+            if (isset($value) && !$this->isIndex($field)) {
                 $args[] = $value;
                 $sql1 .= "`$field` = ?, ";
             }
