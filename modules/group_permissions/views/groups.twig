@@ -95,9 +95,12 @@
                                     <div class="col-lg-10">
                                         <select name="controller" class="form-control">
                                             {% for page in this.controllers %}
-                                                <option value="{{ page }}">{{ page }} - {{ this.getLink(page) }}</option>
+
+                                                <option value="{{ page }}">{% if this.isPagePressent(page) %}* {% endif %}{{ page }} - {{ this.getLink(page) }}</option>
+
                                             {% endfor %}
                                         </select>
+                                        * Indica que esa página ya esta añadida
                                     </div>
 
                                     <div class="col-lg-offset-2 col-lg-10">
