@@ -171,7 +171,7 @@ class Association
         {
             foreach($this->nameInFile as $subkey)
             {
-                if($this->defaultValue)
+                if(isset($this->defaultValue) && $this->defaultValue !== NULL)
                 {
                     $model->{$this->nameInModel} = $this->defaultValue;
                 }
