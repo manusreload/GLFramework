@@ -38,7 +38,17 @@
                             <td>{{ user.nombre }}</td>
                             <td>{{ user.email }}</td>
                             <td>{{ user.privilegios }}</td>
-                            <td>{% if user.admin %}<label class="label label-success">Admin</label>{% else %}<label class="label label-default">Usuario</label>{% endif %}</td>
+                            <td>
+                                {% if user.disabled %}
+                                    <label class="label label-danger">Desativado</label>
+                                {% else %}
+                                    {% if user.admin %}
+                                        <label class="label label-success">Admin</label>
+                                    {% else %}
+                                        <label class="label label-default">Usuario</label>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
 
                         </tr>
                     {% endfor %}
