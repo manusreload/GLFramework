@@ -1,0 +1,22 @@
+{% extends "templates/mail.twig" %}
+{% block body %}
+    <h1>Hola {{ user.nombre }}!</h1>
+    <p>Acabamos de crearle una cuenta en {{ mainconfig.app.name }}</p>
+    <p>Para acceder al servicio lo tiene que hacer através de un navegador web (Recomendamos Google Chrome)</p>
+    <table>
+        <tr>
+            <th>URL</th>
+            <td><a href="http://{{ _SERVER.HTTP_HOST }}/">http://{{ _SERVER.HTTP_HOST }}/</a></td>
+        </tr>
+        <tr>
+
+            <th>Nombre de usuario</th>
+            <td>{{ user.user_name }}</td>
+        </tr>
+    </table>
+    <p>Por defecto su contraseña está desactivada. Para activar la cuenta acceda al siguiente enlace y establezca la contraseña que desee.</p>
+
+    {% include "templates/mail/button.twig" with {href: this.getLink("GLFramework\\Modules\\Login\\recovery", {token: recovery.token}, true), text: "Establecer mi contraseña" } %}
+
+    <p>Si tiene cualquier duda puede contactar con nuestro servicio de soporte: soporte@gestionlan.com</p>
+{% endblock %}

@@ -617,13 +617,13 @@ class Model
                                 $object =  new $model();
                                 if(isset($fields[$name]))
                                     $filter = $fields[$name];
+                                $recursive2 = (isset($mt['recursive']))?$mt['recursive']:$recursive;
                                 if(isset($mt['field']))
                                 {
-                                    $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))->json($filter);
-
+                                    $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))->json($filter, $recursive2);
                                 }
                                 else{
-                                    $json[$name] = $object->get($this->getFieldValue($field))->json($filter);
+                                    $json[$name] = $object->get($this->getFieldValue($field))->json($filter,$recursive2);
                                 }
                             }
                             else
@@ -632,7 +632,7 @@ class Model
                                 if(isset($fields[$name]))
                                     $filter = $fields[$name];
                                 $object = new $mt($this->getFieldValue($field));
-                                $json[$name] = $object->json($filter);
+                                $json[$name] = $object->json($filter, $recursive);
                             }
                         }
                     }

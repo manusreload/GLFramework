@@ -32,6 +32,7 @@ use GLFramework\DaMa\Manipulators\CSVManipulator;
 use GLFramework\DaMa\Manipulators\ManipulatorCore;
 use GLFramework\DaMa\Manipulators\XLSManipulator;
 use GLFramework\DaMa\Manipulators\XLSXManipulator;
+use GLFramework\Log;
 use GLFramework\Model;
 
 class Manipulator
@@ -229,6 +230,11 @@ class Manipulator
         return false;
     }
 
+    function getNext()
+    {
+        $item =  $this->getCore()->next();
+        return $item;
+    }
     /**
      * @param $controller Controller
      * @param array $config
@@ -242,11 +248,11 @@ class Manipulator
         $buffer = "";
         $count = 0;
         $this->init($config);
-        if($header = $this->getCore()->next())
+        if($header = $this->getNext())
         {
             $this->current++;
             $buffer .= "<table class='table table-bordered'>";
-            while($next = $this->getCore()->next())
+            while($next = $this->getNext())
             {
                 if(implode("", $next) != "")
                 {
@@ -284,7 +290,7 @@ class Manipulator
             $controller->addMessage("Total Items: " . $count, "info");
             return $buffer;
         }
-
+        Log::d("Headers: " . print_r($header, true));
         $controller->addMessage("Error reading headers!", "danger");
         return false;
     }
@@ -351,11 +357,12 @@ class Manipulator
         return $model;
     }
 
-    public function debug($number, $config = array())
+    public function debug($count = 0, $config = array())
     {
         $tmp = array();
         $list = array();
         $this->init($config);
+        $number = $count;
         if($header = $this->getCore()->next())
         {
             while($data = $this->getCore()->next())
@@ -364,8 +371,11 @@ class Manipulator
                 $tmp = $data;
                 $model = $this->build($header, $data);
                 $number--;
-                if($number >= 0 && $model->valid())
-                    $list[] = $model;
+                if($model)
+                {
+                    if(($count == 0 || $number >= 0) && $model->valid())
+                        $list[] = $model;
+                }
             }
         }
         print_debug($header, $tmp, $list);
