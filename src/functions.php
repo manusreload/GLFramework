@@ -91,6 +91,7 @@ function print_array($array,$depth=1,$indentation=0){
 
 function fix_date($date)
 {
+    $date = trim($date);
     if($date != "")
     {
         if(preg_match("#([0-9]{2})/([0-9]{2})/([0-9]{4})#", $date, $matches))

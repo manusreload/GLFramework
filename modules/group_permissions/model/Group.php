@@ -12,12 +12,15 @@ class Group extends \GLFramework\Model
     var $id;
     var $title;
     var $permissions;
+    var $default;
     protected $table_name = "groups";
     protected $definition = array(
         'index' => 'id',
         'fields' => array(
             'title' => 'varchar(64)',
-            'permissions' => 'varchar(64)'
+            'permissions' => 'varchar(64)',
+            'default' => 'int(11)',
+
         )
     );
 
@@ -36,7 +39,7 @@ class Group extends \GLFramework\Model
     {
         $groups = explode(",", $user->privilegios);
         $groups = array_map('trim', $groups);
-        return $this->build($this->db->select("SELECT * FROM " . $this->getTableName() . " WHERE permissions IN ('" . implode("','", $groups) ."')"));
+        return $this->build($this->db->select("SELECT * FROM " . $this->getTableName() . " WHERE permissions IN ('" . implode("','", $groups) ."') OR `default` = 1"));
     }
 
     public function search($label)

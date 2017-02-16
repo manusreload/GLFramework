@@ -95,6 +95,11 @@ class Model
     protected $created_at_fileds = array('created_at');
 
     /**
+     * @var array Campos extra para el JSON array
+     */
+    protected $json_extra = array();
+
+    /**
      * Model constructor.
      * @param null $data
      * @throws \Exception
@@ -642,6 +647,13 @@ class Model
                 $json[$field] = $this->getFieldValue($field);
 
             }
+        }
+
+        foreach ($this->json_extra as $key => $function)
+        {
+
+            $json[$key] = call_user_func(array($this, $function));
+
         }
 
         return $json;
