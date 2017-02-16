@@ -83,6 +83,7 @@ class AuthController extends Controller implements Middleware
             $this->addMessage("Se ha desconectado correctamente");
             unset($_SESSION[self::$session_key]);
             setcookie(self::$session_key, "", 0, "/");
+            $this->user = new User();
         }
         if($this->requireLogin)
         {
