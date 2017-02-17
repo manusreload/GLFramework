@@ -28,6 +28,7 @@ namespace GLFramework\Excel;
 
 
 use GLFramework\Filesystem;
+use GLFramework\Model;
 
 class ExcelDocument
 {
@@ -119,9 +120,17 @@ class ExcelDocument
     {
         if(is_string($item))
         {
-            if(isset($model->{$item}))
-                return $model->{$item};
-            return $item;
+            if($model instanceof Model)
+            {
+                if(isset($model->{$item}))
+                    return $model->{$item};
+                return $item;
+            }
+            else{
+                if(isset($model[$item]))
+                    return $model[$item];
+                return $item;
+            }
         }
         else if(is_callable($item))
         {

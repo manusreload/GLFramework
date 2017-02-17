@@ -1,8 +1,5 @@
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-</head>
-<body>
+{% extends "templates/mail.twig" %}
+{% block body %}
 <p>{{ _POST.nombre }} ha enviado una incidencia</p>
 
 <table>
@@ -26,5 +23,4 @@
 <h3>Informacion del sistema</h3>
 <pre>{{ _POST.data }}</pre>
 <small>Incidencia generada por GLFramework el {{ "now" | date("d/m/Y") }} a las {{ "now" | date("H:i:s") }}</small>
-</body>
-</html>
+{% endblock %}

@@ -196,6 +196,11 @@ class ModelResult implements \IteratorAggregate
         return new \ArrayIterator( $this->getModels());
     }
 
+    /**
+     * @param $length
+     * @param null $start
+     * @return ModelResult
+     */
     public function limit($length, $start = null)
     {
         return new ModelResult($this->model_class, array_slice($this->models, $start, $length));

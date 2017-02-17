@@ -1,13 +1,9 @@
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-</head>
-<body>
-<h1>Hola {{ user.nombre }}!</h1>
-<p>Parece que has solicitado recuperar tu contraseña.</p>
-<p>Su nombre de usuario para acceder es: <b>{{ user.user_name }}</b></p>
-<p>Para restablecer la contraseña haz click aqui en este enlace:</p>
-<p><a href="{{ this.getLink(this, {token: recovery.token}, true) }}">{{ this.getLink(this, {token: recovery.token}, true) }}</a> </p>
+{% extends "templates/mail.twig" %}
+{% block body %}
+    <h1>Hola {{ user.nombre }}!</h1>
+    <p>Parece que has solicitado recuperar tu contraseña.</p>
+    <p>Su nombre de usuario para acceder es: <b>{{ user.user_name }}</b></p>
+    <p>Para restablecer la contraseña haz click aqui en este boton:</p>
+    {% include "templates/mail/button.twig" with {href: this.getLink(this, {token: recovery.token}, true), text: "Recuperar contraseña" } %}
 
-</body>
-</html>
+{% endblock %}

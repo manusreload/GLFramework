@@ -60,6 +60,12 @@ class AuthController extends Controller implements Middleware
             if($user)
             {
                 $this->user = self::instanceUser($user);
+                if($this->user->disabled)
+                {
+                    unset($_SESSION[self::$session_key]);
+                    $this->addMessage("Se ha denegado el acceso al sistema", "danger");
+                    $this->quit("/login");
+                }
             }
             else{
                 unset($_SESSION[self::$session_key]);
@@ -77,6 +83,7 @@ class AuthController extends Controller implements Middleware
             $this->addMessage("Se ha desconectado correctamente");
             unset($_SESSION[self::$session_key]);
             setcookie(self::$session_key, "", 0, "/");
+            $this->user = new User();
         }
         if($this->requireLogin)
         {
@@ -114,22 +121,30 @@ class AuthController extends Controller implements Middleware
             if($user)
             {
                 $this->user = new User($user);
-                $_SESSION[self::$session_key] = array($username, $password);
-                Events::fire('onLoginSuccess', array('user' => $this->user));
-                if(isset($_REQUEST['remember']) && $_REQUEST['remember'])
+                if(!$this->user->disabled)
                 {
-                    setcookie(self::$session_key, serialize($_SESSION[self::$session_key]), time() + 60 * 60 * 24 * 30, "/");
-                }
-                if(isset($_SESSION['return']))
-                {
-                    $this->redirection($_SESSION['return']);
+                    $_SESSION[self::$session_key] = array($username, $password);
+                    Events::fire('onLoginSuccess', array('user' => $this->user));
+                    if(isset($_REQUEST['remember']) && $_REQUEST['remember'])
+                    {
+                        setcookie(self::$session_key, serialize($_SESSION[self::$session_key]), time() + 60 * 60 * 24 * 30, "/");
+                    }
+                    if(isset($_SESSION['return']))
+                    {
+                        $this->redirection($_SESSION['return']);
+                    }
+                    else
+                    {
+                        $this->redirection("/home");
+                    }
+                    unset($_SESSION['return']);
+                    return true;
+
                 }
                 else
                 {
-                    $this->redirection("/home");
+                    $this->addMessage("Este usuario está desactivado", "danger");
                 }
-                unset($_SESSION['return']);
-                return true;
             }
             else{
                 $this->addMessage("Usuario o contraseña incorrecta", "danger");

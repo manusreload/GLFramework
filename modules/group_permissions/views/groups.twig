@@ -68,6 +68,17 @@
                                     <input class="form-control" type="text" name="permissions" value="{{ this.group.permissions }}" required />
                                 </div>
                             </div>
+                            <div class="form-group ">
+                                <label class="control-label col-lg-2"></label>
+                                <div class="col-lg-10 col-lg-offset-2">
+                                    <label class="checkbox">
+                                        <input type="checkbox" name="default" value="1" {{ this.group.default?"checked":"" }} />
+                                        Grupo por defecto
+                                    </label>
+                                    <small>Si se activa, entonces el grupo se aplicará a todos los usuarios.</small>
+
+                                </div>
+                            </div>
                             <div class="form-group">
                                 <div class="col-lg-offset-2 col-lg-10">
                                     <button class="btn btn-danger" type="submit" name="save">Guardar</button>
