@@ -55,10 +55,16 @@ class DataManipulation
      * @param int $mode
      * @return Manipulator
      */
-    public function createFromFile($file, $mode = DATA_MANIPULATION_CREATE_MODE_AUTO)
+    public function createFromFile($file, $mode = DATA_MANIPULATION_CREATE_MODE_AUTO, $extension = null)
     {
         $manipulator = new Manipulator();
-        $manipulator->setFileInput($file, $mode);
+        $manipulator->setFileInput($file, $mode, $extension);
+        return $manipulator;
+    }
+    public function createFromUpload($upload)
+    {
+        $manipulator = new Manipulator();
+        $manipulator->setFileInput($upload['tmp_name'], DATA_MANIPULATION_CREATE_MODE_AUTO, $this->getFileExtension($upload['name']));
         return $manipulator;
     }
 }

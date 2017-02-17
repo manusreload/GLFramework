@@ -364,7 +364,7 @@ class Manipulator
                 $tmp = $data;
                 $model = $this->build($header, $data);
                 $number--;
-                if($number >= 0 && $model->valid())
+                if($number >= 0 && $model && $model->valid())
                     $list[] = $model;
             }
         }
@@ -388,24 +388,24 @@ class Manipulator
         return $example;
     }
 
-    public function getModeByFile($file)
+    public function getModeByFile($file, $extension = null)
     {
+        if(!$extension) $extension = substr($file, strrpos($file, "."));
         if(strpos($file, ".") !== FALSE)
         {
-            $ext = substr($file, strrpos($file, "."));
-            if($ext == ".csv") return DATA_MANIPULATION_CREATE_MODE_CSV;
-            if($ext == ".xls") return DATA_MANIPULATION_CREATE_MODE_XLS;
-            if($ext == ".xlsx") return DATA_MANIPULATION_CREATE_MODE_XLSX;
-            if($ext == ".ods") return DATA_MANIPULATION_CREATE_MODE_ODS;
+            if($extension == ".csv") return DATA_MANIPULATION_CREATE_MODE_CSV;
+            if($extension == ".xls") return DATA_MANIPULATION_CREATE_MODE_XLS;
+            if($extension == ".xlsx") return DATA_MANIPULATION_CREATE_MODE_XLSX;
+            if($extension == ".ods") return DATA_MANIPULATION_CREATE_MODE_ODS;
         }
     }
 
-    public function setFileInput($file, $mode = DATA_MANIPULATION_CREATE_MODE_AUTO)
+    public function setFileInput($file, $mode = DATA_MANIPULATION_CREATE_MODE_AUTO, $extension = null)
     {
         $this->setFilename($file);
         if($mode == DATA_MANIPULATION_CREATE_MODE_AUTO)
         {
-            $mode = $this->getModeByFile($file);
+            $mode = $this->getModeByFile($file, $extension);
         }
         if($mode == DATA_MANIPULATION_CREATE_MODE_ODS) $this->setCore(new CSVManipulator());
         else if($mode == DATA_MANIPULATION_CREATE_MODE_XLS) $this->setCore(new XLSManipulator());
