@@ -43,6 +43,7 @@ class AuthController extends Controller implements Middleware
      */
     var $user;
     private $requireLogin = true;
+    private $default_redirect = "/home";
 
     public function __construct($base, $module)
     {
@@ -135,7 +136,7 @@ class AuthController extends Controller implements Middleware
                     }
                     else
                     {
-                        $this->redirection("/home");
+                        $this->redirection($this->default_redirect);
                     }
                     unset($_SESSION['return']);
                     return true;
@@ -200,4 +201,22 @@ class AuthController extends Controller implements Middleware
         $_SESSION[self::$session_key] = array($user->user_name, $user->password);
         return $user;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultRedirect()
+    {
+        return $this->default_redirect;
+    }
+
+    /**
+     * @param mixed $default_redirect
+     */
+    public function setDefaultRedirect($default_redirect)
+    {
+        $this->default_redirect = $default_redirect;
+    }
+
+
 }
