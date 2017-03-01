@@ -52,6 +52,11 @@ class Manipulator
     private $current = 0;
     private $result = array();
 
+    private $callback;
+    public function setParseCallback($callback)
+    {
+        $this->callback = $callback;
+    }
     /**
      * @return mixed
      */
@@ -217,6 +222,10 @@ class Manipulator
                     $model = $this->build($header, $next);
                     if($model && $model->valid() && $model->save(true))
                     {
+                        if($this->callback)
+                        {
+                            call_user_func($this->callback, $model);
+                        }
                         $models[] = $model;
                         $this->result[$this->current] = $model;
                         $count++;
@@ -368,7 +377,7 @@ class Manipulator
             while($data = $this->getCore()->next())
             {
                 if($data == null) break;
-                $tmp = $data;
+                $tmp[] = $data;
                 $model = $this->build($header, $data);
                 $number--;
                 if($model)
@@ -400,7 +409,7 @@ class Manipulator
 
     public function getModeByFile($file, $extension = null)
     {
-        if(!$extension) $extension = substr($file, strrpos($file, "."));
+        if(!$extension) $extension = strtolower(substr($file, strrpos($file, ".")));
         if(strpos($file, ".") !== FALSE)
         {
             if($extension == ".csv") return DATA_MANIPULATION_CREATE_MODE_CSV;
