@@ -13,6 +13,7 @@ use GLFramework\Bootstrap;
 use GLFramework\Events;
 use GLFramework\Media\JavascriptMedia;
 use GLFramework\Media\StylesheetMedia;
+use GLFramework\Model\Vars;
 use GLFramework\Module\ModuleManager;
 use GLFramework\View;
 
@@ -43,6 +44,7 @@ class FrameworkExtras extends Extra
         $this->addFunction(new \Twig_SimpleFunction('phpversion', 'phpversion'));
         $this->addFunction(new \Twig_SimpleFunction('js', array($this, 'js')));
         $this->addFunction(new \Twig_SimpleFunction('css', array($this, 'css')));
+        $this->addFunction(new \Twig_SimpleFunction('vars', array($this, 'vars')));
         $this->addFilter(new \Twig_SimpleFilter('active', array($this, 'isHrefActive')));
         $this->addFilter(new \Twig_SimpleFilter('fecha_hora', array($this, 'parseFechaHora')));
         $this->addFilter(new \Twig_SimpleFilter('fecha', array($this, 'parseFecha')));
@@ -110,6 +112,11 @@ class FrameworkExtras extends Extra
     {
         $css = new StylesheetMedia($src, $options);
         return $css->getBrowserCode();
+    }
+
+    public function vars($name, $def = null)
+    {
+        return Vars::getVar($name, $def);
     }
 
 }
