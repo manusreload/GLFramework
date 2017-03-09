@@ -48,6 +48,7 @@ class User extends Model
             'nombre' => "text",
             'email' => "text",
             'profile_image' => "varchar(256)",
+            'disabled' => "int(1)",
         )
     );
 

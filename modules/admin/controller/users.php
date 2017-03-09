@@ -11,6 +11,7 @@ namespace GLFramework\Modules\Admin;
 
 use GLFramework\Controller\AuthController;
 use GLFramework\Events;
+use GLFramework\Mail;
 use GLFramework\Model\Page;
 use GLFramework\Model\User;
 use GLFramework\Model\UserPage;
@@ -52,6 +53,13 @@ class users extends AuthController
         if(isset($params['id']))
         {
             $this->users = $this->users->get($params['id'])->getModel();
+            if(isset($_GET['login']))
+            {
+                $this->processLogin($this->users->user_name, $this->users->password, false);
+                $this->quit("/home");
+                return false;
+
+            }
             if($params['id'] == 'add' || $this->users->id != 0)
             {
                 if(isset($params['controller']))
@@ -132,6 +140,31 @@ class users extends AuthController
                     else
                     {
                         $this->addMessage("Se ha producido un error al guardar los datos", "danger");
+                    }
+                    if(isset($_POST['welcome_mail']) && $_POST['welcome_mail'])
+                    {
+                        if(ModuleManager::exists("login"))
+                        {
+
+//                            die($this->getLink('GLFramework\Modules\Login\recovery', array('token' => 'abc')));
+                            $recovery = new \UserRecovery();
+                            $recovery = $recovery->generateNew($this->users);
+                            $recovery->save(true);
+                            $mail = new Mail();
+                            $message = $mail->render($this, "mail/welcome.twig", array('user' => $this->users, 'recovery' => $recovery));
+                            if($mail->send($this->users->email, "Bienvenido a Jarmauto Planning", $message))
+                            {
+                                $this->addMessage("Se ha enviado un email al usuario con los pasos que tiene que seguir para acceder al servicio");
+                            }
+                            else
+                            {
+                                $this->addMessage("Se ha producido un error al enviar el email, verifique los parametros de configuración.", "danger");
+                            }
+                        }
+                        else
+                        {
+                            $this->addMessage("Para enviar el mail de bienvenida tienes que tener el modulo 'login' activado", "danger");
+                        }
                     }
                 }
 

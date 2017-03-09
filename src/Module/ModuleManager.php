@@ -339,11 +339,20 @@ class ModuleManager
 
     public function handleFilesystem($args, $request)
     {
-        $filesystem = new Filesystem($args['name']);
-        if($filesystem->isPublic())
+        $file = urldecode($args['name']);
+        $filesystem = new Filesystem($file);
+        if($filesystem->exists())
         {
-            $filesystem->read(true);
-            die();
+            if($filesystem->isPublic())
+            {
+                header("Content-Type: " . mime_content_type($filesystem->getAbsolutePath()));
+                $filesystem->read(true);
+                die();
+            }
+            else
+            {
+                return $this->mainModule->run(new ErrorController("Este archivo no es descargable"), $request);
+            }
         }
         else
         {

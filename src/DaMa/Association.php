@@ -39,6 +39,7 @@ class Association
     public $parser = null;
     public $manipulatorParser = null;
     public $filterObject = null;
+    public $defaultValue = null;
     /**
      * @var Manipulator
      */
@@ -62,10 +63,12 @@ class Association
 
     /**
      * @param mixed $nameInFile
+     * @return $this
      */
     public function addNameInFile($nameInFile)
     {
         $this->nameInFile[] = $nameInFile;
+        return $this;
     }
 
     /**
@@ -78,17 +81,28 @@ class Association
 
     /**
      * @param mixed $nameInModel
+     * @return $this
      */
     public function setNameInModel($nameInModel)
     {
         $this->nameInModel = $nameInModel;
+        return $this;
     }
+
     /**
      * @param mixed $nameInManipulator
+     * @return $this
      */
     public function setNameInManipulator($nameInManipulator)
     {
         $this->nameInManipulator = $nameInManipulator;
+        return $this;
+    }
+
+    public function setDefaultValue($value)
+    {
+        $this->defaultValue = $value;
+        return $this;
     }
 
     /**
@@ -101,19 +115,23 @@ class Association
 
     /**
      * @param null $parser
+     * @return $this
      */
     public function setParser($parser)
     {
         $this->parser = $parser;
+        return $this;
     }
 
 
     /**
      * @param null $manipulatorParser
+     * @return $this
      */
     public function setManipulatorParser($manipulatorParser)
     {
         $this->manipulatorParser = $manipulatorParser;
+        return $this;
     }
 
 
@@ -128,15 +146,18 @@ class Association
 
     /**
      * @param boolean $constant
+     * @return $this
      */
     public function setConstant($constant)
     {
         $this->constant = $constant;
+        return $this;
     }
 
     public function setManipulator($manipulator)
     {
         $this->manipulator = $manipulator;
+        return $this;
     }
 
     /**
@@ -150,6 +171,10 @@ class Association
         {
             foreach($this->nameInFile as $subkey)
             {
+                if(isset($this->defaultValue) && $this->defaultValue !== NULL)
+                {
+                    $model->{$this->nameInModel} = $this->defaultValue;
+                }
                 if(isset($row[$subkey]))
                 {
                     $model->{$this->nameInModel} = $this->parse($row[$subkey], $row);

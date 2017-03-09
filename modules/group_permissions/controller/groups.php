@@ -83,10 +83,20 @@ class groups extends AuthController
             $this->groupPage = $this->groupPage->get(array('id_group' => $this->params['id']))->getModels();
         }
         $this->groups = $this->groups->get_all()->getModels();
+    }
 
-
-
-
+    public function isPagePressent($name)
+    {
+        $page = new Page();
+        $page = $page->get_by_controller($name)->getModel();
+        if($page->id)
+        {
+            foreach ($this->groupPage as $item)
+            {
+                if($item->id_page == $page->id) return true;
+            }
+        }
+        return false;
     }
 
 

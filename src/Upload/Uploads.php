@@ -58,7 +58,7 @@ class Uploads
 
     public function getUploadDir()
     {
-        return $this->dir . "/" . $this->folder;
+        return $this->folder . "/" . $this->dir;
     }
 
     /**

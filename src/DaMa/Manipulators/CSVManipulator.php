@@ -31,13 +31,40 @@ class CSVManipulator extends ManipulatorCore
 {
 
     private $handle;
+    private $separator = ";";
     public function open($file, $config = array())
     {
+        $this->separator = $this->detectSeparator($file);
         $this->handle = fopen($file, "r");
     }
 
     public function next()
     {
-        return fgetcsv($this->handle, null, ";", "\"");
+        return fgetcsv($this->handle, null, $this->separator, "\"");
+    }
+
+    private function detectSeparator($file)
+    {
+        $matches = array(";", ",", "|", "\t");
+        $handle = fopen($file, "r");
+        if ($handle) {
+            $minSeparator = $matches[0];
+            if (($line = fgets($handle)) !== false) {
+                $minOffset = strlen($line);
+                foreach ($matches as $item)
+                {
+                    $i = strpos($line, $item);
+                    if($i !== FALSE && $i < $minOffset)
+                    {
+                        $minOffset = $i;
+                        $minSeparator = $item;
+                    }
+                }
+            }
+
+            fclose($handle);
+            return $minSeparator;
+        }
+        return $matches[0];
     }
 }

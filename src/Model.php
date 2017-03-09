@@ -95,6 +95,11 @@ class Model
     protected $created_at_fileds = array('created_at');
 
     /**
+     * @var array Campos extra para el JSON array
+     */
+    protected $json_extra = array();
+
+    /**
      * Model constructor.
      * @param null $data
      * @throws \Exception
@@ -162,7 +167,7 @@ class Model
                 $this->{$field} = now();
             }
             $value = $this->getFieldValue($field, $data);
-            if (isset($value) && $value !== '' && !$this->isIndex($field)) {
+            if (isset($value) && !$this->isIndex($field)) {
                 $args[] = $value;
                 $sql1 .= "`$field` = ?, ";
             }
@@ -617,13 +622,13 @@ class Model
                                 $object =  new $model();
                                 if(isset($fields[$name]))
                                     $filter = $fields[$name];
+                                $recursive2 = (isset($mt['recursive']))?$mt['recursive']:$recursive;
                                 if(isset($mt['field']))
                                 {
-                                    $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))->json($filter);
-
+                                    $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))->json($filter, $recursive2);
                                 }
                                 else{
-                                    $json[$name] = $object->get($this->getFieldValue($field))->json($filter);
+                                    $json[$name] = $object->get($this->getFieldValue($field))->json($filter,$recursive2);
                                 }
                             }
                             else
@@ -632,7 +637,7 @@ class Model
                                 if(isset($fields[$name]))
                                     $filter = $fields[$name];
                                 $object = new $mt($this->getFieldValue($field));
-                                $json[$name] = $object->json($filter);
+                                $json[$name] = $object->json($filter, $recursive);
                             }
                         }
                     }
@@ -642,6 +647,13 @@ class Model
                 $json[$field] = $this->getFieldValue($field);
 
             }
+        }
+
+        foreach ($this->json_extra as $key => $function)
+        {
+
+            $json[$key] = call_user_func(array($this, $function));
+
         }
 
         return $json;

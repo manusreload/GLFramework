@@ -310,7 +310,7 @@ abstract class Controller
      */
     public function getUploads()
     {
-        return new Uploads($this->module->getDirectory(), $this->config);
+        return new Uploads(Bootstrap::getSingleton()->getDirectory(), $this->config);
     }
 
     /**

@@ -9,6 +9,7 @@
 namespace GLFramework\Modules\Scripts;
 
 
+use GLFramework\Bootstrap;
 use GLFramework\Controller;
 
 class scripts extends Controller
@@ -25,7 +26,7 @@ class scripts extends Controller
         // TODO: Implement run() method.
         $this->getResponse()->setContentType("text/plain");
         $script = $this->params['script'];
-        $filename = __DIR__ . "/../scripts/" . $script . ".php";
+        $filename = Bootstrap::getSingleton()->getDirectory() . "/scripts/" . $script . ".php";
         ob_start();
         include $filename;
         ob_end_flush();

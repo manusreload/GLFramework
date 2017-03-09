@@ -13,8 +13,14 @@ use GLFramework\Bootstrap;
 use GLFramework\Controller;
 use GLFramework\Mail;
 
-class send extends Controller
+class send extends Controller\AuthController
 {
+    public function __construct($base, $module)
+    {
+        parent::__construct($base, $module);
+        $this->setRequireLogin(false);
+    }
+
 
     /**
      * Implementar aqui el código que ejecutara nuestra aplicación

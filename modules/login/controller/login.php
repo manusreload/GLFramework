@@ -22,7 +22,7 @@ class login extends AuthController
         {
             if($this->processLogin())
             {
-//                $this->redirection("/auth");
+//                $this->redirection("/panel");
             }
         }
 

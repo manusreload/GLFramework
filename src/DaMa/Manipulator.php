@@ -32,6 +32,7 @@ use GLFramework\DaMa\Manipulators\CSVManipulator;
 use GLFramework\DaMa\Manipulators\ManipulatorCore;
 use GLFramework\DaMa\Manipulators\XLSManipulator;
 use GLFramework\DaMa\Manipulators\XLSXManipulator;
+use GLFramework\Log;
 use GLFramework\Model;
 
 class Manipulator
@@ -51,6 +52,11 @@ class Manipulator
     private $current = 0;
     private $result = array();
 
+    private $callback;
+    public function setParseCallback($callback)
+    {
+        $this->callback = $callback;
+    }
     /**
      * @return mixed
      */
@@ -138,6 +144,22 @@ class Manipulator
             $association->setConstant($value);
             $this->association[] = $association;
         }
+        return $association;
+    }
+    public function defaultValue($nameInModel, $def)
+    {
+        if($association = $this->getAssociation($nameInModel))
+        {
+            $association->setDefaultValue($def);
+        }
+        else
+        {
+            $association = new Association();
+            $association->setNameInModel($nameInModel);
+            $association->setDefaultValue($def);
+            $this->association[] = $association;
+        }
+        return $association;
     }
 
     public function manipulator($manipulator, $nameInModel, $nameInManipulator, $fn = null)
@@ -200,6 +222,10 @@ class Manipulator
                     $model = $this->build($header, $next);
                     if($model && $model->valid() && $model->save(true))
                     {
+                        if($this->callback)
+                        {
+                            call_user_func($this->callback, $model);
+                        }
                         $models[] = $model;
                         $this->result[$this->current] = $model;
                         $count++;
@@ -213,6 +239,11 @@ class Manipulator
         return false;
     }
 
+    function getNext()
+    {
+        $item =  $this->getCore()->next();
+        return $item;
+    }
     /**
      * @param $controller Controller
      * @param array $config
@@ -226,11 +257,11 @@ class Manipulator
         $buffer = "";
         $count = 0;
         $this->init($config);
-        if($header = $this->getCore()->next())
+        if($header = $this->getNext())
         {
             $this->current++;
             $buffer .= "<table class='table table-bordered'>";
-            while($next = $this->getCore()->next())
+            while($next = $this->getNext())
             {
                 if(implode("", $next) != "")
                 {
@@ -268,7 +299,7 @@ class Manipulator
             $controller->addMessage("Total Items: " . $count, "info");
             return $buffer;
         }
-
+        Log::d("Headers: " . print_r($header, true));
         $controller->addMessage("Error reading headers!", "danger");
         return false;
     }
@@ -335,21 +366,25 @@ class Manipulator
         return $model;
     }
 
-    public function debug($number, $config = array())
+    public function debug($count = 0, $config = array())
     {
         $tmp = array();
         $list = array();
         $this->init($config);
+        $number = $count;
         if($header = $this->getCore()->next())
         {
             while($data = $this->getCore()->next())
             {
                 if($data == null) break;
-                $tmp = $data;
+                $tmp[] = $data;
                 $model = $this->build($header, $data);
                 $number--;
-                if($number >= 0 && $model->valid())
-                    $list[] = $model;
+                if($model)
+                {
+                    if(($count == 0 || $number >= 0) && $model && $model->valid())
+                        $list[] = $model;
+                }
             }
         }
         print_debug($header, $tmp, $list);
@@ -372,24 +407,24 @@ class Manipulator
         return $example;
     }
 
-    public function getModeByFile($file)
+    public function getModeByFile($file, $extension = null)
     {
+        if(!$extension) $extension = strtolower(substr($file, strrpos($file, ".")));
         if(strpos($file, ".") !== FALSE)
         {
-            $ext = substr($file, strrpos($file, "."));
-            if($ext == ".csv") return DATA_MANIPULATION_CREATE_MODE_CSV;
-            if($ext == ".xls") return DATA_MANIPULATION_CREATE_MODE_XLS;
-            if($ext == ".xlsx") return DATA_MANIPULATION_CREATE_MODE_XLSX;
-            if($ext == ".ods") return DATA_MANIPULATION_CREATE_MODE_ODS;
+            if($extension == ".csv") return DATA_MANIPULATION_CREATE_MODE_CSV;
+            if($extension == ".xls") return DATA_MANIPULATION_CREATE_MODE_XLS;
+            if($extension == ".xlsx") return DATA_MANIPULATION_CREATE_MODE_XLSX;
+            if($extension == ".ods") return DATA_MANIPULATION_CREATE_MODE_ODS;
         }
     }
 
-    public function setFileInput($file, $mode = DATA_MANIPULATION_CREATE_MODE_AUTO)
+    public function setFileInput($file, $mode = DATA_MANIPULATION_CREATE_MODE_AUTO, $extension = null)
     {
         $this->setFilename($file);
         if($mode == DATA_MANIPULATION_CREATE_MODE_AUTO)
         {
-            $mode = $this->getModeByFile($file);
+            $mode = $this->getModeByFile($file, $extension);
         }
         if($mode == DATA_MANIPULATION_CREATE_MODE_ODS) $this->setCore(new CSVManipulator());
         else if($mode == DATA_MANIPULATION_CREATE_MODE_XLS) $this->setCore(new XLSManipulator());

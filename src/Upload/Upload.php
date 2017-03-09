@@ -33,6 +33,8 @@ class Upload
     var $upload;
     var $uploads;
     var $hash;
+
+    var $folder;
     /**
      * Upload constructor.
      * @param $uploads Uploads
@@ -46,6 +48,27 @@ class Upload
         $this->hash = date("Y-m-d_H-i-s") . "_";
     }
 
+    /**
+     * @return mixed
+     */
+    public function getFolder()
+    {
+        return $this->folder;
+    }
+
+    /**
+     * @param mixed $folder
+     */
+    public function setFolder($folder)
+    {
+        if(substr($folder, strrpos($folder, "/")) != strlen($folder))
+        {
+            $folder .= "/";
+        }
+        $this->folder = $folder;
+    }
+
+
     public function isMultiple()
     {
         return is_array($this->upload['name']);
@@ -58,7 +81,7 @@ class Upload
 
     public function getFilename($index = null)
     {
-        return $this->uploads->folder . "/" . $this->hash . $this->name($index);
+        return $this->uploads->folder . "/" . $this->folder . $this->hash . $this->name($index);
     }
 
     public function getAbsolutePath($index = false)
@@ -70,6 +93,11 @@ class Upload
     {
         $source = $this->tmpName($index);
         $dest = $this->getAbsolutePath($index);
+        $parent = substr($dest, 0, strrpos($dest, "/"));
+        if(!is_dir($parent))
+        {
+            mkdir($parent);
+        }
         return move_uploaded_file($source, $dest);
     }
 
@@ -86,12 +114,24 @@ class Upload
             return $this->upload['name'];
         return $this->upload['name'][$index];
     }
+    public function setName($name, $index = false)
+    {
+        if($index === false)
+            return $this->upload['name'] = $name;
+        return $this->upload['name'][$index] = $name;;
+    }
 
     public function tmpName($index = false)
     {
         if($index === false)
             return $this->upload['tmp_name'];
         return $this->upload['tmp_name'][$index];
+    }
+    public function contentType($index = false)
+    {
+        if($index === false)
+            return $this->upload['type'];
+        return $this->upload['type'][$index];
     }
 
     public function isEmpty($index = false)
@@ -102,6 +142,11 @@ class Upload
     public function isSuccess($index = false)
     {
         return $this->error($index) == 0;
+    }
+
+    public function url($index = false)
+    {
+        return "http://" . $_SERVER['HTTP_HOST'] . "/" . $this->getFilename($index);
     }
 
 }
