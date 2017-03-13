@@ -219,12 +219,13 @@ class Manipulator
                 }
                 if(implode("", $next) != "")
                 {
-                    $model = $this->build($header, $next);
+                    $modelSource = null;
+                    $model = $this->build($header, $next, $modelSource);
                     if($model && $model->valid() && $model->save(true))
                     {
                         if($this->callback)
                         {
-                            call_user_func($this->callback, $model);
+                            call_user_func($this->callback, $model, $modelSource);
                         }
                         $models[] = $model;
                         $this->result[$this->current] = $model;
@@ -307,9 +308,10 @@ class Manipulator
     /**
      * @param $header
      * @param $row
+     * @param null $modelSource
      * @return Model
      */
-    public function build($header, $row)
+    public function build($header, $row, &$modelSource = null)
     {
         $associative = array();
         foreach($header as $key => $value)
@@ -326,7 +328,9 @@ class Manipulator
                     $value = $model->{$association->nameInModel};
                     if($value && !empty($value))
                     {
-                        $model = $model->get(array($association->nameInModel => $value))->getModel();
+                        $result = $model->get(array($association->nameInModel => $value));
+                        $model = $result->getModel();
+                        $modelSource = $result->getModel();
                         break;
                     }
                 }
