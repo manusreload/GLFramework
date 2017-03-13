@@ -38,5 +38,16 @@ class Vars extends Model
         $var->value = $value;
         return $var->save();
     }
+
+    public static function getArray()
+    {
+        $var = new Vars();
+        $list = array();
+        foreach ($var->get_all()->getModels() as $item)
+        {
+            $list[$item->key] = $item->value;
+        }
+        return $list;
+    }
     
 }
