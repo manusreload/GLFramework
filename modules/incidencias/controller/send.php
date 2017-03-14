@@ -32,7 +32,7 @@ class send extends Controller\AuthController
         $cnf = Bootstrap::getSingleton()->getConfig();
         $appName = $cnf['app']['name'];
         $this->setTemplate("json.twig");
-        $mail = new Mail();
+        $mail = new Mail($_POST['email'], $_POST['nombre']);
         $content = $mail->render($this, "mail_template.twig", array('post' => $_POST));
         $mail->send('soporte@gestionlan.com', 'Incidencia de ' . $appName, $content, array(), array($_POST['email']));
 
