@@ -110,8 +110,7 @@ class FrameworkExtras extends Extra
     }
     public function css($src, $options = array())
     {
-        $css = new StylesheetMedia($src, $options);
-        return $css->getBrowserCode();
+        $this->view->addCSS($src, $options);
     }
 
     public function vars($name, $def = null)

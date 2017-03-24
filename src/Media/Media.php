@@ -35,6 +35,10 @@ abstract class Media
             {
                 $src = $this->addParameterToURL($src, 'v', $this->options['version']);
             }
+            if(isset($this->options['v']))
+            {
+                $src = $this->addParameterToURL($src, 'v', $this->options['v']);
+            }
             if(isset($this->options['hash']))
             {
                 $file = realpath(".") . "$src";

@@ -220,7 +220,7 @@ class View
         $result = "";
         foreach ($view->stylesheetMedia as $css)
         {
-            $result .= $css->getBrowserCode();
+            $result .= $css->getBrowserCode() . "\n";
         }
         return $result;
     }
