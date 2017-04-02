@@ -21,7 +21,7 @@ class ControllerCollector extends DataCollector implements Renderable
     /**
      * @var Controller
      */
-    var $controller;
+    var $controllerStorage;
     /**
      * Called by the DebugBar when data needs to be collected
      *
@@ -30,11 +30,11 @@ class ControllerCollector extends DataCollector implements Renderable
     function collect()
     {
         // TODO: Implement collect() method.
-        if($this->controller)
+        if($this->controllerStorage)
         {
             return array(
-                'name' => $this->controller->name,
-                'controller' => $this->controller
+                'name' => $this->controllerStorage->name,
+                'controller' => $this->getVariables()
             );
         }
     }
@@ -73,7 +73,23 @@ class ControllerCollector extends DataCollector implements Renderable
      */
     public function setController($controller)
     {
-        $this->controller = $controller;
+        $this->controllerStorage = $controller;
+    }
+
+    public function getVariables()
+    {
+        $array = array();
+        $rf = new \ReflectionClass($this->controllerStorage);
+        $p = $rf->getProperties();
+        foreach ($p as $item)
+        {
+//            if($item->class == get_class($this->controller))
+            {
+                $array[$item->name] = (string) $this->controllerStorage->{$item->name};
+            }
+        }
+        return ($array);
+
     }
     
     

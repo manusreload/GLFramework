@@ -4,6 +4,7 @@ namespace Core\Installer;
 use GLFramework\Controller;
 use GLFramework\DatabaseManager;
 use GLFramework\Events;
+use GLFramework\Mail;
 use GLFramework\Model;
 use GLFramework\Model\User;
 use GLFramework\Module\ModuleManager;
@@ -122,9 +123,39 @@ class setup extends Controller
 
     private function step3()
     {
-        if(isset($_POST['save']))
+        // TODO: Buscar a otros conectores.
+        $this->mails = array(
+            'Mail' => 'Mail command',
+            'PHPMailer' => 'PHPMailer (SMTP)',
+        );
+        if(isset($_POST['save']) || isset($_POST['email']))
         {
-            return true;
+            $config = $this->loadCurrentConfig();
+            $config['mail']['mailsystem'] = $_POST['mailsystem'];
+            if($_POST['mailsystem'] == "PHPMailer")
+            {
+                $config['mail']['hostname'] = $_POST['hostname'];
+                $config['mail']['port'] = $_POST['port'];
+                $config['mail']['username'] = $_POST['username'];
+                $config['mail']['password'] = $_POST['password'];
+            }
+
+            $config['mail']['from']['title'] = $_POST['from']['title'];
+            $config['mail']['from']['email'] = $_POST['from']['email'];
+
+            if($this->saveConfig($config))
+            {
+                if($_POST['save']) return true;
+                $mail = new Mail();
+                $message = $mail->render($this, "mail.twig", array());
+                if($mail->send($_POST['from']['email'], "Email test", $message))
+                {
+                    $this->addMessage("Se ha enviado un email de prueba");
+                }
+                else{
+                    $this->addMessage("Se ha producido un error al enviar el mensaje", "danger");
+                }
+            }
         }
         return "steps/3.twig";
     }
