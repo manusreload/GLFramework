@@ -197,13 +197,13 @@ class Module
         return $array;
     }
 
-    public function addFolder(&$array, $folder)
+    public static function addFolder(&$array, $folder)
     {
         if(is_array($folder))
         {
             foreach($folder as $item)
             {
-                $this->addFolder($array, $item);
+                self::addFolder($array, $item);
             }
         }
         else

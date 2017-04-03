@@ -83,7 +83,7 @@ class ControllerCollector extends DataCollector implements Renderable
         $p = $rf->getProperties();
         foreach ($p as $item)
         {
-//            if($item->class == get_class($this->controller))
+            if($item->isPublic())
             {
                 $array[$item->name] = (string) $this->controllerStorage->{$item->name};
             }

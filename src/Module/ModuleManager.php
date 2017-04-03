@@ -169,12 +169,12 @@ class ModuleManager
             }
         }
         $mainModule = ModuleManager::getInstance()->getMainModule();
-        if($module != $mainModule) $module->addFolder($views, $mainModule->getViews());
+        if($module != $mainModule) Module::addFolder($views, $mainModule->getViews());
         // Add framework views
-        $module->addFolder($views, realpath(__DIR__ . "/../../..") . "/");
-        $module->addFolder($views, realpath(__DIR__ . "/../..") . "/");
-        $module->addFolder($views, realpath(__DIR__ . "/../..") . "/views");
-        $module->addFolder($views, realpath(__DIR__ . "/../..") . "/modules");
+        Module::addFolder($views, realpath(__DIR__ . "/../../..") . "/");
+        Module::addFolder($views, realpath(__DIR__ . "/../..") . "/");
+        Module::addFolder($views, realpath(__DIR__ . "/../..") . "/views");
+        Module::addFolder($views, realpath(__DIR__ . "/../..") . "/modules");
         return $views;
     }
 
