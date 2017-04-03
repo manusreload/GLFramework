@@ -74,6 +74,10 @@ class ModuleManager
         return self::$instance;
     }
 
+    /**
+     * @param $name
+     * @return Module
+     */
     public static function getModuleInstanceByName($name)
     {
         $instance = self::getInstance();

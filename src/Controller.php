@@ -74,6 +74,8 @@ abstract class Controller
     {
         if($module == null)
             $module = ModuleManager::getInstance()->getMainModule();
+        if(is_string($module))
+            $module = ModuleManager::getModuleInstanceByName($module);
 
         $this->module = $module;
         $this->config = $this->module->getConfig();

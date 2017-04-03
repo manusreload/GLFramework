@@ -33,6 +33,7 @@ use GLFramework\Events;
 use GLFramework\Log;
 use GLFramework\Model\UserPage;
 use GLFramework\Request;
+use GLFramework\View;
 
 class Module
 {
@@ -379,5 +380,12 @@ class Module
     public function getControllersUrlRoutes()
     {
         return $this->controllers_url_routes;
+    }
+
+    public function display($controller, $template, $args = array())
+    {
+        $view = new View($controller);
+        return $view->display($template, $args);
+
     }
 }
