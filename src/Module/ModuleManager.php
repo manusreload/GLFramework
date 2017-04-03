@@ -50,6 +50,7 @@ class ModuleManager
      */
     private $mainModule;
     private static $instance;
+    private $runningModule;
 
     /**
      * ModuleManager constructor.
@@ -153,9 +154,10 @@ class ModuleManager
      * @param $module Module
      * @return array
      */
-    public function getViews($module)
+    public function getViews($module = false)
     {
-        $views = $module->getViews();
+        $views = array();
+        if($module) $views = $module->getViews();
         foreach($this->getModules() as $module2)
         {
             if($module2 != $module)
@@ -300,6 +302,7 @@ class ModuleManager
                 {
                     $target = $match['target'];
                     $module = $target[0];
+                    $this->runningModule = $module;
                     $controller = $target[1];
                     $request->setParams($match['params']);
                     return $module->run($controller, $request);
@@ -359,6 +362,16 @@ class ModuleManager
             return $this->mainModule->run(new ErrorController("No se ha encontrado este archivo!"), $request);
         }
     }
+
+    /**
+     * @return mixed
+     */
+    public function getRunningModule()
+    {
+        return $this->runningModule;
+    }
+
+
 
 
 }

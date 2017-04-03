@@ -380,8 +380,4 @@ class Module
     {
         return $this->controllers_url_routes;
     }
-
-
-
-
 }

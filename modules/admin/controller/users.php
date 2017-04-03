@@ -145,8 +145,6 @@ class users extends AuthController
                     {
                         if(ModuleManager::exists("login"))
                         {
-
-//                            die($this->getLink('GLFramework\Modules\Login\recovery', array('token' => 'abc')));
                             $recovery = new \UserRecovery();
                             $recovery = $recovery->generateNew($this->users);
                             $recovery->save(true);

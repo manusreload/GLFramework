@@ -447,4 +447,10 @@ class Bootstrap
         return false;
     }
 
+    public function toUrl($file)
+    {
+        $url = str_replace($this->directory, "", $file);
+        return $url;
+    }
+
 }
