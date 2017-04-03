@@ -205,21 +205,25 @@ class ModuleManager
                     {
                         $dirbase .= "/$subsection";
                     }
-                    if(!is_array($value)) $value = array($value);
-                    foreach($value as $name => $extra)
+                    if($value)
                     {
-                        if(is_integer($name)) $name = $extra;
-                        if(is_array($extra))
+                        if(!is_array($value)) $value = array($value);
+                        foreach($value as $name => $extra)
                         {
-                            $name = key($extra);
-                            $extra = current($extra);
-                        }
-                        $module = $this->load($dirbase . "/" . $name, $extra);
-                        if($module && !$this->exists($module->title))
-                            $this->add($module);
-                        else
-                            throw new \Exception("Can't not load module: " . $name);
+                            if(empty($extra)) continue;
+                            if(is_integer($name)) $name = $extra;
+                            if(is_array($extra))
+                            {
+                                $name = key($extra);
+                                $extra = current($extra);
+                            }
+                            $module = $this->load($dirbase . "/" . $name, $extra);
+                            if($module && !$this->exists($module->title))
+                                $this->add($module);
+                            else
+                                throw new \Exception("Can't not load module: " . $name);
 
+                        }
                     }
                 }
             }

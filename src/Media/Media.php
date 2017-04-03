@@ -10,6 +10,7 @@ namespace GLFramework\Media;
 
 
 use GLFramework\Bootstrap;
+use GLFramework\Log;
 use GLFramework\Module\ModuleManager;
 
 abstract class Media
@@ -55,6 +56,7 @@ abstract class Media
         else
         {
             $src = $this->source;
+            Log::d("Media file not found: " . $src);
         }
         if(is_array($this->options))
         {
