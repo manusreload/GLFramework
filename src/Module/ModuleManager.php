@@ -131,6 +131,26 @@ class ModuleManager
     }
 
     /**
+     * @param $key
+     * @return bool|Module
+     */
+    public static function getModuleForController($key)
+    {
+        $instance = self::getInstance();
+        foreach($instance->getModules() as $module)
+        {
+            foreach($module->getControllers() as $controller => $file)
+            {
+                if($key == $controller)
+                {
+                    return $module;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * @return \AltoRouter
      */
     public function getRouter()
@@ -222,10 +242,14 @@ class ModuleManager
                                 $extra = current($extra);
                             }
                             $module = $this->load($dirbase . "/" . $name, $extra);
-                            if($module && !$this->exists($module->title))
-                                $this->add($module);
-                            else
+                            if($module)
+                            {
+                                if(!$this->exists($module->title))
+                                    $this->add($module);
+                            }
+                            else{
                                 throw new \Exception("Can't not load module: " . $name);
+                            }
 
                         }
                     }
@@ -378,8 +402,6 @@ class ModuleManager
     {
         return $this->runningModule;
     }
-
-
 
 
 }

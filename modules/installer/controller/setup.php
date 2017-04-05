@@ -7,7 +7,9 @@ use GLFramework\Events;
 use GLFramework\Mail;
 use GLFramework\Model;
 use GLFramework\Model\User;
+use GLFramework\Module\Module;
 use GLFramework\Module\ModuleManager;
+use GLFramework\Module\ModuleScanner;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -25,6 +27,10 @@ class setup extends Controller
     var $hasAdmin;
     var $steps = array();
     var $view = "steps/1.twig";
+    /**
+     * @var Module[]
+     */
+    var $plugins;
 
     /**
      * Implementar aqui el código que ejecutara nuestra aplicación
@@ -33,9 +39,9 @@ class setup extends Controller
     public function run()
     {
         // TODO: Implement run() method.
-        if($this->config['app']['configured'])
+        if($this->mainConfig['app']['configured'])
         {
-            $this->addMessage("El sitio ya esta configurado!", "warning");
+            $this->addMessage("El sitio ya esta configurado! Acceda con un administrador al panel de control y reinicie la instalacion.", "warning");
             $this->quit("/");
             return true;
         }
@@ -58,14 +64,38 @@ class setup extends Controller
 
     private function step1()
     {
+        $moduleScanner = new ModuleScanner();
+        $this->plugins = $moduleScanner->scan(".");
         if(isset($_POST['save']))
         {
+            $modulesSave = array();
+            foreach ($_POST['module'] as $module => $k)
+            {
+                $found = false;
+                foreach ($this->plugins as $plugin)
+                {
+                    if($plugin->title == $module)
+                    {
+                        $found = true;
+                        $dir = $plugin->getDirectory();
+                        $folder = substr($dir, strrpos($dir, "/") + 1);
+                        $base = dirname($dir);
+                        $modulesSave[$base][] = $folder;
+                        break;
+                    }
+                }
+            }
             $config = $this->loadCurrentConfig();
             $config['app']['name'] = $_POST['site_name'];
             $config['app']['debug'] = $_POST['debug']?true:false;
+            $config['modules'] = $modulesSave;
             if($this->saveConfig($config))
             {
                 return true;
+            }
+            else
+            {
+                $this->addMessage("No se puede generar el archivo de configuracion: " . $this->yamlDestination);
             }
         }
         return "steps/1.twig";

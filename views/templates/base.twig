@@ -48,6 +48,6 @@
 {{ js("js/bootstrap.min.js") | raw }}
 {% block scripts %}{% endblock %}
 
-{{ fire('displayScripts', [render ]) }}
+{{ fire('displayScripts', [render ]) | raw }}
 </body>
 </html>

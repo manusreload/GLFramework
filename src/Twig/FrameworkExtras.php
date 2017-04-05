@@ -45,6 +45,7 @@ class FrameworkExtras extends Extra
         $this->addFunction(new \Twig_SimpleFunction('js', array($this, 'js')));
         $this->addFunction(new \Twig_SimpleFunction('css', array($this, 'css')));
         $this->addFunction(new \Twig_SimpleFunction('vars', array($this, 'vars')));
+        $this->addFunction(new \Twig_SimpleFunction('meses', array($this, 'meses')));
         $this->addFilter(new \Twig_SimpleFilter('active', array($this, 'isHrefActive')));
         $this->addFilter(new \Twig_SimpleFilter('fecha_hora', array($this, 'parseFechaHora')));
         $this->addFilter(new \Twig_SimpleFilter('fecha', array($this, 'parseFecha')));
@@ -116,6 +117,15 @@ class FrameworkExtras extends Extra
     public function vars($name, $def = null)
     {
         return Vars::getVar($name, $def);
+    }
+
+    public function meses()
+    {
+        return array("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Nombiembre", "Diciembre");
+    }
+    public function dia_semanas()
+    {
+        return array("Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo");
     }
 
 }

@@ -386,6 +386,10 @@ class Module
     {
         $view = new View($controller);
         return $view->display($template, $args);
+    }
 
+    public function isEnabled()
+    {
+        return ModuleManager::exists($this->title);
     }
 }

@@ -498,3 +498,9 @@ function function_closure_dump($closure)
     }
     return $str;
 }
+
+
+function fecha($date, $format = "d/m/Y")
+{
+    return date($format, strtotime($date));
+}
