@@ -109,9 +109,9 @@ class Events
                 }
                 else
                 {
-                    print_r($fn);
-                    die();
-                    Log::getInstance()->error("Can not call event: " . $event . " function: " . function_dump($fn) . print_r($item, true), array('events'));
+//                    print_r($fn);
+//                    die();
+                    Log::getInstance()->error("<pre>Can not call event: " . $event . ", context: " . get_class($context) .  " function: " . function_dump($fn) . " " . print_r($item, true), array('events'));
                 }
             }
             return $buffer;

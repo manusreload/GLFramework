@@ -306,7 +306,7 @@ class Module
 
     public function register_events()
     {
-        $context = array();
+        $context = array('module' => $this->title);
         if(isset($this->config['app']['listeners']))
         {
             $events = $this->config['app']['listeners'];
@@ -316,6 +316,7 @@ class Module
                 if(!is_array($listener)) $listener = array($listener);
                 foreach($listener as $fn)
                 {
+                    $context['event'] = $event;
                     Events::getInstance()->listen($event, instance_method($fn, $context, array($this)), $this);
                 }
             }
@@ -391,5 +392,15 @@ class Module
     public function isEnabled()
     {
         return ModuleManager::exists($this->title);
+    }
+
+    public function getListName()
+    {
+        return substr($this->directory, strrpos($this->directory, "/") + 1);
+    }
+
+    public function getFolderContainer()
+    {
+        return dirname($this->directory);
     }
 }

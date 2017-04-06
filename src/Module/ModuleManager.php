@@ -212,48 +212,7 @@ class ModuleManager
             $this->add($module);
             if(isset($this->config['modules']))
             {
-                $modules = $this->config['modules'];
-                if(!is_array($modules)) $modules = array($modules);
-                foreach($modules as $subsection => $value)
-                {
-                    $dirbase = $this->directory;
-                    if((string) $subsection == "internal")
-                    {
-                        $dirbase = __DIR__ . "/../../modules";
-                    }
-                    else if(is_numeric($subsection))
-                    {
-                        $dirbase .= "modules";
-                    }
-                    else
-                    {
-                        $dirbase .= "/$subsection";
-                    }
-                    if($value)
-                    {
-                        if(!is_array($value)) $value = array($value);
-                        foreach($value as $name => $extra)
-                        {
-                            if(empty($extra)) continue;
-                            if(is_integer($name)) $name = $extra;
-                            if(is_array($extra))
-                            {
-                                $name = key($extra);
-                                $extra = current($extra);
-                            }
-                            $module = $this->load($dirbase . "/" . $name, $extra);
-                            if($module)
-                            {
-                                if(!$this->exists($module->title))
-                                    $this->add($module);
-                            }
-                            else{
-                                throw new \Exception("Can't not load module: " . $name);
-                            }
-
-                        }
-                    }
-                }
+                $this->loadConfig($this->config);
             }
 
             foreach($this->modules as $module)
@@ -269,6 +228,54 @@ class ModuleManager
         else
         {
             throw new \Exception("Can't not load the main module!");
+        }
+    }
+
+    public function loadConfig($config)
+    {
+        $modules = $config['modules'];
+        if(!is_array($modules)) $modules = array($modules);
+        foreach($modules as $subsection => $value)
+        {
+            $dirbase = $this->directory;
+            if((string) $subsection == "internal")
+            {
+                $dirbase = __DIR__ . "/../../modules";
+            }
+            else if(is_numeric($subsection))
+            {
+                $dirbase .= "modules";
+            }
+            else
+            {
+                $dirbase .= "/$subsection";
+            }
+            if($value)
+            {
+                if(!is_array($value)) $value = array($value);
+                foreach($value as $name => $extra)
+                {
+                    if(empty($extra)) continue;
+                    if(is_integer($name)) $name = $extra;
+                    if(is_array($extra))
+                    {
+                        $name = key($extra);
+                        $extra = current($extra);
+                    }
+                    Log::d("Loading: " . $dirbase . "/" . $name);
+                    $module = $this->load($dirbase . "/" . $name, $extra);
+                    if($module)
+                    {
+                        $this->loadModuleDependencies($module);
+                        if(!$this->exists($module->title))
+                            $this->add($module);
+                    }
+                    else{
+                        throw new \Exception("Can't not load module: " . $name . " in directory: '" . $dirbase . "'" );
+                    }
+
+                }
+            }
         }
     }
 
@@ -293,6 +300,18 @@ class ModuleManager
             $config = array_merge_recursive_ex($config, $extra);
         }
         return new Module($config, $folder);
+    }
+
+    /**
+     * @param $module Module
+     */
+    public function loadModuleDependencies($module)
+    {
+        $config = $module->getConfig();
+        if(isset($config['modules']))
+        {
+            $this->loadConfig($config);
+        }
     }
 
     /**
