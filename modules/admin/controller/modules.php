@@ -34,9 +34,11 @@ class modules extends AuthController
         if(isset($this->params['name']))
         {
             $module = null;
+            $name = urldecode($this->params['name']);
             foreach ($this->modules as $module1)
             {
-                if($module1->title == $this->params['name'])
+
+                if($module1->title == $name)
                 {
                     $module = $module1;
                     break;
