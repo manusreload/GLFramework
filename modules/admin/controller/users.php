@@ -145,7 +145,6 @@ class users extends AuthController
                     {
                         if(ModuleManager::exists("login"))
                         {
-
 //                            die($this->getLink('GLFramework\Modules\Login\recovery', array('token' => 'abc')));
                             $this->sendWelcomeEmail($this->users);
                         }

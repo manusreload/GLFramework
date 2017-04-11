@@ -11,4 +11,10 @@
             No content
         {% endblock %}
     </div>
+    {% set footer =  block('footer') %}
+    {% if footer != "" %}
+    <div class="panel-footer">
+        {{ footer | raw }}
+    </div>
+    {% endif %}
 </div>

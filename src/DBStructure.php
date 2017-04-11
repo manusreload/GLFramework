@@ -360,6 +360,7 @@ class DBStructure
             {
                 $sql .= " PRIMARY KEY";
             }
+
         }
 
         return "CREATE TABLE " . $tableName . "($sql)";

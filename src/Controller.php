@@ -44,6 +44,7 @@ abstract class Controller
     private $view;
     var $messages = array();
     var $config = array();
+    var $mainConfig = array();
     var $description = "";
     var $directory;
 
@@ -73,10 +74,15 @@ abstract class Controller
     public function __construct($base = "", $module = null)
     {
         if($module == null)
+            $module = ModuleManager::getModuleForController(get_class($this));
+        if($module == null)
             $module = ModuleManager::getInstance()->getMainModule();
+        if(is_string($module))
+            $module = ModuleManager::getModuleInstanceByName($module);
 
         $this->module = $module;
         $this->config = $this->module->getConfig();
+        $this->mainConfig = Bootstrap::getSingleton()->getConfig();
         $this->restoreMessages();
         if(empty($this->name))
             $this->name = get_class($this);

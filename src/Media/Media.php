@@ -9,10 +9,15 @@
 namespace GLFramework\Media;
 
 
+use GLFramework\Bootstrap;
+use GLFramework\Log;
+use GLFramework\Module\ModuleManager;
+
 abstract class Media
 {
     protected $source;
     protected $options = array();
+    protected $file;
 
     /**
      * Media constructor.
@@ -23,22 +28,49 @@ abstract class Media
     {
         $this->source = $source;
         $this->options = $options;
+        $this->file = realpath(".") . "$source";
+        if(!file_exists($this->file))
+        {
+            $module = ModuleManager::getInstance()->getRunningModule();
+            $views = ModuleManager::getInstance()->getViews($module);
+            foreach ($views as $view)
+            {
+                $path =  $view . "/" . $source;
+                if(file_exists($path))
+                {
+                    $this->file = $path;
+                    break;
+                }
+            }
+
+        }
     }
 
 
     public function getBrowserCode()
     {
-        $src = $this->source;
+        if(file_exists($this->file))
+        {
+            $src = Bootstrap::getSingleton()->toUrl($this->file);
+        }
+        else
+        {
+            $src = $this->source;
+            Log::d("Media file not found: " . $src);
+        }
         if(is_array($this->options))
         {
             if(isset($this->options['version']))
             {
                 $src = $this->addParameterToURL($src, 'v', $this->options['version']);
             }
+            if(isset($this->options['v']))
+            {
+                $src = $this->addParameterToURL($src, 'v', $this->options['v']);
+            }
             if(isset($this->options['hash']))
             {
-                $file = realpath(".") . "$src";
-                if(is_file($file) && file_exists($file))
+                if(is_file($this->file) && file_exists($this->file))
                 {
                     switch ($this->options['hash'])
                     {
