@@ -28,7 +28,7 @@ abstract class Media
     {
         $this->source = $source;
         $this->options = $options;
-        $this->file = realpath(".") . "$source";
+        $this->file = realpath(".") . "/" . "$source";
         if(!file_exists($this->file))
         {
             $module = ModuleManager::getInstance()->getRunningModule();
@@ -75,11 +75,11 @@ abstract class Media
                     switch ($this->options['hash'])
                     {
                         case 'md5':
-                            $src = $this->addParameterToURL($src, 'h', md5_file($file));
+                            $src = $this->addParameterToURL($src, 'h', md5_file($this->file));
                             break;
                         case 'sha1':
                         default:
-                            $src = $this->addParameterToURL($src, 'h', sha1_file($file));
+                            $src = $this->addParameterToURL($src, 'h', sha1_file($this->file));
                             break;
                     }
                 }

@@ -68,29 +68,10 @@ class setup extends Controller
 
     private function step1()
     {
-        $moduleScanner = new ModuleScanner();
-        $this->plugins = $moduleScanner->scan(".");
+
         if(isset($_POST['save']))
         {
-            $modulesSave = array();
-            foreach ($_POST['module'] as $module => $k)
-            {
-                $found = false;
-                foreach ($this->plugins as $plugin)
-                {
-                    if($plugin->title == $module)
-                    {
-                        $found = true;
-                        $dir = $plugin->getDirectory();
-                        $folder = substr($dir, strrpos($dir, "/") + 1);
-                        $base = dirname($dir);
-                        $modulesSave[$base][] = $folder;
-                        break;
-                    }
-                }
-            }
             $config = $this->loadCurrentConfig();
-            $config['modules'] = $modulesSave;
             $config['app']['name'] = $_POST['site_name'];
             $config['app']['debug'] = $_POST['debug']?true:false;
             if($this->saveConfig($config))
@@ -99,7 +80,7 @@ class setup extends Controller
             }
             else
             {
-                $this->addMessage("No se puede generar el archivo de configuracion: " . $this->yamlDestination);
+                $this->addMessage("No se puede generar el archivo de configuracion: " . $this->configManager->getFilename());
             }
         }
         return "steps/1.twig";
@@ -232,6 +213,42 @@ class setup extends Controller
 
     private function step5()
     {
+        $moduleScanner = new ModuleScanner();
+        $this->plugins = $moduleScanner->scan("..");
+        if(isset($_POST['save']))
+        {
+            $modulesSave = array();
+            foreach ($_POST['module'] as $module => $k)
+            {
+                $found = false;
+                foreach ($this->plugins as $plugin)
+                {
+                    if($plugin->title == $module)
+                    {
+                        $found = true;
+                        $dir = $plugin->getDirectory();
+                        $folder = substr($dir, strrpos($dir, "/") + 1);
+                        $base = dirname($dir);
+                        $modulesSave[$base][] = $folder;
+                        break;
+                    }
+                }
+            }
+            $config = $this->loadCurrentConfig();
+            $config['modules'] = $modulesSave;
+            if($this->saveConfig($config))
+            {
+                return true;
+            }
+            else
+            {
+                $this->addMessage("No se puede generar el archivo de configuracion: " . $this->configManager->getFilename());
+            }
+        }
+        return "steps/5.twig";
+    }
+    private function step6()
+    {
         if(isset($_POST['save']))
         {
             $config = $this->loadCurrentConfig();
@@ -239,7 +256,7 @@ class setup extends Controller
             $this->saveConfig($config);
             $this->quit("/");
         }
-        return "steps/5.twig";
+        return "steps/6.twig";
     }
     
     public function next()
@@ -282,6 +299,10 @@ class setup extends Controller
             'title' => 'Cuenta Administrador',
             'function' => array($this, 'step4')
         );
+        $steps[] = array(
+            'title' => 'Seleccionar módulos',
+            'function' => array($this, 'step5')
+        );
         foreach ($this->getInstallers() as $installer)
         {
             $instance = new $installer();
@@ -294,7 +315,7 @@ class setup extends Controller
 
         $steps[] = array(
             'title' => 'Finalizar configuracion',
-            'function' => array($this, 'step5')
+            'function' => array($this, 'step6')
         );
 
         return $steps;
