@@ -1,6 +1,7 @@
 <?php
 
 namespace Core\Installer;
+use GLFramework\Bootstrap;
 use GLFramework\ConfigurationManager;
 use GLFramework\Controller;
 use GLFramework\DatabaseManager;
@@ -214,7 +215,7 @@ class setup extends Controller
     private function step5()
     {
         $moduleScanner = new ModuleScanner();
-        $this->plugins = $moduleScanner->scan("..");
+        $this->plugins = $moduleScanner->scan(Bootstrap::getSingleton()->getDirectory());
         if(isset($_POST['save']))
         {
             $modulesSave = array();

@@ -26,6 +26,7 @@ class ConfigurationManager
     {
         if($folder != null)
         {
+            if($folder == ".") $folder = Bootstrap::getSingleton()->getDirectory();
             $this->filename = realpath($folder) . "/" . $filename;;
         }
         else
