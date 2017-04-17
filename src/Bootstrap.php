@@ -451,6 +451,7 @@ class Bootstrap
     {
         $dir = realpath(".");
         $url = str_replace($dir, "", $file);
+        $url = (str_replace("//", "/", $url));
         return $url;
     }
 
