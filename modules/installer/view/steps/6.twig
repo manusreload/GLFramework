@@ -1,0 +1,19 @@
+
+<div class="row">
+    <div class="col-lg-8">
+    {% embed "views/templates/box.twig" %}
+        {% block title %}
+            Nombre
+        {% endblock %}
+        {% block content %}
+
+            <h1>Enhorabuena!</h1>
+            <p>Su sitio ya esta listo para ser usado.</p>
+            <form class="form-horizontal" method="post" action="{{ this.getLink(this, {step: this.step}) }}">
+                <input type="submit" name="save" value="Terminar la configuracion" class="btn btn-success">
+            </form>
+
+        {% endblock %}
+    {% endembed %}
+    </div>
+</div>

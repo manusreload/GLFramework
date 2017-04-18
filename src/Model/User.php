@@ -36,6 +36,8 @@ class User extends Model
     var $email;
     var $profile_image;
     var $admin;
+    var $disabled;
+    var $lastlogin;
 
     protected $table_name = "user";
     protected $definition = array(
@@ -49,6 +51,7 @@ class User extends Model
             'email' => "text",
             'profile_image' => "varchar(256)",
             'disabled' => "int(1)",
+            'lastlogin' => "datetime",
         )
     );
 

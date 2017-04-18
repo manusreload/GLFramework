@@ -449,7 +449,9 @@ class Bootstrap
 
     public function toUrl($file)
     {
-        $url = str_replace($this->directory, "", $file);
+        $dir = realpath(".");
+        $url = str_replace($dir, "", $file);
+        $url = (str_replace("//", "/", $url));
         return $url;
     }
 
