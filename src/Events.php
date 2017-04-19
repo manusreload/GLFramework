@@ -28,6 +28,7 @@ namespace GLFramework;
 
 
 use GLFramework\Module\Module;
+use Socket\Raw\Exception;
 
 class Events
 {
@@ -109,7 +110,7 @@ class Events
                 }
                 else
                 {
-                    Log::getInstance()->error("Can not call event: " . $event . " function: " . function_dump($fn), array('events'));
+                    throw new \Exception("Can not call event: " . $event . " function: " . function_dump($fn) . " args: " . implode(", ", $args));
                 }
             }
             return $buffer;

@@ -126,4 +126,13 @@ class MySQLConnection extends Connection
     {
         return $this->pdo;
     }
+
+    public function disconnect()
+    {
+        // TODO: Implement disconnect() method.
+        if($this->pdo)
+        {
+            $this->pdo = null;
+        }
+    }
 }

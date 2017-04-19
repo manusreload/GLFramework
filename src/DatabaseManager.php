@@ -265,4 +265,10 @@ class DatabaseManager
         self::$selected = false;
     }
 
+    public function disconnect()
+    {
+        $this->getConnection()->disconnect();
+        $this->reset();
+    }
+
 }

@@ -49,7 +49,7 @@ class Bootstrap
      */
     public function __construct($directory, $config = "config.yml")
     {
-        error_reporting(E_ERROR | E_PARSE);
+        error_reporting(E_ALL);
         $this->startTime = microtime(true);
         $this->events = new Events();
         $this->directory = $directory;
