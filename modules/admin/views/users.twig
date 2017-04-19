@@ -21,41 +21,48 @@
                 </div>
                 <div class="clearfix"></div>
                 <br>
-                <table class="table table-responsive">
-                    <tr>
-                        <th>#</th>
-                        <th>Usuario</th>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Privilegios</th>
-                        <th>Administrador</th>
-                        <th>Login</th>
-                    </tr>
+                <form method="post">
 
-                    {% for user in this.users_all %}
+                    <table class="table table-responsive">
                         <tr>
-                            <td><a href="{{ this.getLink(this, { id: user.id}) }}">{{ user.id }}</a></td>
-                            <td>{{ user.user_name }}</td>
-                            <td>{{ user.nombre }}</td>
-                            <td>{{ user.email }}</td>
-                            <td>{{ user.privilegios }}</td>
-                            <td>
-                                {% if user.disabled %}
-                                    <label class="label label-danger">Desativado</label>
-                                {% else %}
-                                    {% if user.admin %}
-                                        <label class="label label-success">Admin</label>
-                                    {% else %}
-                                        <label class="label label-default">Usuario</label>
-                                    {% endif %}
-                                {% endif %}
-                            </td>
-                            <td><label class="label label-warning"><a href="{{ this.getLink(this, { id: user.id}) }}?login"><i class="fa fa-lock"></i></a></label></td>
-
-
+                            <th colspan="2">#</th>
+                            <th>Usuario</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Ult. Login</th>
+                            <th>Privilegios</th>
+                            <th>Administrador</th>
+                            <th>Login</th>
                         </tr>
-                    {% endfor %}
-                </table>
+
+                        {% for user in this.users_all %}
+                            <tr>
+                                <td><input type="checkbox" name="ids[]" value="{{ user.id }}"> </td>
+                                <td><a href="{{ this.getLink(this, { id: user.id}) }}">{{ user.id }}</a></td>
+                                <td>{{ user.user_name }}</td>
+                                <td>{{ user.nombre }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.lastlogin | date("d/m/Y H:i:s") }}</td>
+                                <td>{{ user.privilegios }}</td>
+                                <td>
+                                    {% if user.disabled %}
+                                        <label class="label label-danger">Desativado</label>
+                                    {% else %}
+                                        {% if user.admin %}
+                                            <label class="label label-success">Admin</label>
+                                        {% else %}
+                                            <label class="label label-default">Usuario</label>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td><label class="label label-warning"><a href="{{ this.getLink(this, { id: user.id}) }}?login"><i class="fa fa-lock"></i></a></label></td>
+
+
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <button type="submit" name="send-mail">Enviar invitacion</button>
+                </form>
             {% endblock %}
         {% endembed %}
     </div>

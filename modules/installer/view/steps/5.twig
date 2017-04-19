@@ -1,19 +1,42 @@
 
 <div class="row">
     <div class="col-lg-8">
-    {% embed "views/templates/box.twig" %}
-        {% block title %}
-            Nombre
-        {% endblock %}
-        {% block content %}
+        {% embed "views/templates/box.twig" %}
+            {% block title %}
+                Editar módulos activados
+            {% endblock %}
+            {% block content %}
+                <form class="form-horizontal" method="post" action="{{ this.getLink(this, {step: this.step}) }}">
 
-            <h1>Enhorabuena!</h1>
-            <p>Su sitio ya esta listo para ser usado.</p>
-            <form class="form-horizontal" method="post" action="{{ this.getLink(this, {step: this.step}) }}">
-                <input type="submit" name="save" value="Terminar la configuracion" class="btn btn-success">
-            </form>
+                    <div class="form-group">
+                        <label class="control-label col-lg-4">Plugins disponibles</label>
+                        <div class="col-sm-8">
+                            {% for plugin in this.plugins %}
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="module[{{ plugin.title }}]" value="true" {{ plugin.isEnabled()?"checked":"" }} > <b>{{ plugin.title }}</b> {{ plugin.version | default("") }}
+                                        <p>{{ plugin.description }}</p>
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
 
-        {% endblock %}
-    {% endembed %}
+                    <div class="form-group">
+                        <div class="col-lg-8 col-lg-offset-0">
+                            <a href="{{ this.next() }}" class="btn btn-success">Siguiente</a>
+                        </div>
+                    </div>
+
+                </form>
+
+            {% endblock %}
+        {% endembed %}
+    </div>
+    <div class="col-lg-4">
+        <h3>Ayuda</h3>
+        <ul>
+
+        </ul>
     </div>
 </div>

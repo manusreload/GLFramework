@@ -29,6 +29,7 @@ namespace GLFramework\DaMa;
 use GLFramework\DaMa\Manipulators\CSVManipulator;
 use GLFramework\DaMa\Manipulators\XLSManipulator;
 use GLFramework\DaMa\Manipulators\XLSXManipulator;
+use GLFramework\Filesystem;
 
 define('DATA_MANIPULATION_CREATE_MODE_AUTO', 0);
 define('DATA_MANIPULATION_CREATE_MODE_CSV', 1);
@@ -48,7 +49,7 @@ class DataManipulation
 
     public function getFileExtension($file)
     {
-        return substr($file, strrpos($file, "."));
+        return strtolower(substr($file, strrpos($file, ".")));
     }
     /**
      * @param $file
@@ -61,10 +62,15 @@ class DataManipulation
         $manipulator->setFileInput($file, $mode, $extension);
         return $manipulator;
     }
-    public function createFromUpload($upload)
+    public function createFromUpload($upload, $store = false)
     {
         $manipulator = new Manipulator();
         $manipulator->setFileInput($upload['tmp_name'], DATA_MANIPULATION_CREATE_MODE_AUTO, $this->getFileExtension($upload['name']));
+        if($store)
+        {
+            $fs = new Filesystem($upload['name'] . "_".date("d-m-Y_H-i-s"), "uploads/" . $store);
+            copy($upload['tmp_name'], $fs->getAbsolutePath());
+        }
         return $manipulator;
     }
 }

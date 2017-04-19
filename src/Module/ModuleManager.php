@@ -50,6 +50,7 @@ class ModuleManager
      */
     private $mainModule;
     private static $instance;
+    private $runningModule;
 
     /**
      * ModuleManager constructor.
@@ -73,6 +74,10 @@ class ModuleManager
         return self::$instance;
     }
 
+    /**
+     * @param $name
+     * @return Module
+     */
     public static function getModuleInstanceByName($name)
     {
         $instance = self::getInstance();
@@ -126,6 +131,26 @@ class ModuleManager
     }
 
     /**
+     * @param $key
+     * @return bool|Module
+     */
+    public static function getModuleForController($key)
+    {
+        $instance = self::getInstance();
+        foreach($instance->getModules() as $module)
+        {
+            foreach($module->getControllers() as $controller => $file)
+            {
+                if($key == $controller)
+                {
+                    return $module;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * @return \AltoRouter
      */
     public function getRouter()
@@ -153,9 +178,10 @@ class ModuleManager
      * @param $module Module
      * @return array
      */
-    public function getViews($module)
+    public function getViews($module = false)
     {
-        $views = $module->getViews();
+        $views = array();
+        if($module) $views = $module->getViews();
         foreach($this->getModules() as $module2)
         {
             if($module2 != $module)
@@ -167,12 +193,12 @@ class ModuleManager
             }
         }
         $mainModule = ModuleManager::getInstance()->getMainModule();
-        if($module != $mainModule) $module->addFolder($views, $mainModule->getViews());
+        if($module != $mainModule) Module::addFolder($views, $mainModule->getViews());
         // Add framework views
-        $module->addFolder($views, realpath(__DIR__ . "/../../..") . "/");
-        $module->addFolder($views, realpath(__DIR__ . "/../..") . "/");
-        $module->addFolder($views, realpath(__DIR__ . "/../..") . "/views");
-        $module->addFolder($views, realpath(__DIR__ . "/../..") . "/modules");
+        Module::addFolder($views, realpath(__DIR__ . "/../../..") . "/");
+        Module::addFolder($views, realpath(__DIR__ . "/../..") . "/");
+        Module::addFolder($views, realpath(__DIR__ . "/../..") . "/views");
+        Module::addFolder($views, realpath(__DIR__ . "/../..") . "/modules");
         return $views;
     }
 
@@ -186,40 +212,7 @@ class ModuleManager
             $this->add($module);
             if(isset($this->config['modules']))
             {
-                $modules = $this->config['modules'];
-                if(!is_array($modules)) $modules = array($modules);
-                foreach($modules as $subsection => $value)
-                {
-                    $dirbase = $this->directory;
-                    if((string) $subsection == "internal")
-                    {
-                        $dirbase = __DIR__ . "/../../modules";
-                    }
-                    else if(is_numeric($subsection))
-                    {
-                        $dirbase .= "modules";
-                    }
-                    else
-                    {
-                        $dirbase .= "/$subsection";
-                    }
-                    if(!is_array($value)) $value = array($value);
-                    foreach($value as $name => $extra)
-                    {
-                        if(is_integer($name)) $name = $extra;
-                        if(is_array($extra))
-                        {
-                            $name = key($extra);
-                            $extra = current($extra);
-                        }
-                        $module = $this->load($dirbase . "/" . $name, $extra);
-                        if($module && !$this->exists($module->title))
-                            $this->add($module);
-                        else
-                            throw new \Exception("Can't not load module: " . $name);
-
-                    }
-                }
+                $this->loadConfig($this->config);
             }
 
             foreach($this->modules as $module)
@@ -235,6 +228,54 @@ class ModuleManager
         else
         {
             throw new \Exception("Can't not load the main module!");
+        }
+    }
+
+    public function loadConfig($config)
+    {
+        $modules = $config['modules'];
+        if(!is_array($modules)) $modules = array($modules);
+        foreach($modules as $subsection => $value)
+        {
+            $dirbase = $this->directory;
+            if((string) $subsection == "internal")
+            {
+                $dirbase = __DIR__ . "/../../modules";
+            }
+            else if(is_numeric($subsection))
+            {
+                $dirbase .= "modules";
+            }
+            else
+            {
+                $dirbase .= "/$subsection";
+            }
+            if($value)
+            {
+                if(!is_array($value)) $value = array($value);
+                foreach($value as $name => $extra)
+                {
+                    if(empty($extra)) continue;
+                    if(is_integer($name)) $name = $extra;
+                    if(is_array($extra))
+                    {
+                        $name = key($extra);
+                        $extra = current($extra);
+                    }
+                    Log::d("Loading: " . $dirbase . "/" . $name);
+                    $module = $this->load($dirbase . "/" . $name, $extra);
+                    if($module)
+                    {
+                        $this->loadModuleDependencies($module);
+                        if(!$this->exists($module->title))
+                            $this->add($module);
+                    }
+                    else{
+                        throw new \Exception("Can't not load module: " . $name . " in directory: '" . $dirbase . "'" );
+                    }
+
+                }
+            }
         }
     }
 
@@ -259,6 +300,18 @@ class ModuleManager
             $config = array_merge_recursive_ex($config, $extra);
         }
         return new Module($config, $folder);
+    }
+
+    /**
+     * @param $module Module
+     */
+    public function loadModuleDependencies($module)
+    {
+        $config = $module->getConfig();
+        if(isset($config['modules']))
+        {
+            $this->loadConfig($config);
+        }
     }
 
     /**
@@ -300,6 +353,7 @@ class ModuleManager
                 {
                     $target = $match['target'];
                     $module = $target[0];
+                    $this->runningModule = $module;
                     $controller = $target[1];
                     $request->setParams($match['params']);
                     return $module->run($controller, $request);
@@ -358,6 +412,14 @@ class ModuleManager
         {
             return $this->mainModule->run(new ErrorController("No se ha encontrado este archivo!"), $request);
         }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRunningModule()
+    {
+        return $this->runningModule;
     }
 
 

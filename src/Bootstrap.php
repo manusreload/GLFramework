@@ -447,4 +447,12 @@ class Bootstrap
         return false;
     }
 
+    public function toUrl($file)
+    {
+        $dir = realpath(".");
+        $url = str_replace($dir, "", $file);
+        $url = (str_replace("//", "/", $url));
+        return $url;
+    }
+
 }

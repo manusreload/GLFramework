@@ -1,0 +1,13 @@
+modules: {  }
+app:
+    name: Demo
+    debug: true
+    configured: true
+database:
+    hostname: 127.0.0.1
+    username: ''
+    password: ''
+    database: test
+mail:
+    mailsystem: Mail
+    from: { title: '', email: '' }

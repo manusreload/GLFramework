@@ -35,7 +35,7 @@ class FixedLengthFile extends WriterBase
     {
         $length = $params['size'];
 
-        $strlen = strlen($line);
+        $strlen = mb_strlen($line, "UTF-8");
         if($strlen > $length)
         {
             return substr($line, 0, $length);

@@ -145,6 +145,7 @@ class Debugbar
      */
     public function beforeControllerRun($instance)
     {
+        if(!$this->getDebugbar()->hasCollector('controller')) return;
         $this->controller->setController($instance);
         $this->request->addRequestData('params', $instance->params);
         $config = Bootstrap::getSingleton()->getConfig();
@@ -161,9 +162,10 @@ class Debugbar
      */
     public function afterControllerRun($instance, $response)
     {
-        $this->response->setResponse($instance->response);
-        $this->time->stopMeasure('controller');
         $this->time->startMeasure('run', 'Core run finished');
+        $this->response->setResponse($instance->response);
+        if(!$this->getDebugbar()->hasCollector('controller')) return;
+        $this->time->stopMeasure('controller');
 
     }
 
@@ -242,7 +244,7 @@ class Debugbar
 
     public function errorHandler($errno, $errstr, $errfile, $errline)
     {
-        $this->errors->addError(new GeneratedError($errstr, $errno, $errfile, $errline));
+//        $this->errors->addError(new GeneratedError($errstr, $errno, $errfile, $errline));
     }
 
     /**
@@ -262,6 +264,7 @@ class Debugbar
      */
     public function exceptionHandler($exception)
     {
+        if(!$this->getDebugbar()->hasCollector('exceptions')) return;
         if($exception instanceof \Exception)
             $this->exceptions->addException($exception);
         elseif($exception instanceof \Throwable)

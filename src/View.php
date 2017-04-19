@@ -29,6 +29,7 @@ namespace GLFramework;
 
 use GLFramework\Media\JavascriptMedia;
 use GLFramework\Media\StylesheetMedia;
+use GLFramework\Module\Module;
 use GLFramework\Module\ModuleManager;
 use GLFramework\Twig\FrameworkExtras;
 use GLFramework\Twig\IExtra;
@@ -49,16 +50,17 @@ class View
      * @var StylesheetMedia[]
      */
     private $stylesheetMedia = array();
+    private $directories;
 
     /**
      * View constructor.
-     * @param $controller Controller
+     * @param $controller Controller|Module
      */
     public function __construct($controller)
     {
         $this->controller = $controller;
-        $directories = ModuleManager::getInstance()->getViews($controller->module);
-        $loader = new \Twig_Loader_Filesystem($directories);
+        $this->directories = ModuleManager::getInstance()->getViews($controller->module);
+        $loader = new \Twig_Loader_Filesystem($this->directories);
         $fs = new Filesystem("twig_cache");
         $fs->mkdir();
         $config = array();
@@ -220,9 +222,17 @@ class View
         $result = "";
         foreach ($view->stylesheetMedia as $css)
         {
-            $result .= $css->getBrowserCode();
+            $result .= $css->getBrowserCode() . "\n";
         }
         return $result;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDirectories()
+    {
+        return $this->directories;
     }
 
     
