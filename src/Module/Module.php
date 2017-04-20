@@ -33,6 +33,7 @@ use GLFramework\Events;
 use GLFramework\Log;
 use GLFramework\Model\UserPage;
 use GLFramework\Request;
+use GLFramework\View;
 
 class Module
 {
@@ -197,13 +198,13 @@ class Module
         return $array;
     }
 
-    public function addFolder(&$array, $folder)
+    public static function addFolder(&$array, $folder)
     {
         if(is_array($folder))
         {
             foreach($folder as $item)
             {
-                $this->addFolder($array, $item);
+                self::addFolder($array, $item);
             }
         }
         else
@@ -305,7 +306,7 @@ class Module
 
     public function register_events()
     {
-        $context = array();
+        $context = array('module' => $this->title);
         if(isset($this->config['app']['listeners']))
         {
             $events = $this->config['app']['listeners'];
@@ -315,6 +316,7 @@ class Module
                 if(!is_array($listener)) $listener = array($listener);
                 foreach($listener as $fn)
                 {
+                    $context['event'] = $event;
                     Events::getInstance()->listen($event, instance_method($fn, $context, array($this)), $this);
                 }
             }
@@ -381,7 +383,24 @@ class Module
         return $this->controllers_url_routes;
     }
 
+    public function display($controller, $template, $args = array())
+    {
+        $view = new View($controller);
+        return $view->display($template, $args);
+    }
 
+    public function isEnabled()
+    {
+        return ModuleManager::exists($this->title);
+    }
 
+    public function getListName()
+    {
+        return substr($this->directory, strrpos($this->directory, "/") + 1);
+    }
 
+    public function getFolderContainer()
+    {
+        return dirname($this->directory);
+    }
 }

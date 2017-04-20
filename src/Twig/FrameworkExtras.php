@@ -45,6 +45,7 @@ class FrameworkExtras extends Extra
         $this->addFunction(new \Twig_SimpleFunction('js', array($this, 'js')));
         $this->addFunction(new \Twig_SimpleFunction('css', array($this, 'css')));
         $this->addFunction(new \Twig_SimpleFunction('vars', array($this, 'vars')));
+        $this->addFunction(new \Twig_SimpleFunction('meses', array($this, 'meses')));
         $this->addFilter(new \Twig_SimpleFilter('active', array($this, 'isHrefActive')));
         $this->addFilter(new \Twig_SimpleFilter('fecha_hora', array($this, 'parseFechaHora')));
         $this->addFilter(new \Twig_SimpleFilter('fecha', array($this, 'parseFecha')));
@@ -52,6 +53,7 @@ class FrameworkExtras extends Extra
         $this->addFilter(new \Twig_SimpleFilter('debug', array($this, 'debug')));
         $this->addFilter(new \Twig_SimpleFilter('number', array($this, 'isNumber')));
         $this->addFilter(new \Twig_SimpleFilter('implode', array($this, 'implode')));
+        $this->addFilter(new \Twig_SimpleFilter('icon', array($this, 'icon')));
     }
 
     public function fireEvent($name, $args = array())
@@ -110,13 +112,28 @@ class FrameworkExtras extends Extra
     }
     public function css($src, $options = array())
     {
-        $css = new StylesheetMedia($src, $options);
-        return $css->getBrowserCode();
+        $this->view->addCSS($src, $options);
     }
 
     public function vars($name, $def = null)
     {
         return Vars::getVar($name, $def);
+    }
+
+    public function meses()
+    {
+        return array("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Nombiembre", "Diciembre");
+    }
+    public function dia_semanas()
+    {
+        return array("Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo");
+    }
+
+    public function icon($text)
+    {
+        $names = array(
+
+        );
     }
 
 }

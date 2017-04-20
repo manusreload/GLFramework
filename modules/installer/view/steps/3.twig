@@ -8,44 +8,74 @@
         {% block content %}
 
             <form class="form-horizontal" method="post" action="{{ this.getLink(this, {step: this.step}) }}">
-                <h3>SMTP</h3>
+                <h3>E-Mail</h3>
                 <div class="form-group">
-                    <label class="control-label col-lg-4">Dominio</label>
+                    <label class="control-label col-lg-4">Mail connector</label>
                     <div class="col-lg-8">
-                        <input class="form-control" name="hostname" value="{{ _POST.hostname | default(mainconfig.mail.hostname | default("localhost")) }}">
+                        <select name="mailsystem" class="form-control">
+                            {% for key,item in this.mails %}
+                            <option value="{{ key }}" {{ mainconfig.mail.mailsystem==key?"selected":"" }}>{{ item }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="control-label col-lg-4">Puerto</label>
-                    <div class="col-lg-8">
-                        <input class="form-control" name="port" value="{{ _POST.port | default(mainconfig.mail.port | default("25")) }}">
+                <div data-mail="PHPMailer">
+                    <div class="form-group">
+                        <label class="control-label col-lg-4">Dominio</label>
+                        <div class="col-lg-8">
+                            <input class="form-control" name="hostname" value="{{ _POST.hostname | default(mainconfig.mail.hostname | default("localhost")) }}">
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-lg-4">Usuario</label>
-                    <div class="col-lg-8">
-                        <input class="form-control" name="username" value="{{  _POST.username | default(mainconfig.mail.username | default("")) }}">
+                    <div class="form-group">
+                        <label class="control-label col-lg-4">Puerto</label>
+                        <div class="col-lg-8">
+                            <input class="form-control" name="port" value="{{ _POST.port | default(mainconfig.mail.port | default("25")) }}">
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-lg-4">Contraseña</label>
-                    <div class="col-lg-8">
-                        <input class="form-control" name="password" value="{{  _POST.password | default(mainconfig.mail.password )}}">
+                    <div class="form-group">
+                        <label class="control-label col-lg-4">Usuario</label>
+                        <div class="col-lg-8">
+                            <input class="form-control" name="username" value="{{  _POST.username | default(mainconfig.mail.username | default("")) }}">
+                        </div>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="col-sm-offset-4 col-sm-8">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" name="noconfig" value="true"> Prefiero configurar esto más adelante
-                            </label>
+                    <div class="form-group">
+                        <label class="control-label col-lg-4">Contraseña</label>
+                        <div class="col-lg-8">
+                            <input class="form-control" name="password" value="{{  _POST.password | default(mainconfig.mail.password )}}">
                         </div>
                     </div>
                 </div>
+                <div data-mail="Mail">
+                    <small class="italic">Este conector no tiene ninguna configuración.</small>
+                </div>
+
+                <hr>
+
+                <div class="form-group">
+                    <label class="control-label col-lg-4">Nombre del remitente</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" name="from[title]" value="{{  _POST.from.title | default(mainconfig.mail.from.title | default("")) }}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-lg-4">Email del remitente</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" name="from[email]" value="{{  _POST.from.email | default(mainconfig.mail.from.email )}}">
+                    </div>
+                </div>
+                {#<div class="form-group">#}
+                    {#<div class="col-sm-offset-4 col-sm-8">#}
+                        {#<div class="checkbox">#}
+                            {#<label>#}
+                                {#<input type="checkbox" name="noconfig" value="true"> Prefiero configurar esto más adelante#}
+                            {#</label>#}
+                        {#</div>#}
+                    {#</div>#}
+                {#</div>#}
                 <div class="form-group">
                     <div class="col-lg-8 col-lg-offset-4">
                         <input type="submit" class="btn btn-success" name="save" value="Siguiente Paso">
+                        <input type="submit" class="btn btn-info" name="email" value="Enviar prueba al remitente">
                     </div>
                 </div>
             </form>
@@ -56,22 +86,36 @@
     <div class="col-lg-4">
         <h3>Ayuda</h3>
         <ul>
-            <li><b>Nombre del Host</b>: Es una direccion de internet, a donde se conectará para almacenar los datos</li>
-            <li><b>Usuario</b>: Usuario para acceder a la base de datos</li>
-            <li><b>Contraseña</b>: Contraseña para acceder a la base de datos</li>
-            <li><b>Dase de datos</b>: Es el nombre de la base de datos donde se conectará</li>
+            <li><b>Mail connector</b>: Es el conector para enviar correos electronicos.</li>
         </ul>
+        <div data-mail="PHPMailer">
+            <i><b>PHPMailer</b> es una implementación del protocolo SMTP para PHP.</i>
+            <ul>
+                <li><b>Dominio</b>: Es una direccion de internet, a donde se conectará para enviar los e-mails.</li>
+                <li><b>Puerto</b>: Numero del puerto en el que está el servicio (25 defecto)</li>
+                <li><b>Usuario</b>: Usuario para logear en el servidor.</li>
+                <li><b>Contraseña</b>: Contraseña para autenticar al usuario.</li>
+            </ul>
+        </div>
         <hr>
-        <p>
-
-            <b>Crear base de datos MySQL</b>
-            <pre>CREATE DATABASE factumol;</pre>
-        </p>
-        <p>
-
-            <b>Crear usuario MySQL</b>
-            <pre>CREATE USER user_factumol;
-GRANT ALL ON factumol.* TO 'user_factumol'@'localhost' IDENTIFIED BY '&lt;password&gt;';</pre>
-        </p>
+        <ul>
+            <li><b>Nombre del remitente</b>: Nombre que aparecerá en el correo.</li>
+            <li><b>Email del remitente</b>: Email que aparecerá en el e-mail enviado.</li>
+        </ul>
     </div>
 </div>
+
+<script>
+
+    function updateConfig()
+    {
+        var current = $("[name=mailsystem]").val();
+        $("[data-mail]").addClass("hidden");
+        $("[data-mail='" +  current + "']").removeClass("hidden");
+    }
+    $("[name=mailsystem]").change(function()
+    {
+        updateConfig();
+    });
+    updateConfig();
+</script>

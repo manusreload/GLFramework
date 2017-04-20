@@ -145,21 +145,8 @@ class users extends AuthController
                     {
                         if(ModuleManager::exists("login"))
                         {
-
 //                            die($this->getLink('GLFramework\Modules\Login\recovery', array('token' => 'abc')));
-                            $recovery = new \UserRecovery();
-                            $recovery = $recovery->generateNew($this->users);
-                            $recovery->save(true);
-                            $mail = new Mail();
-                            $message = $mail->render($this, "mail/welcome.twig", array('user' => $this->users, 'recovery' => $recovery));
-                            if($mail->send($this->users->email, "Bienvenido a Jarmauto Planning", $message))
-                            {
-                                $this->addMessage("Se ha enviado un email al usuario con los pasos que tiene que seguir para acceder al servicio");
-                            }
-                            else
-                            {
-                                $this->addMessage("Se ha producido un error al enviar el email, verifique los parametros de configuración.", "danger");
-                            }
+                            $this->sendWelcomeEmail($this->users);
                         }
                         else
                         {
@@ -177,6 +164,14 @@ class users extends AuthController
             {
                 $this->addMessage("No se encuentra este usuario", "danger");
                 $this->quit($this->getLink('GLFramework\Modules\Admin\users'));
+            }
+        }
+
+        if(isset($_POST['send-mail']))
+        {
+            foreach ($_POST['ids'] as $id)
+            {
+                $this->sendWelcomeEmail(new \User($id));
             }
         }
     }
@@ -237,6 +232,23 @@ class users extends AuthController
         $result = $group->get_all();
 //        print_debug($result);
         return $result->models;
+    }
+
+    public function sendWelcomeEmail($user)
+    {
+        $recovery = new \UserRecovery();
+        $recovery = $recovery->generateNew($user);
+        $recovery->save(true);
+        $mail = new Mail();
+        $message = $mail->render($this, "mail/welcome.twig", array('user' => $user, 'recovery' => $recovery));
+        if($mail->send($user->email, "Bienvenido a Jarmauto Planning", $message))
+        {
+            $this->addMessage("Se ha enviado un email al usuario con los pasos que tiene que seguir para acceder al servicio");
+        }
+        else
+        {
+            $this->addMessage("Se ha producido un error al enviar el email, verifique los parametros de configuración.", "danger");
+        }
     }
 
 

@@ -1,0 +1,7 @@
+<ol class="breadcrumb">
+    <li><a href="/"><i class="glyphicon glyphicon-home"></i> Home</a></li>
+    {% for k, v in prev %}
+        <li><a href="{{ v }}">{{ k | raw }}</a></li>
+    {% endfor %}
+    <li>{{ current | raw }}</li>
+</ol>

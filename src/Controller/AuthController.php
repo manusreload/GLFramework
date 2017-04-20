@@ -30,6 +30,7 @@ namespace GLFramework\Controller;
 use GLFramework\Controller;
 use GLFramework\Events;
 use GLFramework\Middleware;
+use GLFramework\Model;
 use GLFramework\Model\User;
 use GLFramework\Request;
 use GLFramework\Response;
@@ -121,9 +122,12 @@ class AuthController extends Controller implements Middleware
             $user = $user->getByUserPassword($username, $password);
             if($user)
             {
-                $this->user = new User($user);
+                $this->user = Model::newInstance("User", $user);
                 if(!$this->user->disabled)
                 {
+                    $this->user->lastlogin = now();
+                    $this->user->save();
+
                     $_SESSION[self::$session_key] = array($username, $password);
                     Events::fire('onLoginSuccess', array('user' => $this->user));
                     if(isset($_REQUEST['remember']) && $_REQUEST['remember'])

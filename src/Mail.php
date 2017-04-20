@@ -39,10 +39,13 @@ class Mail
      * Mail constructor.
      * @param $from
      * @param $fromName
+     * @param null $config
      */
-    public function __construct($from = null, $fromName = null)
+    public function __construct($from = null, $fromName = null, $config = null)
     {
-        $config = Bootstrap::getSingleton()->getConfig();
+        if(!$config)
+            $config = Bootstrap::getSingleton()->getConfig();
+
         if(!$from) $from = $config['mail']['from']['email'];
         if(!$fromName) $fromName = $config['mail']['from']['title'];
         $this->from = $from;

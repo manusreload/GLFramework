@@ -50,6 +50,7 @@ class MySQLConnection extends Connection
             if($this->pdo->errorCode() == 0)
             {
                 $this->pdo->exec("SET NAMES utf8");
+                $this->pdo->exec("SET sql_mode = \"\"");
                 return true;
             }
         }catch(\Exception $ex)
@@ -125,5 +126,14 @@ class MySQLConnection extends Connection
     public function getPDO()
     {
         return $this->pdo;
+    }
+
+    public function disconnect()
+    {
+        // TODO: Implement disconnect() method.
+        if($this->pdo)
+        {
+            $this->pdo = null;
+        }
     }
 }

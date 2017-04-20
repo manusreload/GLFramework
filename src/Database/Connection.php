@@ -34,6 +34,7 @@ abstract class Connection
     abstract public function getLastInsertId();
     abstract public function getLastError();
     abstract public function getPDO();
+    abstract public function disconnect();
 
 
 }
