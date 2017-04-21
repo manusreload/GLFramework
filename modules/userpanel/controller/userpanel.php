@@ -31,7 +31,7 @@ class userpanel extends AuthController
                 $upload->setName($name);
                 $image = new ImageProcessing($upload->tmpName());
                 $image->open($upload->contentType());
-                $image->resize_image(64, 64, false);
+                $image->resize_image(512, 512, false);
                 $image->save($upload->getAbsolutePath());
                 $this->user->profile_image = $upload->url();
             }

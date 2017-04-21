@@ -53,6 +53,7 @@ class FrameworkExtras extends Extra
         $this->addFilter(new \Twig_SimpleFilter('debug', array($this, 'debug')));
         $this->addFilter(new \Twig_SimpleFilter('number', array($this, 'isNumber')));
         $this->addFilter(new \Twig_SimpleFilter('implode', array($this, 'implode')));
+        $this->addFilter(new \Twig_SimpleFilter('icon', array($this, 'icon')));
     }
 
     public function fireEvent($name, $args = array())
@@ -126,6 +127,13 @@ class FrameworkExtras extends Extra
     public function dia_semanas()
     {
         return array("Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo");
+    }
+
+    public function icon($text)
+    {
+        $names = array(
+
+        );
     }
 
 }

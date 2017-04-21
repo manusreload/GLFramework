@@ -177,6 +177,7 @@ class ModelResult implements \IteratorAggregate
     {
         usort($this->models, function($a, $b) use($field)
         {
+            if(is_string($a[$field])) return strcmp($a[$field], $b[$field]);
             return $a[$field] - $b[$field];
 
         });
