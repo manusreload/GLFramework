@@ -35,17 +35,20 @@ class Upload
     var $hash;
 
     var $folder;
+
     /**
      * Upload constructor.
      * @param $uploads Uploads
      * @param $upload
+     * @param null $folder
      */
-    public function __construct($uploads, $upload)
+    public function __construct($uploads, $upload, $folder = null)
     {
         $this->uploads = $uploads;
         $this->upload = $upload;
 
         $this->hash = date("Y-m-d_H-i-s") . "_";
+        $this->folder = $folder?"$folder/":"";
     }
 
     /**

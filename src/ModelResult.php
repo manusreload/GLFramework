@@ -230,4 +230,10 @@ class ModelResult implements \IteratorAggregate
         return $this;
 
     }
+
+    public function append($model)
+    {
+        $this->models[] = (array) $model;
+        if(count($this->models) == 1) $this->model = $this->models[0];
+    }
 }
