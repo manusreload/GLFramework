@@ -89,6 +89,15 @@ function print_array($array,$depth=1,$indentation=0){
     }
 }
 
+/**
+ *
+ * Soporta fechas del estilo:
+ *      - DD/MM/AAAA
+ *      - MM-DD-AA
+ *      - YYYY-MM-DD
+ * @param $date
+ * @return false|mixed|string
+ */
 function fix_date($date)
 {
     $date = trim($date);
