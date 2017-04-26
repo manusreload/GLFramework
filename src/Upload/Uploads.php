@@ -63,11 +63,12 @@ class Uploads
 
     /**
      * @param $name
+     * @param null $folder
      * @return Upload
      */
-    public function allocate($name)
+    public function allocate($name, $folder = null)
     {
-        return new Upload($this, $_FILES[$name]);
+        return new Upload($this, $_FILES[$name], $folder);
     }
 
 

@@ -24,7 +24,7 @@ class userpanel extends AuthController
         if(isset($_POST['save']))
         {
             $this->user->setData($_POST);
-            $upload = $this->getUploads()->allocate("picture");
+            $upload = $this->getUploads()->allocate("picture", "profile_pictures");
             if($upload->isSuccess() && !$upload->isEmpty())
             {
                 $name = "image_" . $this->user->id . ".png";
