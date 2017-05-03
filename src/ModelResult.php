@@ -177,6 +177,8 @@ class ModelResult implements \IteratorAggregate
     {
         usort($this->models, function($a, $b) use($field)
         {
+            if((int) ($a[$field]) == $a[$field]) return $a[$field] - $b[$field];
+            if(is_string($a[$field])) return strcmp($a[$field], $b[$field]);
             return $a[$field] - $b[$field];
 
         });
@@ -228,5 +230,11 @@ class ModelResult implements \IteratorAggregate
 
         return $this;
 
+    }
+
+    public function append($model)
+    {
+        $this->models[] = (array) $model;
+        if(count($this->models) == 1) $this->model = $this->models[0];
     }
 }

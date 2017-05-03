@@ -281,4 +281,14 @@ class Debugbar
          self::$instance->stop = true;
     }
 
+    public static function timer($name, $label = null)
+    {
+        self::$instance->time->startMeasure($name, $label);
+    }
+
+    public static function stopTimer($name)
+    {
+        self::$instance->time->stopMeasure($name);
+    }
+
 }

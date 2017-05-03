@@ -72,7 +72,20 @@ class setup extends Controller
 
         if(isset($_POST['save']))
         {
+            $upload = $this->getUploads()->allocate('banner');
             $config = $this->loadCurrentConfig();
+            if($upload->isSuccess())
+            {
+                if($upload->move())
+                {
+                    $file = $upload->getFilename();
+                    $config['app']['banner'] = "/" . $file;
+                }
+                else
+                {
+                    $this->addMessage("Se ha producido un error al guardar la imagen", "danger");
+                }
+            }
             $config['app']['name'] = $_POST['site_name'];
             $config['app']['debug'] = $_POST['debug']?true:false;
             if($this->saveConfig($config))

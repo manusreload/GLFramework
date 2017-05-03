@@ -69,9 +69,22 @@ class Log extends AbstractLogger
     {
         // TODO: Implement log() method.
         if(!in_array('events', $context))
+        {
+
             Events::fire('onLog', array($message, $level));
-        else if($this->debugMode)
-            die($message);
+
+        }
+        else
+        {
+            if($this->debugMode)
+            {
+                echo "<pre>";
+                echo($level . " " . $message . "\n");
+                debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+                echo "</pre>";
+                die();
+            }
+        }
     }
 
     public static function em($message, array $context = array())

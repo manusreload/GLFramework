@@ -24,14 +24,14 @@ class userpanel extends AuthController
         if(isset($_POST['save']))
         {
             $this->user->setData($_POST);
-            $upload = $this->getUploads()->allocate("picture");
+            $upload = $this->getUploads()->allocate("picture", "profile_pictures");
             if($upload->isSuccess() && !$upload->isEmpty())
             {
                 $name = "image_" . $this->user->id . ".png";
                 $upload->setName($name);
                 $image = new ImageProcessing($upload->tmpName());
                 $image->open($upload->contentType());
-                $image->resize_image(64, 64, false);
+                $image->resize_image(512, 512, false);
                 $image->save($upload->getAbsolutePath());
                 $this->user->profile_image = $upload->url();
             }

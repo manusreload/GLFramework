@@ -89,6 +89,15 @@ function print_array($array,$depth=1,$indentation=0){
     }
 }
 
+/**
+ *
+ * Soporta fechas del estilo:
+ *      - DD/MM/AAAA
+ *      - MM-DD-AA
+ *      - YYYY-MM-DD
+ * @param $date
+ * @return false|mixed|string
+ */
 function fix_date($date)
 {
     $date = trim($date);
@@ -446,6 +455,7 @@ function time_elapsed_default_translation()
         'seconds' => '%d segundo%s',
         'minutes' => '%d minuto%s',
         'hours' => '%d hora%s',
+        'days' => '%d dias%s',
     );
 }
 function time_elapsed($start, $end = null, $translation = array())
@@ -453,7 +463,17 @@ function time_elapsed($start, $end = null, $translation = array())
     if(empty($translation)) $translation = time_elapsed_default_translation();
     if(!$end) $end = time();
     $seconds = $end - $start;
-    if($seconds <= 15) $key = 'few';
+    if($seconds <= 15) {
+        $key = 'few';
+    }
+    else
+    {
+        $keys = array('seconds', 'minutes', 'hours', 'days');
+        $current = 0;
+
+    }
+
+    return sprintf($translation[$key], $seconds);
 
 }
 
