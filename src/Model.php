@@ -649,13 +649,13 @@ class Model
             }
         }
 
-        foreach ($this->json_extra as $key => $function)
+        if($recursive)
         {
-
-            $json[$key] = call_user_func(array($this, $function));
-
+            foreach ($this->json_extra as $key => $function)
+            {
+                $json[$key] = call_user_func(array($this, $function));
+            }
         }
-
         return $json;
     }
 
