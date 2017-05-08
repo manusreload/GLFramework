@@ -463,4 +463,17 @@ class Bootstrap
         return $url;
     }
 
+    public static function autoDetectConfig($folder = "", $default = "config.yml")
+    {
+        $host = $_SERVER['HTTP_HOST'];
+        if(strpos($host, ":") !== FALSE)
+            $host = substr($host, 0, strpos($host, ":"));
+        if($host == "localhost") $host = "default";
+        if(file_exists("{$folder}{$host}.yml"))
+            $config = "{$folder}{$host}.yml";
+        else
+            $config = $default;
+        return $config;
+    }
+
 }

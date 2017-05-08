@@ -240,10 +240,7 @@ class setup extends Controller
                     if($plugin->title == $module)
                     {
                         $found = true;
-                        $dir = $plugin->getDirectory();
-                        $folder = substr($dir, strrpos($dir, "/") + 1);
-                        $base = dirname($dir);
-                        $modulesSave[$base][] = $folder;
+                        $modulesSave[$plugin->getFolderContainer()][] = $plugin->getListName();
                         break;
                     }
                 }
