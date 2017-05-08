@@ -142,6 +142,14 @@ class Bootstrap
         Log::d("Modules initialized: " . count($this->manager->getModules()));
     }
 
+    public static function getAppHash()
+    {
+        $config = self::getSingleton()->getConfig();
+        $string = $config['app']['name'];
+        $string .= __FILE__;
+        return substr(md5($string), 0, 16);
+    }
+
     /**
      * Prepara e inicia el entorno de testeo
      */

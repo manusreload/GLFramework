@@ -27,6 +27,7 @@
 namespace GLFramework\Controller;
 
 
+use GLFramework\Bootstrap;
 use GLFramework\Controller;
 use GLFramework\Events;
 use GLFramework\Middleware;
@@ -38,7 +39,7 @@ use GLFramework\Response;
 class AuthController extends Controller implements Middleware
 {
 
-    private static $session_key = "auth_user";
+    private $session_key = "auth_user";
     /**
      * @var User|\User
      */
@@ -49,14 +50,15 @@ class AuthController extends Controller implements Middleware
     public function __construct($base, $module)
     {
         parent::__construct($base, $module);
-        if(isset($_COOKIE[self::$session_key]))
+        $this->session_key = self::getSessionKey();
+        if(isset($_COOKIE[$this->session_key]))
         {
-            $_SESSION[self::$session_key] = unserialize($_COOKIE[self::$session_key]);
+            $_SESSION[$this->session_key] = unserialize($_COOKIE[$this->session_key]);
         }
-        if(isset($_SESSION[self::$session_key]))
+        if(isset($_SESSION[$this->session_key]))
         {
-            $username =  $_SESSION[self::$session_key][0];
-            $password =  $_SESSION[self::$session_key][1];
+            $username =  $_SESSION[$this->session_key][0];
+            $password =  $_SESSION[$this->session_key][1];
             $user = self::instanceUser(null);
             $user = $user->getByUserPassword($username, $password);
             if($user)
@@ -64,13 +66,13 @@ class AuthController extends Controller implements Middleware
                 $this->user = self::instanceUser($user);
                 if($this->user->disabled)
                 {
-                    unset($_SESSION[self::$session_key]);
+                    unset($_SESSION[$this->session_key]);
                     $this->addMessage("Se ha denegado el acceso al sistema", "danger");
                     $this->quit("/login");
                 }
             }
             else{
-                unset($_SESSION[self::$session_key]);
+                unset($_SESSION[$this->session_key]);
             }
         }
         $this->addMiddleware($this);
@@ -83,13 +85,13 @@ class AuthController extends Controller implements Middleware
         if(isset($_GET['logout']))
         {
             $this->addMessage("Se ha desconectado correctamente");
-            unset($_SESSION[self::$session_key]);
-            setcookie(self::$session_key, "", 0, "/");
+            unset($_SESSION[$this->session_key]);
+            setcookie($this->session_key, "", 0, "/");
             $this->user = new User();
         }
         if($this->requireLogin)
         {
-            if(!isset($_SESSION[self::$session_key]))
+            if(!isset($_SESSION[$this->session_key]))
             {
                 if(strpos($_SERVER['REQUEST_URI'], "/login") === FALSE)
                 {
@@ -128,11 +130,11 @@ class AuthController extends Controller implements Middleware
                     $this->user->lastlogin = now();
                     $this->user->save();
 
-                    $_SESSION[self::$session_key] = array($username, $password);
+                    $_SESSION[$this->session_key] = array($username, $password);
                     Events::fire('onLoginSuccess', array('user' => $this->user));
                     if(isset($_REQUEST['remember']) && $_REQUEST['remember'])
                     {
-                        setcookie(self::$session_key, serialize($_SESSION[self::$session_key]), time() + 60 * 60 * 24 * 30, "/");
+                        setcookie($this->session_key, serialize($_SESSION[$this->session_key]), time() + 60 * 60 * 24 * 30, "/");
                     }
                     if(isset($_SESSION['return']))
                     {
@@ -202,8 +204,13 @@ class AuthController extends Controller implements Middleware
     public static function auth($user_id)
     {
         $user = self::instanceUser($user_id);
-        $_SESSION[self::$session_key] = array($user->user_name, $user->password);
+        $_SESSION[self::getSessionKey()] = array($user->user_name, $user->password);
         return $user;
+    }
+
+    public static function getSessionKey()
+    {
+        return "authorization_" . Bootstrap::getAppHash();
     }
 
     /**
