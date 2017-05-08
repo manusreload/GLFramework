@@ -266,9 +266,11 @@ class ModuleManager
                     $module = $this->load($dirbase . "/" . $name, $extra);
                     if($module)
                     {
-                        $this->loadModuleDependencies($module);
                         if(!$this->exists($module->title))
+                        {
                             $this->add($module);
+                            $this->loadModuleDependencies($module);
+                        }
                     }
                     else{
                         throw new \Exception("Can't not load module: " . $name . " in directory: '" . $dirbase . "'" );
