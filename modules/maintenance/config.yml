@@ -12,6 +12,5 @@ app:
 
   resources: resources
 
-
-  routes:
-      - GLFramework\Modules\UserPanel\userpanel: /user/panel
+  listeners:
+    - beforeControllerRun: GLFramework\Modules\Maintenance\home->beforeControllerRun
