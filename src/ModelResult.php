@@ -237,4 +237,10 @@ class ModelResult implements \IteratorAggregate
         $this->models[] = (array) $model;
         if(count($this->models) == 1) $this->model = $this->models[0];
     }
+
+    public function paginate($page, $pageSize)
+    {
+        $start = $page * $pageSize;
+        return $this->limit($pageSize, $start);
+    }
 }

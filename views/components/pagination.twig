@@ -1,0 +1,70 @@
+{#
+{% embed "components/pagination.twig" with {models: this.all, [pageSize: n (def=50)]} %}
+
+    {% block head %}
+        <tr>
+        <th>#</th>
+        <th>Object</th>
+        <th>Date</th>
+        <th>Device</th>
+        <th>DeviceId</th>
+        <th>Version</th>
+        <th>Stacktrace</th>
+        </tr>
+    {% endblock %}
+    {% block row %}
+        <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.object }}</td>
+            <td>{{ item.fecha }}</td>
+            <td>{{ item.device }}</td>
+            <td>{{ item.device_id }}</td>
+            <td>{{ item.version }}</td>
+            <td><a href="{{ this.getLink('reports_report', {hash: item.hash}) }}">Ver</a></td>
+        </tr>
+    {% endblock %}
+{% endembed %}
+#}
+{% set paginatationVar = name | default("page") %}
+{% set _pageSize = pageSize | default(50) %}
+{% set page = _GET[paginatationVar] | default(0) %}
+{% set pages = (models.count() / _pageSize) %}
+{% if page >= pages %}{% set page = pages - 1 %}{% endif %}
+
+<table class="table" xmlns="http://www.w3.org/1999/html" id="{{ name }}">
+    <thead>
+    {% block head %}{% endblock %}
+    </thead>
+    <tbody>
+    {% for item in models.paginate(page, _pageSize) %}
+        {% block row %}{% endblock %}
+    {% endfor %}
+    </tbody>
+</table>
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+
+        {% if page > 0 %}
+            <li><a href="?{{ paginatationVar }}={{ page - 1 }}#{{ name }}" aria-label="Previous"> <span aria-hidden="true">&laquo;</span> </a></li>
+        {% else %}
+            <li class="disabled"><a href="#{{ name }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+        {% endif %}
+
+        {% for i in range(0, pages) %}
+            <li class="{{ i == page?"active":"" }}"><a href="?{{ paginatationVar }}={{ i }}#{{ name }}">{{ i + 1 }}</a></li>
+        {% endfor %}
+        {% if page < pages - 1 %}
+        <li>
+            <a href="?{{ paginatationVar }}={{ page + 1 }}#{{ name }}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+        {% else %}
+        <li class="disabled">
+            <a href="#{{ name }}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
