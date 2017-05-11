@@ -82,7 +82,7 @@ class Upload
         return count($this->upload['name']);
     }
 
-    public function getFilename($index = null)
+    public function getFilename($index = false)
     {
         return $this->uploads->folder . "/" . $this->folder . $this->hash . $this->name($index);
     }

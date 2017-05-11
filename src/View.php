@@ -69,6 +69,7 @@ class View
         Events::fire('onViewCreated', array(&$this->twig));
         Events::getInstance()->listen('displayScripts', array($this, 'getJavascripts'));
         Events::getInstance()->listen('displayStyle', array($this, 'getStylesheets'));
+        Log::d("Register listener");
         $this->addExtras();
     }
 
@@ -211,6 +212,7 @@ class View
         {
             $result .= $js->getBrowserCode();
         }
+        $view->javascriptMedia = array();
         return $result;
     }
     /**
@@ -224,6 +226,7 @@ class View
         {
             $result .= $css->getBrowserCode() . "\n";
         }
+        $view->stylesheetMedia = array();
         return $result;
     }
 

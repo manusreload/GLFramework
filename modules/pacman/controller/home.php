@@ -35,7 +35,7 @@ class pacman extends Controller
     public function displayExtraErrorView($view)
     {
 //        $view->getTwig()->enableDebug();
-        echo $view->getTwig()->render('pacman/views/error.twig');
+        return $view->getTwig()->render('pacman/views/custom_error.twig');
 
     }
 

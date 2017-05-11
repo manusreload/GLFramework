@@ -142,6 +142,14 @@ class Bootstrap
         Log::d("Modules initialized: " . count($this->manager->getModules()));
     }
 
+    public static function getAppHash()
+    {
+        $config = self::getSingleton()->getConfig();
+        $string = $config['app']['name'];
+        $string .= __FILE__;
+        return substr(md5($string), 0, 16);
+    }
+
     /**
      * Prepara e inicia el entorno de testeo
      */
@@ -453,6 +461,19 @@ class Bootstrap
         $url = str_replace($dir, "", $file);
         $url = (str_replace("//", "/", $url));
         return $url;
+    }
+
+    public static function autoDetectConfig($folder = "", $default = "config.yml")
+    {
+        $host = $_SERVER['HTTP_HOST'];
+        if(strpos($host, ":") !== FALSE)
+            $host = substr($host, 0, strpos($host, ":"));
+        if($host == "localhost") $host = "default";
+        if(file_exists("{$folder}{$host}.yml"))
+            $config = "{$folder}{$host}.yml";
+        else
+            $config = $default;
+        return $config;
     }
 
 }
