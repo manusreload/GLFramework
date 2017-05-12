@@ -78,7 +78,7 @@
                                 </div>
                             </div>
 
-                            {{ fire('widgetAdminForm', [render]) | raw }}
+                            {{ fire('widgetAdminForm', [render, this.users]) | raw }}
 
                             <div class="form-group">
                                 <div class="col-lg-offset-2 col-lg-10">
@@ -143,6 +143,7 @@
                 {% endblock %}
             {% endembed %}
         </div>
+        {{ fire('widgetEditUser', [render, this.users]) | raw }}
     </div>
 {% endblock %}
 {% block scripts %}

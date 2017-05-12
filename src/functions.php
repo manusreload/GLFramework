@@ -118,6 +118,7 @@ function fix_date($date)
     return $date;
 }
 
+
 function fix_decimal($number)
 {
     if(preg_match("#[0-9,.]+#", $number, $matches))

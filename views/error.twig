@@ -15,7 +15,7 @@
     <a href="#" class="btn btn-warning"> Reportar incidencia</a>
     <a href="/" class="btn btn-default"> Inicio</a>
 
-    {{ fire('displayExtraErrorView',[render ]) }}
+    {{ fire('displayExtraErrorView',[render ]) | raw }}
 
     {% set current = this.exception %}
 

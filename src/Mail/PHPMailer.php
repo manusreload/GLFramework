@@ -65,7 +65,20 @@ class PHPMailer extends MailSystem
         $config = $this->config;
         $transport = \Swift_SmtpTransport::newInstance($config['mail']['hostname'], $config['mail']['port']);
         $transport->setUsername($config['mail']['username']);
-        $transport->setPassword($config['mail']['password']);
+        $transport->setPassword($this->getPassword());
         return $transport;
+    }
+
+    public function getPassword()
+    {
+        if(isset($this->config['mail']['encrypt']))
+        {
+            switch ($this->config['mail']['encrypt'])
+            {
+                case 'base64':
+                    return base64_decode($this->config['mail']['password']);
+            }
+        }
+        return $this->config['mail']['password'];
     }
 }
