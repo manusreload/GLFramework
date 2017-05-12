@@ -44,8 +44,7 @@ class Filesystem
      */
     public function __construct($file = null, $folder = null)
     {
-        if(!$folder) $folder = $this->getFilesystemFolder();
-        $this->folder = $folder;
+        $this->folder = $this->getFilesystemFolder() . "/$folder";
         $this->file = $file;
     }
 
