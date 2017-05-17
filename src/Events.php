@@ -134,8 +134,17 @@ class Events
     public static function dispatch($event, $args = array())
     {
         return self::getInstance()->_dispatch($event, $args);
+    }
 
+    /**
+     * @param $event
+     * @param array $args
+     * @return Event
+     */
 
+    public static function run($event, $args = array())
+    {
+        return self::getInstance()->_run($event, $args);
     }
 
     public function _dispatch($event, $args = array())
@@ -173,6 +182,34 @@ class Events
             return $buffer;
         }
         return 0;
+    }
+
+    public function _run($event, $args = array())
+    {
+        $eventResult = new Event();
+        global $context;
+        $buffer = array();
+        if(!is_array($args)) $args = array($args);
+        if(isset($this->handlers[$event]) && count(($this->handlers[$event])) > 0)
+        {
+            $handlers = $this->handlers[$event];
+            foreach($handlers as $item)
+            {
+                $eventResult->addHandler($item);
+                $fn = $item['fn'];
+                $context = $item['context'];
+                if(is_callable($fn))
+                {
+                    $result = call_user_func_array($fn, $args);
+                    $eventResult->addResult($result);
+                }
+                else
+                {
+                    Log::getInstance()->error("Can not call event: " . $event . " function: " . function_dump($fn), array('events'));
+                }
+            }
+        }
+        return $eventResult;
     }
 
     public static function anyFalse($result)
