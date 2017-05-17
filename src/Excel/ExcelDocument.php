@@ -160,6 +160,14 @@ class ExcelDocument
         unlink($filePath);
     }
 
+    public function saveAsFile($file, $folder = null)
+    {
+        $fs = new Filesystem($file, $folder);
+        $objWriter = \PHPExcel_IOFactory::createWriter($this->excel, 'Excel2007');
+        $objWriter->save($fs->getAbsolutePath());
+        return $fs->getAbsolutePath();
+    }
+
     public function executeFormulas()
     {
 

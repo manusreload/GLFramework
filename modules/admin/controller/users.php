@@ -55,9 +55,16 @@ class users extends AuthController
             $this->users = $this->users->get($params['id'])->getModel();
             if(isset($_GET['login']))
             {
-                $this->processLogin($this->users->user_name, $this->users->password, false);
-                $this->quit("/home");
-                return false;
+                $_REQUEST['remember'] = true;
+                if($this->processLogin($this->users->user_name, $this->users->password, false))
+                {
+                    $this->quit("/home");
+                    return false;
+                }
+                else
+                {
+                    $this->addMessage("Se ha producido un error al suplantar la identidad");
+                }
 
             }
             if($params['id'] == 'add' || $this->users->id != 0)
