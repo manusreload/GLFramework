@@ -469,7 +469,7 @@ function time_elapsed($start, $end = null, $translation = array())
     }
     else
     {
-        $keys = array('seconds', 'minutes', 'hours', 'days');
+        $keys = array('seconds' => 1, 'minutes' => 60, 'hours' => 24 * 60, 'days');
         $current = 0;
 
     }

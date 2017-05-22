@@ -586,7 +586,6 @@ class Model
      */
     public function json($fields = array(), $recursive = true, $limit = 16)
     {
-        $limit--;
         if($limit == 0) return null;
         $json = array();
         if($url = $this->url())
@@ -628,10 +627,10 @@ class Model
                                 $recursive2 = (isset($mt['recursive']))?$mt['recursive']:$recursive;
                                 if(isset($mt['field']))
                                 {
-                                    $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))->json($filter, $recursive2, $limit);
+                                    $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))->json($filter, $recursive2, $limit - 1);
                                 }
                                 else{
-                                    $json[$name] = $object->get($this->getFieldValue($field))->json($filter,$recursive2, $limit);
+                                    $json[$name] = $object->get($this->getFieldValue($field))->json($filter,$recursive2, $limit - 1);
                                 }
                             }
                             else
