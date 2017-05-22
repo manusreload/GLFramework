@@ -5,7 +5,6 @@ indev: true
 
 app:
   index: home
-
   controllers: controller
   model: model
   views: views
@@ -13,4 +12,4 @@ app:
   resources: resources
 
   listeners:
-    - beforeControllerRun: GLFramework\Modules\Maintenance\home->beforeControllerRun
+    - afterControllerConstruct: GLFramework\Modules\Maintenance\home->beforeControllerRun

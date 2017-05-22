@@ -11,7 +11,7 @@ namespace GLFramework\Modules\Maintenance;
 
 use GLFramework\Controller;
 
-class maintenance extends Controller
+class home extends Controller
 {
 
     /**
@@ -25,7 +25,6 @@ class maintenance extends Controller
 
     public function beforeControllerRun($controller)
     {
-
         die("OK");
     }
 }
