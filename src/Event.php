@@ -31,8 +31,15 @@ class Event
 
     public function anyFalse()
     {
-        foreach ($this->result as $item)
-            if($item === false) return true;
+        if(is_array($this->result))
+        {
+            foreach ($this->result as $item)
+                if($item === false) return true;
+        }
+        else
+        {
+            return $this->result === false;
+        }
         return false;
     }
 
@@ -79,9 +86,8 @@ class Event
         }
     }
 
+    public function allTrue()
+    {
 
-
-
-
-
+    }
 }

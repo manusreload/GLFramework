@@ -210,6 +210,9 @@ class ModuleManager
         {
             $this->mainModule = $module;
             $this->add($module);
+            $this->mainModule->init();
+            $this->mainModule->register_router($this->router);
+            $this->mainModule->register_events();
             if(isset($this->config['modules']))
             {
                 $this->loadConfig($this->config);
@@ -217,8 +220,11 @@ class ModuleManager
 
             foreach($this->modules as $module)
             {
-                $module->init();
-                $module->register_router($this->router);
+                if($module != $this->mainModule)
+                {
+                    $module->init();
+                    $module->register_router($this->router);
+                }
             }
             foreach($this->modules as $module)
             {
@@ -266,7 +272,7 @@ class ModuleManager
                     $module = $this->load($dirbase . "/" . $name, $extra);
                     if($module)
                     {
-                        if(!$this->exists($module->title))
+                        if(!$this->exists($module->title)  && !Events::run('isModuleEnabled', array($module))->anyFalse())
                         {
                             $this->add($module);
                             $this->loadModuleDependencies($module);

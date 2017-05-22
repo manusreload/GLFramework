@@ -34,6 +34,7 @@ class Mail
     private static $mailer;
     private $from;
     private $fromName;
+    public $config;
 
     /**
      * Mail constructor.
@@ -45,9 +46,10 @@ class Mail
     {
         if(!$config)
             $config = Bootstrap::getSingleton()->getConfig();
+        $this->config = $config;
 
-        if(!$from) $from = $config['mail']['from']['email'];
-        if(!$fromName) $fromName = $config['mail']['from']['title'];
+        if(!$from) $from = $this->config['mail']['from']['email'];
+        if(!$fromName) $fromName = $this->config['mail']['from']['title'];
         $this->from = $from;
         $this->fromName = $fromName;
     }
@@ -87,17 +89,16 @@ class Mail
      */
     private function getMailSystem()
     {
-        $config = Bootstrap::getSingleton()->getConfig();
-        if(isset($config['mail']))
+        if(isset($this->config['mail']))
         {
-            if(isset($config['mail']['mailsystem']))
+            if(isset($this->config['mail']['mailsystem']))
             {
-                $system = $config['mail']['mailsystem'];
+                $system = $this->config['mail']['mailsystem'];
                 $class = "GLPlanning/Mail/$system";
-                if(class_exists($class)) return new $class($config);
+                if(class_exists($class)) return new $class($this->config);
             }
         }
-        return new Mail\Mail($config);
+        return new Mail\Mail($this->config);
     }
 
     /**
@@ -126,7 +127,6 @@ class Mail
     public function send($to, $subject, $message, $attachments = array(), $cc = array())
     {
         $transport = $this->getTransport();
-        Events::fire('onEmail', array( 'emails' => $to, 'subject' => $subject, 'message' => $message, 'transport' => $transport));
 
         $mail = new \Swift_Message($subject, $message, "text/html", "UTF-8");
         $mail->setFrom($this->from, $this->fromName);
@@ -139,6 +139,31 @@ class Mail
             $mail->attach($atta);
         }
 
+        return $this->done($mail);
+    }
+
+    /**
+     * @param $to
+     * @param $subject
+     * @param $message
+     * @return \Swift_Message
+     */
+    public function build($to, $subject, $message)
+    {
+        $mail = new \Swift_Message($subject, $message, "text/html", "UTF-8");
+        $mail->setFrom($this->from, $this->fromName);
+        $mail->setTo($to);
+        return $mail;
+    }
+
+    /**
+     * @param $mail \Swift_Message
+     * @return int
+     */
+    public function done($mail)
+    {
+        $transport = $this->getTransport();
+        Events::fire('onEmail', array( 'emails' => $mail->getTo(), 'subject' => $mail->getSubject(), 'message' => $mail->getBody(), 'transport' => $transport));
         return $transport->send($mail);
     }
 }

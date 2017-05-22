@@ -581,10 +581,12 @@ class Model
      * se construye tambien de forma recursiva.
      * @param array $fields
      * @param bool $recursive Especifica si devuelve las asociaciones con otros modelos
+     * @param int $limit
      * @return array
      */
-    public function json($fields = array(), $recursive = true)
+    public function json($fields = array(), $recursive = true, $limit = 16)
     {
+        if($limit == 0) return null;
         $json = array();
         if($url = $this->url())
         {
@@ -625,10 +627,10 @@ class Model
                                 $recursive2 = (isset($mt['recursive']))?$mt['recursive']:$recursive;
                                 if(isset($mt['field']))
                                 {
-                                    $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))->json($filter, $recursive2);
+                                    $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))->json($filter, $recursive2, $limit - 1);
                                 }
                                 else{
-                                    $json[$name] = $object->get($this->getFieldValue($field))->json($filter,$recursive2);
+                                    $json[$name] = $object->get($this->getFieldValue($field))->json($filter,$recursive2, $limit - 1);
                                 }
                             }
                             else
@@ -637,7 +639,7 @@ class Model
                                 if(isset($fields[$name]))
                                     $filter = $fields[$name];
                                 $object = new $mt($this->getFieldValue($field));
-                                $json[$name] = $object->json($filter, $recursive);
+                                $json[$name] = $object->json($filter, $recursive, $limit);
                             }
                         }
                     }

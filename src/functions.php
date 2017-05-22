@@ -118,6 +118,7 @@ function fix_date($date)
     return $date;
 }
 
+
 function fix_decimal($number)
 {
     if(preg_match("#[0-9,.]+#", $number, $matches))
@@ -468,7 +469,7 @@ function time_elapsed($start, $end = null, $translation = array())
     }
     else
     {
-        $keys = array('seconds', 'minutes', 'hours', 'days');
+        $keys = array('seconds' => 1, 'minutes' => 60, 'hours' => 24 * 60, 'days');
         $current = 0;
 
     }
