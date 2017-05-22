@@ -27,11 +27,10 @@
                         <th>Activado</th>
 
                     </tr>
-
                     {% for module in this.modules %}
                         <tr>
                             <td>{{ module.getListName() }}</td>
-                            <td><a href="#">{{ module.title }}</a></td>
+                            <td><a href="{{ this.getLink(this, {name: module.title}) }}">{{ module.title }}</a></td>
                             <td>{{ module.description }}</td>
                             <td>{{ module.directory }}</td>
                             {% if module.isEnabled() %}

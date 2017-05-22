@@ -40,6 +40,7 @@ class Module
 
     var $title;
     var $description;
+    var $version;
     private $config;
     private $directory;
 
@@ -61,6 +62,8 @@ class Module
             $this->title = $this->config['title'];
         if(isset($this->config['description']))
             $this->description = $this->config['description'];
+        if(isset($this->config['version']))
+            $this->version = $this->config['version'];
 //        $this->config = array_merge_recursive_ex($this->config, Bootstrap::getSingleton()->getConfig());
     }
 
