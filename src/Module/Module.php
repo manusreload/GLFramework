@@ -43,6 +43,7 @@ class Module
     var $version;
     private $config;
     private $directory;
+    private $settings = array();
 
     private $controllers = array();
     private $controllers_map = array();
@@ -64,6 +65,20 @@ class Module
             $this->description = $this->config['description'];
         if(isset($this->config['version']))
             $this->version = $this->config['version'];
+
+        if(isset($this->config['app']['settings']))
+        {
+            $settings = $this->config['app']['settings'];
+            foreach ($settings as $name => $setting)
+            {
+                $moduleSetting = new ModuleSettings();
+                $moduleSetting->description = $setting['description'];
+                $moduleSetting->type = $setting['type'];
+                $moduleSetting->default = $setting['default'];
+                $moduleSetting->key = $name;
+                $this->settings[] = $moduleSetting;
+            }
+        }
 //        $this->config = array_merge_recursive_ex($this->config, Bootstrap::getSingleton()->getConfig());
     }
 
@@ -407,5 +422,13 @@ class Module
     public function getFolderContainer()
     {
         return dirname($this->directory);
+    }
+
+    /**
+     * @return ModuleSettings[]
+     */
+    public function getModuleSettings()
+    {
+        return $this->settings;
     }
 }

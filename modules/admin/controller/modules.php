@@ -69,10 +69,23 @@ class modules extends AuthController
                     {
                         $this->addMessage("No se ha podido guardar la configuracion", "danger");
                     }
-//                    $this->quit(".");
                 }
                 $this->module = $module;
                 $this->module->init();
+                if(isset($_POST['settings']))
+                {
+                    $config = $configManager->load();
+                    $this->setModuleConfiguration($config, $module, $_POST['settings']);
+                    if($configManager->save($config))
+                    {
+                        $this->addMessage("Se ha guardado correctamente");
+                        $this->redirection("");
+                    }
+                    else
+                    {
+                        $this->addMessage("No se ha podido guardar la configuracion", "danger");
+                    }
+                }
                 $this->setTemplate("module.twig");
             }
             else
@@ -80,6 +93,53 @@ class modules extends AuthController
                 $this->addMessage("No se ha encontrado el módulo", "danger");
             }
         }
+    }
+
+
+    /**
+     * @param $config
+     * @param $module Module
+     * @return mixed
+     */
+    public function getModuleConfiguration($config, $module)
+    {
+        $keys = $config['modules'][$module->getFolderContainer()];
+        foreach ($keys as $key => $value)
+        {
+            if(is_array($value) && isset($value[$module->getListName()]))
+            {
+                return $value[$module->getListName()];
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param $config
+     * @param $module Module
+     * @param $settings
+     * @return bool
+     */
+    public function setModuleConfiguration(&$config, $module, $settings)
+    {
+        $keys = &$config['modules'][$module->getFolderContainer()];
+        foreach ($keys as $key => &$value)
+        {
+            if(is_array($value) && isset($value[$module->getListName()]))
+            {
+                $value[$module->getListName()] = $settings;
+                return true;
+            }
+            elseif($key === $module->getListName())
+            {
+                print_debug($key, $module->getListName());
+                die("OK");
+                $value[$module->getListName()] = $settings;
+                return true;
+
+            }
+        }
+        return false;
     }
 
 

@@ -7,6 +7,7 @@
  #}
 {% block title %}Administracion - Usuarios{% endblock %}
 {% block body %}
+    <a href="/admin/modules" class="btn btn-default"><i class="fa fa-chevron-left"></i> Volver</a>
     <div class="row">
         <div class="col-lg-6">
             {% embed "templates/box.twig" %}
@@ -32,6 +33,32 @@
                             <td><code>{{ this.module.getDirectory() }}</code></td>
                         </tr>
                     </table>
+                {% endblock %}
+            {% endembed %}
+        </div>
+        <div class="col-lg-6">
+            {% embed "templates/box.twig" %}
+                {% block title %}
+                    Ajustes
+                {% endblock %}
+                {% block content %}
+                    <form method="post">
+                        {% set module_config = this.getModuleConfiguration(mainconfig, this.module) %}
+                        {% for setting in this.module.getModuleSettings() %}
+                            {% set value = module_config[setting.key] | default( setting.default ) %}
+                            <div class="form-group">
+                                <label>{{ setting.key }} ({{ setting.type }})</label>
+                                {% if setting.type == "boolean" %}
+                                    <select class="form-control" name="settings[{{ setting.key }}]">
+                                        <option value="1" {{ value=="1"?"selected":"" }}>TRUE</option>
+                                        <option value="0" {{ value=="0"?"selected":"" }}>FALSE</option>
+                                    </select>
+                                {% endif %}
+                                <small>{{ setting.description }}</small>
+                            </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-default" name="save">Guardar</button>
+                    </form>
                 {% endblock %}
             {% endembed %}
         </div>

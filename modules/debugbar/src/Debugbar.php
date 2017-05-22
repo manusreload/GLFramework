@@ -193,9 +193,12 @@ class Debugbar
      */
     public function displayStyle($view)
     {
-        $url = $view->getController()->getLink("GLFramework\\Modules\\Debugbar\\handler");
         $render = $this->getDebugbar()->getJavascriptRenderer();
-        $render->setOpenHandlerUrl($url);
+        if($this->getDebugbar()->getStorage() != null)
+        {
+            $url = $view->getController()->getLink("GLFramework\\Modules\\Debugbar\\handler");
+            $render->setOpenHandlerUrl($url);
+        }
         if($this->time->hasStartedMeasure('run'))
             $this->time->stopMeasure('run');
         if(Bootstrap::isDebug())
