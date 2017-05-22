@@ -54,16 +54,16 @@ class modules extends AuthController
                     $config = $configManager->load();
                     if($this->params['state'] == "enable")
                     {
-                        $config['modules'][$module->getFolderContainer()][] = $module->getListName();
+                        $configManager->enableModule($config, $module);
                     }
                     else if($this->params['state'] == "disable")
                     {
-                        $index = array_search($module->getListName(), $config['modules'][$module->getFolderContainer()]);
-                        unset($config['modules'][$module->getFolderContainer()][$index]);
+                        $configManager->disableModule($config, $module);
                     }
                     if($configManager->save($config))
                     {
                         $this->addMessage("Se ha guardado correctamente");
+                        $this->quit($this->getLink($this, array('name' => $this->params['name'])));
                     }
                     else
                     {
@@ -75,11 +75,11 @@ class modules extends AuthController
                 if(isset($_POST['settings']))
                 {
                     $config = $configManager->load();
-                    $this->setModuleConfiguration($config, $module, $_POST['settings']);
+                    $configManager->setModuleSettings($config, $module, $_POST['settings']);
                     if($configManager->save($config))
                     {
                         $this->addMessage("Se ha guardado correctamente");
-                        $this->redirection("");
+                        $this->quit($this->getLink($this, array('name' => $this->params['name'])));
                     }
                     else
                     {
@@ -103,15 +103,7 @@ class modules extends AuthController
      */
     public function getModuleConfiguration($config, $module)
     {
-        $keys = $config['modules'][$module->getFolderContainer()];
-        foreach ($keys as $key => $value)
-        {
-            if(is_array($value) && isset($value[$module->getListName()]))
-            {
-                return $value[$module->getListName()];
-            }
-        }
-        return false;
+        return $config['modules'][$module->getFolderContainer()][$module->getListName()];
     }
 
     /**
@@ -130,15 +122,15 @@ class modules extends AuthController
                 $value[$module->getListName()] = $settings;
                 return true;
             }
-            elseif($key === $module->getListName())
+            elseif(strval($value) == $module->getListName())
             {
-                print_debug($key, $module->getListName());
-                die("OK");
-                $value[$module->getListName()] = $settings;
+                $value =  array($module->getListName() => $settings);
+//                print_debug($config);
                 return true;
 
             }
         }
+        $keys[] = array($module->getListName() => $settings);
         return false;
     }
 

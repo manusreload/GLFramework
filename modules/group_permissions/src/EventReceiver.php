@@ -10,6 +10,7 @@ namespace GLFrameworkModules;
 
 
 use GLFramework\Controller\AuthController;
+use GLFramework\Events;
 use GLFramework\Model\Page;
 use GLFramework\Model\User;
 
@@ -35,6 +36,8 @@ class EventReceiver
      */
     public static function isGroupAllowed($controller, $user)
     {
+        $context = Events::getContext();
+        $config = $context->getConfig();
         $page = new Page();
         $page = $page->get_by_controller($controller)->getModel();
         if($page->id > 0)
@@ -48,7 +51,7 @@ class EventReceiver
                 if($result->count() > 0) return true;
             }
         }
-        return false;
+        return $config['allowDefault']?:null;
     }
 
     public function getAdminControllers()

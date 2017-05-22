@@ -58,7 +58,7 @@ class FrameworkExtras extends Extra
 
     public function fireEvent($name, $args = array())
     {
-        return implode("\n", Events::fire($name, $args));
+        return implode("\n", Events::dispatch($name, $args)->getArray());
     }
 
     public function isHrefActive($url)

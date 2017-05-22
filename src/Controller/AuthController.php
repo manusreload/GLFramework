@@ -137,7 +137,7 @@ class AuthController extends Controller implements Middleware
                     $this->user->save();
 
                     $_SESSION[$this->session_key] = array($username, $password);
-                    Events::fire('onLoginSuccess', array('user' => $this->user));
+                    Events::dispatch('onLoginSuccess', array('user' => $this->user));
                     if(isset($_REQUEST['remember']) && $_REQUEST['remember'])
                     {
                         setcookie($this->session_key, serialize($_SESSION[$this->session_key]), time() + 60 * 60 * 24 * 30, "/");

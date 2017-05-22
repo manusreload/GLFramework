@@ -261,18 +261,24 @@ class ModuleManager
                 if(!is_array($value)) $value = array($value);
                 foreach($value as $name => $extra)
                 {
-                    if(empty($extra)) continue;
-                    if(is_integer($name)) $name = $extra;
-                    if(is_array($extra))
+                    if(is_integer($name) && empty($extra)) continue;
+                    if(is_integer($name))  // tipo: - admin
                     {
-                        $name = key($extra);
-                        $extra = current($extra);
+                        $name = $extra;
+                    }
+                    if(!is_string($name))
+                    {
+                        if(is_array($extra)) // tipo - admin : []
+                        {
+                            $name = key($extra);
+                            $extra = current($extra);
+                        }
                     }
                     Log::d("Loading: " . $dirbase . "/" . $name);
                     $module = $this->load($dirbase . "/" . $name, $extra);
                     if($module)
                     {
-                        if(!$this->exists($module->title)  && !Events::run('isModuleEnabled', array($module))->anyFalse())
+                        if(!$this->exists($module->title)  && !Events::dispatch('isModuleEnabled', array($module))->anyFalse())
                         {
                             $this->add($module);
                             $this->loadModuleDependencies($module);
@@ -361,9 +367,12 @@ class ModuleManager
                 {
                     $target = $match['target'];
                     $module = $target[0];
-                    $this->runningModule = $module;
-                    $controller = $target[1];
-                    $request->setParams($match['params']);
+                    if($module instanceof Module)
+                    {
+                        $this->runningModule = $module;
+                        $controller = $target[1];
+                        $request->setParams($match['params']);
+                    }
                     return $module->run($controller, $request);
                 }
             }
@@ -372,10 +381,10 @@ class ModuleManager
                 return $this->mainModule->run(new ErrorController("Controller for '$url' not found. " . $this->getRoutes()), $request);
             }
         } catch (\Exception $ex) {
-            Events::fire('onException', $ex);
+            Events::dispatch('onException', $ex);
             return $this->mainModule->run(new ExceptionController($ex), $request);
         } catch (\Throwable $ex) {
-            Events::fire('onError', $ex);
+            Events::dispatch('onError', $ex);
             return $this->mainModule->run(new ExceptionController($ex), $request);
         }
         return false;

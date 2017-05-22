@@ -140,6 +140,7 @@ class Bootstrap
         $this->manager = new ModuleManager($this->config, $this->directory);
         $this->manager->init();
         Log::d("Modules initialized: " . count($this->manager->getModules()));
+        Log::d(array_map(function($a){ return $a->title; }, $this->manager->getModules()));
     }
 
     public static function getAppHash()
@@ -190,6 +191,7 @@ class Bootstrap
      */
     public function run($url = null, $method = null)
     {
+        session_start();
         $this->init();
         Log::i("Welcome to GLFramework");
         Log::i("· Version: " . $this->getVersion());
@@ -200,8 +202,7 @@ class Bootstrap
         Log::i("· Current Folder: " . realpath("."));
         Log::i("· Extensiones de PHP: ");
         Log::i(get_loaded_extensions());
-        session_start();
-        Events::fire('onCoreStartUp', $this->startTime);
+        Events::dispatch('onCoreStartUp', $this->startTime);
         $response = $this->manager->run($url, $method);
         if($response)
             $response->setUri($url);

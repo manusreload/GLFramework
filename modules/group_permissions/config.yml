@@ -17,3 +17,11 @@ app:
     isUserAllowed: GLFrameworkModules\EventReceiver->isUserAllowed
     getAdminControllers: GLFrameworkModules\EventReceiver->getAdminControllers
 
+  settings:
+    # Name and description about the possible configuration override by the main config
+    allowDefault:
+      description: >
+        Especifica si cuando no se a definido el acceso a un grupo se permite el acesso.
+        Valores: 1 para indicar que se permite el acceso, 0 para que tome la configuracion por defecto.
+      type: boolean
+      default: false

@@ -374,7 +374,8 @@ class Module
             {
                 if($instance->user)
                 {
-                    if(Events::anyFalse(Events::fire('isUserAllowed', array($instance, $instance->user))))
+                    $result = Events::dispatch('isUserAllowed', array($instance, $instance->user));
+                    if($result->anyFalse())
                     {
                         throw new \Exception('El usuario no tiene permisos para acceder a este sitio');
                     }

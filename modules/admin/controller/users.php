@@ -205,7 +205,7 @@ class users extends AuthController
 
     public function isPagePermission($controller)
     {
-        if(!Events::fire('isUserAllowed', array($controller, $this->users)))
+        if(Events::dispatch('isUserAllowed', array($controller, $this->users))->anyFalse())
         {
             return false;
         }

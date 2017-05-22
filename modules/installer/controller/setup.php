@@ -143,7 +143,7 @@ class setup extends Controller
             }
             catch (\Exception $ex)
             {
-                Events::fire('onException', $ex);
+                Events::dispatch('onException', $ex);
                 $this->addMessage($ex->getMessage(), "danger");
             }
         }
@@ -231,22 +231,18 @@ class setup extends Controller
         $this->plugins = $moduleScanner->scan(Bootstrap::getSingleton()->getDirectory());
         if(isset($_POST['save']))
         {
-            $modulesSave = array();
+            $config = $this->loadCurrentConfig();
             foreach ($_POST['module'] as $module => $k)
             {
-                $found = false;
                 foreach ($this->plugins as $plugin)
                 {
                     if($plugin->title == $module)
                     {
-                        $found = true;
-                        $modulesSave[$plugin->getFolderContainer()][] = $plugin->getListName();
+                        $this->configManager->enableModule($config, $plugin);
                         break;
                     }
                 }
             }
-            $config = $this->loadCurrentConfig();
-            $config['modules'] = $modulesSave;
             if($this->saveConfig($config))
             {
                 return true;
@@ -335,7 +331,7 @@ class setup extends Controller
     public function getInstallers()
     {
         $result = array();
-        $items = Events::fire('getInstallersControllers');
+        $items = Events::dispatch('getInstallersControllers')->getArray();
         foreach ($items as $item)
         {
             if(!is_array($item)) $item = array($item);

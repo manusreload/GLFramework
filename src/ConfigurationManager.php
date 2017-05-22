@@ -9,6 +9,7 @@
 namespace GLFramework;
 
 
+use GLFramework\Module\Module;
 use Symfony\Component\Yaml\Yaml;
 
 class ConfigurationManager
@@ -65,6 +66,29 @@ class ConfigurationManager
     public function getFilename()
     {
         return $this->filename;
+    }
+
+    /**
+     * @param $config
+     * @param $module Module
+     */
+    public function enableModule(&$config, $module)
+    {
+        $config['modules'][$module->getFolderContainer()][$module->getListName()] = array();
+    }
+    /**
+     * @param $config
+     * @param $module Module
+     */
+    public function disableModule(&$config, $module)
+    {
+        unset($config['modules'][$module->getFolderContainer()][$module->getListName()]);
+    }
+
+    public function setModuleSettings(&$config, $module, $settings)
+    {
+        $config['modules'][$module->getFolderContainer()][$module->getListName()] = $settings;
+
     }
 
 

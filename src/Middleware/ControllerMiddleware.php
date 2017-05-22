@@ -52,10 +52,10 @@ class ControllerMiddleware implements Middleware
     {
         // TODO: Implement next() method.
 
-        Events::fire('beforeControllerRun', array($this->controller));
+        Events::dispatch('beforeControllerRun', array($this->controller));
         $data = call_user_func_array(array($this->controller, "run"), $request->params);
         $next($request, $response);
-        Events::fire('afterControllerRun', array($this->controller, $this->controller->response));
+        Events::dispatch('afterControllerRun', array($this->controller, $this->controller->response));
         $response->setContent($this->controller->display($data, $request->params));
     }
 }

@@ -71,7 +71,7 @@ class Log extends AbstractLogger
         if(!in_array('events', $context))
         {
 
-            Events::fire('onLog', array($message, $level));
+            Events::dispatch('onLog', array($message, $level));
 
         }
         else

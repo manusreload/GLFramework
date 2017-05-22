@@ -110,7 +110,7 @@ class Mail
         if(!self::$mailer)
         {
             self::$mailer = $this->getMailSystem()->getTransport();
-            Events::fire('onMailTransport', array( 'transport' => self::$mailer ));
+            Events::dispatch('onMailTransport', array( 'transport' => self::$mailer ));
         }
         return self::$mailer;
     }
@@ -163,7 +163,7 @@ class Mail
     public function done($mail)
     {
         $transport = $this->getTransport();
-        Events::fire('onEmail', array( 'emails' => $mail->getTo(), 'subject' => $mail->getSubject(), 'message' => $mail->getBody(), 'transport' => $transport));
+        Events::dispatch('onEmail', array( 'emails' => $mail->getTo(), 'subject' => $mail->getSubject(), 'message' => $mail->getBody(), 'transport' => $transport));
         return $transport->send($mail);
     }
 }

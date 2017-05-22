@@ -98,7 +98,7 @@ class Response
         if($this->contentType) header("Content-Type: " . $this->contentType);
 //        header("Content-Length: " . strlen($this->content));
         if($this->redirection) header("Location: " . $this->redirection);
-        Events::fire('beforeResponseSend', array($this));
+        Events::dispatch('beforeResponseSend', array($this));
         print $this->content;
     }
 

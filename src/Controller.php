@@ -83,7 +83,6 @@ abstract class Controller
         $this->module = $module;
         $this->config = $this->module->getConfig();
         $this->mainConfig = Bootstrap::getSingleton()->getConfig();
-        $this->restoreMessages();
         if(empty($this->name))
             $this->name = get_class($this);
         $this->directory = dirname($base);
@@ -93,7 +92,7 @@ abstract class Controller
         $this->view = new View($this);
         $this->response = new Response();
         $this->addMiddleware(new ControllerMiddleware($this));
-        Events::fire('afterControllerConstruct', array($this));
+        Events::dispatch('afterControllerConstruct', array($this));
     }
 
     /**
@@ -238,7 +237,7 @@ abstract class Controller
      */
     public function addMessage($message, $type = "success")
     {
-        Events::fire('onMessageDisplay', array('message' => $message, 'type' => $type));
+        Events::dispatch('onMessageDisplay', array('message' => $message, 'type' => $type));
         $this->messages[] = array('message' => $message, 'type' => $type);
     }
 
@@ -330,7 +329,7 @@ abstract class Controller
 
     public function log($message, $level)
     {
-        Events::fire('onLog', array('message' => $message, 'level' => $level));
+        Events::dispatch('onLog', array('message' => $message, 'level' => $level));
     }
 
     /**
@@ -339,7 +338,7 @@ abstract class Controller
      */
     public function csrf()
     {
-        return Events::fire('validateCSRF');
+        return !Events::dispatch('validateCSRF')->anyFalse();
     }
 
     /**
@@ -371,6 +370,6 @@ abstract class Controller
 
     public function onCreate()
     {
-
+        $this->restoreMessages();
     }
 }

@@ -66,7 +66,7 @@ class View
         $config = array();
         $config['cache'] = $fs->getAbsolutePath();
         $this->twig = new \Twig_Environment($loader, array());
-        Events::fire('onViewCreated', array(&$this->twig));
+        Events::dispatch('onViewCreated', array(&$this->twig));
         Events::getInstance()->listen('displayScripts', array($this, 'getJavascripts'));
         Events::getInstance()->listen('displayStyle', array($this, 'getStylesheets'));
         Log::d("Register listener");
