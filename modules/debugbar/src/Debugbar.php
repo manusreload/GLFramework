@@ -15,6 +15,7 @@ use GLFramework\Events;
 use GLFramework\Filesystem;
 use GLFramework\Modules\Debugbar\Collectors\ControllerCollector;
 use GLFramework\Modules\Debugbar\Collectors\ErrorCollector;
+use GLFramework\Modules\Debugbar\Collectors\MySQLiCollectorextends;
 use GLFramework\Modules\Debugbar\Collectors\RequestDataCollector;
 use GLFramework\Modules\Debugbar\Collectors\ResponseCollector;
 use DebugBar\DataCollector\PhpInfoCollector;
@@ -122,6 +123,7 @@ class Debugbar
             self::$debugbar->addCollector(new MemoryCollector());
             self::$debugbar->addCollector(new ExceptionsCollector());
             self::$debugbar->addCollector(new ErrorCollector());
+//            self::$debugbar->addCollector(new PDOCollector(new TraceablePDO()));
 //            self::$debugbar->addCollector(new SwiftMailCollector());
         }
         return self::$debugbar;
@@ -187,11 +189,13 @@ class Debugbar
     }
 
     /**
-     * @param $render View
+     * @param $view View
      */
-    public function displayStyle($render)
+    public function displayStyle($view)
     {
+        $url = $view->getController()->getLink("GLFramework\\Modules\\Debugbar\\handler");
         $render = $this->getDebugbar()->getJavascriptRenderer();
+        $render->setOpenHandlerUrl($url);
         if($this->time->hasStartedMeasure('run'))
             $this->time->stopMeasure('run');
         if(Bootstrap::isDebug())
@@ -215,9 +219,9 @@ class Debugbar
 
     public function onPDOCreated(&$pdo)
     {
-        $pdo = new TraceablePDO($pdo);
-        if(!$this->getDebugbar()->hasCollector('pdo'))
+        if(!($pdo instanceof TraceablePDO))
         {
+            $pdo = new TraceablePDO($pdo);
             $this->getDebugbar()->addCollector(new PDOCollector($pdo, $this->time));
         }
     }
@@ -293,4 +297,8 @@ class Debugbar
             self::$instance->time->stopMeasure($name);
     }
 
+    public static function getInstance()
+    {
+        return self::$instance;
+    }
 }

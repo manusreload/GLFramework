@@ -96,6 +96,7 @@ class Events
             {
                 $fn = $item['fn'];
                 $context = $item['context'];
+//                print_debug($item);
                 if(is_callable($fn))
                 {
                     $result = call_user_func_array($fn, $args);

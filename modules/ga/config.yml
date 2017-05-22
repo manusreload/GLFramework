@@ -18,3 +18,10 @@ app:
   listeners:
     onMessageDisplay: GLFramework\Modules\GoogleAnalytics\GA->onMessageDisplay
     onLoginSuccess: GLFramework\Modules\GoogleAnalytics\GA->onLoginSuccess
+
+  settings:
+    # Name and description about the possible configuration override by the main config
+    tracker:
+      description: Google analytics tracker.
+      type: string
+      default:

@@ -3,6 +3,7 @@ description: Barra para depurara aplicaciones con el framework
 version: 0.0.1
 
 app:
+  controllers: controller
 
   listeners:
     onCoreStartUp: GLFramework\Modules\Debugbar\Debugbar->onCoreStartUp
@@ -20,7 +21,11 @@ app:
     onMailTransport: GLFramework\Modules\Debugbar\Debugbar->onMailTransport
     onException: GLFramework\Modules\Debugbar\Debugbar->exceptionHandler
 
+  routes:
+      - GLFramework\Modules\Debugbar\handler: /debugbar/handler
   settings:
       # Name and description about the possible configuration override by the main config
-      filesystem: >
-          true o false para que DebugBar almacene todas la peticiones para que se pueda depurar en un futuro.
+      filesystem:
+        description: true o false para que DebugBar almacene todas la peticiones para que se pueda depurar en un futuro.
+        type: boolean
+        default: false

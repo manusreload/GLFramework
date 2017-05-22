@@ -9,7 +9,7 @@
 namespace GLFramework\Modules\Debugbar\Collectors;
 
 
-class MySQLiCollectorextends extends \DebugBar\DataCollector\DataCollector implements \DebugBar\DataCollector\Renderable, DebugBar\DataCollector\AssetProvider
+class MySQLiCollector extends \DebugBar\DataCollector\DataCollector implements \DebugBar\DataCollector\Renderable, DebugBar\DataCollector\AssetProvider
 {
     // ...
 

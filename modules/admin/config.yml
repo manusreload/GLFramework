@@ -28,7 +28,10 @@ app:
 
   settings:
     # Name and description about the possible configuration override by the main config
-    allowDefault: >
+    allowDefault:
+      description: >
         Especifica si cuando no se a definido el acceso a una pagina se permite el acesso.
         Valores: 1 para indicar que se permite el acceso, 0 para que tome la configuracion por defecto.
+      type: boolean
+      default: false
 

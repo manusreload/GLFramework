@@ -348,6 +348,8 @@ class Module
             $instance = $controller;
         }
 
+        $instance->onCreate();
+
         if($instance instanceof Controller)
         {
             if($instance instanceof Controller\AuthController)

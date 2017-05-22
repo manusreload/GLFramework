@@ -368,4 +368,9 @@ abstract class Controller
     {
         $this->filters[] = $filter;
     }
+
+    public function onCreate()
+    {
+
+    }
 }

@@ -10,9 +10,15 @@ app:
   settings:
       # Name and description about the possible configuration override by the main config
       # https://www.google.com/recaptcha/admin#list
-      key: >
-          Clave del sitio
-      secret: >
+      key:
+        description: Clave del sitio
+        type: string
+        default:
+      secret:
+        description: >
           Clave secreta
           Úsala para las comunicaciones entre tu sitio y Google. Ten la precaución de no revelársela a nadie.
+        type: string
+        default:
+
 
