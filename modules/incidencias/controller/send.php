@@ -34,7 +34,7 @@ class send extends Controller\AuthController
         $this->setTemplate("json.twig");
         $mail = new Mail($_POST['email'], $_POST['nombre']);
         $content = $mail->render($this, "mail_template.twig", array('post' => $_POST));
-        $mail->send('soporte@gestionlan.com', 'Incidencia de ' . $appName, $content, array(), array($_POST['email']));
+        $mail->send($this->config['email'], 'Incidencia de ' . $appName, $content, array(), array($_POST['email']));
 
         return array('json' => array('ok' => true));
     }

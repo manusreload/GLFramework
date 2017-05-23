@@ -15,3 +15,8 @@ app:
           [none]
       return:
           string|array: Nombre o lista de nombres de los controladores, el titulo sera la variable $name definida en el controlador
+  settings:
+    configured:
+      description: Indica si el sitio esta configurado
+      type: boolean
+      default: false

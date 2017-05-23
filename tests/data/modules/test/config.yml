@@ -1,7 +1,7 @@
 title:  test
 description: Test module
 version: 0.0.1
-
+test: true
 app:
   index: home
 

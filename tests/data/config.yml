@@ -1,5 +1,6 @@
 include: include.config.yml
 
+test: true
 app:
   basepath:
   index: home

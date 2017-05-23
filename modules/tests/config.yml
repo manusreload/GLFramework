@@ -1,6 +1,7 @@
 title:  tests
 description: Pruebas para el framework
 version: 0.0.1
+test: true
 
 app:
   index: home

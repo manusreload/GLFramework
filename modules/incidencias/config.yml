@@ -8,3 +8,10 @@ app:
 
   routes:
     GLFramework\Modules\Incidencias\send: /incidencia/send
+
+
+  settings:
+    email:
+      description: Mail para enviar la incidencia
+      type: string
+      default: soporte@gestionlan.com

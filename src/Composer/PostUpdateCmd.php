@@ -18,4 +18,9 @@ class PostUpdateCmd
     {
 
     }
+
+    public static function postAutoloadDump(Event $event)
+    {
+        echo "Ok\n";
+    }
 }

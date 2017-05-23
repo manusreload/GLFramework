@@ -51,8 +51,6 @@ class ModelResult implements \IteratorAggregate
             $this->model = $models[0];
         }
     }
-
-
     /**
      * Obtiene el primer modelo disponible
      * @return Model
@@ -242,5 +240,16 @@ class ModelResult implements \IteratorAggregate
     {
         $start = $page * $pageSize;
         return $this->limit($pageSize, $start);
+    }
+
+    /**
+     * @param $callback
+     * @return ModelResult
+     */
+    public function filter($callback)
+    {
+        $filter = array_filter($this->models, $callback);
+        return new ModelResult($this->model_class, $filter);
+
     }
 }

@@ -254,7 +254,14 @@ class ModuleManager
             }
             else
             {
-                $dirbase .= "/$subsection";
+                if(is_dir($subsection))
+                {
+                    $dirbase = $subsection;
+                }
+                else
+                {
+                    $dirbase .= "/$subsection";
+                }
             }
             if($value)
             {

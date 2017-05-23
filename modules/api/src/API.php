@@ -49,6 +49,7 @@ class API implements Middleware
             if($request->isAjax())
             {
                 $login = new Controller\AuthController();
+                $login->onCreate();
                 if($login->login())
                 {
                     $this->controller->user = $login->user;

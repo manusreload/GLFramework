@@ -24,7 +24,7 @@ class ModuleScanner
             $folder = dirname($moduleConfig);
             $config = Bootstrap::loadConfig($folder, "config.yml");
             $module = new Module($config, $folder);
-            if($module->title)
+            if($module->title && !$module->test)
             {
                 $modules[] = $module;
             }

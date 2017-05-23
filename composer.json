@@ -45,6 +45,7 @@
     }
   },
   "scripts": {
-    "post-update-cmd": ""
+    "post-update-cmd": "",
+    "post-autoload-dump": ""
   }
 }

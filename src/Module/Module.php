@@ -41,6 +41,7 @@ class Module
     var $title;
     var $description;
     var $version;
+    var $test;
     private $config;
     private $directory;
     private $settings = array();
@@ -65,6 +66,8 @@ class Module
             $this->description = $this->config['description'];
         if(isset($this->config['version']))
             $this->version = $this->config['version'];
+        if(isset($this->config['test']))
+            $this->test = $this->config['test'];
 
         if(isset($this->config['app']['settings']))
         {
