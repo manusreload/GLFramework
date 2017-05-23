@@ -14,6 +14,7 @@ class Event
 
     private $result = false;
     private $handlers = array();
+    private $count = 0;
 
     /**
      * Event constructor.
@@ -116,18 +117,20 @@ class Event
 
     public function addResult($item)
     {
-        if(!$this->result)
-        {
-            $this->result = $item;
-        }
-        else if(!is_array($this->result))
-        {
-            $this->result = array($this->result, $item);
-        }
-        else
-        {
-            $this->result[] = $item;
-        }
+//        if(!$this->result)
+//        {
+//            $this->result = $item;
+//        }
+//        else if(!is_array($this->result))
+//        {
+//            $this->result = array($this->result, $item);
+//        }
+//        else
+//        {
+//        }
+
+        $this->result[] = $item;
+        $this->count ++;
     }
 
     public function getArray()
