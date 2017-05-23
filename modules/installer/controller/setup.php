@@ -232,6 +232,7 @@ class setup extends Controller
         if(isset($_POST['save']))
         {
             $config = $this->loadCurrentConfig();
+            $this->configManager->clearModules($config);
             foreach ($_POST['module'] as $module => $k)
             {
                 foreach ($this->plugins as $plugin)

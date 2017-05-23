@@ -68,6 +68,10 @@ class ConfigurationManager
         return $this->filename;
     }
 
+    public function clearModules(&$config)
+    {
+        $config['modules'] = array();
+    }
     /**
      * @param $config
      * @param $module Module
