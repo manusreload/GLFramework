@@ -183,6 +183,21 @@ class Bootstrap
         }
     }
 
+    public function startSession()
+    {
+        if(isset($this->config['app']['tempdir']))
+        {
+            $base = sys_get_temp_dir();
+            $folder = $base . "/" . $this->config['app']['tempdir'];
+            if(!is_dir($folder) && is_executable($base))
+            {
+                mkdir($folder);
+            }
+            session_save_path(sys_get_temp_dir() . "/glframework_session");
+        }
+        session_start();
+    }
+
     /**
      * Ejecutar la petición mediante esa url y el método
      * @param null $url
@@ -191,7 +206,7 @@ class Bootstrap
      */
     public function run($url = null, $method = null)
     {
-        session_start();
+        $this->startSession();
         $this->init();
         Log::i("Welcome to GLFramework");
         Log::i("· Version: " . $this->getVersion());
