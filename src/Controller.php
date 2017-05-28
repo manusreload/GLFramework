@@ -38,25 +38,25 @@ use GLFramework\Upload\Uploads;
  */
 abstract class Controller
 {
-    var $title = false;
-    var $name = null;
-    var $admin = false;
-    var $messages = array();
-    var $config = array();
-    var $mainConfig = array();
-    var $description = "";
-    var $directory;
+    public $title = false;
+    public $name = null;
+    public $admin = false;
+    public $messages = array();
+    public $config = array();
+    public $mainConfig = array();
+    public $description = "";
+    public $directory;
     /**
      * @var Module
      */
-    var $module;
-    var $params = array();
-    var $redirect = false;
+    public $module;
+    public $params = array();
+    public $redirect = false;
     /**
      * @var Response
      */
-    var $response;
-    var $filters = array();
+    public $response;
+    public $filters = array();
     private $template = null;
     private $db = null;
     private $view;

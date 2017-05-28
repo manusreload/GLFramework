@@ -286,8 +286,7 @@ class ModuleManager
         //      [path_to_module]:
         //          [module_folder]: { [extra_config] }
 
-        foreach ($modules as $folder => $list)
-        {
+        foreach ($modules as $folder => $list) {
             // Resolver el tipo de directorio
             if ((string)$folder === 'internal') { // Para especificar un modulo interno
                 $folder = __DIR__ . '/../../modules';
@@ -301,16 +300,14 @@ class ModuleManager
                 $list = array($list);
             }
 
-            foreach ($list as $name => $moduleConfig)
-            {
+            foreach ($list as $name => $moduleConfig) {
                 if (is_int($name) && empty($moduleConfig)) {
                     continue;
                 }
                 if (!is_string($name) && is_array($moduleConfig)) {
                     $name = key($moduleConfig);
                     $moduleConfig = current($moduleConfig);
-                } else if (is_int($name))
-                {
+                } elseif (is_int($name)) {
                     // tipo: "- admin" o "admin"
                     $name = $moduleConfig;
                     $moduleConfig = array();
@@ -324,7 +321,8 @@ class ModuleManager
                         $this->loadModuleDependencies($module);
                     }
                 } else {
-                    throw new \Exception('Can\'t not load module: ' . $name . ' in directory: \'' . $folder . '/' . $name . '\'');
+                    throw new \Exception('Can\'t not load module: ' . $name . ' in directory: \'' .
+                        $folder . '/' . $name . '\'');
                 }
             }
 
@@ -406,7 +404,7 @@ class ModuleManager
      *
      * @param null $url
      * @param null $method
-     * @return \GLFramework\Response
+     * @return \GLFramework\Response|bool
      */
     public function run($url = null, $method = null)
     {
@@ -426,7 +424,8 @@ class ModuleManager
                     return $module->run($controller, $request);
                 }
             } else {
-                return $this->mainModule->run(new ErrorController("Controller for '$url' not found. " . $this->getRoutes()),
+                return $this->mainModule->run(new ErrorController("Controller for '$url' not found. " .
+                    $this->getRoutes()),
                     $request);
             }
         } catch (\Exception $ex) {
@@ -436,7 +435,7 @@ class ModuleManager
             Events::dispatch('onError', $ex);
             return $this->mainModule->run(new ExceptionController($ex), $request);
         }
-        return false;
+//        return false;
     }
 
     /**
