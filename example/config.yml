@@ -28,7 +28,7 @@ database:
 
 modules:
   internal:
-    csrf: { test: true }
+    csrf: {}
     installer: {}
     login: {}
     debugbar: {}

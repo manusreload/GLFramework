@@ -487,6 +487,7 @@ class Module
      */
     public function getFolderContainer()
     {
+        if(realpath(dirname($this->directory)) === GL_INTERNAL_MODULES_PATH) return "internal";
         return dirname($this->directory);
     }
 

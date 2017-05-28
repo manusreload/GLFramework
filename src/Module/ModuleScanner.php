@@ -29,7 +29,7 @@ class ModuleScanner
         if (!is_array($base)) {
             $base = array($base);
         }
-//        $base[] = GL_INTERNAL_MODULES_PATH;
+        $base[] = GL_INTERNAL_MODULES_PATH;
         foreach ($base as $folder) {
             $this->recursive($folder, $list);
         }
