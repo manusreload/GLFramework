@@ -75,11 +75,11 @@ abstract class Controller
         if ($module === null) {
             $module = ModuleManager::getModuleForController(get_class($this));
         }
-        if ($module === null) {
-            $module = ModuleManager::getInstance()->getMainModule();
-        }
         if (is_string($module)) {
             $module = ModuleManager::getModuleInstanceByName($module);
+        }
+        if (!$module) {
+            $module = ModuleManager::getInstance()->getMainModule();
         }
 
         $this->module = $module;
