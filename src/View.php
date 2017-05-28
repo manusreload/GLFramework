@@ -92,7 +92,7 @@ class View
             }
             $this->twig->addGlobal('params', $params);
             $template = $this->twig->loadTemplate($this->controller->getTemplate());
-            return $template->render($data);
+            return $template->render($data ? $data : array());
         }
         return $data;
     }

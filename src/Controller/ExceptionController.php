@@ -58,7 +58,7 @@ class ExceptionController extends ErrorController
      * @param int $limit
      * @return array
      */
-    public function expandException(\Exception $ex, &$result = array(), $limit = 10)
+    public function expandException($ex, &$result = array(), $limit = 10)
     {
         if ($ex->getPrevious()) {
             if ($limit > 0) {
