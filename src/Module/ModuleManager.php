@@ -324,7 +324,7 @@ class ModuleManager
                         $this->loadModuleDependencies($module);
                     }
                 } else {
-                    throw new \Exception('Can\'t not load module: ' . $name . ' in directory: \'' . $folder . '\'');
+                    throw new \Exception('Can\'t not load module: ' . $name . ' in directory: \'' . $folder . '/' . $name . '\'');
                 }
             }
 

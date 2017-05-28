@@ -128,7 +128,8 @@ class DatabaseManager
                     return true;
                 }
             } else {
-                throw new \Exception('Can not establish connection to database!');
+                throw new \Exception(sprintf('Can not establish connection to database! {host=%s, user=%s, database=%s}',
+                    $config['database']['hostname'], $config['database']['username'], $config['database']['database']));
             }
         }
         return true;

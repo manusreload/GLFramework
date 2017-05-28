@@ -4,6 +4,7 @@ version: 0.0.1
 
 app:
   controllers: controller
+  resources:
 
   listeners:
     onCoreStartUp: GLFramework\Modules\Debugbar\Debugbar->onCoreStartUp

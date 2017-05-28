@@ -170,6 +170,7 @@ class Log extends AbstractLogger
      */
     public function log($level, $message, array $context = array())
     {
+        error_log("[$level] " . (is_string($message)?$message:implode(", ", $message)));
         // TODO: Implement log() method.
         if (!in_array('events', $context)) {
             Events::dispatch('onLog', array($message, $level));

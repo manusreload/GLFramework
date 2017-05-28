@@ -26,7 +26,13 @@ class ModuleScanner
     public function scan($base)
     {
         $list = array();
-        $this->recursive($base, $list);
+        if (!is_array($base)) {
+            $base = array($base);
+        }
+//        $base[] = GL_INTERNAL_MODULES_PATH;
+        foreach ($base as $folder) {
+            $this->recursive($folder, $list);
+        }
         $modules = array();
         foreach ($list as $moduleConfig) {
             $folder = dirname($moduleConfig);
@@ -54,7 +60,7 @@ class ModuleScanner
                 if (is_dir($filename)) {
                     $this->recursive($filename, $list);
                 } else {
-                    if ($file === 'config.yml') {
+                    if ($file === 'config.yml' && !in_array($filename, $list)) {
                         $list[] = $filename;
                     }
                 }

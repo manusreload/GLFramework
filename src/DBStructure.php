@@ -377,7 +377,7 @@ class DBStructure
         if (isset($table['field'])) {
             $fields = array($table);
         }
-        $fun = create_function('$a', 'return implode(' - ', $a);');
+        $fun = create_function('$a', 'return implode(\' - \', $a);');
         $list = array_map($fun, $fields);
         ksort($list);
         return sha1(strtolower(implode('-', array_keys($list)) . implode('-', $list)));

@@ -60,12 +60,13 @@ class MySQLConnection extends Connection
         try {
             $this->pdo = new \PDO('mysql:host=' . $hostname . ';', $username, $password);
             $result = Events::dispatch('onPDOCreated', array(&$this->pdo));
-            if ($this->pdo->errorCode() === 0) {
+            if (intval($this->pdo->errorCode()) === 0) {
                 $this->pdo->exec('SET NAMES utf8');
                 $this->pdo->exec('SET sql_mode = \'\'');
                 return true;
             }
         } catch (\Exception $ex) {
+            print_debug($ex);
             Events::dispatch('onException', $ex);
         }
         return false;
@@ -82,7 +83,7 @@ class MySQLConnection extends Connection
         //        try{
 
         if ($this->pdo) {
-            if ($this->pdo->exec('USE ' . $database) !== false) {
+            if ($this->pdo->exec('USE ' . $database) !== FALSE) {
                 return true;
             }
         }

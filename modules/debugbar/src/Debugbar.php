@@ -222,7 +222,7 @@ class Debugbar
 
     public function onPDOCreated(&$pdo)
     {
-        if(!($pdo instanceof TraceablePDO))
+        if(!($pdo instanceof TraceablePDO) && !$this->getDebugbar()->hasCollector('pdo'))
         {
             $pdo = new TraceablePDO($pdo);
             $this->getDebugbar()->addCollector(new PDOCollector($pdo, $this->time));
