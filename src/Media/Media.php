@@ -33,7 +33,7 @@ abstract class Media
     {
         $this->source = $source;
         $this->options = $options;
-        $this->file = realpath('.') . '/' . '$source';
+        $this->file = realpath('.') . '/' . $source;
         if (!file_exists($this->file)) {
             $module = ModuleManager::getInstance()->getRunningModule();
             $views = ModuleManager::getInstance()->getViews($module);

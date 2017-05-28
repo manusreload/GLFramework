@@ -752,3 +752,12 @@ function fecha($date, $format = 'd/m/Y')
 {
     return date($format, strtotime($date));
 }
+
+function fix_folder($folder)
+{
+    if(strpos("/", $folder)  === 0)
+    {
+        return $folder;
+    }
+    return '/' . $folder;
+}

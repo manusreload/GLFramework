@@ -53,7 +53,7 @@ class Upload
         $this->upload = $upload;
 
         $this->hash = date('Y-m-d_H-i-s') . '_';
-        $this->folder = $folder ? '$folder/' : '';
+        $this->folder = $folder ? ($folder . '/') : '';
     }
 
     /**

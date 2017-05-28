@@ -294,7 +294,7 @@ class ModuleManager
             } elseif (is_numeric($folder)) { // Para especificar un modulo simple
                 $folder = $this->directory . 'modules';
             } else {
-                $folder = $this->directory . $folder;
+                $folder = $this->directory . fix_folder($folder);
             }
 
             if (!is_array($list)) {
