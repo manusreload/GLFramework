@@ -46,7 +46,7 @@ class Log extends AbstractLogger
     {
         self::$instance = $this;
         $config = Bootstrap::getSingleton()->getConfig();
-        if ($config['app']['debug']) {
+        if (isset($config['app']['debug']) && $config['app']['debug']) {
             $this->debugMode = true;
         }
     }

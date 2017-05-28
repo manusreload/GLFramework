@@ -42,7 +42,7 @@ class Events
     /**
      * Events constructor.
      */
-    private function __construct()
+    public function __construct()
     {
         self::$instance = $this;
     }

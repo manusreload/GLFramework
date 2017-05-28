@@ -269,7 +269,8 @@ class ModuleManager
     }
 
     /**
-     * TODO
+     * Cargar la configuracion de aplicacion.
+     * Aqui se inicializa los módulos y sus dependencias.
      *
      * @param $config
      * @throws \Exception
@@ -280,52 +281,53 @@ class ModuleManager
         if (!is_array($modules)) {
             $modules = array($modules);
         }
-        foreach ($modules as $subsection => $value) {
-            $dirbase = $this->directory;
-            if ((string)$subsection === 'internal') {
-                $dirbase = __DIR__ . '/../../modules';
-            } elseif (is_numeric($subsection)) {
-                $dirbase .= 'modules';
+        // Los modulos se definen de la siguiente manera:
+        // modules:
+        //      [path_to_module]:
+        //          [module_folder]: { [extra_config] }
+
+        foreach ($modules as $folder => $list)
+        {
+            // Resolver el tipo de directorio
+            if ((string)$folder === 'internal') { // Para especificar un modulo interno
+                $folder = __DIR__ . '/../../modules';
+            } elseif (is_numeric($folder)) { // Para especificar un modulo simple
+                $folder = $this->directory . 'modules';
             } else {
-                if (is_dir($subsection)) {
-                    $dirbase = $subsection;
+                $folder = $this->directory . $folder;
+            }
+
+            if (!is_array($list)) {
+                $list = array($list);
+            }
+
+            foreach ($list as $name => $moduleConfig)
+            {
+                if (is_int($name) && empty($moduleConfig)) {
+                    continue;
+                }
+                if (!is_string($name) && is_array($moduleConfig)) {
+                    $name = key($moduleConfig);
+                    $moduleConfig = current($moduleConfig);
+                } else if (is_int($name))
+                {
+                    // tipo: "- admin" o "admin"
+                    $name = $moduleConfig;
+                    $moduleConfig = array();
+                }
+                $module = $this->load($folder . '/' . $name, $moduleConfig);
+                if ($module) {
+                    if (!$this->exists($module->title) && !Events::dispatch('isModuleEnabled', array($module))
+                            ->anyFalse()
+                    ) {
+                        $this->add($module);
+                        $this->loadModuleDependencies($module);
+                    }
                 } else {
-                    $dirbase .= "/$subsection";
+                    throw new \Exception('Can\'t not load module: ' . $name . ' in directory: \'' . $folder . '\'');
                 }
             }
-            if ($value) {
-                if (!is_array($value)) {
-                    $value = array($value);
-                }
-                foreach ($value as $name => $extra) {
-                    if (is_int($name) && empty($extra)) {
-                        continue;
-                    }
-                    // tipo: - admin
-                    if (is_int($name)) {
-                        $name = $extra;
-                    }
-                    if (!is_string($name)) {
-                        // tipo - admin : []
-                        if (is_array($extra)) {
-                            $name = key($extra);
-                            $extra = current($extra);
-                        }
-                    }
-                    Log::d('Loading: ' . $dirbase . '/' . $name);
-                    $module = $this->load($dirbase . '/' . $name, $extra);
-                    if ($module) {
-                        if (!$this->exists($module->title) && !Events::dispatch('isModuleEnabled', array($module))
-                                                                     ->anyFalse()
-                        ) {
-                            $this->add($module);
-                            $this->loadModuleDependencies($module);
-                        }
-                    } else {
-                        throw new \Exception('Can\'t not load module: ' . $name . ' in directory: \'' . $dirbase . '\'');
-                    }
-                }
-            }
+
         }
     }
 

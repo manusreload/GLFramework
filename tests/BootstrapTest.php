@@ -62,9 +62,9 @@ class BootstrapTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('app', $config);
         $this->assertArrayHasKey('index', $config['app']);
         $this->assertArrayHasKey('database', $config);
-        $this->assertArrayHasKey('modules', $config);
+        $this->assertArrayNotHasKey('modules', $config);
         $this->assertEquals('home', $config['app']['index']);
-        $this->assertEquals('localhost', $config['database']['hostname']);
+        $this->assertEquals('127.0.0.1', $config['database']['hostname']);
     }
 
     /**
