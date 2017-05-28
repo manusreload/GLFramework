@@ -8,13 +8,15 @@
 
 namespace GLFramework\FTP;
 
-
+/**
+ * Class Transference
+ *
+ * @package GLFramework\FTP
+ */
 class Transference
 {
-
     private $id;
     private $from;
     private $to;
     private $callback;
-
 }

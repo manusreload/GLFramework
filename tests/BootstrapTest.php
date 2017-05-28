@@ -6,23 +6,35 @@
  * Date: 29/03/16
  * Time: 12:44
  */
+
+/**
+ * Class BootstrapTest
+ */
 class BootstrapTest extends PHPUnit_Framework_TestCase
 {
-
+    /**
+     * TODO
+     *
+     * @return \GLFramework\Bootstrap
+     */
     public static function testCreateBootstrap()
     {
-        return new \GLFramework\Bootstrap(__DIR__ . "/data/");
+        return new \GLFramework\Bootstrap(__DIR__ . '/data/');
     }
 
     /**
+     * TODO
+     *
      * @expectedException Symfony\Component\Yaml\Exception\ParseException
      */
     public function testInvalidBootstrap()
     {
-        new \GLFramework\Bootstrap(__DIR__ . "/data", "invalidConfig.yml");
+        new \GLFramework\Bootstrap(__DIR__ . '/data', 'invalidConfig.yml');
     }
 
     /**
+     * TODO
+     *
      * @depends testCreateBootstrap
      * @param $bootstrap \GLFramework\Bootstrap
      */
@@ -36,7 +48,10 @@ class BootstrapTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('home', $config['app']['index']);
         $this->assertEquals('127.0.0.1', $config['database']['hostname']);
     }
+
     /**
+     * TODO
+     *
      * @depends testCreateBootstrap
      * @param $bootstrap \GLFramework\Bootstrap
      */
@@ -53,6 +68,8 @@ class BootstrapTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * TODO
+     *
      * @depends testCreateBootstrap
      * @param $bootstrap \GLFramework\Bootstrap
      */

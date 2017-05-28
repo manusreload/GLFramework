@@ -8,12 +8,17 @@
 
 namespace GLFramework\Module;
 
-
+/**
+ * Class ModuleSource
+ *
+ * @package GLFramework\Module
+ */
 class ModuleSource
 {
+    protected $config;
     private $title;
     private $instance;
-    protected $config;
+
     /**
      * ModuleSource constructor.
      * @param $title
@@ -21,11 +26,9 @@ class ModuleSource
     public function __construct($title)
     {
         $this->title = $title;
-        if($title)
-        {
+        if ($title) {
             $this->instance = ModuleManager::getModuleInstanceByName($title);
             $this->config = $this->instance->getConfig();
         }
     }
-
 }

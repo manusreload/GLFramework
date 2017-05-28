@@ -32,18 +32,23 @@ define("MODEL_FIELD_TYPE_STRING", 1);
 define("MODEL_FIELD_TYPE_INT", 2);
 define("MODEL_FIELD_TYPE_DOUBLE", 3);
 
+/**
+ * Class Model
+ *
+ * @package GLFramework
+ */
 class Model
 {
     /**
      * @var DatabaseManager
      */
     var $db;
-    protected $order = "";
+    protected $order = '';
     /**
      * Nombre de la tabla en la base de datos
      * @var string
      */
-    protected $table_name = "";
+    protected $table_name = '';
     /**
      * Definicion del modelo
      * @var array
@@ -101,57 +106,84 @@ class Model
 
     /**
      * Model constructor.
+     *
      * @param null $data
      * @throws \Exception
      */
     public function __construct($data = null)
     {
-        if($this->table_name == "") throw new \Exception("El nombre de la tabla para el modelo '" . get_class($this) . "' no puede estar vacío!");
+        if ($this->table_name === '') {
+            throw new \Exception('El nombre de la tabla para el modelo \'' . get_class($this) . '\' no puede estar vacío!');
+        }
         $this->db = new DatabaseManager();
-        foreach ($this->getFields() as $field)
-        {
+        foreach ($this->getFields() as $field) {
             $this->{$field} = false;
-            if($this->isIndex($field))
+            if ($this->isIndex($field)) {
                 $this->{$field} = null;
+            }
         }
         $this->setData($data);
     }
 
     /**
+     * TODO
+     *
+     * @param $baseclass
+     * @param array $args
+     * @return Model
+     */
+    public static function newInstance($baseclass, $args = array())
+    {
+        $modules = ModuleManager::getInstance()->getModules();
+        foreach ($modules as $module) {
+            if (in_array($baseclass, $module->getModels())) {
+                $classes = array('\\' . $module->title . '\\' . $baseclass, $baseclass);
+                foreach ($classes as $class) {
+                    if (class_exists($class)) {
+                        return new $class($args);
+                    }
+                }
+            }
+        }
+        $class = '\\GLFramework\\Model\\' . $baseclass;
+
+        return new $class($args);
+    }
+
+    /**
      * Inserta el modelo en la tabla
+     *
      * @param null $data
      * @return bool
      */
     public function insert($data = null)
     {
         $fields = $this->getFields();
-        $sql1 = "";
-        $sql2 = "";
+        $sql1 = '';
+        $sql2 = '';
         $args = array();
         foreach ($fields as $field) {
-//            if($this->getFieldValue($field, $data) !== NULL)
-            {
-                if(in_array($field, $this->created_at_fileds))
-                {
-                    $this->{$field} = now();
-                }
-                $value = $this->getFieldValue($field, $data);
-                $args[$field] = $value;
-                $sql1 .= "`$field`, ";
-                $sql2 .= ":$field, ";
+            // if($this->getFieldValue($field, $data) !== NULL)
+            if (in_array($field, $this->created_at_fileds)) {
+                $this->{$field} = now();
             }
+            $value = $this->getFieldValue($field, $data);
+            $args[$field] = $value;
+            $sql1 .= "`$field`, ";
+            $sql2 .= ":$field, ";
         }
         if (!empty($sql1)) {
             $sql1 = substr($sql1, 0, -2);
             $sql2 = substr($sql2, 0, -2);
 
-            return $this->db->insert("INSERT INTO {$this->table_name} ($sql1) VALUES ($sql2)", $args);
+            return $this->db->insert('INSERT INTO '.$this->table_name.' ('.$sql1.') VALUES ('.$sql2.')', $args);
         }
         return false;
     }
 
     /**
      * Si el modelo tiene indice actualiza el modelo con los datos
+     *
      * @param null $data
      * @return bool
      * @throws \Exception
@@ -159,11 +191,10 @@ class Model
     public function update($data = null)
     {
         $fields = $this->getFields();
-        $sql1 = "";
+        $sql1 = '';
         $args = array();
         foreach ($fields as $field) {
-            if(in_array($field, $this->updated_at_fileds))
-            {
+            if (in_array($field, $this->updated_at_fileds)) {
                 $this->{$field} = now();
             }
             $value = $this->getFieldValue($field, $data);
@@ -176,15 +207,19 @@ class Model
             $sql1 = substr($sql1, 0, -2);
             $index = $this->getIndex();
             $indexValue = $this->db->escape_string($this->getFieldValue($index, $data));
-            if (!$indexValue) return false;
+            if (!$indexValue) {
+                return false;
+            }
             $args[] = $indexValue;
-            return $this->db->exec("UPDATE {$this->table_name} SET $sql1 WHERE `$index` = ?",$args, $this->getCacheId($indexValue));
+
+            return $this->db->exec("UPDATE {$this->table_name} SET $sql1 WHERE `$index` = ?", $args, $this->getCacheId($indexValue));
         }
         return false;
     }
 
     /**
      * Eliminar el modelo de la base de datos
+     *
      * @return bool
      * @throws \Exception
      */
@@ -199,6 +234,8 @@ class Model
     }
 
     /**
+     * TODO
+     *
      * @param $sql
      * @param array $args
      * @return ModelResult
@@ -209,37 +246,46 @@ class Model
         return $this->build($this->db->select($sql, $args));
     }
 
+    /**
+     * TODO
+     *
+     * @param $id
+     * @return string
+     */
     public function getCacheId($id)
     {
-        return $this->table_name . "_" . $id;
+        return $this->table_name . '_' . $id;
     }
+
     /**
      * Obtener el modelo de la base de datos. Puede ser el id, o una lista con el nombre de las columnas
      *  y el valor esperado. Es una condición conjuntiva.
+     *
      * @param int|array $id
      * @return ModelResult
      */
     public function get($id)
     {
         if (!is_array($id)) {
-
             $index = $this->getIndex();
             $id = $this->db->escape_string($id);
-            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE `$index` = ? ", array($id), $this->getCacheId($id)));
-        } else if (is_array($id)) {
+            return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE `' . $index . '` = ? ',
+                array($id), $this->getCacheId($id)));
+        }
+        if (is_array($id)) {
             $fieldsValue = $id;
             $fields = $this->getFields();
-            $sql = "";
+            $sql = '';
             $args = array();
             foreach ($fields as $field) {
                 if (isset($fieldsValue[$field])) {
                     $args[$field] = $fieldsValue[$field];
-                    $sql .= "`" . $field . "` = :$field AND ";
+                    $sql .= '`' . $field . '` = :' . $field . ' AND ';
                 }
             }
             if (!empty($sql)) {
                 $sql = substr($sql, 0, -5);
-                return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $sql", $args));
+                return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE ' . $sql, $args));
             }
         }
         return $this->build(array());
@@ -247,6 +293,7 @@ class Model
 
     /**
      * Obtener el modelo de la base de datos con condiciones disyuntivas
+     *
      * @param $fields
      * @return ModelResult
      * @throws \Exception
@@ -256,43 +303,41 @@ class Model
         $args = array();
         $fieldsValue = $fields;
         $fields = $this->getFields();
-        $sql = "";
+        $sql = '';
         foreach ($fields as $field) {
             if (isset($fieldsValue[$field])) {
                 $value = $fieldsValue[$field];
-                if(is_array($value))
-                {
-                    foreach($value as $subvalue)
-                    {
-                        $sql .= "`" . $field . "` = ? OR ";
+                if (is_array($value)) {
+                    foreach ($value as $subvalue) {
+                        $sql .= '`' . $field . '` = ? OR ';
                         $args[] = $subvalue;
                     }
-                }
-                else
-                {
-                    $sql .= "`" . $field . "` = ? OR ";
+                } else {
+                    $sql .= '`' . $field . '` = ? OR ';
                     $args[] = $value;
                 }
             }
         }
         if (!empty($sql)) {
             $sql = substr($sql, 0, -4);
-            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $sql", $args));
+            return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE ' . $sql, $args));
         }
         return $this->build(array());
     }
 
     /**
      * Obtener todos los modelos de la tabla
+     *
      * @return ModelResult
      */
     public function get_all()
     {
-        return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE 1"));
+        return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE 1'));
     }
 
     /**
      * Obtener los modelos que no sean este.
+     *
      * @return ModelResult
      * @throws \Exception
      */
@@ -300,67 +345,70 @@ class Model
     {
         $index = $this->getIndex();
         $value = $this->getFieldValue($index);
-        if ($value)
-            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE `$index` != ?", array(strval($value))));
+        if ($value) {
+            return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE `' . $index . '` != ?', array((string)$value)));
+        }
         return $this->get_all();
-
     }
 
     /**
      * Busca en forma de texto en la tabla
+     *
      * @param $fields
      * @return ModelResult
      * @throws \Exception
      */
     public function search($fields)
     {
-        if(!is_array($fields)) $fields = array($this->getIndex() => $fields);
+        if (!is_array($fields)) {
+            $fields = array($this->getIndex() => $fields);
+        }
 
         $fieldsValue = $fields;
         $fields = $this->getFields();
-        $sql = "";
+        $sql = '';
         $args = array();
         foreach ($fields as $field) {
             if (isset($fieldsValue[$field])) {
                 $value = $fieldsValue[$field];
-                if($this->isString($field)) {
-                    $sql .= "`" . $field . "` LIKE ? OR ";
+                if ($this->isString($field)) {
+                    $sql .= '`' . $field . '` LIKE ? OR ';
                     $args[] = '%' . $value . '%';
-                }
-                else {
-                    $sql .= "`" . $field . "` = ? OR ";
+                } else {
+                    $sql .= '`' . $field . '` = ? OR ';
                     $args[] = $value;
                 }
-
             }
         }
         if (!empty($sql)) {
             $sql = substr($sql, 0, -4);
-            return $this->build($this->db->select("SELECT * FROM {$this->table_name} WHERE $sql", $args));
+            return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE ' . $sql, $args));
         }
         return $this->build(array());
     }
 
     /**
-     * Actliza si ya existe, en otro caso inserta
+     * Actualiza si ya existe, en otro caso inserta
+     *
      * @param bool $updateIndex
      * @return bool
      */
     public function save($updateIndex = false)
     {
-        if($this->exists())
-        {
+        if ($this->exists()) {
             return $this->update();
         }
         $result = $this->insert();
-        if($result && $updateIndex)
+        if ($result && $updateIndex) {
             $this->setToIndex($result);
+        }
 
         return $result;
     }
 
     /**
      * Devuelve true si existe el modelo en la tabla
+     *
      * @return bool
      */
     public function exists()
@@ -374,13 +422,14 @@ class Model
 
     /**
      * Obtiene el valor del campo especificado, null si no existe el campo
+     *
      * @param $field
      * @param null $data
      * @return null
      */
     public function getFieldValue($field, $data = null)
     {
-        if ($data != null && isset($data[$field])) {
+        if ($data !== null && isset($data[$field])) {
             return $data[$field];
         }
         if (isset($this->{$field})) {
@@ -391,6 +440,7 @@ class Model
 
     /**
      * Apartir de la definicion devuelve los campos disponibles para el modelo
+     *
      * @return array
      */
     public function getFields()
@@ -401,10 +451,11 @@ class Model
         }
         if (isset($this->definition['fields'])) {
             foreach ($this->definition['fields'] as $key => $value) {
-                if (!is_numeric($key))
+                if (!is_numeric($key)) {
                     $fields[] = $key;
-                else
+                } else {
                     $fields[] = $value;
+                }
             }
         }
         return $fields;
@@ -412,13 +463,15 @@ class Model
 
     /**
      * Obtiene el nombre del indice para esta tabla
+     *
      * @return null
      */
     public function getIndex()
     {
         if (isset($this->definition['index'])) {
-            if (is_array($this->definition['index']))
+            if (is_array($this->definition['index'])) {
                 return $this->definition['index']['field'];
+            }
             return $this->definition['index'];
         }
         return null;
@@ -426,27 +479,31 @@ class Model
 
     /**
      * Asigna este valor al indice del modelo
+     *
      * @param $value
      */
     public function setToIndex($value)
     {
         $field = $this->getIndex();
-        if($field)
+        if ($field) {
             $this->{$field} = $value;
+        }
     }
 
     /**
      * Devuelve true si es el indice del modelo
+     *
      * @param $field
      * @return bool
      */
     public function isIndex($field)
     {
-        return $this->getIndex() == $field;
+        return $this->getIndex() === $field;
     }
 
     /**
      * Genera un resultado de modelos a partir de la lista develta por la consulta
+     *
      * @param $result
      * @return ModelResult
      */
@@ -457,18 +514,27 @@ class Model
         if (count($result) > 0) {
             $modelResult->model = $result[0];
         }
-        if($this->order != "") $modelResult->order($this->order);
+        if ($this->order !== '') {
+            $modelResult->order($this->order);
+        }
         return $modelResult;
     }
 
-    public function setDataFromArray($data, $prefix = "", $suffix = "")
+    /**
+     * TODO
+     *
+     * @param $data
+     * @param string $prefix
+     * @param string $suffix
+     */
+    public function setDataFromArray($data, $prefix = '', $suffix = '')
     {
-
     }
 
     /**
      * Establecer estos datos al modelo, en funcion de la definicion, si no esta en la definicion no
      * se asigna al modelo.
+     *
      * @param $data
      * @param bool $allowEmpty
      * @param bool $allowUnset
@@ -476,43 +542,34 @@ class Model
      */
     public function setData($data, $allowEmpty = true, $allowUnset = false)
     {
-        if ($data != null) {
-            if(is_array($data))
-            {
+        if ($data !== null) {
+            if (is_array($data)) {
                 $fileds = $this->getFields();
                 foreach ($fileds as $field) {
                     if (isset($data[$field]) && ($allowEmpty || $data[$field] !== '')) {
-                        if(strpos($this->getFieldType($field), "varchar") !== FALSE ||
-                            $this->getFieldType($field) == "text")
-                        {
-
+                        if (strpos($this->getFieldType($field), 'varchar') !== false || $this->getFieldType($field) === 'text') {
                             $encoding = mb_detect_encoding($data[$field]);
-                            if($encoding != 'utf8')
+                            if ($encoding !== 'utf8') {
                                 $this->{$field} = mb_convert_encoding($data[$field], 'utf8', $encoding);
-                            else
+                            } else {
                                 $this->{$field} = $data[$field];
-                        }
-                        else
-                        {
-
+                            }
+                        } else {
                             $this->{$field} = $data[$field];
                         }
-                    }
-                    else if($allowUnset)
-                    {
+                    } elseif ($allowUnset) {
                         $this->{$field} = false;
                     }
                 }
-            }
-            else
-            {
+            } else {
                 $result = $this->get($data);
                 $this->setData($result->model);
-                if(empty($result->model)) $this->asDefault();
+                if (empty($result->model)) {
+                    $this->asDefault();
+                }
             }
         }
-        if(empty($data))
-        {
+        if (empty($data)) {
             $this->asDefault();
         }
         return $this;
@@ -520,41 +577,48 @@ class Model
 
     /**
      * Devuelve la definicion original del modelo
+     *
      * @return array
      */
     public function getDefinition()
     {
         return $this->definition;
     }
+
     /**
      * Obtiene la definicion para este campo
-     * @return array
+     *
+     * @param $field
+     * @return mixed|null
      */
     public function getFieldDefinition($field)
     {
-        if(isset($this->definition[$field]))
+        if (isset($this->definition[$field])) {
             return $this->definition[$field];
-        if(isset($this->definition['fields'][$field]))
+        }
+        if (isset($this->definition['fields'][$field])) {
             return $this->definition['fields'][$field];
+        }
         return null;
     }
 
     /**
      * Obtiene el tipo para el campo
+     *
      * @param $field
      * @return mixed
      */
     public function getFieldType($field)
     {
         $definition = $this->getFieldDefinition($field);
-        if($definition && isset($definition['type']))
-        {
+        if ($definition && isset($definition['type'])) {
             return $definition['type'];
         }
     }
 
     /**
      * Nombre de la tabla asociada al modelo.
+     *
      * @return string
      */
     public function getTableName()
@@ -565,6 +629,7 @@ class Model
     /**
      * Genera las diferencias entre este modelo y lo que hay
      * en la base de datos.
+     *
      * @param bool $drop
      * @return array
      */
@@ -579,6 +644,7 @@ class Model
      * Construye un array asocativo con la infrmación en json del Modelo.
      * Si se ha establecido en $this->models un modelo asociado, entonces
      * se construye tambien de forma recursiva.
+     *
      * @param array $fields
      * @param bool $recursive Especifica si devuelve las asociaciones con otros modelos
      * @param int $limit
@@ -586,75 +652,67 @@ class Model
      */
     public function json($fields = array(), $recursive = true, $limit = 16)
     {
-        if($limit == 0) return null;
+        if ($limit === 0) {
+            return null;
+        }
         $json = array();
-        if($url = $this->url())
-        {
+        if ($url = $this->url()) {
             $json['url'] = fix_url($url);
         }
-        if(empty($fields)) $fields = $this->getFields();
+        if (empty($fields)) {
+            $fields = $this->getFields();
+        }
         $it = 2;
-        foreach($fields as $field)
-        {
-            if(!in_array($field, $this->hidden))
-            {
+        foreach ($fields as $field) {
+            if (!in_array($field, $this->hidden)) {
                 $found = false;
                 $list = array();
-                foreach ($this->models as $item)
-                {
-                    if(isset($item['from']) && $item['from'] == $field)
-                    {
+                foreach ($this->models as $item) {
+                    if (isset($item['from']) && $item['from'] === $field) {
                         $list[] = $item;
                         $found = true;
                     }
                 }
-                if($found || isset($this->models[$field]))
-                {
-                    if($recursive)
-                    {
-                        if(!$found) $modelTransform = array($this->models[$field]);
-                        else $modelTransform = $list;
-                        foreach ($modelTransform as $mt)
-                        {
+                if ($found || isset($this->models[$field])) {
+                    if ($recursive) {
+                        $modelTransform = $list;
+                        if (!$found) {
+                            $modelTransform = array($this->models[$field]);
+                        }
+                        foreach ($modelTransform as $mt) {
                             $filter = array();
-                            if(is_array($mt))
-                            {
+                            if (is_array($mt)) {
                                 $name = $mt['name'];
                                 $model = $mt['model'];
-                                $object =  new $model();
-                                if(isset($fields[$name]))
+                                $object = new $model();
+                                if (isset($fields[$name])) {
                                     $filter = $fields[$name];
-                                $recursive2 = (isset($mt['recursive']))?$mt['recursive']:$recursive;
-                                if(isset($mt['field']))
-                                {
-                                    $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))->json($filter, $recursive2, $limit - 1);
                                 }
-                                else{
-                                    $json[$name] = $object->get($this->getFieldValue($field))->json($filter,$recursive2, $limit - 1);
+                                $recursive2 = isset($mt['recursive']) ? $mt['recursive'] : $recursive;
+                                if (isset($mt['field'])) {
+                                    $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))
+                                                          ->json($filter, $recursive2, $limit - 1);
+                                } else {
+                                    $json[$name] = $object->get($this->getFieldValue($field))
+                                                          ->json($filter, $recursive2, $limit - 1);
                                 }
-                            }
-                            else
-                            {
+                            } else {
                                 $name = $this->underescapeName($mt);
-                                if(isset($fields[$name]))
+                                if (isset($fields[$name])) {
                                     $filter = $fields[$name];
+                                }
                                 $object = new $mt($this->getFieldValue($field));
                                 $json[$name] = $object->json($filter, $recursive, $limit);
                             }
                         }
                     }
-
                 }
-
                 $json[$field] = $this->getFieldValue($field);
-
             }
         }
 
-        if($recursive)
-        {
-            foreach ($this->json_extra as $key => $function)
-            {
+        if ($recursive) {
+            foreach ($this->json_extra as $key => $function) {
                 $json[$key] = call_user_func(array($this, $function));
             }
         }
@@ -663,21 +721,32 @@ class Model
 
     /**
      * Separa las palabras por barras bajas
+     *
      * @param $name
      * @return mixed
      */
     public function underescapeName($name)
     {
-        if(preg_match_all("#([A-Z][a-z]*)#", $name, $matches))
-        {
-            return implode("_", array_map('strtolower', $matches[1]));
+        if (preg_match_all('#([A-Z][a-z]*)#', $name, $matches)) {
+            return implode('_', array_map('strtolower', $matches[1]));
         }
     }
+
+    /**
+     * TODO
+     *
+     * @param $field
+     * @return bool
+     */
     public function isString($field)
     {
-        $def = strtolower( $this->getFieldDefinition($field) );
-        if(strpos($def, "varchar") !== FALSE) return true;
-        if(strpos($def, "text") !== FALSE) return true;
+        $def = strtolower($this->getFieldDefinition($field));
+        if (strpos($def, 'varchar') !== false) {
+            return true;
+        }
+        if (strpos($def, 'text') !== false) {
+            return true;
+        }
         return false;
     }
 
@@ -685,61 +754,45 @@ class Model
      * Se ejecuta cuando estamos estableciendo los datos
      * al modelo y no hay ningun campo para rellenar.
      */
-    public function asDefault(){}
+    public function asDefault()
+    {
+    }
 
     /**
      * Comprueba que el modelo sea válido, es decir, que tenga datos en
      * almenos un campo.
+     *
      * @param array $fields
      * @return bool
      */
     public function valid($fields = array())
     {
-        if(empty($fields))
-        {
+        if (empty($fields)) {
             $fields = array_diff($this->getFields(), array($this->getIndex()));
         }
-        foreach ($fields as $field)
-        {
+        foreach ($fields as $field) {
             $value = $this->getFieldValue($field);
-            if(!empty($value)) return true;
+            if (!empty($value)) {
+                return true;
+            }
         }
         return false;
     }
 
-
     /**
-     * @param $baseclass
-     * @param array $args
-     * @return Model
+     * TODO
+     *
+     * @return null
      */
-    public static function newInstance($baseclass, $args = array())
-    {
-        $modules = ModuleManager::getInstance()->getModules();
-        foreach ($modules as $module)
-        {
-            if(in_array($baseclass, $module->getModels()))
-            {
-                $classes = array("\\" . $module->title . "\\" . $baseclass, $baseclass);
-                foreach ($classes as $class)
-                {
-                    if(class_exists($class))
-                    {
-                        return new $class($args);
-                    }
-                }
-            }
-        }
-        $class = "\\GLFramework\\Model\\$baseclass";
-        return new $class($args);
-
-    }
-
     public function url()
     {
         return null;
     }
 
-    public function onCreate() { }
-
+    /**
+     * TODO
+     */
+    public function onCreate()
+    {
+    }
 }

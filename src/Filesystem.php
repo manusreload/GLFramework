@@ -26,19 +26,23 @@
 
 namespace GLFramework;
 
-
 use TijsVerkoyen\CssToInlineStyles\Exception;
 
+/**
+ * Class Filesystem
+ *
+ * @package GLFramework
+ */
 class Filesystem
 {
-
-    private static $publicTable = "publicFiles.json";
+    private static $publicTable = 'publicFiles.json';
     private $file;
     private $folder;
     private $pfile;
 
     /**
      * Generara un gestor de archivos
+     *
      * @param $file
      * @param null $folder
      */
@@ -49,23 +53,9 @@ class Filesystem
     }
 
     /**
-     * Obtiene la ruta al directorio donde se almacenan los archivos
-     * @return string
-     */
-    public function getFilesystemFolder()
-    {
-
-        $config = Bootstrap::getSingleton()->getConfig();
-        if(isset($config['app']['filesystem']))
-        {
-            return Bootstrap::getSingleton()->getDirectory() . "/" . $config['app']['filesystem'];
-        }
-        return Bootstrap::getSingleton()->getDirectory() . "/filesystem";
-    }
-
-    /**
      * Solicita un nuevo archivo con ese nombre y extension, si no se indica un nombre, se genera
      * uno de forma aleatoria.
+     *
      * @param null $filename
      * @param string $extension
      * @param null $folder
@@ -73,54 +63,57 @@ class Filesystem
      */
     public static function allocate($filename = null, $extension = ".rnd", $folder = null)
     {
-        if($filename == null)
+        if ($filename === null) {
             $filename = sha1(time() . "_" . microtime(true));
-        if($folder)
-        {
-            $ffolder = new Filesystem($folder);
-            if(!$ffolder->exists())
-                $ffolder->mkdir();
         }
-        $file = new Filesystem("{$folder}/{$filename}{$extension}"); //$this->getStorage() . "/{$filename}{$extension}";
+        if ($folder) {
+            $ffolder = new Filesystem($folder);
+            if (!$ffolder->exists()) {
+                $ffolder->mkdir();
+            }
+        }
+        $file = new Filesystem($folder . '/' . $filename . $extension);
+        //$this->getStorage() . "/{$filename}{$extension}";
         return $file;
     }
 
-    private function getStorage()
+    /**
+     * Obtiene la ruta al directorio donde se almacenan los archivos
+     *
+     * @return string
+     */
+    public function getFilesystemFolder()
     {
-        $folder = $this->folder;
-        if(!is_dir($folder))
-        {
-            if(!mkdir($folder, 0777, true))
-            {
-                throw new Exception("Can not create Filesystem folder: '" . $folder . "'. Please verify permissions.");
-            }
+        $config = Bootstrap::getSingleton()->getConfig();
+        if (isset($config['app']['filesystem'])) {
+            return Bootstrap::getSingleton()->getDirectory() . '/' . $config['app']['filesystem'];
         }
-
-        return $folder;
+        return Bootstrap::getSingleton()->getDirectory() . '/filesystem';
     }
-
 
     /**
      * Obtiene la ruta relativa al archivo
+     *
      * @return string
      */
     public function getFilePath()
     {
-        return basename($this->getStorage()) . "/" . $this->file;
+        return basename($this->getStorage()) . '/' . $this->file;
     }
 
     /**
      * Obtiene la rut absoluta al archivo
+     *
      * @return string
-     * @throws Exception
      */
     public function getAbsolutePath()
     {
-        return realpath($this->getStorage()) . "/" . $this->file;
+        return realpath($this->getStorage()) . '/' . $this->file;
     }
 
     /**
      * Crea el archivo vacio
+     *
      * @return bool
      */
     public function touch()
@@ -130,6 +123,7 @@ class Filesystem
 
     /**
      * Devuelve true si existe el archivo
+     *
      * @return bool
      */
     public function exists()
@@ -139,29 +133,34 @@ class Filesystem
 
     /**
      * Obtiene una url accesible por el navegador
+     *
      * @param null $expires
      * @return string
      */
     public function url($expires = null)
     {
         $this->setPublic($expires);
-        $scheme = "http://";
-        if($_SERVER['HTTPS']) $scheme = "https://";
-        return $scheme . $_SERVER['HTTP_HOST'] . "/_raw/" . $this->file;
+        $scheme = 'http://';
+        if ($_SERVER['HTTPS']) {
+            $scheme = 'https://';
+        }
+        return $scheme . $_SERVER['HTTP_HOST'] . '/_raw/' . $this->file;
     }
 
     /**
      * Abrir un archivo, devuelve el puntero al archio
+     *
      * @param string $mode
      * @return resource
      */
-    public function open($mode = "rw")
+    public function open($mode = 'rw')
     {
         return ($this->pfile = fopen($this->getAbsolutePath(), $mode));
     }
 
     /**
      * Cierra el último puntero abiero
+     *
      * @return bool
      */
     public function close()
@@ -171,14 +170,13 @@ class Filesystem
 
     /**
      * Leer el contenido del archivo. No se requiere ejecutar open() ni close()
+     *
      * @param bool $output Enviar contenido al navegador
      * @return string
      */
     public function read($output = false)
     {
-        if($output)
-        {
-
+        if ($output) {
             $handle = $this->open();
             if ($handle) {
                 while (!feof($handle)) {
@@ -187,15 +185,14 @@ class Filesystem
                 }
                 fclose($handle);
             }
-        }
-        else
-        {
+        } else {
             return file_get_contents($this->getAbsolutePath());
         }
     }
 
     /**
      * Escribir el contenido al archivo. No se requiere ejecutar open() ni close()
+     *
      * @param $content
      * @return int
      */
@@ -204,6 +201,11 @@ class Filesystem
         return file_put_contents($this->getAbsolutePath(), $content);
     }
 
+    /**
+     * TODO
+     *
+     * @return int
+     */
     public function getSize()
     {
         return filesize($this->getAbsolutePath());
@@ -218,6 +220,8 @@ class Filesystem
     }
 
     /**
+     * TODO
+     *
      * @return null
      */
     public function getFile()
@@ -225,23 +229,31 @@ class Filesystem
         return $this->file;
     }
 
+    /**
+     * TODO
+     *
+     * @return Filesystem
+     */
     public function getPublicTableFile()
     {
         return new Filesystem(Filesystem::$publicTable);
     }
 
+    /**
+     * TODO
+     *
+     * @param null $expires
+     * @return bool
+     */
     public function setPublic($expires = null)
     {
-        if($expires != null)
-        {
-            $expires = $expires + time();
+        if ($expires !== null) {
+            $expires += time();
         }
         $file = json_decode(file_get_contents($this->getPublicTableFile()));
         $filename = $this->getAbsolutePath();
-        foreach ($file as &$item)
-        {
-            if($item->filename == $filename)
-            {
+        foreach ($file as &$item) {
+            if ($item->filename === $filename) {
                 $item->expires = $expires;
                 file_put_contents($this->getPublicTableFile(), json_encode($file));
                 return true;
@@ -250,29 +262,52 @@ class Filesystem
         $item = new \stdClass();
         $item->filename = $filename;
         $item->expires = $expires;
-        $file[]  = $item;
+        $file[] = $item;
         file_put_contents($this->getPublicTableFile(), json_encode($file));
         return true;
     }
 
+    /**
+     * TODO
+     *
+     * @return bool
+     */
     public function isPublic()
     {
         $file = json_decode(file_get_contents($this->getPublicTableFile()));
         $filename = $this->getAbsolutePath();
-        foreach ($file as $item)
-        {
-            if($item->filename == $filename && $item->expires <= time())
-            {
+        foreach ($file as $item) {
+            if ($item->filename === $filename && $item->expires <= time()) {
                 return true;
             }
         }
         return false;
     }
 
-    function __toString()
+    /**
+     * TODO
+     *
+     * @return string
+     */
+    public function __toString()
     {
         return $this->getAbsolutePath();
     }
 
+    /**
+     * TODO
+     *
+     * @return string
+     */
+    private function getStorage()
+    {
+        $folder = $this->folder;
+        if (!is_dir($folder)) {
+            if (!mkdir($folder, 0777, true)) {
+                throw new Exception("Can not create Filesystem folder: '" . $folder . "'. Please verify permissions.");
+            }
+        }
 
+        return $folder;
+    }
 }

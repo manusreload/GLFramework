@@ -26,9 +26,13 @@
 
 namespace GLFramework\Utils;
 
-
 use GLFramework\Model;
 
+/**
+ * Class DataTablesManager
+ *
+ * @package GLFramework\Utils
+ */
 class DataTablesManager
 {
     /**
@@ -40,6 +44,7 @@ class DataTablesManager
 
     /**
      * DataTablesManager constructor.
+     *
      * @param $callback
      */
     public function __construct($callback)
@@ -47,23 +52,31 @@ class DataTablesManager
         $this->callback = $callback;
     }
 
+    /**
+     * TODO
+     *
+     * @param $row
+     * @return mixed
+     */
     public function row($row)
     {
         return call_user_func($this->callback, $row);
     }
 
+    /**
+     * TODO
+     *
+     * @param $fields
+     */
     public function process($fields)
     {
         $data = array();
-        foreach($fields as $model)
-        {
+        foreach ($fields as $model) {
             $data[] = $this->row($model);
         }
-        header("Content-Type: text/json");
+        header('Content-Type: text/json');
 
-        echo json_encode(array("data" => $data));
+        echo json_encode(array('data' => $data));
         die();
     }
-
-
 }

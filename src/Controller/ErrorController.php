@@ -30,29 +30,38 @@ namespace GLFramework\Controller;
 use GLFramework\Controller;
 use GLFramework\Events;
 
+/**
+ * Class ErrorController
+ *
+ * @package GLFramework\Controller
+ */
 class ErrorController extends Controller
 {
 
     var $error;
 
     var $refer;
+
     /**
      * ErrorController constructor.
-     * @param $error
+     * @param string $error
      */
     public function __construct($error)
     {
         parent::__construct();
         $this->error = $error;
-        $this->setTemplate("error.twig");
+        $this->setTemplate('error.twig');
         $this->response->setResponseCode(200);
     }
 
-
+    /**
+     * TODO
+     */
     public function run()
     {
-        if(isset($_SERVER['HTTP_REFERER']))
+        if (isset($_SERVER['HTTP_REFERER'])) {
             $this->refer = $_SERVER['HTTP_REFERER'];
+        }
         Events::dispatch('onError', array('error' => $this->error, 'refer' => $this->refer));
     }
 }

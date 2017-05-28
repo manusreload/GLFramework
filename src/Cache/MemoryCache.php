@@ -26,35 +26,70 @@
 
 namespace GLFramework\Cache;
 
-
+/**
+ * Class MemoryCache
+ *
+ * @package GLFramework\Cache
+ */
 class MemoryCache extends Cache
 {
 
     private $array = array();
+
+    /**
+     * TODO
+     *
+     * @param array $config
+     * @return bool
+     */
     public function connect($config = array())
     {
         // TODO: Implement connect() method.
         return true;
     }
 
+    /**
+     * TODO
+     *
+     * @param $key
+     * @param $value
+     * @param null $duration
+     */
     public function set($key, $value, $duration = null)
     {
         // TODO: Implement set() method.
         $this->array[$key] = $value;
     }
 
+    /**
+     * TODO
+     *
+     * @param $key
+     * @return mixed
+     */
     public function get($key)
     {
         // TODO: Implement get() method.
         return $this->array[$key];
     }
 
+    /**
+     * TODO
+     *
+     * @param $key
+     * @return bool
+     */
     public function hash($key)
     {
         // TODO: Implement hash() method.
         return isset($this->array[$key]);
     }
 
+    /**
+     * TODO
+     *
+     * @param $key
+     */
     public function remove($key)
     {
         // TODO: Implement remove() method.

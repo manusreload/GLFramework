@@ -18,6 +18,7 @@
  */
 
 namespace GLFramework\Middleware;
+
 use GLFramework\Controller;
 use GLFramework\Events;
 use GLFramework\Middleware;
@@ -30,15 +31,22 @@ use GLFramework\Response;
  * Date: 21/04/16
  * Time: 9:04
  */
+
+/**
+ * Class ControllerMiddleware
+ *
+ * @package GLFramework\Middleware
+ */
 class ControllerMiddleware implements Middleware
 {
-
     /**
      * @var Controller
      */
     var $controller;
 
     /**
+     * TODO
+     *
      * ControllerMiddleware constructor.
      * @param Controller $controller
      */
@@ -47,13 +55,19 @@ class ControllerMiddleware implements Middleware
         $this->controller = $controller;
     }
 
-
+    /**
+     * TODO
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param $next
+     */
     public function next(Request $request, Response $response, $next)
     {
         // TODO: Implement next() method.
 
         Events::dispatch('beforeControllerRun', array($this->controller));
-        $data = call_user_func_array(array($this->controller, "run"), $request->params);
+        $data = call_user_func_array(array($this->controller, 'run'), $request->params);
         $next($request, $response);
         Events::dispatch('afterControllerRun', array($this->controller, $this->controller->response));
         $response->setContent($this->controller->display($data, $request->params));

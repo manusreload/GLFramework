@@ -26,7 +26,6 @@
 
 namespace GLFramework\Module;
 
-
 use GLFramework\Bootstrap;
 use GLFramework\Controller\ErrorController;
 use GLFramework\Controller\ExceptionController;
@@ -36,8 +35,14 @@ use GLFramework\Log;
 use GLFramework\Request;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * Class ModuleManager
+ *
+ * @package GLFramework\Module
+ */
 class ModuleManager
 {
+    private static $instance;
     /**
      * @var Module[]
      */
@@ -49,11 +54,11 @@ class ModuleManager
      * @var Module
      */
     private $mainModule;
-    private static $instance;
     private $runningModule;
 
     /**
      * ModuleManager constructor.
+     *
      * @param $config
      * @param $directory
      */
@@ -66,63 +71,83 @@ class ModuleManager
         $this->router->addMatchTypes(array(
             'idd' => '([0-9]+|add)?',
         ));
-        $this->router->map('GET', "/_raw/[*:name]", array($this, 'handleFilesystem'), 'handleFilesystem');
+        $this->router->map('GET', '/_raw/[*:name]', array($this, 'handleFilesystem'), 'handleFilesystem');
     }
 
+    /**
+     * TODO
+     *
+     * @return ModuleManager
+     */
     public static function getInstance()
     {
         return self::$instance;
     }
 
     /**
+     * TODO
+     *
      * @param $name
      * @return Module
      */
     public static function getModuleInstanceByName($name)
     {
         $instance = self::getInstance();
-        foreach($instance->getModules() as $module)
-        {
-            if($module->title == $name) return $module;
+        foreach ($instance->getModules() as $module) {
+            if ($module->title === $name) {
+                return $module;
+            }
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param $string
+     * @return bool
+     */
     public static function exists($string)
     {
         $instance = self::getInstance();
-        foreach($instance->getModules() as $module)
-        {
-            if($module->title == $string) return true;
-        }
-        return false;
-    }
-
-    public static function existsController($key)
-    {
-        $instance = self::getInstance();
-        foreach($instance->getModules() as $module)
-        {
-            foreach($module->getControllers() as $controller => $file)
-            {
-                if($key == $controller) return true;
+        foreach ($instance->getModules() as $module) {
+            if ($module->title === $string) {
+                return true;
             }
         }
         return false;
     }
 
     /**
+     * TODO
+     *
+     * @param $key
+     * @return bool
+     */
+    public static function existsController($key)
+    {
+        $instance = self::getInstance();
+        foreach ($instance->getModules() as $module) {
+            foreach ($module->getControllers() as $controller => $file) {
+                if ($key == $controller) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * TODO
+     *
      * @param $key
      * @return bool|\GLFramework\Controller
      */
     public static function instanceController($key)
     {
         $instance = self::getInstance();
-        foreach($instance->getModules() as $module)
-        {
-            foreach($module->getControllers() as $controller => $file)
-            {
-                if($key == $controller)
-                {
+        foreach ($instance->getModules() as $module) {
+            foreach ($module->getControllers() as $controller => $file) {
+                if ($key == $controller) {
                     return $module->instanceController($controller);
                 }
             }
@@ -131,18 +156,17 @@ class ModuleManager
     }
 
     /**
+     * TODO
+     *
      * @param $key
      * @return bool|Module
      */
     public static function getModuleForController($key)
     {
         $instance = self::getInstance();
-        foreach($instance->getModules() as $module)
-        {
-            foreach($module->getControllers() as $controller => $file)
-            {
-                if($key == $controller)
-                {
+        foreach ($instance->getModules() as $module) {
+            foreach ($module->getControllers() as $controller => $file) {
+                if ($key == $controller) {
                     return $module;
                 }
             }
@@ -151,6 +175,8 @@ class ModuleManager
     }
 
     /**
+     * TODO
+     *
      * @return \AltoRouter
      */
     public function getRouter()
@@ -159,6 +185,8 @@ class ModuleManager
     }
 
     /**
+     * TODO
+     *
      * @return Module[]
      */
     public function getModules()
@@ -167,6 +195,8 @@ class ModuleManager
     }
 
     /**
+     * TODO
+     *
      * @return Module
      */
     public function getMainModule()
@@ -175,186 +205,203 @@ class ModuleManager
     }
 
     /**
-     * @param $module Module
+     * TODO
+     *
+     * @param bool $module
      * @return array
      */
     public function getViews($module = false)
     {
         $views = array();
-        if($module) $views = $module->getViews();
-        foreach($this->getModules() as $module2)
-        {
-            if($module2 != $module)
-            {
-                foreach($module2->getViews() as $view)
-                {
+        if ($module) {
+            $views = $module->getViews();
+        }
+        foreach ($this->getModules() as $module2) {
+            if ($module2 !== $module) {
+                foreach ($module2->getViews() as $view) {
                     $views[] = $view;
                 }
             }
         }
         $mainModule = ModuleManager::getInstance()->getMainModule();
-        if($module != $mainModule) Module::addFolder($views, $mainModule->getViews());
+        if ($module != $mainModule) {
+            Module::addFolder($views, $mainModule->getViews());
+        }
         // Add framework views
-        Module::addFolder($views, realpath(__DIR__ . "/../../..") . "/");
-        Module::addFolder($views, realpath(__DIR__ . "/../..") . "/");
-        Module::addFolder($views, realpath(__DIR__ . "/../..") . "/views");
-        Module::addFolder($views, realpath(__DIR__ . "/../..") . "/modules");
+        Module::addFolder($views, realpath(__DIR__ . '/../../..') . '/');
+        Module::addFolder($views, realpath(__DIR__ . '/../..') . '/');
+        Module::addFolder($views, realpath(__DIR__ . '/../..') . '/views');
+        Module::addFolder($views, realpath(__DIR__ . '/../..') . '/modules');
         return $views;
     }
 
+    /**
+     * TODO
+     *
+     * @throws \Exception
+     */
     public function init()
     {
         $time = microtime();
         $module = $this->load($this->directory, array(), true);
-        if($module)
-        {
+        if ($module) {
             $this->mainModule = $module;
             $this->add($module);
             $this->mainModule->init();
             $this->mainModule->register_router($this->router);
             $this->mainModule->register_events();
-            if(isset($this->config['modules']))
-            {
+            if (isset($this->config['modules'])) {
                 $this->loadConfig($this->config);
             }
 
-            foreach($this->modules as $module)
-            {
-                if($module != $this->mainModule)
-                {
+            foreach ($this->modules as $module) {
+                if ($module != $this->mainModule) {
                     $module->init();
                     $module->register_router($this->router);
                 }
             }
-            foreach($this->modules as $module)
-            {
+            foreach ($this->modules as $module) {
                 $module->register_events();
             }
-        }
-        else
-        {
-            throw new \Exception("Can't not load the main module!");
+        } else {
+            throw new \Exception('Can\'t not load the main module!');
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param $config
+     * @throws \Exception
+     */
     public function loadConfig($config)
     {
         $modules = $config['modules'];
-        if(!is_array($modules)) $modules = array($modules);
-        foreach($modules as $subsection => $value)
-        {
+        if (!is_array($modules)) {
+            $modules = array($modules);
+        }
+        foreach ($modules as $subsection => $value) {
             $dirbase = $this->directory;
-            if((string) $subsection == "internal")
-            {
-                $dirbase = __DIR__ . "/../../modules";
-            }
-            else if(is_numeric($subsection))
-            {
-                $dirbase .= "modules";
-            }
-            else
-            {
-                if(is_dir($subsection))
-                {
+            if ((string)$subsection === 'internal') {
+                $dirbase = __DIR__ . '/../../modules';
+            } elseif (is_numeric($subsection)) {
+                $dirbase .= 'modules';
+            } else {
+                if (is_dir($subsection)) {
                     $dirbase = $subsection;
-                }
-                else
-                {
+                } else {
                     $dirbase .= "/$subsection";
                 }
             }
-            if($value)
-            {
-                if(!is_array($value)) $value = array($value);
-                foreach($value as $name => $extra)
-                {
-                    if(is_integer($name) && empty($extra)) continue;
-                    if(is_integer($name))  // tipo: - admin
-                    {
+            if ($value) {
+                if (!is_array($value)) {
+                    $value = array($value);
+                }
+                foreach ($value as $name => $extra) {
+                    if (is_int($name) && empty($extra)) {
+                        continue;
+                    }
+                    // tipo: - admin
+                    if (is_int($name)) {
                         $name = $extra;
                     }
-                    if(!is_string($name))
-                    {
-                        if(is_array($extra)) // tipo - admin : []
-                        {
+                    if (!is_string($name)) {
+                        // tipo - admin : []
+                        if (is_array($extra)) {
                             $name = key($extra);
                             $extra = current($extra);
                         }
                     }
-                    Log::d("Loading: " . $dirbase . "/" . $name);
-                    $module = $this->load($dirbase . "/" . $name, $extra);
-                    if($module)
-                    {
-                        if(!$this->exists($module->title)  && !Events::dispatch('isModuleEnabled', array($module))->anyFalse())
-                        {
+                    Log::d('Loading: ' . $dirbase . '/' . $name);
+                    $module = $this->load($dirbase . '/' . $name, $extra);
+                    if ($module) {
+                        if (!$this->exists($module->title) && !Events::dispatch('isModuleEnabled', array($module))
+                                                                     ->anyFalse()
+                        ) {
                             $this->add($module);
                             $this->loadModuleDependencies($module);
                         }
+                    } else {
+                        throw new \Exception('Can\'t not load module: ' . $name . ' in directory: \'' . $dirbase . '\'');
                     }
-                    else{
-                        throw new \Exception("Can't not load module: " . $name . " in directory: '" . $dirbase . "'" );
-                    }
-
                 }
             }
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param $folder
+     * @param null $extra
+     * @param bool $main
+     * @return Module|null
+     */
     public function load($folder, $extra = null, $main = false)
     {
-        $configFile = $folder . "/config.yml";
-        if(file_exists($configFile))
-        {
-            $config = Bootstrap::loadConfig($folder, "config.yml");
-        }
-        else
-        {
-            if(!$main) return null;
+        $configFile = $folder . '/config.yml';
+        if (file_exists($configFile)) {
+            $config = Bootstrap::loadConfig($folder, 'config.yml');
+        } else {
+            if (!$main) {
+                return null;
+            }
             $config = Bootstrap::getSingleton()->getConfig();
-            if(!$config)
-            {
+            if (!$config) {
                 return null;
             }
         }
-        if(is_array($extra))
-        {
+        if (is_array($extra)) {
             $config = array_merge_recursive_ex($config, $extra);
         }
         return new Module($config, $folder);
     }
 
     /**
+     * TODO
+     *
      * @param $module Module
      */
     public function loadModuleDependencies($module)
     {
         $config = $module->getConfig();
-        if(isset($config['modules']))
-        {
+        if (isset($config['modules'])) {
             $this->loadConfig($config);
         }
     }
 
     /**
+     * TODO
+     *
      * @param $module Module
      */
     public function add($module)
     {
-        if($module != null)
+        if ($module !== null) {
             $this->modules[] = $module;
+        }
     }
 
+    /**
+     * TODO
+     *
+     * @param $name
+     * @return bool
+     */
     public function isEnabled($name)
     {
-        foreach($this->modules as $module)
-        {
-            if($name == $module->title) return true;
+        foreach ($this->modules as $module) {
+            if ($name === $module->title) {
+                return true;
+            }
         }
         return false;
     }
 
 
     /**
+     * TODO
+     *
      * @param null $url
      * @param null $method
      * @return \GLFramework\Response
@@ -363,29 +410,22 @@ class ModuleManager
     {
         $request = new Request($method, $url);
         try {
-
-            if($match = $this->router->match($url, $method))
-            {
-                if($match['name'] == "handleFilesystem")
-                {
+            if ($match = $this->router->match($url, $method)) {
+                if ($match['name'] === 'handleFilesystem') {
                     return $this->handleFilesystem($match['params'], $request);
-                }
-                else
-                {
+                } else {
                     $target = $match['target'];
                     $module = $target[0];
-                    if($module instanceof Module)
-                    {
+                    if ($module instanceof Module) {
                         $this->runningModule = $module;
                         $controller = $target[1];
                         $request->setParams($match['params']);
                     }
                     return $module->run($controller, $request);
                 }
-            }
-            else
-            {
-                return $this->mainModule->run(new ErrorController("Controller for '$url' not found. " . $this->getRoutes()), $request);
+            } else {
+                return $this->mainModule->run(new ErrorController("Controller for '$url' not found. " . $this->getRoutes()),
+                    $request);
             }
         } catch (\Exception $ex) {
             Events::dispatch('onException', $ex);
@@ -396,55 +436,58 @@ class ModuleManager
         }
         return false;
     }
-    
+
+    /**
+     * TODO
+     *
+     * @return string
+     */
     public function getRoutes()
     {
-        if($this->config['app']['debug'])
-        {
-            $html = "<pre>";
+        if ($this->config['app']['debug']) {
+            $html = '<pre>';
             $result = array();
-            foreach($this->modules as $module)
-            {
+            foreach ($this->modules as $module) {
                 $list = $module->getControllersUrlRoutes();
                 $result = array_merge($list, $result);
             }
             $html .= implode("\n", $result);
-            $html .= "</pre>";
+            $html .= '</pre>';
             return $html;
         }
     }
 
-
+    /**
+     * TODO
+     *
+     * @param $args
+     * @param $request
+     * @return bool|\GLFramework\Response
+     */
     public function handleFilesystem($args, $request)
     {
         $file = urldecode($args['name']);
         $filesystem = new Filesystem($file);
-        if($filesystem->exists())
-        {
-            if($filesystem->isPublic())
-            {
-                header("Content-Type: " . mime_content_type($filesystem->getAbsolutePath()));
+        if ($filesystem->exists()) {
+            if ($filesystem->isPublic()) {
+                header('Content-Type: ' . mime_content_type($filesystem->getAbsolutePath()));
                 $filesystem->read(true);
                 die();
+            } else {
+                return $this->mainModule->run(new ErrorController('Este archivo no es descargable'), $request);
             }
-            else
-            {
-                return $this->mainModule->run(new ErrorController("Este archivo no es descargable"), $request);
-            }
-        }
-        else
-        {
-            return $this->mainModule->run(new ErrorController("No se ha encontrado este archivo!"), $request);
+        } else {
+            return $this->mainModule->run(new ErrorController('No se ha encontrado este archivo!'), $request);
         }
     }
 
     /**
+     * TODO
+     *
      * @return mixed
      */
     public function getRunningModule()
     {
         return $this->runningModule;
     }
-
-
 }

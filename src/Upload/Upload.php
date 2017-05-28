@@ -26,7 +26,11 @@
 
 namespace GLFramework\Upload;
 
-
+/**
+ * Class Upload
+ *
+ * @package GLFramework\Upload
+ */
 class Upload
 {
 
@@ -38,6 +42,7 @@ class Upload
 
     /**
      * Upload constructor.
+     *
      * @param $uploads Uploads
      * @param $upload
      * @param null $folder
@@ -47,11 +52,13 @@ class Upload
         $this->uploads = $uploads;
         $this->upload = $upload;
 
-        $this->hash = date("Y-m-d_H-i-s") . "_";
-        $this->folder = $folder?"$folder/":"";
+        $this->hash = date('Y-m-d_H-i-s') . '_';
+        $this->folder = $folder ? '$folder/' : '';
     }
 
     /**
+     * TODO
+     *
      * @return mixed
      */
     public function getFolder()
@@ -60,96 +67,178 @@ class Upload
     }
 
     /**
+     * TODO
+     *
      * @param mixed $folder
      */
     public function setFolder($folder)
     {
-        if(substr($folder, strrpos($folder, "/")) != strlen($folder))
-        {
-            $folder .= "/";
+        if (substr($folder, strrpos($folder, '/')) !== strlen($folder)) {
+            $folder .= '/';
         }
         $this->folder = $folder;
     }
 
-
+    /**
+     * TODO
+     *
+     * @return bool
+     */
     public function isMultiple()
     {
         return is_array($this->upload['name']);
     }
 
+    /**
+     * TODO
+     *
+     * @return int
+     */
     public function getLength()
     {
         return count($this->upload['name']);
     }
 
+    /**
+     * TODO
+     *
+     * @param bool $index
+     * @return string
+     */
     public function getFilename($index = false)
     {
         return $this->uploads->folder . "/" . $this->folder . $this->hash . $this->name($index);
     }
 
+    /**
+     * TODO
+     *
+     * @param bool $index
+     * @return string
+     */
     public function getAbsolutePath($index = false)
     {
-        return $this->uploads->dir . "/" . $this->getFilename($index);
+        return $this->uploads->dir . '/' . $this->getFilename($index);
     }
 
+    /**
+     * TODO
+     *
+     * @param bool $index
+     * @return bool
+     */
     public function move($index = false)
     {
         $source = $this->tmpName($index);
         $dest = $this->getAbsolutePath($index);
-        $parent = substr($dest, 0, strrpos($dest, "/"));
-        if(!is_dir($parent))
-        {
+        $parent = substr($dest, 0, strrpos($dest, '/'));
+        if (!is_dir($parent)) {
             mkdir($parent);
         }
         return move_uploaded_file($source, $dest);
     }
 
+    /**
+     * TODO
+     *
+     * @param bool $index
+     * @return mixed
+     */
     public function error($index = false)
     {
-        if($index === false)
+        if ($index === false) {
             return $this->upload['error'];
+        }
         return $this->upload['error'][$index];
     }
 
+    /**
+     * TODO
+     *
+     * @param bool $index
+     * @return mixed
+     */
     public function name($index = false)
     {
-        if($index === false)
+        if ($index === false) {
             return $this->upload['name'];
+        }
         return $this->upload['name'][$index];
     }
+
+    /**
+     * TODO
+     *
+     * @param $name
+     * @param bool $index
+     * @return mixed
+     */
     public function setName($name, $index = false)
     {
-        if($index === false)
+        if ($index === false) {
             return $this->upload['name'] = $name;
-        return $this->upload['name'][$index] = $name;;
+        }
+        return $this->upload['name'][$index] = $name;
     }
 
+    /**
+     * TODO
+     *
+     * @param bool $index
+     * @return mixed
+     */
     public function tmpName($index = false)
     {
-        if($index === false)
+        if ($index === false) {
             return $this->upload['tmp_name'];
+        }
         return $this->upload['tmp_name'][$index];
     }
+
+    /**
+     * TODO
+     *
+     * @param bool $index
+     * @return mixed
+     */
     public function contentType($index = false)
     {
-        if($index === false)
+        if ($index === false) {
             return $this->upload['type'];
+        }
         return $this->upload['type'][$index];
     }
 
+    /**
+     * TODO
+     *
+     * @param bool $index
+     * @return bool
+     */
     public function isEmpty($index = false)
     {
-        return $this->error($index) == 4;
+        return $this->error($index) === 4;
     }
 
+    /**
+     * TODO
+     *
+     * @param bool $index
+     * @return bool
+     */
     public function isSuccess($index = false)
     {
-        return $this->error($index) == 0;
+        return $this->error($index) === 0;
     }
 
+    /**
+     * TODO
+     *
+     * @param bool $index
+     * @return string
+     */
     public function url($index = false)
     {
-        return "http://" . $_SERVER['HTTP_HOST'] . "/" . $this->getFilename($index);
+        return 'http://' . $_SERVER['HTTP_HOST'] . '/' . $this->getFilename($index);
     }
-
 }

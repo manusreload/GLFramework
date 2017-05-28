@@ -26,10 +26,18 @@
 
 namespace GLFramework\Mail;
 
-
+/**
+ * Class Mail
+ *
+ * @package GLFramework\Mail
+ */
 class Mail extends MailSystem
 {
-
+    /**
+     * TODO
+     *
+     * @return \Swift_MailTransport
+     */
     public function getTransport()
     {
         // TODO: Implement getTransport() method.

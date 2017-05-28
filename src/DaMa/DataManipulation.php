@@ -26,9 +26,6 @@
 
 namespace GLFramework\DaMa;
 
-use GLFramework\DaMa\Manipulators\CSVManipulator;
-use GLFramework\DaMa\Manipulators\XLSManipulator;
-use GLFramework\DaMa\Manipulators\XLSXManipulator;
 use GLFramework\Filesystem;
 
 define('DATA_MANIPULATION_CREATE_MODE_AUTO', 0);
@@ -37,23 +34,44 @@ define('DATA_MANIPULATION_CREATE_MODE_XLS', 2);
 define('DATA_MANIPULATION_CREATE_MODE_XLSX', 3);
 define('DATA_MANIPULATION_CREATE_MODE_ODS', 4);
 
+/**
+ * Class DataManipulation
+ *
+ * @package GLFramework\DaMa
+ */
 class DataManipulation
 {
+    /**
+     * TODO
+     *
+     * @param $file
+     * @param $original
+     * @return string
+     */
     public function rename_extension($file, $original)
     {
         $name = $file . $this->getFileExtension($original);
         rename($file, $name);
         return $name;
-
     }
 
+    /**
+     * TODO
+     *
+     * @param $file
+     * @return string
+     */
     public function getFileExtension($file)
     {
-        return strtolower(substr($file, strrpos($file, ".")));
+        return strtolower(substr($file, strrpos($file, '.')));
     }
+
     /**
+     * TODO
+     *
      * @param $file
      * @param int $mode
+     * @param null $extension
      * @return Manipulator
      */
     public function createFromFile($file, $mode = DATA_MANIPULATION_CREATE_MODE_AUTO, $extension = null)
@@ -62,13 +80,21 @@ class DataManipulation
         $manipulator->setFileInput($file, $mode, $extension);
         return $manipulator;
     }
+
+    /**
+     * TODO
+     *
+     * @param $upload
+     * @param bool $store
+     * @return Manipulator
+     */
     public function createFromUpload($upload, $store = false)
     {
         $manipulator = new Manipulator();
-        $manipulator->setFileInput($upload['tmp_name'], DATA_MANIPULATION_CREATE_MODE_AUTO, $this->getFileExtension($upload['name']));
-        if($store)
-        {
-            $fs = new Filesystem($upload['name'] . "_".date("d-m-Y_H-i-s"), "uploads/" . $store);
+        $manipulator->setFileInput($upload['tmp_name'], DATA_MANIPULATION_CREATE_MODE_AUTO,
+            $this->getFileExtension($upload['name']));
+        if ($store) {
+            $fs = new Filesystem($upload['name'] . '_' . date('d-m-Y_H-i-s'), 'uploads/' . $store);
             copy($upload['tmp_name'], $fs->getAbsolutePath());
         }
         return $manipulator;

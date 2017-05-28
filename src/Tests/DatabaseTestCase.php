@@ -26,14 +26,18 @@
 
 namespace GLFramework\Tests;
 
-
-use GLFramework\Database\MySQLConnection;
 use GLFramework\DatabaseManager;
 
+/**
+ * Class DatabaseTestCase
+ *
+ * @package GLFramework\Tests
+ */
 class DatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
 {
-
     /**
+     * TODO
+     *
      * @return \PHPUnit_Extensions_Database_DB_IDatabaseConnection
      */
     public function getConnection()
@@ -43,6 +47,13 @@ class DatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
         return $this->createDefaultDBConnection($db->getConnection()->getPDO(), $config['database']['database']);
     }
 
+    /**
+     * TODO
+     *
+     * @param $model
+     * @param $name
+     * @param $value
+     */
     public function fieldEqual($model, $name, $value)
     {
         $this->assertEquals($model->{$name}, $value);

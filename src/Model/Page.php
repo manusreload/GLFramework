@@ -26,58 +26,65 @@
 
 namespace GLFramework\Model;
 
-
 use GLFramework\Controller;
 use GLFramework\Model;
-use GLFramework\ModelResult;
 
+/**
+ * Class Page
+ *
+ * @package GLFramework\Model
+ */
 class Page extends Model
 {
-
     var $id;
     var $controller;
     var $admin;
     var $title;
     var $description;
 
-    protected $table_name = "page";
+    protected $table_name = 'page';
     protected $definition = array(
         'index' => 'id',
         'fields' => array(
-            'controller' => "varchar(255)",
-            'title' => "varchar(64)",
-            'description' => "varchar(255)",
-            'admin' => "int(11)",
+            'controller' => 'varchar(255)',
+            'title' => 'varchar(64)',
+            'description' => 'varchar(255)',
+            'admin' => 'int(11)',
         )
     );
 
-
     /**
-     * @param $controller Controller|string
-     * @return ModelResult
+     * Alias de getByController
+     * TODO: Eliminar
      */
     public function get_by_controller($controller)
     {
+        return $this->getByController($controller);
+    }
 
-        if(!is_string($controller))
-        {
+    public function getByController($controller)
+    {
+        if (!is_string($controller)) {
             $name = get_class($controller);
-        }
-        else
-        {
+        } else {
             $name = $controller;
         }
         return $this->get(array('controller' => $name));
     }
 
+    /**
+     * TODO
+     *
+     * @param $controller
+     */
     public function generate($controller)
     {
-        if(!$controller instanceof Controller)
-            $controller = new $controller("", null);
+        if (!$controller instanceof Controller) {
+            $controller = new $controller('', null);
+        }
         $this->controller = get_class($controller);
         $this->admin = $controller->admin;
         $this->title = $controller->name;
         $this->description = $controller->description;
     }
-
 }

@@ -8,10 +8,19 @@
 
 namespace GLFramework\Media;
 
-
+/**
+ * Class JavascriptMedia
+ *
+ * @package GLFramework\Media
+ */
 class JavascriptMedia extends Media
 {
-
+    /**
+     * TODO
+     *
+     * @param $src
+     * @return string
+     */
     protected function get($src)
     {
         // TODO: Implement get() method.

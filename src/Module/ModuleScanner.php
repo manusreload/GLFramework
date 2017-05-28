@@ -8,47 +8,53 @@
 
 namespace GLFramework\Module;
 
-
 use GLFramework\Bootstrap;
 
+/**
+ * Class ModuleScanner
+ *
+ * @package GLFramework\Module
+ */
 class ModuleScanner
 {
-
+    /**
+     * TODO
+     *
+     * @param $base
+     * @return array
+     */
     public function scan($base)
     {
         $list = array();
         $this->recursive($base, $list);
         $modules = array();
-        foreach ($list as $moduleConfig)
-        {
+        foreach ($list as $moduleConfig) {
             $folder = dirname($moduleConfig);
-            $config = Bootstrap::loadConfig($folder, "config.yml");
+            $config = Bootstrap::loadConfig($folder, 'config.yml');
             $module = new Module($config, $folder);
-            if($module->title && !$module->test)
-            {
+            if ($module->title && !$module->test) {
                 $modules[] = $module;
             }
         }
         return $modules;
     }
 
-
+    /**
+     * TODO
+     *
+     * @param $path
+     * @param array $list
+     */
     public function recursive($path, &$list = array())
     {
         $files = scandir($path);
-        foreach ($files as $file)
-        {
-            if($file != "." && $file != "..")
-            {
-                $filename = $path . "/" . $file;
-                if(is_dir($filename))
-                {
+        foreach ($files as $file) {
+            if ($file !== '.' && $file !== '..') {
+                $filename = $path . '/' . $file;
+                if (is_dir($filename)) {
                     $this->recursive($filename, $list);
-                }
-                else
-                {
-                    if($file == "config.yml")
-                    {
+                } else {
+                    if ($file === 'config.yml') {
                         $list[] = $filename;
                     }
                 }

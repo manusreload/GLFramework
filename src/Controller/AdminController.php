@@ -26,9 +26,12 @@
 
 namespace GLFramework\Controller;
 
-
+/**
+ * Class AdminController
+ *
+ * @package GLFramework\Controller
+ */
 class AdminController extends AuthController
 {
-
 
 }

@@ -26,17 +26,23 @@
 
 namespace GLFramework;
 
-
+/**
+ * Class Response
+ *
+ * @package GLFramework
+ */
 class Response
 {
     private $content;
     private $uri;
-    private $contentType = "text/html";
+    private $contentType = 'text/html';
     private $redirection = null;
     private $ajax;
     private $responseCode = 200;
+
     /**
      * Obtener el contenid de la respuesta
+     *
      * @return mixed
      */
     public function getContent()
@@ -46,6 +52,7 @@ class Response
 
     /**
      * Establecer el contenido de la respuesta
+     *
      * @param mixed $content
      */
     public function setContent($content)
@@ -55,6 +62,7 @@ class Response
 
     /**
      * Obtener el tipo de contenido de la respuesta
+     *
      * @return string
      */
     public function getContentType()
@@ -64,6 +72,7 @@ class Response
 
     /**
      * Establece el tipo de contenido de la respuesta
+     *
      * @param string $contentType
      */
     public function setContentType($contentType)
@@ -73,6 +82,7 @@ class Response
 
     /**
      * Obtiene la url de la redireccion
+     *
      * @return mixed
      */
     public function getRedirection()
@@ -82,6 +92,7 @@ class Response
 
     /**
      * Establece la URI de la redireccion
+     *
      * @param mixed $redirection
      */
     public function setRedirection($redirection)
@@ -95,14 +106,20 @@ class Response
     public function display()
     {
         \http_response_code($this->getResponseCode());
-        if($this->contentType) header("Content-Type: " . $this->contentType);
-//        header("Content-Length: " . strlen($this->content));
-        if($this->redirection) header("Location: " . $this->redirection);
+        if ($this->contentType) {
+            header('Content-Type: ' . $this->contentType);
+        }
+        //        header('Content-Length: ' . strlen($this->content));
+        if ($this->redirection) {
+            header('Location: ' . $this->redirection);
+        }
         Events::dispatch('beforeResponseSend', array($this));
         print $this->content;
     }
 
     /**
+     * TODO
+     *
      * true si la respueta tiene una redireccion
      * @return bool
      */
@@ -112,16 +129,8 @@ class Response
     }
 
     /**
-     * Establecer la URI de respuesta
-     * @param $url
-     */
-    public function setUri($url)
-    {
-        $this->uri = $url;
-    }
-
-    /**
      * Obtener la URI de la respuesta
+     *
      * @return mixed
      */
     public function getUri()
@@ -130,7 +139,18 @@ class Response
     }
 
     /**
+     * Establecer la URI de respuesta
+     *
+     * @param $url
+     */
+    public function setUri($url)
+    {
+        $this->uri = $url;
+    }
+
+    /**
      * Devuelve el estado de AJAX
+     *
      * @return mixed
      */
     public function getAjax()
@@ -140,6 +160,7 @@ class Response
 
     /**
      * Establece el estado de AJAX
+     *
      * @param mixed $ajax
      */
     public function setAjax($ajax)
@@ -149,6 +170,7 @@ class Response
 
     /**
      * Obtener el codigo de respuesta HTTP
+     *
      * @return int
      */
     public function getResponseCode()
@@ -158,14 +180,11 @@ class Response
 
     /**
      * Establece el codigo de respuesta HTTP
+     *
      * @param int $responseCode
      */
     public function setResponseCode($responseCode)
     {
         $this->responseCode = $responseCode;
     }
-
-    
-
-
 }

@@ -17,9 +17,7 @@ namespace GLFramework\Module;
 class ModuleSettings
 {
     public $key;
-
     public $description;
     public $type;
     public $default;
-
 }

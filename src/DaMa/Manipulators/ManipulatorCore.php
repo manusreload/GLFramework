@@ -26,16 +26,35 @@
 
 namespace GLFramework\DaMa\Manipulators;
 
-
+/**
+ * Class ManipulatorCore
+ *
+ * @package GLFramework\DaMa\Manipulators
+ */
 abstract class ManipulatorCore
 {
-
+    /**
+     * TODO
+     *
+     * @param $file
+     * @param array $config
+     * @return mixed
+     */
     abstract public function open($file, $config = array());
+
+    /**
+     * TODO
+     *
+     * @return mixed
+     */
     abstract public function next();
 
+    /**
+     * TODO
+     *
+     * @param $index
+     */
     public function setSheet($index)
     {
-
     }
-
 }

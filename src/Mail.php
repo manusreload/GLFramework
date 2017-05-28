@@ -28,45 +28,45 @@ namespace GLFramework;
 
 use TijsVerkoyen\CssToInlineStyles\CssToInlineStyles;
 
+/**
+ * Class Mail
+ *
+ * @package GLFramework
+ */
 class Mail
 {
-
     private static $mailer;
+    public $config;
     private $from;
     private $fromName;
-    public $config;
 
     /**
      * Mail constructor.
+     *
      * @param $from
      * @param $fromName
      * @param null $config
      */
     public function __construct($from = null, $fromName = null, $config = null)
     {
-        if(!$config)
+        if (!$config) {
             $config = Bootstrap::getSingleton()->getConfig();
+        }
         $this->config = $config;
 
-        if(!$from) $from = $this->config['mail']['from']['email'];
-        if(!$fromName) $fromName = $this->config['mail']['from']['title'];
+        if (!$from) {
+            $from = $this->config['mail']['from']['email'];
+        }
+        if (!$fromName) {
+            $fromName = $this->config['mail']['from']['title'];
+        }
         $this->from = $from;
         $this->fromName = $fromName;
     }
 
-
-    private function getCss($cssFiles = array())
-    {
-        $css = "";
-        foreach($cssFiles as $file)
-        {
-            if(file_exists($file)) $css .= file_get_contents($file) . "\n";
-        }
-        return $css;
-    }
-
     /**
      * Genera una vista del email compatible con clientes de correo
+     *
      * @param $controller
      * @param $template
      * @param $data
@@ -85,38 +85,22 @@ class Mail
     }
 
     /**
-     * @return Mail\MailSystem.php
-     */
-    private function getMailSystem()
-    {
-        if(isset($this->config['mail']))
-        {
-            if(isset($this->config['mail']['mailsystem']))
-            {
-                $system = $this->config['mail']['mailsystem'];
-                $class = "GLPlanning/Mail/$system";
-                if(class_exists($class)) return new $class($this->config);
-            }
-        }
-        return new Mail\Mail($this->config);
-    }
-
-    /**
      * Este transporte se genera mediante la configuración
+     *
      * @return \Swift_Transport
      */
     public function getTransport()
     {
-        if(!self::$mailer)
-        {
+        if (!self::$mailer) {
             self::$mailer = $this->getMailSystem()->getTransport();
-            Events::dispatch('onMailTransport', array( 'transport' => self::$mailer ));
+            Events::dispatch('onMailTransport', array('transport' => self::$mailer));
         }
         return self::$mailer;
     }
 
     /**
      * Envia el email a los contactos pasados a $to
+     *
      * @param $to
      * @param $subject
      * @param $message
@@ -128,14 +112,15 @@ class Mail
     {
         $transport = $this->getTransport();
 
-        $mail = new \Swift_Message($subject, $message, "text/html", "UTF-8");
+        $mail = new \Swift_Message($subject, $message, 'text/html', 'UTF-8');
         $mail->setFrom($this->from, $this->fromName);
         $mail->setTo($to);
         $mail->setCc($cc);
-        foreach ($attachments as $key => $attachment)
-        {
+        foreach ($attachments as $key => $attachment) {
             $atta = \Swift_Attachment::fromPath($attachment);
-            if(!is_int($key)) $atta->setFilename($key);
+            if (!is_int($key)) {
+                $atta->setFilename($key);
+            }
             $mail->attach($atta);
         }
 
@@ -143,6 +128,8 @@ class Mail
     }
 
     /**
+     * TODO
+     *
      * @param $to
      * @param $subject
      * @param $message
@@ -150,20 +137,61 @@ class Mail
      */
     public function build($to, $subject, $message)
     {
-        $mail = new \Swift_Message($subject, $message, "text/html", "UTF-8");
+        $mail = new \Swift_Message($subject, $message, 'text/html', 'UTF-8');
         $mail->setFrom($this->from, $this->fromName);
         $mail->setTo($to);
         return $mail;
     }
 
     /**
+     * TODO
+     *
      * @param $mail \Swift_Message
      * @return int
      */
     public function done($mail)
     {
         $transport = $this->getTransport();
-        Events::dispatch('onEmail', array( 'emails' => $mail->getTo(), 'subject' => $mail->getSubject(), 'message' => $mail->getBody(), 'transport' => $transport));
+        Events::dispatch('onEmail', array(
+            'emails' => $mail->getTo(),
+            'subject' => $mail->getSubject(),
+            'message' => $mail->getBody(),
+            'transport' => $transport
+        ));
         return $transport->send($mail);
+    }
+
+    /**
+     * TODO
+     *
+     * @param array $cssFiles
+     * @return string
+     */
+    private function getCss($cssFiles = array())
+    {
+        $css = '';
+        foreach ($cssFiles as $file) {
+            if (file_exists($file)) {
+                $css .= file_get_contents($file) . "\n";
+            }
+        }
+        return $css;
+    }
+
+    /**
+     * TODO
+     *
+     * @return Mail\MailSystem.php
+     */
+    private function getMailSystem()
+    {
+        if (isset($this->config['mail']) && isset($this->config['mail']['mailsystem'])) {
+            $system = $this->config['mail']['mailsystem'];
+            $class = 'GLPlanning/Mail/' . $system;
+            if (class_exists($class)) {
+                return new $class($this->config);
+            }
+        }
+        return new Mail\Mail($this->config);
     }
 }

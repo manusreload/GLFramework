@@ -26,9 +26,13 @@
 
 namespace GLFramework\DaMa;
 
-
 use GLFramework\Model;
 
+/**
+ * Class Association
+ *
+ * @package GLFramework\DaMa
+ */
 class Association
 {
     public $nameInFile = array();
@@ -47,13 +51,18 @@ class Association
     public $nameInManipulator = false;
 
     /**
+     * TODO
+     *
      * @return mixed
      */
     public function getNameInFile()
     {
         return $this->nameInFile;
     }
+
     /**
+     * TODO
+     *
      * @return mixed
      */
     public function getFirstNameInFile()
@@ -62,6 +71,8 @@ class Association
     }
 
     /**
+     * TODO
+     *
      * @param mixed $nameInFile
      * @return $this
      */
@@ -72,6 +83,8 @@ class Association
     }
 
     /**
+     * TODO
+     *
      * @return mixed
      */
     public function getNameInModel()
@@ -80,6 +93,8 @@ class Association
     }
 
     /**
+     * TODO
+     *
      * @param mixed $nameInModel
      * @return $this
      */
@@ -90,6 +105,8 @@ class Association
     }
 
     /**
+     * TODO
+     *
      * @param mixed $nameInManipulator
      * @return $this
      */
@@ -99,6 +116,12 @@ class Association
         return $this;
     }
 
+    /**
+     * TODO
+     *
+     * @param $value
+     * @return $this
+     */
     public function setDefaultValue($value)
     {
         $this->defaultValue = $value;
@@ -106,6 +129,8 @@ class Association
     }
 
     /**
+     * TODO
+     *
      * @return null
      */
     public function getParser()
@@ -114,6 +139,8 @@ class Association
     }
 
     /**
+     * TODO
+     *
      * @param null $parser
      * @return $this
      */
@@ -123,8 +150,99 @@ class Association
         return $this;
     }
 
+    /**
+     * TODO
+     *
+     * @return bool
+     */
+    public function isConstant()
+    {
+        return $this->constant;
+    }
 
     /**
+     * TODO
+     *
+     * @param $constant
+     * @return $this
+     */
+    public function setConstant($constant)
+    {
+        $this->constant = $constant;
+        return $this;
+    }
+
+    /**
+     * TODO
+     *
+     * @param $manipulator
+     * @return $this
+     */
+    public function setManipulator($manipulator)
+    {
+        $this->manipulator = $manipulator;
+        return $this;
+    }
+
+    /**
+     * TODO
+     *
+     * @param $model Model
+     * @param $row
+     * @return bool
+     */
+    public function fill($model, $row)
+    {
+        if ($this->constant === false) {
+            foreach ($this->nameInFile as $subkey) {
+                if (isset($this->defaultValue) && $this->defaultValue !== null) {
+                    $model->{$this->nameInModel} = $this->defaultValue;
+                }
+                if (isset($row[$subkey])) {
+                    $model->{$this->nameInModel} = $this->parse($row[$subkey], $row);
+                    return true;
+                }
+            }
+        } else {
+            $model->{$this->nameInModel} = $this->constant;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * TODO
+     *
+     * @param $value
+     * @param $row
+     * @return mixed
+     */
+    public function parse($value, $row)
+    {
+        if ($this->parser != null) {
+            return call_user_func($this->parser, $value, $row);
+        }
+        return $value;
+    }
+
+    /**
+     * TODO
+     *
+     * @param $value
+     * @param $row
+     * @return mixed
+     */
+    public function getManipulatorParser($value, $row)
+    {
+        if ($this->manipulatorParser != null) {
+            return call_user_func($this->manipulatorParser, $value, $row);
+        }
+        return $value;
+    }
+
+    /**
+     * TODO
+     *
      * @param null $manipulatorParser
      * @return $this
      */
@@ -134,95 +252,34 @@ class Association
         return $this;
     }
 
-
-
     /**
-     * @return boolean
-     */
-    public function isConstant()
-    {
-        return $this->constant;
-    }
-
-    /**
-     * @param boolean $constant
+     * TODO
+     *
      * @return $this
      */
-    public function setConstant($constant)
-    {
-        $this->constant = $constant;
-        return $this;
-    }
-
-    public function setManipulator($manipulator)
-    {
-        $this->manipulator = $manipulator;
-        return $this;
-    }
-
-    /**
-     * @param $model Model
-     * @param $row
-     * @return bool
-     */
-    public function fill($model, $row)
-    {
-        if($this->constant === FALSE)
-        {
-            foreach($this->nameInFile as $subkey)
-            {
-                if(isset($this->defaultValue) && $this->defaultValue !== NULL)
-                {
-                    $model->{$this->nameInModel} = $this->defaultValue;
-                }
-                if(isset($row[$subkey]))
-                {
-                    $model->{$this->nameInModel} = $this->parse($row[$subkey], $row);
-                    return true;
-                }
-            }
-        }
-        else
-        {
-            $model->{$this->nameInModel} = $this->constant;
-            return true;
-        }
-        return false;
-    }
-
-    public function parse($value, $row)
-    {
-        if($this->parser != null)
-        {
-            return call_user_func($this->parser, $value, $row);
-        }
-        return $value;
-    }
-
-    /**
-     * @param $value
-     * @param $row
-     * @return null
-     */
-    public function getManipulatorParser($value, $row)
-    {
-        if($this->manipulatorParser != null)
-        {
-            return call_user_func($this->manipulatorParser, $value, $row);
-        }
-        return $value;
-    }
     public function index()
     {
         $this->index = true;
         return $this;
     }
+
+    /**
+     * TODO
+     *
+     * @return $this
+     */
     public function required()
     {
         $this->required = true;
         return $this;
     }
 
+    /**
+     * TODO
+     *
+     * @param $callable
+     * @return $this
+     */
     public function filter($callable)
     {
         $this->filterObject = $callable;
@@ -230,6 +287,8 @@ class Association
     }
 
     /**
+     * TODO
+     *
      * @param $model Model
      * @param $field
      * @return mixed

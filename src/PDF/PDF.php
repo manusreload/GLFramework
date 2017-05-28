@@ -8,17 +8,19 @@
 
 namespace GLFramework\PDF;
 
-
-use GLFramework\Response;
 use GLFramework\View;
 
-define("PDF_ORIENTATION_VERTICAL", "P");
-define("PDF_ORIENTATION_HORIZONTAL", "L");
+define('PDF_ORIENTATION_VERTICAL', 'P');
+define('PDF_ORIENTATION_HORIZONTAL', 'L');
 define('K_TCPDF_THROW_EXCEPTION_ERROR', true);
+
+/**
+ * Class PDF
+ *
+ * @package GLFramework\PDF
+ */
 class PDF
 {
-
-
     /**
      * @var \TCPDF
      */
@@ -28,18 +30,31 @@ class PDF
      * PDF constructor.
      * @param string $orientation
      */
-    public function __construct($orientation = "P")
+    public function __construct($orientation = 'P')
     {
         $this->pdf = new \TCPDF($orientation, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $this->pdf->SetFont('helvetica', '', 10);
     }
 
+    /**
+     * TODO
+     *
+     * @param $url
+     */
     public function image($url)
     {
         list($width, $height) = getimagesize($url);
         $this->pdf->Image($url, '', '', 100);
-
     }
+
+    /**
+     * TODO
+     *
+     * @param $controller
+     * @param $template
+     * @param array $data
+     * @return array|string
+     */
     public function render($controller, $template, $data = array())
     {
         $view = new View($controller);
@@ -49,19 +64,46 @@ class PDF
         return $data;
     }
 
+    /**
+     * TODO
+     *
+     * @param null $title
+     * @return mixed
+     */
     public function sendAsPDF($title = null)
     {
         return $this->output($title, 'I');
     }
+
+    /**
+     * TODO
+     *
+     * @param null $title
+     * @return mixed
+     */
     public function sendAsDownload($title = null)
     {
         return $this->output($title, 'D');
     }
+
+    /**
+     * TODO
+     *
+     * @param $file
+     * @return mixed
+     */
     public function saveToFile($file)
     {
         return $this->output($file, 'F');
     }
 
+    /**
+     * TODO
+     *
+     * @param $name
+     * @param $type
+     * @return mixed
+     */
     public function output($name, $type)
     {
         return $this->pdf->Output($name, $type);

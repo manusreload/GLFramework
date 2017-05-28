@@ -26,9 +26,12 @@
 
 namespace GLFramework;
 
-
+/**
+ * Class MailView
+ *
+ * @package GLFramework
+ */
 class MailView
 {
-
     private $twig;
 }

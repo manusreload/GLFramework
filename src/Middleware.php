@@ -26,9 +26,20 @@
 
 namespace GLFramework;
 
-
+/**
+ * Interface Middleware
+ *
+ * @package GLFramework
+ */
 interface Middleware
 {
-
+    /**
+     * TODO
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param $next
+     * @return mixed
+     */
     public function next(Request $request, Response $response, $next);
 }

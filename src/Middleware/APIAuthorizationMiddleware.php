@@ -26,19 +26,27 @@
 
 namespace GLFramework\Middleware;
 
-
-use GLFramework\Events;
 use GLFramework\Middleware;
 use GLFramework\Request;
 use GLFramework\Response;
 
+/**
+ * Class APIAuthorizationMiddlewar
+ * e
+ * @package GLFramework\Middleware
+ */
 class APIAuthorizationMiddleware implements Middleware
 {
-
+    /**
+     * TODO
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param $next
+     */
     public function next(Request $request, Response $response, $next)
     {
-        $response->setContentType("text/json");
+        $response->setContentType('text/json');
         $next($request, $response);
-        
     }
 }

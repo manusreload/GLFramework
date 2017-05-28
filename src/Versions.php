@@ -26,25 +26,45 @@
 
 namespace GLFramework;
 
-
+/**
+ * Class Versions
+ *
+ * @package GLFramework
+ */
 class Versions
 {
-    private $filename = "versions.json";
+    private $filename = 'versions.json';
+
+    /**
+     * TODO
+     *
+     * @return mixed
+     */
     public function getVersions()
     {
         return json_decode(file_get_contents($this->filename));
     }
 
+    /**
+     * TODO
+     *
+     * @return mixed
+     */
     public function getLastVersion()
     {
         $versions = $this->getVersions();
         return $versions[0];
     }
 
+    /**
+     * TODO
+     *
+     * @param int $index
+     * @return mixed
+     */
     public function getVersion($index = 0)
     {
         $versions = $this->getVersions();
         return $versions[$index];
     }
-
 }

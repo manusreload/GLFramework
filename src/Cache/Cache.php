@@ -26,15 +26,52 @@
 
 namespace GLFramework\Cache;
 
-
+/**
+ * Class Cache
+ *
+ * @package GLFramework\Cache
+ */
 abstract class Cache
 {
-
+    /**
+     * TODO
+     *
+     * @param array $config
+     * @return mixed
+     */
     abstract public function connect($config = array());
+
+    /**
+     * TODO
+     *
+     * @param $key
+     * @param $value
+     * @param null $duration
+     * @return mixed
+     */
     abstract public function set($key, $value, $duration = null);
+
+    /**
+     * TODO
+     *
+     * @param $key
+     * @return mixed
+     */
     abstract public function get($key);
+
+    /**
+     * TODO
+     *
+     * @param $key
+     * @return mixed
+     */
     abstract public function hash($key);
+
+    /**
+     * TODO
+     *
+     * @param $key
+     * @return mixed
+     */
     abstract public function remove($key);
-
-
 }

@@ -26,7 +26,10 @@
 
 namespace GLFramework\Mail;
 
-
+/**
+ * Class MailSystem
+ * @package GLFramework\Mail
+ */
 abstract class MailSystem
 {
     protected $config = array();
@@ -43,6 +46,5 @@ abstract class MailSystem
     /**
      * @return \Swift_Transport
      */
-    public abstract function getTransport();
-
+    abstract public function getTransport();
 }

@@ -26,7 +26,11 @@
 
 namespace GLFramework;
 
-
+/**
+ * Class Request
+ *
+ * @package GLFramework
+ */
 class Request
 {
 
@@ -36,19 +40,20 @@ class Request
 
     /**
      * Request constructor.
-     * @param $params
+     *
      * @param $method
      * @param $uri
      */
     public function __construct($method, $uri)
     {
-//        $this->params = $params;
+        //        $this->params = $params;
         $this->method = $method;
         $this->uri = $uri;
     }
 
     /**
      * Obtiene los parametros de peticion
+     *
      * @return mixed
      */
     public function getParams()
@@ -58,6 +63,7 @@ class Request
 
     /**
      * Establecer los parametros de peticion
+     *
      * @param mixed $params
      */
     public function setParams($params)
@@ -67,6 +73,7 @@ class Request
 
     /**
      * Obtiene el metodo de peticion
+     *
      * @return mixed
      */
     public function getMethod()
@@ -76,6 +83,7 @@ class Request
 
     /**
      * Establece el metodo de la meticion (GET, POST, PUT ...)
+     *
      * @param mixed $method
      */
     public function setMethod($method)
@@ -85,6 +93,7 @@ class Request
 
     /**
      * Obtiene la url de la peticion
+     *
      * @return mixed
      */
     public function getUri()
@@ -94,6 +103,7 @@ class Request
 
     /**
      * Establecer la url de la peticion
+     *
      * @param mixed $uri
      */
     public function setUri($uri)
@@ -103,15 +113,14 @@ class Request
 
     /**
      * Obtiene las cabeceras de la petición
+     *
      * @return string
      */
     public function getHeaders()
     {
         $headers = '';
-        foreach ($_SERVER as $name => $value)
-        {
-            if (substr($name, 0, 5) == 'HTTP_')
-            {
+        foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) === 'HTTP_') {
                 $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
             }
         }
@@ -120,6 +129,7 @@ class Request
 
     /**
      * Obtiene el header indicado
+     *
      * @param $name
      * @return mixed
      */
@@ -129,10 +139,13 @@ class Request
         return $headers[$name];
     }
 
+    /**
+     * TODO
+     *
+     * @return bool
+     */
     public function isAjax()
     {
-        return strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == "xmlhttprequest";
+        return strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
     }
-
-
 }

@@ -8,10 +8,19 @@
 
 namespace GLFramework\DaMa;
 
-
+/**
+ * Interface IFilter
+ *
+ * @package GLFramework\DaMa
+ */
 interface IFilter
 {
-
+    /**
+     * TODO
+     *
+     * @param $model
+     * @return mixed
+     */
     public function filter($model);
 
 }

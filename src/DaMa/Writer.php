@@ -8,11 +8,15 @@
 
 namespace GLFramework\DaMa;
 
-
 use GLFramework\DaMa\Writers\WriterBase;
 use GLFramework\Model;
 use GLFramework\ModelResult;
 
+/**
+ * Class Writer
+ *
+ * @package GLFramework\DaMa
+ */
 class Writer
 {
     /**
@@ -23,7 +27,7 @@ class Writer
      * @var WriterBase
      */
     private $writer;
-    
+
     private $associations = array();
     private $parsers = array();
 
@@ -34,7 +38,9 @@ class Writer
 
     /**
      * Writer constructor.
-     * @param \GLFramework\Model[]|ModelResult $models
+     *
+     * Writer constructor.
+     * @param $models
      */
     public function __construct($models)
     {
@@ -43,25 +49,37 @@ class Writer
 
 
     /**
+     * TODO
+     *
      * @return \GLFramework\Model[]
      */
     public function getModels()
     {
-       if($this->models instanceof ModelResult)
-       {
-           return $this->models->getModels();
-       }
+        if ($this->models instanceof ModelResult) {
+            return $this->models->getModels();
+        }
         return $this->models;
     }
 
+    /**
+     * TODO
+     *
+     * @param $list
+     */
     public function addModels($list)
     {
-        foreach ($list as $item)
-        {
+        foreach ($list as $item) {
             $this->models[] = $item;
         }
     }
-    
+
+    /**
+     * TODO
+     *
+     * @param $nameInModel
+     * @param $nameInFile
+     * @param null $fn
+     */
     public function field($nameInModel, $nameInFile, $fn = null)
     {
         $association = new Association();
@@ -69,24 +87,28 @@ class Writer
         $association->addNameInFile($nameInFile);
         $association->setParser($fn);
         $this->associations[$nameInModel] = $association;
-
     }
 
     /**
+     * TODO
+     *
      * @param $writer WriterBase
      */
     public function setWriter($writer)
     {
         $this->writer = $writer;
     }
-    
+
+    /**
+     * TODO
+     *
+     * @param $output
+     */
     public function exec($output)
     {
         $this->writer->open($output);
-        foreach ($this->models as $model)
-        {
-            if($this->filter == false || $this->filter->filter($model))
-            {
+        foreach ($this->models as $model) {
+            if ($this->filter === false || $this->filter->filter($model)) {
                 $this->writer->write($model, $this->associations);
             }
         }
@@ -94,13 +116,12 @@ class Writer
     }
 
     /**
+     * TODO
+     *
      * @param bool|IFilter $filter IFilter
      */
     public function setFilter($filter = false)
     {
         $this->filter = $filter;
     }
-    
-    
-
 }

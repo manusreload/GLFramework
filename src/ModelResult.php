@@ -28,7 +28,11 @@ namespace GLFramework;
 
 use Traversable;
 
-
+/**
+ * Class ModelResult
+ *
+ * @package GLFramework
+ */
 class ModelResult implements \IteratorAggregate
 {
     var $model_class;
@@ -38,6 +42,7 @@ class ModelResult implements \IteratorAggregate
 
     /**
      * ModelResult constructor.
+     *
      * @param $model_class
      * @param array $models
      */
@@ -45,15 +50,16 @@ class ModelResult implements \IteratorAggregate
     {
         $this->reflection = new \ReflectionClass($model_class);
         $this->model_class = $model_class;
-        if(!empty($models))
-        {
+        if (!empty($models)) {
             $this->models = $models;
             $this->model = $models[0];
         }
     }
+
     /**
      * Obtiene el primer modelo disponible
-     * @return Model
+     *
+     * @return object
      */
     public function getModel()
     {
@@ -61,6 +67,8 @@ class ModelResult implements \IteratorAggregate
     }
 
     /**
+     * TODO
+     *
      * @param null $size
      * @return Model[]
      * @deprecated
@@ -68,23 +76,15 @@ class ModelResult implements \IteratorAggregate
     public function getModelsInstanced($size = null)
     {
         $instances = array();
-        if($size === null)
-        {
-            foreach($this->models as $model)
-            {
+        if ($size === null) {
+            foreach ($this->models as $model) {
                 $instances[] = $this->reflection->newInstance($model);
             }
-        }
-        else
-        {
-            for($i = 0; $i < $size; $i++)
-            {
-                if(isset($this->models[$i]))
-                {
+        } else {
+            for ($i = 0; $i < $size; $i++) {
+                if (isset($this->models[$i])) {
                     $instances[] = $this->reflection->newInstance($this->models[$i]);
-                }
-                else
-                {
+                } else {
                     $instances[] = $this->reflection->newInstance();
                 }
             }
@@ -94,6 +94,7 @@ class ModelResult implements \IteratorAggregate
 
     /**
      * Obtener una lista con los modelos disponibles
+     *
      * @param null $size
      * @return Model[]
      */
@@ -104,13 +105,13 @@ class ModelResult implements \IteratorAggregate
 
     /**
      * Obtiene el modelo en la posicion $count
+     *
      * @param $count
      * @return null
      */
     public function offset($count)
     {
-        if(count($this->models) < $count)
-        {
+        if (count($this->models) < $count) {
             return $this->models[$count];
         }
         return null;
@@ -118,6 +119,7 @@ class ModelResult implements \IteratorAggregate
 
     /**
      * Devuelve el numero de elementos devueltos
+     *
      * @return int
      */
     public function count()
@@ -127,12 +129,12 @@ class ModelResult implements \IteratorAggregate
 
     /**
      * Obtiene el ultimo modelo de la lista
+     *
      * @return Model|null
      */
     public function last()
     {
-        if($this->count())
-        {
+        if ($this->count()) {
             $models = $this->getModels();
             return $models[$this->count() - 1];
         }
@@ -141,6 +143,7 @@ class ModelResult implements \IteratorAggregate
 
     /**
      * Genera una array lista para usar con json_encode
+     *
      * @param array $fields
      * @param bool $recursive
      * @return array
@@ -148,8 +151,7 @@ class ModelResult implements \IteratorAggregate
     public function json($fields = array(), $recursive = true)
     {
         $list = array();
-        foreach($this->getModels() as $model)
-        {
+        foreach ($this->getModels() as $model) {
             $list[] = $model->json($fields, $recursive);
         }
         return $list;
@@ -157,6 +159,7 @@ class ModelResult implements \IteratorAggregate
 
     /**
      * Devuelve la lista al reves
+     *
      * @param null $size
      * @return array
      */
@@ -167,20 +170,25 @@ class ModelResult implements \IteratorAggregate
 
     /**
      * Ordena de menor a mayor en funcion del campo indicado
+     *
      * @param $field
      * @param bool $desc
      * @return $this
      */
     public function order($field, $desc = false)
     {
-        usort($this->models, function($a, $b) use($field)
-        {
-            if((int) ($a[$field]) == $a[$field]) return $a[$field] - $b[$field];
-            if(is_string($a[$field])) return strcmp($a[$field], $b[$field]);
+        usort($this->models, function ($a, $b) use ($field) {
+            if ((int)$a[$field] === $a[$field]) {
+                return $a[$field] - $b[$field];
+            }
+            if (is_string($a[$field])) {
+                return strcmp($a[$field], $b[$field]);
+            }
             return $a[$field] - $b[$field];
-
         });
-        if($desc) $this->models = array_reverse($this->models);
+        if ($desc) {
+            $this->models = array_reverse($this->models);
+        }
         return $this;
     }
 
@@ -193,10 +201,12 @@ class ModelResult implements \IteratorAggregate
      */
     public function getIterator()
     {
-        return new \ArrayIterator( $this->getModels());
+        return new \ArrayIterator($this->getModels());
     }
 
     /**
+     * TODO
+     *
      * @param $length
      * @param null $start
      * @return ModelResult
@@ -206,36 +216,62 @@ class ModelResult implements \IteratorAggregate
         return new ModelResult($this->model_class, array_slice($this->models, $start, $length));
     }
 
+    /**
+     * TODO
+     */
     public function delete()
     {
-        foreach ($this->getModels() as $model)
-        {
+        foreach ($this->getModels() as $model) {
             $model->delete();
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param $items
+     * @return ModelResult
+     */
     public function copy($items)
     {
         return new ModelResult($this->model_class, $items);
     }
 
+    /**
+     * TODO
+     *
+     * @param ModelResult $modelResult
+     * @return $this
+     */
     public function join(ModelResult $modelResult)
     {
-        foreach ($modelResult->models as $model)
-        {
+        foreach ($modelResult->models as $model) {
             $this->models[] = $model;
         }
 
         return $this;
-
     }
 
+    /**
+     * TODO
+     *
+     * @param $model
+     */
     public function append($model)
     {
-        $this->models[] = (array) $model;
-        if(count($this->models) == 1) $this->model = $this->models[0];
+        $this->models[] = (array)$model;
+        if (count($this->models) === 1) {
+            $this->model = $this->models[0];
+        }
     }
 
+    /**
+     * TODO
+     *
+     * @param $page
+     * @param $pageSize
+     * @return ModelResult
+     */
     public function paginate($page, $pageSize)
     {
         $start = $page * $pageSize;
@@ -243,6 +279,8 @@ class ModelResult implements \IteratorAggregate
     }
 
     /**
+     * TODO
+     *
      * @param $callback
      * @return ModelResult
      */
@@ -250,6 +288,5 @@ class ModelResult implements \IteratorAggregate
     {
         $filter = array_filter($this->models, $callback);
         return new ModelResult($this->model_class, $filter);
-
     }
 }

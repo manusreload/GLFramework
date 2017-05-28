@@ -23,18 +23,77 @@
  * Date: 24/02/16
  * Time: 10:35
  */
+
 namespace GLFramework\Database;
 
+/**
+ * Class Connection
+ *
+ * @package GLFramework\Database
+ */
 abstract class Connection
 {
+    /**
+     * TODO
+     *
+     * @param $hostname
+     * @param $username
+     * @param $password
+     * @return mixed
+     */
     abstract public function connect($hostname, $username, $password);
+
+    /**
+     * TODO
+     *
+     * @param $database
+     * @return mixed
+     */
     abstract public function select_database($database);
+
+    /**
+     * TODO
+     *
+     * @param $value
+     * @return mixed
+     */
     abstract public function escape_string($value);
+
+    /**
+     * TODO
+     *
+     * @param $query
+     * @param array $arguments
+     * @param bool $returnArray
+     * @return mixed
+     */
     abstract public function select($query, $arguments = array(), $returnArray = true);
+
+    /**
+     * TODO
+     *
+     * @return mixed
+     */
     abstract public function getLastInsertId();
+
+    /**
+     * TODO
+     *
+     * @return mixed
+     */
     abstract public function getLastError();
+
+    /**
+     * TODO
+     *
+     * @return mixed
+     */
     abstract public function getPDO();
+
+    /**
+     * TODO
+     *
+     * @return mixed
+     */
     abstract public function disconnect();
-
-
 }

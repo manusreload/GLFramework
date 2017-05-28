@@ -26,7 +26,11 @@
 
 namespace GLFramework\Cache;
 
-
+/**
+ * Class MemcachedCache
+ *
+ * @package GLFramework\Cache
+ */
 class MemcachedCache extends Cache
 {
 
@@ -35,52 +39,79 @@ class MemcachedCache extends Cache
      */
     private $conn;
     private $connected = false;
+
+    /**
+     * TODO
+     *
+     * @param $key
+     * @param $value
+     * @param null $duration
+     * @return bool
+     */
     public function set($key, $value, $duration = null)
     {
         // TODO: Implement set() method.
-        if($this->connected)
-        {
+        if ($this->connected) {
             return $this->conn->set($key, $value, null, $duration);
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param $key
+     * @return array|string
+     */
     public function get($key)
     {
         // TODO: Implement get() method.
-        if($this->connected)
-        {
+        if ($this->connected) {
             return $this->conn->get($key);
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param $key
+     * @return bool
+     */
     public function hash($key)
     {
         // TODO: Implement hash() method.
-        if($this->connected)
-        {
+        if ($this->connected) {
             return $this->get($key) != null;
         }
         return false;
     }
 
+    /**
+     * TODO
+     *
+     * @param $key
+     * @return bool
+     */
     public function remove($key)
     {
         // TODO: Implement remove() method.
-        if($this->connected)
-        {
+        if ($this->connected) {
             return $this->conn->delete($key);
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param array $config
+     * @return bool
+     */
     public function connect($config = array())
     {
         // TODO: Implement connect() method.
-        if(isset($config['database']['cache']))
-        {
+        if (isset($config['database']['cache'])) {
             $configCache = $config['database']['cache'];
             $this->conn = new \Memcache();
-            if($this->conn->connect($configCache['host'], $configCache['port'], $configCache['timeout']))
-            {
+            if ($this->conn->connect($configCache['host'], $configCache['port'], $configCache['timeout'])) {
                 $this->connected = true;
                 return true;
             }

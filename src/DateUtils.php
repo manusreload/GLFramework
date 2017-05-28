@@ -8,11 +8,19 @@
 
 namespace GLFramework;
 
-
+/**
+ * Class DateUtils
+ *
+ * @package GLFramework
+ */
 class DateUtils
 {
-
-
+    /**
+     * TODO
+     *
+     * @param $date
+     * @param null $range
+     */
     public function parse($date, $range = null)
     {
         $tests = array(
@@ -24,29 +32,39 @@ class DateUtils
                 )
             )
         );
-        foreach ($tests as $item)
-        {
+        foreach ($tests as $item) {
             $pattern = $item['pattern'];
             $tries = $item['try'];
-            if(!isset($tries[0])) $tries = array($tries);
-            if(preg_match($item, $date, $matches))
-            {
-                foreach ($tries as $try)
-                {
+            if (!isset($tries[0])) {
+                $tries = array($tries);
+            }
+            if (preg_match($item, $date, $matches)) {
+                foreach ($tries as $try) {
                     $valid = $this->build($matches, $try);
-//                    if($va)
+                    //                    if($va)
                 }
             }
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param $matches
+     * @param $assoc
+     */
     private function build($matches, $assoc)
     {
-
     }
 
+    /**
+     * TODO
+     *
+     * @param $date
+     * @return bool
+     */
     private function isValid($date)
     {
-        return strtotime($date) != 0;
+        return strtotime($date) !== 0;
     }
 }

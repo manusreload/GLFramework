@@ -8,15 +8,19 @@
 
 namespace GLFramework\Image;
 
-
+/**
+ * Class ImageProcessing
+ *
+ * @package GLFramework\Image
+ */
 class ImageProcessing
 {
-
     private $file;
     private $image;
 
     /**
      * ImageProcessing constructor.
+     *
      * @param $file
      */
     public function __construct($file)
@@ -24,10 +28,15 @@ class ImageProcessing
         $this->file = $file;
     }
 
-    public function open($type = "image/jpeg")
+    /**
+     * TODO
+     *
+     * @param string $type
+     * @return null|resource
+     */
+    public function open($type = 'image/jpeg')
     {
-        switch ($type)
-        {
+        switch ($type) {
             case 'image/jpeg':
                 $image = imagecreatefromjpeg($this->file);
                 break;
@@ -43,24 +52,31 @@ class ImageProcessing
         return $this->image = $image;
     }
 
-
-    public function resize_image($w, $h, $crop=FALSE) {
+    /**
+     * TODO
+     *
+     * @param $w
+     * @param $h
+     * @param bool $crop
+     */
+    public function resize_image($w, $h, $crop = false)
+    {
         list($width, $height) = getimagesize($this->file);
         $r = $width / $height;
         if ($crop) {
             if ($width > $height) {
-                $width = ceil($width-($width*abs($r-$w/$h)));
+                $width = ceil($width - ($width * abs($r - $w / $h)));
             } else {
-                $height = ceil($height-($height*abs($r-$w/$h)));
+                $height = ceil($height - ($height * abs($r - $w / $h)));
             }
             $newwidth = $w;
             $newheight = $h;
         } else {
-            if ($w/$h > $r) {
-                $newwidth = $h*$r;
+            if ($w / $h > $r) {
+                $newwidth = $h * $r;
                 $newheight = $h;
             } else {
-                $newheight = $w/$r;
+                $newheight = $w / $r;
                 $newwidth = $w;
             }
         }
@@ -69,10 +85,14 @@ class ImageProcessing
         $this->image = $dst;
     }
 
+    /**
+     * TODO
+     *
+     * @param $file
+     * @return bool
+     */
     public function save($file)
     {
         return imagepng($this->image, $file);
     }
-
-
 }

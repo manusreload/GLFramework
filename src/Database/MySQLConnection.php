@@ -26,11 +26,15 @@
 
 namespace GLFramework\Database;
 
-
 use DebugBar\DataCollector\PDO\TraceablePDOStatement;
 use GLFramework\Events;
 use TijsVerkoyen\CssToInlineStyles\Exception;
 
+/**
+ * Class MySQLConnection
+ *
+ * @package GLFramework\Database
+ */
 class MySQLConnection extends Connection
 {
 
@@ -42,97 +46,138 @@ class MySQLConnection extends Connection
      * @var \PDO
      */
     private $pdo;
+
+    /**
+     * TODO
+     *
+     * @param $hostname
+     * @param $username
+     * @param $password
+     * @return bool
+     */
     public function connect($hostname, $username, $password)
     {
-        try{
+        try {
             $this->pdo = new \PDO('mysql:host=' . $hostname . ';', $username, $password);
             $result = Events::dispatch('onPDOCreated', array(&$this->pdo));
-            if($this->pdo->errorCode() == 0)
-            {
-                $this->pdo->exec("SET NAMES utf8");
-                $this->pdo->exec("SET sql_mode = \"\"");
+            if ($this->pdo->errorCode() === 0) {
+                $this->pdo->exec('SET NAMES utf8');
+                $this->pdo->exec('SET sql_mode = \'\'');
                 return true;
             }
-        }catch(\Exception $ex)
-        {
+        } catch (\Exception $ex) {
             Events::dispatch('onException', $ex);
         }
         return false;
     }
 
+    /**
+     * TODO
+     *
+     * @param $database
+     * @return bool
+     */
     public function select_database($database)
     {
-//        try{
+        //        try{
 
-            if($this->pdo)
-            {
-                if($this->pdo->exec("USE " . $database) !== FALSE)
-                    return true;
+        if ($this->pdo) {
+            if ($this->pdo->exec('USE ' . $database) !== false) {
+                return true;
             }
-//        }catch(\Exception $ex)
-//        {
-//            new Exception($this->getLastError());
-//        }
+        }
+        //        }catch(\Exception $ex)
+        //        {
+        //            new Exception($this->getLastError());
+        //        }
         return false;
     }
 
+    /**
+     * TODO
+     *
+     * @param $value
+     * @return bool|string
+     */
     public function escape_string($value)
     {
-        if($this->pdo)
-        {
+        if ($this->pdo) {
             return substr($this->pdo->quote($value), 1, -1);
         }
         return $value;
     }
 
+    /**
+     * TODO
+     *
+     * @param $query
+     * @param array $args
+     * @param bool $returnArray
+     * @return array|bool
+     * @throws \Exception
+     */
     public function select($query, $args = array(), $returnArray = true)
     {
-        if(!GL_INSTALL)
-        {
+        if (!GL_INSTALL) {
             $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        }
-        else{
+        } else {
             $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING);
-
         }
         $stmt = $this->pdo->prepare($query);
         $result = $stmt->execute($args);
-        $list = array();
+        //$list = array();
         if ($result) {
-            if($returnArray)
-            {
+            if ($returnArray) {
                 return $stmt->fetchAll();
             }
             return true;
         } else {
-//            if($this->getLastError())
-                throw new \Exception($query . "\n" . $this->getLastError());
+            //            if($this->getLastError())
+            throw new \Exception($query . "\n" . $this->getLastError());
         }
     }
 
+    /**
+     * TODO
+     *
+     * @return string
+     */
     public function getLastInsertId()
     {
         return $this->pdo->lastInsertId();
     }
 
+    /**
+     * TODO
+     *
+     * @return mixed
+     */
     public function getLastError()
     {
         $error = $this->pdo->errorInfo();
-        if($error[1])
+        if ($error[1]) {
             print_debug($error);
+        }
         return $error[2];
     }
 
+    /**
+     * TODO
+     *
+     * @return \PDO
+     */
     public function getPDO()
     {
         return $this->pdo;
     }
 
+    /**
+     * TODO
+     */
     public function disconnect()
     {
         // TODO: Implement disconnect() method.
-        if($this->pdo)
-        {
+        if ($this->pdo) {
             $this->pdo = null;
         }
     }

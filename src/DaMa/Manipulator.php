@@ -26,15 +26,17 @@
 
 namespace GLFramework\DaMa;
 
-
-use GLFramework\Controller;
 use GLFramework\DaMa\Manipulators\CSVManipulator;
 use GLFramework\DaMa\Manipulators\ManipulatorCore;
 use GLFramework\DaMa\Manipulators\XLSManipulator;
 use GLFramework\DaMa\Manipulators\XLSXManipulator;
 use GLFramework\Log;
-use GLFramework\Model;
 
+/**
+ * Class Manipulator
+ *
+ * @package GLFramework\DaMa
+ */
 class Manipulator
 {
 
@@ -53,11 +55,20 @@ class Manipulator
     private $result = array();
 
     private $callback;
+
+    /**
+     * TODO
+     *
+     * @param $callback
+     */
     public function setParseCallback($callback)
     {
         $this->callback = $callback;
     }
+
     /**
+     * TODO
+     *
      * @return mixed
      */
     public function getFilename()
@@ -66,7 +77,9 @@ class Manipulator
     }
 
     /**
-     * @param mixed $filename
+     * TODO
+     *
+     * @param $filename
      * @return $this
      */
     public function setFilename($filename)
@@ -76,6 +89,8 @@ class Manipulator
     }
 
     /**
+     * TODO
+     *
      * @return ManipulatorCore
      */
     public function getCore()
@@ -84,7 +99,9 @@ class Manipulator
     }
 
     /**
-     * @param ManipulatorCore $core
+     * TODO
+     *
+     * @param $core
      * @return $this
      */
     public function setCore($core)
@@ -92,20 +109,32 @@ class Manipulator
         $this->core = $core;
         return $this;
     }
+
+    /**
+     * TODO
+     *
+     * @param $modelName
+     * @return $this
+     */
     public function model($modelName)
     {
         $this->modelName = $modelName;
         return $this;
     }
 
+    /**
+     * TODO
+     *
+     * @param $nameInFile
+     * @param $nameInModel
+     * @param null $fn
+     * @return Association|null
+     */
     public function field($nameInFile, $nameInModel, $fn = null)
     {
-        if($association = $this->getAssociation($nameInModel))
-        {
+        if ($association = $this->getAssociation($nameInModel)) {
             $association->addNameInFile($nameInFile);
-        }
-        else
-        {
+        } else {
             $association = new Association();
             $association->addNameInFile($nameInFile);
             $association->setNameInModel($nameInModel);
@@ -116,29 +145,17 @@ class Manipulator
     }
 
     /**
+     * TODO
+     *
      * @param $nameInModel
+     * @param $value
      * @return Association|null
      */
-    private function getAssociation($nameInModel)
-    {
-        foreach($this->association as $association)
-        {
-            if($association->getNameInModel() == $nameInModel)
-            {
-                return $association;
-            }
-        }
-        return null;
-    }
-
     public function constant($nameInModel, $value)
     {
-        if($association = $this->getAssociation($nameInModel))
-        {
+        if ($association = $this->getAssociation($nameInModel)) {
             $association->setConstant($value);
-        }
-        else
-        {
+        } else {
             $association = new Association();
             $association->setNameInModel($nameInModel);
             $association->setConstant($value);
@@ -146,14 +163,19 @@ class Manipulator
         }
         return $association;
     }
+
+    /**
+     * TODO
+     *
+     * @param $nameInModel
+     * @param $def
+     * @return Association|null
+     */
     public function defaultValue($nameInModel, $def)
     {
-        if($association = $this->getAssociation($nameInModel))
-        {
+        if ($association = $this->getAssociation($nameInModel)) {
             $association->setDefaultValue($def);
-        }
-        else
-        {
+        } else {
             $association = new Association();
             $association->setNameInModel($nameInModel);
             $association->setDefaultValue($def);
@@ -162,15 +184,20 @@ class Manipulator
         return $association;
     }
 
+    /**
+     * TODO
+     *
+     * @param $manipulator
+     * @param $nameInModel
+     * @param $nameInManipulator
+     * @param null $fn
+     */
     public function manipulator($manipulator, $nameInModel, $nameInManipulator, $fn = null)
     {
-        if($association = $this->getAssociation($nameInModel))
-        {
+        if ($association = $this->getAssociation($nameInModel)) {
             $association->setManipulator($manipulator);
             $association->setNameInManipulator($nameInManipulator);
-        }
-        else
-        {
+        } else {
             $association = new Association();
             $association->setManipulator($manipulator);
             $association->setNameInModel($nameInModel);
@@ -180,18 +207,23 @@ class Manipulator
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param $index
+     */
     public function sheet($index)
     {
         $this->currentSheet = $index;
     }
 
-    private function init($config = array())
-    {
-        $this->getCore()->open($this->getFilename(), $config);
-        if($this->currentSheet !== null)
-            $this->getCore()->setSheet($this->currentSheet);
-    }
-
+    /**
+     * TODO
+     *
+     * @param array $config
+     * @param array $models
+     * @return bool|int
+     */
     public function exec($config = array(), &$models = array())
     {
         $this->result = array();
@@ -201,30 +233,21 @@ class Manipulator
         $offset = $config['start'];
         $size = $config['size'];
         $total = 0;
-        if($header = $this->getCore()->next())
-        {
+        if ($header = $this->getCore()->next()) {
             $this->current++;
-            while($next = $this->getCore()->next())
-            {
-                if($offset && $size)
-                {
-                    if($total >= $offset && $total < ($offset + $size))
-                    {
+            while ($next = $this->getCore()->next()) {
+                if ($offset && $size) {
+                    if ($total >= $offset && $total < ($offset + $size)) {
                         $total++;
-                    }
-                    else
-                    {
+                    } else {
                         continue;
                     }
                 }
-                if(implode("", $next) != "")
-                {
+                if (implode('', $next) !== '') {
                     $modelSource = null;
                     $model = $this->build($header, $next, $modelSource);
-                    if($model && $model->valid() && $model->save(true))
-                    {
-                        if($this->callback)
-                        {
+                    if ($model && $model->valid() && $model->save(true)) {
+                        if ($this->callback) {
                             call_user_func($this->callback, $model, $modelSource);
                         }
                         $models[] = $model;
@@ -240,94 +263,95 @@ class Manipulator
         return false;
     }
 
+    /**
+     * TODO
+     *
+     * @return mixed
+     */
     function getNext()
     {
-        $item =  $this->getCore()->next();
+        $item = $this->getCore()->next();
         return $item;
     }
+
     /**
-     * @param $controller Controller
+     * TODO
+     *
+     * @param $controller
      * @param array $config
      * @param array $models
-     * @return bool|int
+     * @param int $max
+     * @return bool|string
      */
     public function preview($controller, $config = array(), &$models = array(), $max = 0)
     {
         $this->result = array();
         $this->current = 0;
-        $buffer = "";
+        $buffer = '';
         $count = 0;
         $this->init($config);
-        if($header = $this->getNext())
-        {
+        if ($header = $this->getNext()) {
             $this->current++;
             $buffer .= "<table class='table table-bordered'>";
-            while($next = $this->getNext())
-            {
-                if(implode("", $next) != "")
-                {
+            while ($next = $this->getNext()) {
+                if (implode('', $next) !== '') {
                     $model = $this->build($header, $next);
 
-                    if($model && $model->valid())
-                    {
-                        if($count == 0)
-                        {
-                            $buffer .= "<tr>";
-                            foreach ($model->getFields() as $item)
-                            {
-                                $buffer .= "<th>$item</th>";
+                    if ($model && $model->valid()) {
+                        if ($count == 0) {
+                            $buffer .= '<tr>';
+                            foreach ($model->getFields() as $item) {
+                                $buffer .= '<th>$item</th>';
                             }
-                            $buffer .= "<th>Actualizar</th>";
-                            $buffer .= "</tr>";
+                            $buffer .= '<th>Actualizar</th>';
+                            $buffer .= '</tr>';
                         }
 
                         $models[] = $model;
                         $this->result[$this->current] = $model;
-                        $buffer .= "<tr>";
-                        foreach ($model->getFields() as $item)
-                        {
+                        $buffer .= '<tr>';
+                        foreach ($model->getFields() as $item) {
                             $buffer .= "<td>{$model->getFieldValue($item)}</td>";
                         }
-                        $buffer .= "<td>" . ($model->exists()?"Si":"No") ."</td>";
-                        $buffer .= "</tr>";
-                        $count ++;
+                        $buffer .= '<td>' . ($model->exists() ? 'Si' : 'No') . '</td>';
+                        $buffer .= '</tr>';
+                        $count++;
                     }
                 }
-                if($max && $count >= $max) break;
+                if ($max && $count >= $max) {
+                    break;
+                }
                 $this->current++;
             }
-            $buffer .= "</table>";
-            $controller->addMessage("Total Items: " . $count, "info");
+            $buffer .= '</table>';
+            $controller->addMessage('Total Items: ' . $count, 'info');
             return $buffer;
         }
-        Log::d("Headers: " . print_r($header, true));
-        $controller->addMessage("Error reading headers!", "danger");
+        Log::d('Headers: ' . print_r($header, true));
+        $controller->addMessage('Error reading headers!', 'danger');
         return false;
     }
 
     /**
+     * TODO
+     *
      * @param $header
      * @param $row
      * @param null $modelSource
-     * @return Model
+     * @return bool
      */
     public function build($header, $row, &$modelSource = null)
     {
         $associative = array();
-        foreach($header as $key => $value)
-        {
+        foreach ($header as $key => $value) {
             $associative[$value] = $row[$key];
         }
         $model = new $this->modelName();
-        foreach($this->association as $association)
-        {
-            if($association->index)
-            {
-                if($association->fill($model, $associative))
-                {
+        foreach ($this->association as $association) {
+            if ($association->index) {
+                if ($association->fill($model, $associative)) {
                     $value = $model->{$association->nameInModel};
-                    if($value && !empty($value))
-                    {
+                    if ($value && !empty($value)) {
                         $result = $model->get(array($association->nameInModel => $value));
                         $model = $result->getModel();
                         $modelSource = $result->getModel();
@@ -337,57 +361,58 @@ class Manipulator
             }
         }
 
-        foreach($this->association as $association)
-        {
+        foreach ($this->association as $association) {
             $association->fill($model, $associative);
         }
-        foreach($this->association as $association)
-        {
-            if($association->required)
-            {
+        foreach ($this->association as $association) {
+            if ($association->required) {
                 $value = $model->{$association->nameInModel};
-                if(empty($value)) return false;
-            }
-        }
-        foreach($this->association as $association)
-        {
-            if($association->filterObject)
-            {
-                if(!call_user_func($association->filterObject, $model))
-                {
+                if (empty($value)) {
                     return false;
                 }
             }
         }
-        foreach($this->association as $association)
-        {
-            if($association->manipulator)
-            {
+        foreach ($this->association as $association) {
+            if ($association->filterObject) {
+                if (!call_user_func($association->filterObject, $model)) {
+                    return false;
+                }
+            }
+        }
+        foreach ($this->association as $association) {
+            if ($association->manipulator) {
                 $current = $association->manipulator->result[$this->current];
-                $model->{$association->nameInModel} = $association->getManipulatorParser($current->{$association->nameInManipulator}, $current);
+                $model->{$association->nameInModel} = $association->getManipulatorParser($current->{$association->nameInManipulator},
+                    $current);
             }
         }
         return $model;
     }
 
+    /**
+     * TODO
+     *
+     * @param int $count
+     * @param array $config
+     */
     public function debug($count = 0, $config = array())
     {
         $tmp = array();
         $list = array();
         $this->init($config);
         $number = $count;
-        if($header = $this->getCore()->next())
-        {
-            while($data = $this->getCore()->next())
-            {
-                if($data == null) break;
+        if ($header = $this->getCore()->next()) {
+            while ($data = $this->getCore()->next()) {
+                if ($data === null) {
+                    break;
+                }
                 $tmp[] = $data;
                 $model = $this->build($header, $data);
                 $number--;
-                if($model)
-                {
-                    if(($count == 0 || $number >= 0) && $model && $model->valid())
+                if ($model) {
+                    if (($count == 0 || $number >= 0) && $model && $model->valid()) {
                         $list[] = $model;
+                    }
                 }
             }
         }
@@ -395,45 +420,99 @@ class Manipulator
     }
 
     /**
+     * TODO
+     *
      * @return DataExample
-     * 
      */
     public function example()
     {
         $example = new DataExample();
-        foreach($this->association as $association)
-        {
-            foreach ($association->nameInFile as $item)
-            {
+        foreach ($this->association as $association) {
+            foreach ($association->nameInFile as $item) {
                 $example->addColumn($association->nameInModel, $item);
             }
         }
         return $example;
     }
 
+    /**
+     * TODO
+     *
+     * @param $file
+     * @param null $extension
+     * @return int
+     */
     public function getModeByFile($file, $extension = null)
     {
-        if(!$extension) $extension = strtolower(substr($file, strrpos($file, ".")));
-        if(strpos($file, ".") !== FALSE)
-        {
-            if($extension == ".csv") return DATA_MANIPULATION_CREATE_MODE_CSV;
-            if($extension == ".xls") return DATA_MANIPULATION_CREATE_MODE_XLS;
-            if($extension == ".xlsx") return DATA_MANIPULATION_CREATE_MODE_XLSX;
-            if($extension == ".ods") return DATA_MANIPULATION_CREATE_MODE_ODS;
+        if (!$extension) {
+            $extension = strtolower(substr($file, strrpos($file, '.')));
+        }
+        if (strpos($file, '.') !== false) {
+            if ($extension === '.csv') {
+                return DATA_MANIPULATION_CREATE_MODE_CSV;
+            }
+            if ($extension === '.xls') {
+                return DATA_MANIPULATION_CREATE_MODE_XLS;
+            }
+            if ($extension === '.xlsx') {
+                return DATA_MANIPULATION_CREATE_MODE_XLSX;
+            }
+            if ($extension === '.ods') {
+                return DATA_MANIPULATION_CREATE_MODE_ODS;
+            }
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param $file
+     * @param int $mode
+     * @param null $extension
+     */
     public function setFileInput($file, $mode = DATA_MANIPULATION_CREATE_MODE_AUTO, $extension = null)
     {
         $this->setFilename($file);
-        if($mode == DATA_MANIPULATION_CREATE_MODE_AUTO)
-        {
+        if ($mode == DATA_MANIPULATION_CREATE_MODE_AUTO) {
             $mode = $this->getModeByFile($file, $extension);
         }
-        if($mode == DATA_MANIPULATION_CREATE_MODE_ODS) $this->setCore(new CSVManipulator());
-        else if($mode == DATA_MANIPULATION_CREATE_MODE_XLS) $this->setCore(new XLSManipulator());
-        else if($mode == DATA_MANIPULATION_CREATE_MODE_XLSX) $this->setCore(new XLSXManipulator());
-        else $this->setCore(new CSVManipulator());
+        if ($mode == DATA_MANIPULATION_CREATE_MODE_ODS) {
+            $this->setCore(new CSVManipulator());
+        } else if ($mode == DATA_MANIPULATION_CREATE_MODE_XLS) {
+            $this->setCore(new XLSManipulator());
+        } else if ($mode == DATA_MANIPULATION_CREATE_MODE_XLSX) {
+            $this->setCore(new XLSXManipulator());
+        } else {
+            $this->setCore(new CSVManipulator());
+        }
     }
 
+    /**
+     * TODO
+     *
+     * @param $nameInModel
+     * @return Association|null
+     */
+    private function getAssociation($nameInModel)
+    {
+        foreach ($this->association as $association) {
+            if ($association->getNameInModel() == $nameInModel) {
+                return $association;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * TODO
+     *
+     * @param array $config
+     */
+    private function init($config = array())
+    {
+        $this->getCore()->open($this->getFilename(), $config);
+        if ($this->currentSheet !== null) {
+            $this->getCore()->setSheet($this->currentSheet);
+        }
+    }
 }

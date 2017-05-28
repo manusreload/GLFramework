@@ -18,6 +18,7 @@
  */
 
 namespace GLFramework\Model;
+
 use GLFramework\Model;
 
 /**
@@ -25,6 +26,12 @@ use GLFramework\Model;
  * User: manus
  * Date: 13/1/16
  * Time: 20:44
+ */
+
+/**
+ * Class User
+ *
+ * @package GLFramework\Model
  */
 class User extends Model
 {
@@ -39,35 +46,52 @@ class User extends Model
     var $disabled;
     var $lastlogin;
 
-    protected $table_name = "user";
+    protected $table_name = 'user';
     protected $definition = array(
         'index' => 'id',
         'fields' => array(
-            'user_name' => "varchar(20)",
-            'password' => "varchar(200)",
-            'privilegios' => "text",
-            'admin' => "int(11)",
-            'nombre' => "text",
-            'email' => "text",
-            'profile_image' => "varchar(256)",
-            'disabled' => "int(1)",
-            'lastlogin' => "datetime",
+            'user_name' => 'varchar(20)',
+            'password' => 'varchar(200)',
+            'privilegios' => 'text',
+            'admin' => 'int(11)',
+            'nombre' => 'text',
+            'email' => 'text',
+            'profile_image' => 'varchar(256)',
+            'disabled' => 'int(1)',
+            'lastlogin' => 'datetime',
         )
     );
 
     protected $hidden = array('password');
 
+    /**
+     * TODO
+     *
+     * @param $user
+     * @param $password
+     * @return mixed
+     */
     public function getByUserPassword($user, $password)
     {
         return $this->db->select_first("SELECT * FROM {$this->table_name} WHERE (user_name = '$user' OR email = '$user') AND password = '$password'");
-
     }
 
+    /**
+     * TODO
+     *
+     * @param $pass
+     * @return string
+     */
     public function encrypt($pass)
     {
         return md5($pass);
     }
 
+    /**
+     * TODO
+     *
+     * @return mixed
+     */
     public function getPages()
     {
         $pages = new Page();
@@ -79,6 +103,12 @@ class User extends Model
         return $this->db->select($sql);
     }
 
+    /**
+     * TODO
+     *
+     * @param $password
+     * @return bool
+     */
     public function validPassword($password)
     {
         return strlen($password) >= 6;

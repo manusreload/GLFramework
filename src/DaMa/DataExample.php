@@ -8,33 +8,45 @@
 
 namespace GLFramework\DaMa;
 
-
+/**
+ * Class DataExample
+ *
+ * @package GLFramework\DaMa
+ */
 class DataExample
 {
 
     public $columns;
 
-
+    /**
+     * TODO
+     *
+     * @param $name
+     * @param $value
+     */
     public function addColumn($name, $value)
     {
         $this->columns[$name][] = $value;
     }
-    
-    public function getAsCSV($file = "php://output")
+
+    /**
+     * TODO
+     *
+     * @param string $file
+     */
+    public function getAsCSV($file = 'php://output')
     {
         $headers = array();
         $values = array();
-        foreach ($this->columns as $key => $item)
-        {
-            foreach ($item as $name)
-            {
+        foreach ($this->columns as $key => $item) {
+            foreach ($item as $name) {
                 $headers[] = $name;
                 $values[] = $key;
             }
         }
-        $fp = fopen($file, "w");
-        fputcsv($fp, $headers, ";");
-        fputcsv($fp, $values, ";");
+        $fp = fopen($file, 'wb');
+        fputcsv($fp, $headers, ';');
+        fputcsv($fp, $values, ';');
         fclose($fp);
     }
 }

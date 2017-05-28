@@ -26,36 +26,56 @@
 
 namespace GLFramework\DaMa\Manipulators;
 
-
+/**
+ * Class CSVManipulator
+ *
+ * @package GLFramework\DaMa\Manipulators
+ */
 class CSVManipulator extends ManipulatorCore
 {
 
     private $handle;
-    private $separator = ";";
+    private $separator = ';';
+
+    /**
+     * TODO
+     *
+     * @param $file
+     * @param array $config
+     */
     public function open($file, $config = array())
     {
         $this->separator = $this->detectSeparator($file);
-        $this->handle = fopen($file, "r");
+        $this->handle = fopen($file, 'rb');
     }
 
+    /**
+     * TODO
+     *
+     * @return array
+     */
     public function next()
     {
-        return fgetcsv($this->handle, null, $this->separator, "\"");
+        return fgetcsv($this->handle, null, $this->separator, '\'');
     }
 
+    /**
+     * TODO
+     *
+     * @param $file
+     * @return mixed
+     */
     private function detectSeparator($file)
     {
-        $matches = array(";", ",", "|", "\t");
-        $handle = fopen($file, "r");
+        $matches = array(';', ',', '|', '\t');
+        $handle = fopen($file, 'rb');
         if ($handle) {
             $minSeparator = $matches[0];
             if (($line = fgets($handle)) !== false) {
                 $minOffset = strlen($line);
-                foreach ($matches as $item)
-                {
+                foreach ($matches as $item) {
                     $i = strpos($line, $item);
-                    if($i !== FALSE && $i < $minOffset)
-                    {
+                    if ($i !== false && $i < $minOffset) {
                         $minOffset = $i;
                         $minSeparator = $item;
                     }

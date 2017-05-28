@@ -8,10 +8,19 @@
 
 namespace GLFramework\Media;
 
-
+/**
+ * Class StylesheetMedia
+ *
+ * @package GLFramework\Media
+ */
 class StylesheetMedia extends Media
 {
-
+    /**
+     * TODO
+     *
+     * @param $src
+     * @return string
+     */
     protected function get($src)
     {
         // TODO: Implement get() method.

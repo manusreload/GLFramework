@@ -8,12 +8,13 @@
 
 namespace GLFramework\Twig;
 
-
+/**
+ * Class Extra
+ *
+ * @package GLFramework\Twig
+ */
 class Extra implements IExtra
 {
-
-
-
     /**
      * @var array Array of TwigFilters
      */
@@ -24,6 +25,7 @@ class Extra implements IExtra
 
     /**
      * Extra constructor.
+     *
      * @param $view
      */
     public function __construct($view)
@@ -31,22 +33,40 @@ class Extra implements IExtra
         $this->view = $view;
     }
 
-
+    /**
+     * TODO
+     *
+     * @param $filter
+     */
     public function addFilter($filter)
     {
         $this->filters[] = $filter;
     }
 
+    /**
+     * TODO
+     *
+     * @param $function
+     */
     public function addFunction($function)
     {
         $this->functions[] = $function;
     }
 
+    /**
+     * TODO
+     *
+     * @param $key
+     * @param $value
+     */
     public function addGlobal($key, $value)
     {
         $this->globals[$key] = $value;
     }
+
     /**
+     * TODO
+     *
      * @return array
      */
     public function getFilters()
@@ -55,6 +75,8 @@ class Extra implements IExtra
     }
 
     /**
+     * TODO
+     *
      * @return array
      */
     public function getFunctions()
@@ -62,6 +84,11 @@ class Extra implements IExtra
         return $this->functions;
     }
 
+    /**
+     * TODO
+     *
+     * @return array
+     */
     public function getGlobals()
     {
         return $this->globals;

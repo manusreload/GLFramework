@@ -26,7 +26,11 @@
 
 namespace GLFramework\Upload;
 
-
+/**
+ * Class Uploads
+ *
+ * @package GLFramework\Upload
+ */
 class Uploads
 {
     var $config;
@@ -35,33 +39,37 @@ class Uploads
 
     /**
      * Uploads constructor.
+     *
+     * @param $dir
      * @param $config
      */
     public function __construct($dir, $config)
     {
         $this->config = $config;
         $this->dir = $dir;
-        if(isset($config['app']['upload']))
-        {
+        $this->folder = 'uploads';
+        if (isset($config['app']['upload'])) {
             $this->folder = $config['app']['upload'];
         }
-        else
-        {
-            $this->folder = "uploads";
-        }
-        if(!is_dir($this->getUploadDir()))
-        {
+
+        if (!is_dir($this->getUploadDir())) {
             mkdir($this->getUploadDir());
         }
-
-    }
-
-    public function getUploadDir()
-    {
-        return $this->folder . "/" . $this->dir;
     }
 
     /**
+     * TODO
+     *
+     * @return string
+     */
+    public function getUploadDir()
+    {
+        return $this->folder . '/' . $this->dir;
+    }
+
+    /**
+     * TODO
+     *
      * @param $name
      * @param null $folder
      * @return Upload
@@ -70,8 +78,4 @@ class Uploads
     {
         return new Upload($this, $_FILES[$name], $folder);
     }
-
-
-
-
 }
