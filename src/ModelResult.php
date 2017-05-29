@@ -59,7 +59,7 @@ class ModelResult implements \IteratorAggregate
     /**
      * Obtiene el primer modelo disponible
      *
-     * @return object
+     * @return Model
      */
     public function getModel()
     {

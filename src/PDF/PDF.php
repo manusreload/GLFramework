@@ -36,6 +36,11 @@ class PDF
         $this->pdf->SetFont('helvetica', '', 10);
     }
 
+    public function setHeader($bool)
+    {
+        $this->pdf->setPrintHeader($bool);
+    }
+
     /**
      * TODO
      *
