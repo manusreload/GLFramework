@@ -57,6 +57,9 @@
                                 {% if setting.type == "string" %}
                                     <input class="form-control" type="text" name="settings[{{ setting.key }}]" value="{{ value }}">
                                 {% endif %}
+                                {% if setting.type == "number" %}
+                                    <input class="form-control" type="number" name="settings[{{ setting.key }}]" value="{{ value }}">
+                                {% endif %}
                                 <small>{{ setting.description }}</small>
                             </div>
                         {% endfor %}

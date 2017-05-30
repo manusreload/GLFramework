@@ -40,6 +40,7 @@ use GLFramework\Module\Module;
 class Debugbar
 {
 
+    private $config;
     private static $instance;
     /**
      * @var \DebugBar\DebugBar
@@ -179,7 +180,8 @@ class Debugbar
         if($response->getAjax() && Bootstrap::isDebug())
         {
             if(!$this->stop)
-                $this->getDebugbar()->sendDataInHeaders();
+                $this->getDebugbar()->sendDataInHeaders(null, 'phpdebugbar', $this->config
+                ['headerSize']?:4096);
         }
     }
 
