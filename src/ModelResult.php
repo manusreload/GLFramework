@@ -178,7 +178,7 @@ class ModelResult implements \IteratorAggregate
     public function order($field, $desc = false)
     {
         usort($this->models, function ($a, $b) use ($field) {
-            if ((int)$a[$field] === $a[$field]) {
+            if ((int)$a[$field] == $a[$field]) {
                 return $a[$field] - $b[$field];
             }
             if (is_string($a[$field])) {
@@ -260,7 +260,7 @@ class ModelResult implements \IteratorAggregate
     public function append($model)
     {
         $this->models[] = (array)$model;
-        if (count($this->models) === 1) {
+        if (count($this->models) > 0) {
             $this->model = $this->models[0];
         }
     }

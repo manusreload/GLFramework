@@ -521,14 +521,28 @@ class Model
     }
 
     /**
-     * TODO
+     * Rellenar los datos desde un array. Si se especifica un indice, se tomara como: { columna1: [valor, valor...], columna2: [valor, valor...] }
      *
      * @param $data
-     * @param string $prefix
-     * @param string $suffix
+     * @param bool $index
      */
-    public function setDataFromArray($data, $prefix = '', $suffix = '')
+    public function setDataFromArray($data, $index = false)
     {
+        if($index !== false)
+        {
+            $fields = $this->getFields();
+            foreach ($fields as $field)
+            {
+                if (isset($data[$field][$index]))
+                {
+                    $this->{$field} = $data[$field][$index];
+                }
+            }
+        }
+        else
+        {
+            $this->setData($data);
+        }
     }
 
     /**

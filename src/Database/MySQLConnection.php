@@ -66,8 +66,9 @@ class MySQLConnection extends Connection
                 return true;
             }
         } catch (\Exception $ex) {
-            print_debug($ex);
+//            print_debug($ex);
             Events::dispatch('onException', $ex);
+//            throw $ex;
         }
         return false;
     }
