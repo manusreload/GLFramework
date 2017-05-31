@@ -8,14 +8,98 @@
 {% block title %}Administracion Internal{% endblock %}
 {% block body %}
 
-    <div>
-        <a class="btn btn-default btn-lg" href="{{ this.getLink('GLFramework\\Modules\\Admin\\users') }}">Adminsitrar usuarios</a>
-        <a class="btn btn-default btn-lg" href="{{ this.getLink('GLFramework\\Modules\\Admin\\modules') }}">Adminsitrar módulos</a>
+    <div class="row dashboard">
+        <div class="col-md-4">
+            <div class="wrapper">
+
+                {% embed "templates/box.twig" with {type: 'info'} %}
+                    {% block title %}Adminsitrar usuarios{% endblock %}
+                    {% block content %}
+                        {% include "dashboard/users.twig" %}
+                    {% endblock %}
+                    {% block footer %}
+                        <a class="pull-right" href="{{ this.getLink('GLFramework\\Modules\\Admin\\users') }}">Adminsitrar usuarios <i class="fa fa-arrow-circle-right"></i></a>
+                        <div class="clearfix"></div>
+                    {% endblock %}
+                {% endembed %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="wrapper">
+            {% embed "templates/box.twig"  with {type: 'warning'} %}
+                {% block title %}Adminsitrar módulos{% endblock %}
+                {% block content %}
+                    {% include "dashboard/modules.twig" %}
+                {% endblock %}
+                {% block footer %}
+                    <a class="pull-right" href="{{ this.getLink('GLFramework\\Modules\\Admin\\modules') }}">Adminsitrar módulos <i class="fa fa-arrow-circle-right"></i></a>
+                    <div class="clearfix"></div>
+
+                {% endblock %}
+            {% endembed %}
+            </div>
+
+        </div>
 
         {% for controller in this.controllers %}
-        <a class="btn btn-default btn-lg" href="{{ this.getLink(controller) }}">{{ controller.title }}</a>
+
+            <div class="col-md-4">
+
+                <div class="wrapper">
+                {% embed "templates/box.twig"  with {type: 'primary'} %}
+                    {% block title %}{{ controller.title }}{% endblock %}
+                    {% block content %}
+                        {{ controller.getDashboardView() | raw }}
+                    {% endblock %}
+                    {% block footer %}
+                        <a class="pull-right" href="{{ this.getLink(controller) }}">{{ controller.title }} <i class="fa fa-arrow-circle-right"></i></a>
+                        <div class="clearfix"></div>
+                    {% endblock %}
+                {% endembed %}
+                </div>
+            </div>
+
         {% endfor %}
+
+        <div class="col-md-4">
+            {% embed "templates/box.twig" with {type: 'danger'} %}
+                {% block title %}Informacion del sistema{% endblock %}
+                {% block content %}
+                    <table class="table">
+                        <tr>
+                            <th>Version</th>
+                            <td>{{ "" }}</td>
+                        </tr>
+                        <tr>
+                            <th>PHP</th>
+                            <td>{{ "" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Extensiones</th>
+                            <td>{{ "" }}</td>
+                        </tr>
+                        <tr>
+                            <th>OS Version</th>
+                            <td>{{ "" }}</td>
+                        </tr>
+                    </table>
+                {% endblock %}
+                {% block footer %}
+                    <a href="https://github.com/manusreload/GLFramework"><i class="fa fa-github"></i> GitHub</a>
+                {% endblock %}
+            {% endembed %}
+        </div>
     </div>
 {% endblock %}
 {% block scripts %}{% endblock %}
-{% block styles %}{% endblock %}
+{% block styles %}
+<style>
+    .dashboard .wrapper
+    {
+        min-height: 200px;
+        margin-top: 0px;
+        padding: 0px;
+    }
+</style>
+
+{% endblock %}

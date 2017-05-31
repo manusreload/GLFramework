@@ -59,6 +59,7 @@ class FrameworkExtras extends Extra
         $this->addFilter(new \Twig_SimpleFilter('number', array($this, 'isNumber')));
         $this->addFilter(new \Twig_SimpleFilter('implode', array($this, 'implode')));
         $this->addFilter(new \Twig_SimpleFilter('icon', array($this, 'icon')));
+        $this->addFilter(new \Twig_SimpleFilter('mes', array($this, 'mes')));
     }
 
     /**
@@ -228,6 +229,12 @@ class FrameworkExtras extends Extra
             'Nombiembre',
             'Diciembre'
         );
+    }
+
+    public function mes($index, $base = 1)
+    {
+        $meses = $this->meses();
+        return $meses[$index - $base];
     }
 
     /**
