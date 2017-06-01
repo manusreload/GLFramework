@@ -51,6 +51,11 @@ class admin extends AuthController
                 }
             }
         }
+        if(isset($_GET['update']))
+        {
+            $code = exec("composer update", $result);
+            $this->addMessage("Resultado: " . $code . " " . implode("\n", $result));
+        }
         
         
     }
