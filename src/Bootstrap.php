@@ -469,15 +469,15 @@ class Bootstrap
   <tbody>
   <tr>
     <th>Error</th>
-    <td><pre>$errstr</pre></td>
+    <td><pre>' . $errstr . '</pre></td>
   </tr>
   <tr>
     <th>Errno</th>
-    <td><pre>$errno</pre></td>
+    <td><pre>' . $errno . '</pre></td>
   </tr>
   <tr>
     <th>File</th>
-    <td>$errfile</td>
+    <td>' . $errfile . '</td>
   </tr>
   <tr>
     <th>Line</th>

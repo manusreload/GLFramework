@@ -734,6 +734,80 @@ class Model
     }
 
     /**
+     * @param array $fields
+     * @param bool $recursive
+     * @param int $limit
+     * @return array
+     */
+    public function export($fields = array(), $recursive = true, $limit = 16)
+    {
+        if ($limit === 0) {
+            return null;
+        }
+        $json = array();
+        if ($url = $this->url()) {
+            $json['url'] = fix_url($url);
+        }
+        if (empty($fields)) {
+            $fields = $this->getFields();
+        }
+        foreach ($fields as $field) {
+            if (!in_array($field, $this->hidden)) {
+                $found = false;
+                $list = array();
+                foreach ($this->models as $item) {
+                    if (isset($item['from']) && $item['from'] === $field) {
+                        $list[] = $item;
+                        $found = true;
+                    }
+                }
+                if ($found || isset($this->models[$field])) {
+                    if ($recursive) {
+                        $modelTransform = $list;
+                        if (!$found) {
+                            $modelTransform = array($this->models[$field]);
+                        }
+                        foreach ($modelTransform as $mt) {
+                            $filter = array();
+                            if (is_array($mt)) {
+                                $name = $mt['name'];
+                                $model = $mt['model'];
+                                $object = new $model();
+                                if (isset($fields[$name])) {
+                                    $filter = $fields[$name];
+                                }
+                                $recursive2 = isset($mt['recursive']) ? $mt['recursive'] : $recursive;
+                                if (isset($mt['field'])) {
+                                    $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))
+                                        ->export($filter, $recursive2, $limit - 1);
+                                } else {
+                                    $item = new $object($this->getFieldValue($field));
+                                    $json[$name] = $item->export($filter, $recursive2, $limit - 1);
+                                }
+                            } else {
+                                $name = $this->underescapeName($mt);
+                                if (isset($fields[$name])) {
+                                    $filter = $fields[$name];
+                                }
+                                $object = new $mt($this->getFieldValue($field));
+                                $json[$name] = $object->json($filter, $recursive, $limit);
+                            }
+                        }
+                    }
+                }
+                $json[$field] = $this->getFieldValue($field);
+            }
+        }
+
+        if ($recursive) {
+            foreach ($this->json_extra as $key => $function) {
+                $json[$key] = call_user_func(array($this, $function));
+            }
+        }
+        return $json;
+    }
+
+    /**
      * Separa las palabras por barras bajas
      *
      * @param $name
