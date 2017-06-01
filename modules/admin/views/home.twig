@@ -67,20 +67,20 @@
                 {% block content %}
                     <table class="table">
                         <tr>
-                            <th>Version</th>
-                            <td>{{ "" }}</td>
+                            <th>Framework Version</th>
+                            <td>{{ this.info.version }}</td>
                         </tr>
                         <tr>
                             <th>PHP</th>
-                            <td>{{ "" }}</td>
+                            <td>{{ this.info.php }}</td>
                         </tr>
                         <tr>
                             <th>Extensiones</th>
-                            <td>{{ "" }}</td>
+                            <td>{{ this.info.extensions }}</td>
                         </tr>
                         <tr>
                             <th>OS Version</th>
-                            <td>{{ "" }}</td>
+                            <td>{{ this.info.server }}</td>
                         </tr>
                     </table>
                 {% endblock %}
