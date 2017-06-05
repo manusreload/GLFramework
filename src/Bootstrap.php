@@ -552,4 +552,11 @@ class Bootstrap
         set_error_handler(array($this, 'fatal_handler'));
         register_shutdown_function(array($this, 'fatal_handler'));
     }
+
+    public function relative($path)
+    {
+        $a = realpath($this->getDirectory());
+        $b = realpath($path);
+        return str_replace($a . "/", $b, "");
+    }
 }
