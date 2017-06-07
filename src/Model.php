@@ -254,6 +254,15 @@ class Model
      */
     public function getCacheId($id)
     {
+        if(is_array($id))
+        {
+            $tmp = "";
+            foreach ($id as $key => $value)
+            {
+                $tmp .= $key . "_" . $value;
+            }
+            $id = $tmp;
+        }
         return $this->table_name . '_' . $id;
     }
 
@@ -285,7 +294,7 @@ class Model
             }
             if (!empty($sql)) {
                 $sql = substr($sql, 0, -5);
-                return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE ' . $sql, $args));
+                return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE ' . $sql, $args, $this->getCacheId($id)));
             }
         }
         return $this->build(array());
