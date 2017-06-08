@@ -111,6 +111,7 @@ class setup extends Controller
             $config['database']['database'] = $_POST['database'];
             try
             {
+                $this->getDb()->disconnect();
                 $this->db_config = new DatabaseManager($config);
                 if(isset($_POST['create_database']))
                 {
@@ -175,7 +176,7 @@ class setup extends Controller
             if($this->saveConfig($config))
             {
                 if($_POST['save']) return true;
-                $mail = new Mail();
+                $mail = new Mail(null, null, $config);
                 $message = $mail->render($this, "mail.twig", array());
                 if($mail->send($_POST['from']['email'], "Email test", $message))
                 {
