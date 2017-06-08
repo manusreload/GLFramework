@@ -110,8 +110,6 @@ class Mail
      */
     public function send($to, $subject, $message, $attachments = array(), $cc = array())
     {
-        $transport = $this->getTransport();
-
         $mail = new \Swift_Message($subject, $message, 'text/html', 'UTF-8');
         $mail->setFrom($this->from, $this->fromName);
         $mail->setTo($to);
@@ -158,7 +156,14 @@ class Mail
             'message' => $mail->getBody(),
             'transport' => $transport
         ));
-        return $transport->send($mail);
+        $logger = new \Swift_Plugins_Loggers_ArrayLogger();
+        $mailer = \Swift_Mailer::newInstance($transport);
+        $mailer->registerPlugin(new \Swift_Plugins_LoggerPlugin($logger));
+        $result = $mailer->send($mail);
+        Log::d("Email");
+        print_debug($logger->dump());
+        Log::d($logger->dump());
+        return $result;
     }
 
     /**
