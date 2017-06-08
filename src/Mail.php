@@ -152,13 +152,15 @@ class Mail
     public function done($mail)
     {
         $transport = $this->getTransport();
+        $mailer = new \Swift_Mailer($transport);
+
         Events::dispatch('onEmail', array(
             'emails' => $mail->getTo(),
             'subject' => $mail->getSubject(),
             'message' => $mail->getBody(),
             'transport' => $transport
         ));
-        $result = $transport->send($mail, $fail);
+        $result = $mailer->send($mail, $fail);
         return $result;
     }
 
