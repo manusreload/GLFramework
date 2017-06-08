@@ -159,9 +159,10 @@ class Mail
         $logger = new \Swift_Plugins_Loggers_ArrayLogger();
         $mailer = \Swift_Mailer::newInstance($transport);
         $mailer->registerPlugin(new \Swift_Plugins_LoggerPlugin($logger));
-        $result = $mailer->send($mail);
+        $result = $mailer->send($mail, $fail);
         Log::d("Email");
         Log::d($logger->dump());
+        Log::d($fail);
         return $result;
     }
 
