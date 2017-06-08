@@ -161,7 +161,6 @@ class Mail
         $mailer->registerPlugin(new \Swift_Plugins_LoggerPlugin($logger));
         $result = $mailer->send($mail);
         Log::d("Email");
-        print_debug($logger->dump());
         Log::d($logger->dump());
         return $result;
     }
