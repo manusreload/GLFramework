@@ -27,7 +27,7 @@
 namespace GLFramework;
 
 use GLFramework\Module\ModuleManager;
-use Symfony\Component\Yaml\Yaml;
+
 define("GL_INTERNAL_MODULES_PATH", realpath(__DIR__ . "/../modules"));
 /**
  * Class Bootstrap

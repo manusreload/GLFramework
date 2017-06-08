@@ -62,14 +62,17 @@ class View
      */
     public function __construct($controller)
     {
+        $config = array();
         $this->controller = $controller;
         $this->directories = ModuleManager::getInstance()->getViews($controller->module);
         $loader = new \Twig_Loader_Filesystem($this->directories);
-        $fs = new Filesystem('twig_cache');
-        $fs->mkdir();
-        $config = array();
-        $config['cache'] = $fs->getAbsolutePath();
-        $this->twig = new \Twig_Environment($loader, array());
+        if($this->getController()->config['app']['twig_cache'])
+        {
+            $fs = new Filesystem('twig_cache');
+            $fs->mkdir();
+            $config['cache'] = $fs->getAbsolutePath();
+        }
+        $this->twig = new \Twig_Environment($loader, $config);
         Events::dispatch('onViewCreated', array(&$this->twig));
         Events::getInstance()->listen('displayScripts', array($this, 'getJavascripts'));
         Events::getInstance()->listen('displayStyle', array($this, 'getStylesheets'));
