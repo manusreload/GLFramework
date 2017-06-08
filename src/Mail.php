@@ -39,6 +39,7 @@ class Mail
     public $config;
     private $from;
     private $fromName;
+    private $logger;
 
     /**
      * Mail constructor.
@@ -92,6 +93,7 @@ class Mail
     public function getTransport()
     {
         if (!self::$mailer) {
+
             self::$mailer = $this->getMailSystem()->getTransport();
             Events::dispatch('onMailTransport', array('transport' => self::$mailer));
         }
@@ -156,13 +158,7 @@ class Mail
             'message' => $mail->getBody(),
             'transport' => $transport
         ));
-        $logger = new \Swift_Plugins_Loggers_ArrayLogger();
-        $mailer = \Swift_Mailer::newInstance($transport);
-        $mailer->registerPlugin(new \Swift_Plugins_LoggerPlugin($logger));
-        $result = $mailer->send($mail, $fail);
-        Log::d("Email");
-        Log::d($logger->dump());
-        Log::d($fail);
+        $result = $transport->send($mail, $fail);
         return $result;
     }
 
@@ -192,7 +188,7 @@ class Mail
     {
         if (isset($this->config['mail']) && isset($this->config['mail']['mailsystem'])) {
             $system = $this->config['mail']['mailsystem'];
-            $class = 'GLPlanning/Mail/' . $system;
+            $class = 'GLFramework\\Mail\\' . $system;
             if (class_exists($class)) {
                 return new $class($this->config);
             }
