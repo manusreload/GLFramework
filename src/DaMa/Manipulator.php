@@ -301,7 +301,7 @@ class Manipulator
                         if ($count == 0) {
                             $buffer .= '<tr>';
                             foreach ($model->getFields() as $item) {
-                                $buffer .= '<th>$item</th>';
+                                $buffer .= "<th>$item</th>";
                             }
                             $buffer .= '<th>Actualizar</th>';
                             $buffer .= '</tr>';
@@ -447,17 +447,17 @@ class Manipulator
         if (!$extension) {
             $extension = strtolower(substr($file, strrpos($file, '.')));
         }
-        if (strpos($file, '.') !== false) {
-            if ($extension === '.csv') {
+        if (strpos($extension, '.') !== false) {
+            if ($extension == '.csv') {
                 return DATA_MANIPULATION_CREATE_MODE_CSV;
             }
-            if ($extension === '.xls') {
+            if ($extension == '.xls') {
                 return DATA_MANIPULATION_CREATE_MODE_XLS;
             }
-            if ($extension === '.xlsx') {
+            if ($extension == '.xlsx') {
                 return DATA_MANIPULATION_CREATE_MODE_XLSX;
             }
-            if ($extension === '.ods') {
+            if ($extension == '.ods') {
                 return DATA_MANIPULATION_CREATE_MODE_ODS;
             }
         }
