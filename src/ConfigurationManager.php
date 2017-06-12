@@ -9,7 +9,7 @@
 namespace GLFramework;
 
 use GLFramework\Module\Module;
-use Symfony\Component\Yaml\Yaml;
+//use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class ConfigurationManager
@@ -61,7 +61,7 @@ class ConfigurationManager
      */
     public function load()
     {
-        return Yaml::parse(file_get_contents($this->filename));
+        return Yaml::parse($this->filename);
     }
 
     /**

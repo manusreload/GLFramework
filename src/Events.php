@@ -130,6 +130,7 @@ class Events
             $this->handlers[$event] = array();
         }
         $this->handlers[$event][] = array('fn' => $fn, 'context' => $context);
+        Log::d("Total events: " . count($this->handlers));
     }
 
     /**

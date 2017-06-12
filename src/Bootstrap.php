@@ -78,7 +78,7 @@ class Bootstrap
         if (!file_exists($filename)) {
             return array();
         }
-        $config = Yaml::parse(file_get_contents($filename));
+        $config = Yaml::parse($filename);
         if (isset($config['include'])) {
             $value = $config['include'];
             if (!is_array($value)) {
@@ -225,7 +225,7 @@ class Bootstrap
     public function overrideConfig($file)
     {
         if (!$this->init) {
-            $config = Yaml::parse(file_get_contents($file));
+            $config = Yaml::parse($file);
             $this->config = array_merge_recursive_ex($this->config, $config);
         } else {
             throw new \Exception('Trying to override configuration after init()');

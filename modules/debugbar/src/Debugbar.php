@@ -255,7 +255,7 @@ class Debugbar
 
     public function errorHandler($errno, $errstr, $errfile, $errline)
     {
-//        $this->errors->addError(new GeneratedError($errstr, $errno, $errfile, $errline));
+        $this->errors->addError(new GeneratedError($errstr, $errno, $errfile, $errline));
     }
 
     /**

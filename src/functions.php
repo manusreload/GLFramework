@@ -761,3 +761,18 @@ function fix_folder($folder)
     }
     return '/' . $folder;
 }
+
+function start_timer($tag = "")
+{
+    return array(
+        'time' => microtime(true),
+        'tag' => $tag
+    );
+}
+
+function stop_timer($t)
+{
+    $tag1 = $t['tag'];
+    $d = microtime(true) - $t['time'];
+    \GLFramework\Log::d("[$tag1] " . $d . " s");
+}
