@@ -1,0 +1,29 @@
+{% embed "templates/box.twig" %}
+    {% block title %}
+        Administracion Mail
+    {% endblock %}
+    {% block content %}
+        <table class="table">
+            <tr>
+                <th>Transporte</th>
+                <td>{{ this.transport }}</td>
+                <th></th>
+                <td></td>
+            </tr>
+            <tr>
+                <th>From</th>
+                <td>{{ this.mail_config.from.email }}</td>
+                <th>Name</th>
+                <td>{{ this.mail_config.from.title }}</td>
+            </tr>
+        </table>
+        <form method="post">
+            <div class="form-group">
+                <label for="exampleInputEmail1">Enviar email de prueba</label>
+                <input type="text" class="form-control" name="email" id="exampleInputEmail1" placeholder="Email">
+            </div>
+            <button type="submit" name="send" class="btn btn-default">Enviar</button>
+        </form>
+    {% endblock %}
+
+{% endembed %}

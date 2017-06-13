@@ -634,15 +634,22 @@ function fix_url($url)
  *
  * @param Exception $ex
  * @param int $i
+ * @return string
  */
-function display_exception(Exception $ex, $i = 1)
+function display_exception(Exception $ex, $i = 1, $output = true)
 {
-    echo '<h3>(' . $i . ') ' . $ex->getMessage() . '</h3> at ' . $ex->getFile() . ':' . $ex->getLine();
-    echo '<pre>' . $ex->getTraceAsString() . '</pre><br>';
+    $data = '';
+    $data .= '<h3>(' . $i . ') ' . $ex->getMessage() . '</h3> at ' . $ex->getFile() . ':' . $ex->getLine();
+    $data .= '<pre>' . $ex->getTraceAsString() . '</pre><br>';
 
-    if ($ex->getPrevious()) {
-        display_exception($ex->getPrevious(), $i + 1);
+    if($output)
+    {
+        echo $data;
     }
+    if ($ex->getPrevious()) {
+        $data .= display_exception($ex->getPrevious(), $i + 1, $output);
+    }
+    return $data;
 }
 
 /**
