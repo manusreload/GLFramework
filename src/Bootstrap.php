@@ -559,4 +559,14 @@ class Bootstrap
         $b = realpath($path);
         return str_replace($a . "/", $b, "");
     }
+
+    /**
+     * @return mixed
+     */
+    public function getStartTime()
+    {
+        return $this->startTime;
+    }
+
+
 }

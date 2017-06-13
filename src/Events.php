@@ -130,7 +130,6 @@ class Events
             $this->handlers[$event] = array();
         }
         $this->handlers[$event][] = array('fn' => $fn, 'context' => $context);
-        Log::d("Total events: " . count($this->handlers));
     }
 
     /**
@@ -142,6 +141,7 @@ class Events
      */
     public function _fire($event, $args = array())
     {
+        Log::d("Event " . $event, array('events'));
         global $context;
         $buffer = array();
         if (!is_array($args)) {
@@ -181,6 +181,7 @@ class Events
      */
     public function _dispatch($event, $args = array())
     {
+        Log::d("Event " . $event, array('events'));
         $eventResult = new Event();
         global $context;
         $buffer = array();

@@ -172,19 +172,21 @@ class Log extends AbstractLogger
     {
         if($this->debugMode)
         {
-            error_log("[$level] " . (is_string($message)?$message:implode(", ", $message)));
+            $time = number_format( microtime(true) - Bootstrap::getSingleton()->getStartTime() );
+            error_log("[$time][$level] " . (is_string($message)?$message:implode(", ", $message)));
         }
         // TODO: Implement log() method.
         if (!in_array('events', $context)) {
             Events::dispatch('onLog', array($message, $level));
-        } else {
-            if ($this->debugMode) {
-                echo '<pre>';
-                echo($level . ' ' . $message . "\n");
-                debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-                echo '</pre>';
-                die();
-            }
         }
+//        else {
+//            if ($this->debugMode) {
+//                echo '<pre>';
+//                echo($level . ' ' . $message . "\n");
+//                debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+//                echo '</pre>';
+//                die();
+//            }
+//        }
     }
 }
