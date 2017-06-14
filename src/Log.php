@@ -172,7 +172,7 @@ class Log extends AbstractLogger
     {
         if($this->debugMode)
         {
-            $time = number_format( microtime(true) - Bootstrap::getSingleton()->getStartTime() );
+            $time = number_format( microtime(true) - Bootstrap::getSingleton()->getStartTime(), 6 );
             error_log("[$time][$level] " . (is_string($message)?$message:implode(", ", $message)));
         }
         // TODO: Implement log() method.
