@@ -6,14 +6,14 @@
  * Time: 12:33
  */
 
-namespace GLFramework;
+namespace GLFramework\Event;
 
 /**
  * Class Event
  *
  * @package GLFramework
  */
-class Event
+class EventResult
 {
     private $result = false;
     private $handlers = array();
@@ -150,7 +150,7 @@ class Event
     /**
      * TODO
      *
-     * @param array $handler
+     * @param Event $handler
      */
     public function addHandler($handler)
     {
@@ -164,18 +164,6 @@ class Event
      */
     public function addResult($item)
     {
-        //        if(!$this->result)
-        //        {
-        //            $this->result = $item;
-        //        }
-        //        else if(!is_array($this->result))
-        //        {
-        //            $this->result = array($this->result, $item);
-        //        }
-        //        else
-        //        {
-        //        }
-
         $this->result[] = $item;
         $this->count++;
     }

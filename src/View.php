@@ -30,6 +30,7 @@ use GLFramework\Media\JavascriptMedia;
 use GLFramework\Media\StylesheetMedia;
 use GLFramework\Module\Module;
 use GLFramework\Module\ModuleManager;
+use GLFramework\Modules\Debugbar\Debugbar;
 use GLFramework\Twig\FrameworkExtras;
 use GLFramework\Twig\IExtra;
 
@@ -94,8 +95,11 @@ class View
                 $this->twig->addFilter($filter);
             }
             $this->twig->addGlobal('params', $params);
-            $template = $this->twig->loadTemplate($this->controller->getTemplate());
-            return $template->render($data ? $data : array());
+            $key = "twig" . microtime(true);
+            Debugbar::timer($key, $this->controller->getTemplate());
+            $template = $this->twig->load($this->controller->getTemplate());
+            $data = $template->render($data ? $data : array());
+            Debugbar::stopTimer($key);
         }
         return $data;
     }

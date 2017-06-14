@@ -376,7 +376,10 @@ class Module
                 }
                 foreach ($listener as $fn) {
                     $context['event'] = $event;
-                    Events::getInstance()->listen($event, instance_method($fn, $context, array($this)), $this);
+                    $context['fn'] = $fn;
+                    $event = Events::getInstance()->listen($event, instance_method($fn, $context, array($this)), $this);
+                    $event->setModule($this->title);
+                    $event->setDefinition($fn);
                 }
             }
         }

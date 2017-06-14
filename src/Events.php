@@ -26,9 +26,10 @@
 
 namespace GLFramework;
 
+use GLFramework\Event\Event;
+use GLFramework\Event\EventResult;
 use GLFramework\Module\Module;
 use GLFramework\Modules\Debugbar\Debugbar;
-use Socket\Raw\Exception;
 
 /**
  * Class Events
@@ -38,6 +39,9 @@ use Socket\Raw\Exception;
 class Events
 {
     private static $instance;
+    /**
+     * @var Event[][]
+     */
     private $handlers = array();
     private $count = 0;
 
@@ -84,7 +88,7 @@ class Events
      *
      * @param $event
      * @param array $args
-     * @return Event
+     * @return EventResult
      */
     public static function dispatch($event, $args = array())
     {
@@ -122,16 +126,19 @@ class Events
      * Se pone a la escucha de un evento, se puede añadir en la configuración del módulo
      *  dentro de *app:listeners*
      *
-     * @param $event
+     * @param $name
      * @param $fn
      * @param array $context
+     * @return Event
      */
-    public function listen($event, $fn, $context = array())
+    public function listen($name, $fn, $context = array())
     {
-        if (!isset($this->handlers[$event])) {
-            $this->handlers[$event] = array();
+        $event = new Event($name, $fn, $context);
+        if (!isset($this->handlers[$name])) {
+            $this->handlers[$name] = array();
         }
-        $this->handlers[$event][] = array('fn' => $fn, 'context' => $context);
+        $this->handlers[$name][] = $event;// array('fn' => $fn, 'context' => $context);
+        return $event;
     }
 
     /**
@@ -179,12 +186,12 @@ class Events
      *
      * @param $event
      * @param array $args
-     * @return Event
+     * @return EventResult
      */
     public function _dispatch($event, $args = array())
     {
         Log::d("Event " . $event, array('events'));
-        $eventResult = new Event();
+        $eventResult = new EventResult();
         global $context;
         $buffer = array();
         if (!is_array($args)) {
@@ -193,20 +200,11 @@ class Events
         if (isset($this->handlers[$event]) && count($this->handlers[$event]) > 0) {
             $handlers = $this->handlers[$event];
             foreach ($handlers as $item) {
-                $tag = get_class($item);
-                $key = "event" . ($this->count++) . $event;
                 $eventResult->addHandler($item);
-                $fn = $item['fn'];
-                $context = $item['context'];
-                Debugbar::timer($key, $event . " " . $tag);
-                if (is_callable($fn)) {
-                    $result = call_user_func_array($fn, $args);
+                $result = $item->run($args);
+                if($result !== false) {
                     $eventResult->addResult($result);
-                } else {
-                    Log::getInstance()
-                       ->error('Can not call event: ' . $event . ' function: ' . function_dump($fn), array('events'));
                 }
-                Debugbar::stopTimer($key);
             }
         }
         return $eventResult;

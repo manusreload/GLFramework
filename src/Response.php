@@ -114,6 +114,7 @@ class Response
             header('Location: ' . $this->redirection);
         }
         Events::dispatch('beforeResponseSend', array($this));
+        session_write_close();
         print $this->content;
     }
 
