@@ -300,7 +300,7 @@ class Debugbar
 
     public static function stopTimer($name)
     {
-        if(self::$instance && self::$instance->time)
+        if(self::$instance && self::$instance->time && self::$instance->time->hasStartedMeasure($name))
             self::$instance->time->stopMeasure($name);
     }
 

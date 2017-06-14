@@ -27,6 +27,7 @@
 namespace GLFramework;
 
 use GLFramework\Module\Module;
+use GLFramework\Modules\Debugbar\Debugbar;
 use Socket\Raw\Exception;
 
 /**
@@ -38,6 +39,7 @@ class Events
 {
     private static $instance;
     private $handlers = array();
+    private $count = 0;
 
     /**
      * Events constructor.
@@ -191,9 +193,12 @@ class Events
         if (isset($this->handlers[$event]) && count($this->handlers[$event]) > 0) {
             $handlers = $this->handlers[$event];
             foreach ($handlers as $item) {
+                $tag = get_class($item);
+                $key = "event" . ($this->count++) . $event;
                 $eventResult->addHandler($item);
                 $fn = $item['fn'];
                 $context = $item['context'];
+                Debugbar::timer($key, $event . " " . $tag);
                 if (is_callable($fn)) {
                     $result = call_user_func_array($fn, $args);
                     $eventResult->addResult($result);
@@ -201,6 +206,7 @@ class Events
                     Log::getInstance()
                        ->error('Can not call event: ' . $event . ' function: ' . function_dump($fn), array('events'));
                 }
+                Debugbar::stopTimer($key);
             }
         }
         return $eventResult;
