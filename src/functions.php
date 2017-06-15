@@ -137,6 +137,12 @@ function fix_date($date)
     return $date;
 }
 
+function fix_datetime($date)
+{
+    $day = fix_date($date);
+    return $day . " " . substr($date, strrpos($date," ") + 1);
+}
+
 /**
  * TODO
  *
@@ -767,6 +773,11 @@ function fix_folder($folder)
         return $folder;
     }
     return '/' . $folder;
+}
+
+function remove_file_extension($file)
+{
+    return substr($file, 0, strrpos($file, "."));
 }
 
 function start_timer($tag = "")

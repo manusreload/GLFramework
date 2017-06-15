@@ -256,8 +256,11 @@ class View
      * @param $view View
      * @return array|string
      */
-    public function getStylesheets($view)
+    public function getStylesheets($view = null)
     {
+        if($view === null) {
+            $view = $this;
+        }
         $result = '';
         foreach ($view->stylesheetMedia as $css) {
             $result .= $css->getBrowserCode() . "\n";
@@ -265,6 +268,24 @@ class View
         $view->stylesheetMedia = array();
         return $result;
     }
+
+    /**
+     * @return JavascriptMedia[]
+     */
+    public function getJavascriptMedia()
+    {
+        return $this->javascriptMedia;
+    }
+
+    /**
+     * @return StylesheetMedia[]
+     */
+    public function getStylesheetMedia()
+    {
+        return $this->stylesheetMedia;
+    }
+
+
 
     /**
      * TODO

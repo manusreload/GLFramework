@@ -1,4 +1,10 @@
+
 RewriteEngine On
-RewriteBase /beta
+RewriteBase /
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*) index.php [NC,L]
+
+<Files "*.yml">
+    Order Allow,Deny
+    Deny from all
+</Files>
