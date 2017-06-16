@@ -27,6 +27,7 @@
 namespace GLFramework\Module;
 
 use GLFramework\Controller;
+use GLFramework\Cron\CronTask;
 use GLFramework\Events;
 use GLFramework\Request;
 use GLFramework\View;
@@ -39,13 +40,18 @@ use GLFramework\View;
 class Module
 {
 
-    var $title;
-    var $description;
-    var $version;
-    var $test;
+    public $title;
+    public $description;
+    public $version;
+    public $test;
     private $config;
     private $directory;
     private $settings = array();
+    /**
+     * Para registrar una tarea en cron, el modulo tiene que definir que ejecutar.
+     * @var array
+     */
+    private $cron = array();
 
     private $controllers = array();
     private $controllers_map = array();
@@ -83,6 +89,16 @@ class Module
                 $moduleSetting->default = $setting['default'];
                 $moduleSetting->key = $name;
                 $this->settings[] = $moduleSetting;
+            }
+        }
+        if (isset($this->config['app']['cron'])) {
+            $cron = $this->config['app']['cron'];
+            if (!is_array($cron)) {
+                $cron = array($cron);
+            }
+
+            foreach ($cron as $title => $fn) {
+                $this->cron[] = new CronTask($this, $title, $fn);
             }
         }
         //        $this->config = array_merge_recursive_ex($this->config, Bootstrap::getSingleton()->getConfig());
