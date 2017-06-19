@@ -42,11 +42,12 @@ class CSVManipulator extends ManipulatorCore
      *
      * @param $file
      * @param array $config
+     * @return bool|mixed|resource
      */
     public function open($file, $config = array())
     {
         $this->separator = $this->detectSeparator($file);
-        $this->handle = fopen($file, 'rb');
+        return $this->handle = fopen($file, 'rb');
     }
 
     /**
@@ -56,7 +57,7 @@ class CSVManipulator extends ManipulatorCore
      */
     public function next()
     {
-        return fgetcsv($this->handle, null, $this->separator, '\'');
+        return fgetcsv($this->handle, null, $this->separator, '"');
     }
 
     /**
