@@ -146,6 +146,30 @@ class Bootstrap
     }
 
     /**
+     * Simple script router
+     * 
+     * @param $directory
+     * @param string $config
+     */
+    public static function router($directory, $config = 'config.yml')
+    {
+        $request = $_SERVER['REQUEST_URI'];
+        $root = $_SERVER['DOCUMENT_ROOT'];
+        $file = $root . $request;
+        if(file_exists($file) && !is_dir($file))
+        {
+            return false;
+        }
+        else
+        {
+            Bootstrap::start($directory, $config);
+            return true;
+        }
+
+    }
+
+
+    /**
      * TODO
      *
      * @return bool|string

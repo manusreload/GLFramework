@@ -248,17 +248,14 @@ class ModuleManager
             $this->mainModule = $module;
             $this->add($module);
             $this->mainModule->init();
-//            $this->mainModule->register_router($this->router);
             $this->mainModule->register_events();
             if (isset($this->config['modules'])) {
                 $this->loadConfig($this->config);
             }
 
             foreach ($this->modules as $module) {
-//                if ($module != $this->mainModule) {
                     $module->init();
                     $module->register_router($this->router);
-//                }
             }
             foreach ($this->modules as $module) {
                 if ($module != $this->mainModule) {
@@ -266,7 +263,9 @@ class ModuleManager
                 }
             }
         } else {
-            throw new \Exception('Can\'t not load the main module!');
+            $file = $this->directory . "/config.yml";
+            throw new \Exception('Can\'t not load the main module! Looking for: \'' . $file . '\'. folder 
+            realpath: ' . realpath($this->directory));
         }
     }
 

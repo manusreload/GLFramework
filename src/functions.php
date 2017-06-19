@@ -780,6 +780,11 @@ function remove_file_extension($file)
     return substr($file, 0, strrpos($file, "."));
 }
 
+function get_file_extension($file)
+{
+    return substr($file, strrpos($file, "."));
+}
+
 function start_timer($tag = "")
 {
     return array(
