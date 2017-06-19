@@ -1,0 +1,58 @@
+{% extends "templates/base.twig" %}
+{# 
+ # Created by PhpStorm.
+ # User: manus
+ # Date: 25/04/16
+ # Time: 10:55
+ #}
+{% block title %}Gestor Cron{% endblock %}
+{% block body %}
+
+    <div class="row">
+        <div class="col-lg-12">
+            {% embed "templates/box.twig" %}
+                {% block title %}
+                    Gestionar tareas programadas
+                {% endblock %}
+                {% block content %}
+                    <a href="/admin" class="btn btn-default"><i class="fa fa-chevron-left"></i> Volver</a>
+                    <div class="pull-right">
+                        <a href="{{ this.getLink(this, {id: "add"}) }}" class="btn btn-success">Nueva Tarea</a>
+                    </div>
+                    <div class="clearfix"></div>
+                    <br>
+                    <div class="alert alert-info">
+                        <b>Ruta Para añadir a cron:</b><br>
+                        <code>{{ this.manager.getScriptPath() }}</code>
+                    </div>
+                    <br>
+                    <table class="table table-responsive">
+                        <tr>
+                            <th>#</th>
+                            <th>Cron</th>
+                            <th>Titulo</th>
+                            <th>Funcion</th>
+                        </tr>
+
+                        {% for api in this.cron.get_all() %}
+                            <tr>
+                                <td><a href="{{ this.getLink(this, { id: api.id}) }}">{{ api.id }}</a></td>
+                                <td>{{ api.getUser().nombre }}</td>
+                                <td>{{  api.title }}</td>
+                                <td><code>{{ api.token }}</code></td>
+                                <td>{{ api.date }}</td>
+                                <td>
+                                    <a href="{{ this.getLink(this, { id: api.id}) }}">Editar</a>
+                                    <a data-confirm-a="¿Realmente deseas eliminar esta entrada?" href="{{ this.getLink(this) }}?remove={{ api.id }}">Eliminar</a></td>
+
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endblock %}
+            {% endembed %}
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+{% endblock %}
+{% block styles %}{% endblock %}

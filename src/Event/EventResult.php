@@ -16,6 +16,7 @@ namespace GLFramework\Event;
 class EventResult
 {
     private $result = false;
+    private $events = array();
     private $handlers = array();
     private $count = 0;
 
@@ -161,10 +162,12 @@ class EventResult
      * TODO
      *
      * @param $item
+     * @param $handler
      */
-    public function addResult($item)
+    public function addResult($item, $handler)
     {
         $this->result[] = $item;
+        $this->events[] = array($item, $handler);
         $this->count++;
     }
 
@@ -182,5 +185,13 @@ class EventResult
             return array($this->result);
         } // El resultado es solo 1, generar un array
         return $this->result; //
+    }
+
+    /**
+     * @return array
+     */
+    public  function getEvents()
+    {
+        return $this->events;
     }
 }

@@ -203,7 +203,7 @@ class Events
                 $eventResult->addHandler($item);
                 $result = $item->run($args);
                 if($result !== false) {
-                    $eventResult->addResult($result);
+                    $eventResult->addResult($result, $item);
                 }
             }
         }

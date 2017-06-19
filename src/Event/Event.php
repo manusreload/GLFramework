@@ -90,6 +90,16 @@ class Event
         $this->definition = $definition;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+
+
 
 
 

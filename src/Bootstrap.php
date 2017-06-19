@@ -47,6 +47,7 @@ class Bootstrap
     private $directory;
     private $startTime;
     private $init = false;
+    private $configFile;
 
     /**
      * Bootstrap constructor.
@@ -60,6 +61,7 @@ class Bootstrap
         $this->startTime = microtime(true);
         $this->events = new Events();
         $this->directory = $directory;
+        $this->configFile = $config;
         $this->config = self::loadConfig($this->directory, $config);
         self::$singelton = $this;
     }
@@ -147,9 +149,10 @@ class Bootstrap
 
     /**
      * Simple script router
-     * 
+     *
      * @param $directory
      * @param string $config
+     * @return bool
      */
     public static function router($directory, $config = 'config.yml')
     {
@@ -176,8 +179,11 @@ class Bootstrap
      */
     public static function getAppHash()
     {
-        $config = self::getSingleton()->getConfig();
+        $bs = self::getSingleton();
+        $config = $bs->getConfig();
         $string = $config['app']['name'];
+        $string .= $bs->getConfigFile();
+        $string .= $bs->getDirectory();
         $string .= __FILE__;
         return substr(md5($string), 0, 16);
     }
@@ -592,5 +598,17 @@ class Bootstrap
         return $this->startTime;
     }
 
+    /**
+     * @return string
+     */
+    public function getConfigFile()
+    {
+        return $this->configFile;
+    }
+
+    public function getCurrentPath()
+    {
+        return realpath(".");
+    }
 
 }
