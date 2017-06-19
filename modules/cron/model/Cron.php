@@ -13,6 +13,7 @@ class Cron extends \GLFramework\Model
     public $cron;
     public $enabled;
     public $function;
+    public $last_run;
     protected $table_name = 'cron_tasks';
     protected $definition = array(
         'index' => 'id',
@@ -21,6 +22,12 @@ class Cron extends \GLFramework\Model
             'cron' => "varchar(20)",
             'enabled' => "int(1)",
             'function' => "varchar(128)",
+            'last_run' => "datetime",
         )
     );
+
+    public function run()
+    {
+        $method = instance_method($this->function);
+    }
 }

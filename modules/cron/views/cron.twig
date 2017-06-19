@@ -21,10 +21,18 @@
                     </div>
                     <div class="clearfix"></div>
                     <br>
+                    {% if this.time == 0 %}
                     <div class="alert alert-info">
                         <b>Ruta Para añadir a cron:</b><br>
-                        <code>{{ this.manager.getScriptPath() }}</code>
+                        <code>* * * * * {{ this.system_user }} {{ this.manager.getScriptPath() }}</code><br>
+                        Este mensaje desaparecerá automáticamente cuando halla sido ejecutado correctamente.<br>
+                        <a href="?try" class="btn btn-warning">Intentar añadir</a>
                     </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            Utl. Ejecucion: {{ this.time | date("d/m/Y H:i:s") }}
+                        </div>
+                    {% endif %}
                     <br>
                     <table class="table table-responsive">
                         <tr>
@@ -32,19 +40,21 @@
                             <th>Cron</th>
                             <th>Titulo</th>
                             <th>Funcion</th>
+                            <th>Ult. Ejecucion</th>
+                            <th>Activada</th>
                         </tr>
 
-                        {% for api in this.cron.get_all() %}
+                        {% for cron in this.cron.get_all() %}
                             <tr>
-                                <td><a href="{{ this.getLink(this, { id: api.id}) }}">{{ api.id }}</a></td>
-                                <td>{{ api.getUser().nombre }}</td>
-                                <td>{{  api.title }}</td>
-                                <td><code>{{ api.token }}</code></td>
-                                <td>{{ api.date }}</td>
+                                <td><a href="{{ this.getLink(this, { id: cron.id}) }}">{{ cron.id }}</a></td>
+                                <td>{{ cron.cron }}</td>
+                                <td>{{ cron.title }}</td>
+                                <td>{{ cron.function }}</td>
+                                <td>{{ cron.last_run }}</td>
                                 <td>
-                                    <a href="{{ this.getLink(this, { id: api.id}) }}">Editar</a>
-                                    <a data-confirm-a="¿Realmente deseas eliminar esta entrada?" href="{{ this.getLink(this) }}?remove={{ api.id }}">Eliminar</a></td>
-
+                                    {% if cron.enabled %}<i class="fa fa-check text-success"></i>{% else %}<i class="fa fa-times text-danger"></i>{% endif %}
+                                    <a href="?remove={{ cron.id }}">Eliminar</a>
+                                </td>
                             </tr>
                         {% endfor %}
                     </table>

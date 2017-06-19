@@ -16,6 +16,8 @@
                     Editar tarea
                 {% endblock %}
                 {% block content %}
+                    <a href="/admin/cron" class="btn btn-default">Volver Listado</a>
+                    <br>
                     <form method="post">
                         <div class="form-group">
                             <label>Nombre de la tarea</label>
@@ -37,11 +39,24 @@
                         </div>
                         <div class="form-group">
                             <label>Nombre de la tarea</label>
-                            <select class="form-control">
+                            <select class="form-control" name="function">
                                 {% for item in this.manager.getTasks() %}
-                                <option value="{{ item.fn }}" {{ this.task.fn == item.fn?"selected":"" }}>[{{ item.module }}] {{ item.title }}</option>
+                                <option value="{{ item.fn }}" {{ this.task.function == item.fn?"selected":"" }}>[{{ item.module }}] {{ item.title }}</option>
                                 {% endfor %}
                             </select>
+                        </div>
+
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="enabled" value="1" {{ this.task.enabled?"checked":"" }}>
+                                Activar
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="enabled" value="0"  {{ not this.task.enabled?"checked":"" }}>
+                                Desactivar
+                            </label>
                         </div>
 
                         <button type="submit" class="btn btn-default" name="save">Guardar</button>
