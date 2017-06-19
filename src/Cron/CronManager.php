@@ -11,7 +11,12 @@ namespace GLFramework\Cron;
 
 class CronManager
 {
-    public function update() {
-
+    /**
+     * @return bool
+     */
+    public function update()
+    {
+        return false;
     }
+
 }
