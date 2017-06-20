@@ -226,10 +226,11 @@ class Bootstrap
 
         $this->manager = new ModuleManager($this->config, $this->directory);
         $this->manager->init();
-        Log::d('Modules initialized: ' . count($this->manager->getModules()));
-        Log::d(array_map(function ($a) {
-            return $a->title;
-        }, $this->manager->getModules()));
+        Log::d('Module manager initialized');
+//        Log::d('Modules initialized: ' . count($this->manager->getModules()));
+//        Log::d(array_map(function ($a) {
+//            return $a->title;
+//        }, $this->manager->getModules()));
     }
 
     /**
