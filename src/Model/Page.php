@@ -28,6 +28,7 @@ namespace GLFramework\Model;
 
 use GLFramework\Controller;
 use GLFramework\Model;
+use GLFramework\ModelResult;
 
 /**
  * Class Page
@@ -41,7 +42,7 @@ class Page extends Model
     var $admin;
     var $title;
     var $description;
-
+    private static $cache = null;
     protected $table_name = 'page';
     protected $definition = array(
         'index' => 'id',
@@ -69,7 +70,14 @@ class Page extends Model
         } else {
             $name = $controller;
         }
-        return $this->get(array('controller' => $name));
+        if (self::$cache === null) {
+            self::$cache = array();
+            $items = $this->get_all();
+            foreach ($items as $item) {
+                self::$cache[$item['controller']] = $item;
+            }
+        }
+        return new ModelResult(Page::class, array(self::$cache[$name]));
     }
 
     /**
