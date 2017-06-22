@@ -895,4 +895,9 @@ class Model
     public function onCreate()
     {
     }
+
+    public function clearCache($key)
+    {
+        $this->db->removeCache($this->getCacheId($key));
+    }
 }

@@ -156,7 +156,7 @@ class Bootstrap
      */
     public static function router($directory, $config = 'config.yml')
     {
-        $request = $_SERVER['REQUEST_URI'];
+        $request = $_SERVER['PHP_SELF'];
         $root = $_SERVER['DOCUMENT_ROOT'];
         $file = $root . $request;
         if(file_exists($file) && !is_dir($file))
@@ -301,6 +301,7 @@ class Bootstrap
         Log::i(get_loaded_extensions());
         Events::dispatch('onCoreStartUp', $this->startTime);
         $response = $this->manager->run($url, $method);
+        Log::i('Sending response...');
         if ($response) {
             $response->setUri($url);
         }
