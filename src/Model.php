@@ -254,15 +254,15 @@ class Model
      */
     public function getCacheId($id)
     {
-        if(is_array($id))
-        {
-            $tmp = "";
-            foreach ($id as $key => $value)
-            {
-                $tmp .= $key . "_" . $value;
-            }
-            $id = $tmp;
-        }
+//        if(is_array($id))
+//        {
+//            $tmp = "";
+//            foreach ($id as $key => $value)
+//            {
+//                $tmp .= $key . "_" . $value;
+//            }
+//            $id = $tmp;
+//        }
         return $this->table_name . '_' . $id;
     }
 
