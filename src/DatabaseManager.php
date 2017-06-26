@@ -387,4 +387,15 @@ class DatabaseManager
         self::$cache = new $name();
         self::$cache->connect($this->getConfig());
     }
+
+    public function removeCache($key)
+    {
+        if(self::$cache) {
+            self::$cache->remove($key);
+        }
+    }
+
+    public function disableCache() {
+        self::$cache = null;
+    }
 }

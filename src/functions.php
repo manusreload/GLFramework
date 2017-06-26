@@ -766,6 +766,18 @@ function fecha($date, $format = 'd/m/Y')
     return date($format, strtotime($date));
 }
 
+/**
+ * TODO
+ *
+ * @param $date
+ * @param string $format
+ * @return false|string
+ */
+function fechahora($date, $format = 'd/m/Y H:i:s')
+{
+    return date($format, strtotime($date));
+}
+
 function fix_folder($folder)
 {
     if(strpos("/", $folder)  === 0)

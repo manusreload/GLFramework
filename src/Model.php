@@ -220,14 +220,17 @@ class Model
     /**
      * Eliminar el modelo de la base de datos
      *
+     * @param null $cache
      * @return bool
-     * @throws \Exception
      */
-    public function delete()
+    public function delete($cache = null)
     {
         $index = $this->getIndex();
         $value = $this->getFieldValue($index);
         if ($value) {
+            if($cache) {
+                $this->db->removeCache($this->getCacheId($cache));
+            }
             return $this->db->exec("DELETE FROM {$this->table_name} WHERE `$index` = ?", array($value), $this->getCacheId($value));
         }
         return false;
@@ -891,5 +894,10 @@ class Model
      */
     public function onCreate()
     {
+    }
+
+    public function clearCache($key)
+    {
+        $this->db->removeCache($this->getCacheId($key));
     }
 }

@@ -36,6 +36,7 @@ use Psr\Log\AbstractLogger;
 class Log extends AbstractLogger
 {
     private static $instance;
+    private static $lastLog;
 
     private $debugMode = false;
 
@@ -172,8 +173,12 @@ class Log extends AbstractLogger
     {
         if($this->debugMode)
         {
-            $time = number_format( microtime(true) - Bootstrap::getSingleton()->getStartTime(), 6 );
-            error_log("[$time][$level] " . (is_string($message)?$message:implode(", ", $message)));
+            $ct = microtime(true);
+            $dt = self::$lastLog>0?($ct - self::$lastLog):0;
+            $time = number_format( $ct - Bootstrap::getSingleton()->getStartTime(), 5 );
+            $dt = number_format($dt, 5);
+            error_log("[$time][-$dt][$level]\t" . (is_string($message)?$message:implode(", ", $message)));
+            self::$lastLog = $ct;
         }
         // TODO: Implement log() method.
         if (!in_array('events', $context)) {

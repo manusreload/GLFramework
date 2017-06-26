@@ -226,11 +226,12 @@ class ModelResult implements \IteratorAggregate
 
     /**
      * TODO
+     * @param null $cache
      */
-    public function delete()
+    public function delete($cache = null)
     {
         foreach ($this->getModels() as $model) {
-            $model->delete();
+            $model->delete($cache);
         }
     }
 
