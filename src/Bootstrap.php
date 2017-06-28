@@ -201,7 +201,7 @@ class Bootstrap
         if (strpos($host, ':') !== false) {
             $host = substr($host, 0, strpos($host, ':'));
         }
-        if ($host === 'localhost') {
+        if ($host === 'localhost' or preg_match("#[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+#", $host)) {
             $host = 'default';
         }
         if (file_exists($folder . $host . '.yml')) {
