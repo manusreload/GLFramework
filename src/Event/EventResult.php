@@ -49,12 +49,12 @@ class EventResult
     {
         if (is_array($this->result)) {
             foreach ($this->result as $item) {
-                if ($item === false) {
+                if ($item == false) {
                     return true;
                 }
             }
         } else {
-            return $this->result === false;
+            return $this->result == false;
         }
         return false;
     }
