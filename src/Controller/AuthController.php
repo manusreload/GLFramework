@@ -57,7 +57,7 @@ class AuthController extends Controller implements Middleware
      * @param string $base
      * @param \GLFramework\Module\Module|null $module
      */
-    public function __construct($base, $module)
+    public function __construct($base = null, $module = null)
     {
         parent::__construct($base, $module);
         $this->session_key = self::getSessionKey();

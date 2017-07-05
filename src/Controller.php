@@ -64,6 +64,7 @@ abstract class Controller
      * @var Middleware[]
      */
     private $middleware = array();
+    private $created = false;
 
     /**
      * Controller constructor.
@@ -419,5 +420,12 @@ abstract class Controller
     public function onCreate()
     {
         $this->restoreMessages();
+        $this->created = true;
+    }
+
+    public function requestCreate() {
+        if(!$this->created) {
+            $this->onCreate();
+        }
     }
 }

@@ -67,11 +67,19 @@ class ModuleManager
         self::$instance = $this;
         $this->config = $config;
         $this->directory = $directory;
-        $this->router = new \AltoRouter(array(), $this->config['app']['basepath']);
-        $this->router->addMatchTypes(array(
+        $this->router = $this->newRouter();
+        $this->router->map('GET', '/_raw/[*:name]', array($this, 'handleFilesystem'), 'handleFilesystem');
+    }
+
+    /**
+     * @return \AltoRouter
+     */
+    private function newRouter() {
+        $router = new \AltoRouter(array(), $this->config['app']['basepath']);
+        $router->addMatchTypes(array(
             'idd' => '([0-9]+|add)?',
         ));
-        $this->router->map('GET', '/_raw/[*:name]', array($this, 'handleFilesystem'), 'handleFilesystem');
+        return $router;
     }
 
     /**
@@ -269,6 +277,18 @@ class ModuleManager
         }
     }
 
+    public function checkModulesPolicy() {
+        $remove = array();
+        foreach ($this->modules as $module) {
+            if(Events::dispatch('isModuleEnabled', array($module))->anyFalse()) {
+                $remove[] = $module;
+            }
+        }
+        foreach ($remove as $module) {
+            $this->remove($module);
+        }
+    }
+
     /**
      * Cargar la configuracion de aplicacion.
      * Aqui se inicializa los módulos y sus dependencias.
@@ -315,9 +335,7 @@ class ModuleManager
                 }
                 $module = $this->load($folder . '/' . $name, $moduleConfig);
                 if ($module) {
-                    if (!$this->exists($module->title) && !Events::dispatch('isModuleEnabled', array($module))
-                            ->anyFalse()
-                    ) {
+                    if (!$this->exists($module->title)) {
                         $this->add($module);
                         $this->loadModuleDependencies($module);
                     }
@@ -383,6 +401,16 @@ class ModuleManager
         }
     }
 
+    public function remove($module) {
+        if($module !== null) {
+            $i = array_search($module, $this->modules);
+            if($i >= 0) {
+                $this->modules[$i]->unload();
+                unset($this->modules[$i]);
+            }
+        }
+    }
+
     /**
      * TODO
      *
@@ -411,6 +439,9 @@ class ModuleManager
     {
         $request = new Request($method, $url);
         try {
+//            foreach ($this->modules as $module) {
+//
+//            }
             if ($match = $this->router->match($url, $method)) {
                 if ($match['name'] === 'handleFilesystem') {
                     return $this->handleFilesystem($match['params'], $request);
@@ -418,20 +449,29 @@ class ModuleManager
                     $target = $match['target'];
                     $module = $target[0];
                     if ($module instanceof Module) {
-                        $this->runningModule = $module;
-                        $controller = $target[1];
-                        $request->setParams($match['params']);
+                        if($this->isEnabled($module->title)) {
+                            $this->runningModule = $module;
+                            $controller = $target[1];
+                            $request->setParams($match['params']);
+                            return $module->run($controller, $request);
+                        } else {
+
+                            return $this->mainModule->run(new ErrorController("This module is disabled by your 
+                            policy"),
+                                $request);
+                        }
                     }
-                    return $module->run($controller, $request);
                 }
-            } else {
-                return $this->mainModule->run(new ErrorController("Controller for '$url' not found. " .
-                    $this->getRoutes()),
-                    $request);
             }
+
+
+            return $this->mainModule->run(new ErrorController("Controller for '$url' not found. " .
+                $this->getRoutes()),
+                $request);
         } catch (\Exception $ex) {
             Events::dispatch('onException', $ex);
             return $this->mainModule->run(new ExceptionController($ex), $request);
+
         } catch (\Throwable $ex) {
             Events::dispatch('onError', $ex);
             return $this->mainModule->run(new ExceptionController($ex), $request);

@@ -142,6 +142,16 @@ class Events
     }
 
     /**
+     * @param $event Event
+     */
+    public function remove($event) {
+        $i = array_search($event, $this->handlers[$event->getName()]);
+        if($i >= 0) {
+            unset($this->handlers[$event->getName()][$i]);
+        }
+    }
+
+    /**
      * TODO
      *
      * @param $event
