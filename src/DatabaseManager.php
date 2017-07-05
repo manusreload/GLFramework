@@ -66,8 +66,9 @@ class DatabaseManager
         if (!$config) {
             $config = Bootstrap::getSingleton()->getConfig();
         }
-        if(!Bootstrap::getSingleton()->isInited()) throw new \Exception("Try to create database connection 
-        'before' init the framework!");
+//        if(!Bootstrap::getSingleton()->isInited()) throw new \Exception("Try to create database connection
+//        'before' init the framework!");
+
         $this->config = $config;
         $this->connect();
     }

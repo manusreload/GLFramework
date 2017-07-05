@@ -47,6 +47,7 @@ class ModuleManager
      * @var Module[]
      */
     private $modules = array();
+    private $modulesDisabled = array();
     private $config;
     private $directory;
     private $router;
