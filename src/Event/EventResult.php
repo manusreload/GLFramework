@@ -47,14 +47,15 @@ class EventResult
      */
     public function anyFalse()
     {
+        if($this->count == 0) return false;
         if (is_array($this->result)) {
             foreach ($this->result as $item) {
-                if ($item === false) {
+                if ($item == false) {
                     return true;
                 }
             }
         } else {
-            return $this->result === false;
+            return $this->result == false;
         }
         return false;
     }

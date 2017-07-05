@@ -40,7 +40,7 @@ class users extends AuthController
         $modulues = ModuleManager::getInstance()->getModules();
         $this->pages = new Page();
         $this->users = $this->instanceUser(null);
-        $this->users_all = $this->users->get_all()->getModels();
+        $this->users_all = $this->users->get_all()->order('id')->getModels();
         $this->userPages = new UserPage();
         foreach($modulues as $module)
         {

@@ -193,9 +193,9 @@ class Association
      */
     public function fill($model, $row)
     {
-        if ($this->constant === false) {
+        if ($this->constant == false) {
             foreach ($this->nameInFile as $subkey) {
-                if (isset($this->defaultValue) && $this->defaultValue !== null) {
+                if (isset($this->defaultValue) && $this->defaultValue != null) {
                     $model->{$this->nameInModel} = $this->defaultValue;
                 }
                 if (isset($row[$subkey])) {
