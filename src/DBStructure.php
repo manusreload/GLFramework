@@ -167,7 +167,7 @@ class DBStructure
                         try {
                             $this->runAction($db, $instance, $action);
                         } catch (\Exception $ex) {
-                            Debugbar::getInstance()->exceptionHandler($ex);
+//                            Debugbar::getInstance()->exceptionHandler($ex);
                             Log::getInstance()->critical($ex);
 //                            return $ex;
                         }
