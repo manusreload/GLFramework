@@ -50,6 +50,7 @@ class AuthController extends Controller implements Middleware
     private $session_key = 'auth_user';
     private $requireLogin = true;
     private $default_redirect = '/home';
+    private $reasonMessage = "Por favor acceda con su cuenta antes de continuar";
 
     /**
      * AuthController constructor.
@@ -144,7 +145,7 @@ class AuthController extends Controller implements Middleware
             if (!isset($_SESSION[$this->session_key])) {
                 if (strpos($_SERVER['REQUEST_URI'], '/login') === false) {
                     if (!isset($_GET['logout'])) {
-                        $this->addMessage('Por favor acceda con su cuenta antes de continuar', 'warning');
+                        $this->addMessage($this->reasonMessage, 'warning');
                     }
                     if (!isset($_GET['logout'])) {
                         $_SESSION['return'] = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
@@ -278,4 +279,22 @@ class AuthController extends Controller implements Middleware
     {
         $this->default_redirect = $default_redirect;
     }
+
+    /**
+     * @return string
+     */
+    public function getReasonMessage()
+    {
+        return $this->reasonMessage;
+    }
+
+    /**
+     * @param string $reasonMessage
+     */
+    public function setReasonMessage($reasonMessage)
+    {
+        $this->reasonMessage = $reasonMessage;
+    }
+
+
 }
