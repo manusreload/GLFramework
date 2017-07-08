@@ -98,6 +98,16 @@ class Event
         return $this->context;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    
+
 
 
 

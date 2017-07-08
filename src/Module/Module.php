@@ -57,6 +57,10 @@ class Module
     private $controllers_map = array();
     private $controllers_routes = array();
     private $controllers_url_routes = array();
+    private $events = array();
+    private $router;
+    private $spl_autoload_controllers;
+    private $spl_autoload_models;
 
     /**
      * Module constructor.
@@ -144,6 +148,14 @@ class Module
         //        $this->register_events();
     }
 
+    public function unload() {
+        spl_autoload_unregister($this->spl_autoload_models);
+        spl_autoload_unregister($this->spl_autoload_controllers);
+        foreach ($this->events as $event) {
+            Events::getInstance()->remove($event);
+        }
+    }
+
     /**
      * TODO
      */
@@ -154,8 +166,7 @@ class Module
             $models = array($models);
         }
         $dir = $this->directory;
-
-        spl_autoload_register(function ($class) use ($models, $dir) {
+        $this->spl_autoload_models = function ($class) use ($models, $dir) {
             foreach ($models as $directory) {
                 $filename = $dir . '/' . $directory . '/' . $class . '.php';
                 if (file_exists($filename)) {
@@ -163,7 +174,8 @@ class Module
                     return true;
                 }
             }
-        });
+        };
+        spl_autoload_register($this->spl_autoload_models);
     }
 
     /**
@@ -201,14 +213,15 @@ class Module
     public function register_autoload_controllers()
     {
         $map = $this->controllers_map;
-        spl_autoload_register(function ($class) use ($map) {
+        $this->spl_autoload_controllers = function ($class) use ($map) {
             if (isset($map[$class])) {
                 $file = $map[$class];
                 require_once $file;
                 return true;
             }
             return false;
-        });
+        };
+        spl_autoload_register($this->spl_autoload_controllers);
     }
 
     /**
@@ -308,6 +321,7 @@ class Module
      */
     public function register_router($router)
     {
+        $this->router = $router;
         $list = array();
         $controllers = $this->getControllers();
         foreach ($controllers as $controller => $file) {
@@ -396,9 +410,18 @@ class Module
                     $event = Events::getInstance()->listen($event, instance_method($fn, $context, array($this)), $this);
                     $event->setModule($this->title);
                     $event->setDefinition($fn);
+                    $this->events[] = $event;
                 }
             }
         }
+    }
+
+    /**
+     * Get router
+     * @return \AltoRouter
+     */
+    public function getRouter() {
+        return $this->router;
     }
 
     /**

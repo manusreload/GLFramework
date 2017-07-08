@@ -47,6 +47,7 @@ class Bootstrap
     private $directory;
     private $startTime;
     private $init = false;
+    private $inited = false;
     private $configFile;
 
     /**
@@ -201,7 +202,7 @@ class Bootstrap
         if (strpos($host, ':') !== false) {
             $host = substr($host, 0, strpos($host, ':'));
         }
-        if ($host === 'localhost') {
+        if ($host === 'localhost' or preg_match("#[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+#", $host)) {
             $host = 'default';
         }
         if (file_exists($folder . $host . '.yml')) {
@@ -227,6 +228,8 @@ class Bootstrap
         $this->manager = new ModuleManager($this->config, $this->directory);
         $this->manager->init();
         Log::d('Module manager initialized');
+        $this->inited = true;
+
 //        Log::d('Modules initialized: ' . count($this->manager->getModules()));
 //        Log::d(array_map(function ($a) {
 //            return $a->title;
@@ -300,6 +303,7 @@ class Bootstrap
         Log::i('· Extensiones de PHP: ');
         Log::i(get_loaded_extensions());
         Events::dispatch('onCoreStartUp', $this->startTime);
+        $this->manager->checkModulesPolicy();
         $response = $this->manager->run($url, $method);
         Log::i('Sending response...');
         if ($response) {
@@ -612,5 +616,23 @@ class Bootstrap
     {
         return realpath(".");
     }
+
+    /**
+     * @return bool
+     */
+    public function isInit()
+    {
+        return $this->init;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInited()
+    {
+        return $this->inited;
+    }
+
+
 
 }

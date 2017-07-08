@@ -26,6 +26,7 @@
 
 namespace GLFramework;
 
+use GLFramework\Modules\Debugbar\Debugbar;
 use TijsVerkoyen\CssToInlineStyles\Exception;
 
 /**
@@ -166,7 +167,9 @@ class DBStructure
                         try {
                             $this->runAction($db, $instance, $action);
                         } catch (\Exception $ex) {
-                            return $ex;
+//                            Debugbar::getInstance()->exceptionHandler($ex);
+                            Log::getInstance()->critical($ex);
+//                            return $ex;
                         }
                     }
                 }

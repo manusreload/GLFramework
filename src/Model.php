@@ -297,7 +297,7 @@ class Model
             }
             if (!empty($sql)) {
                 $sql = substr($sql, 0, -5);
-                return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE ' . $sql, $args, $this->getCacheId($id)));
+                return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE ' . $sql, $args));
             }
         }
         return $this->build(array());

@@ -59,12 +59,16 @@ class DatabaseManager
      * DBConnection constructor.
      *
      * @param null $config
+     * @throws \Exception
      */
     public function __construct($config = null)
     {
         if (!$config) {
             $config = Bootstrap::getSingleton()->getConfig();
         }
+//        if(!Bootstrap::getSingleton()->isInited()) throw new \Exception("Try to create database connection
+//        'before' init the framework!");
+
         $this->config = $config;
         $this->connect();
     }
@@ -191,13 +195,13 @@ class DatabaseManager
     public function checkDatabaseStructure()
     {
 
-        if (!self::$checked) {
+        if (!self::$checked && Bootstrap::getSingleton()->isInited()) {
             self::$checked = true;
             $config = $this->getConfig();
             if (!isset($config['database']['ignoreStructure'])) {
                 $manager = new DBStructure();
                 if ($manager->haveModelChanges()) {
-                    //throw new \Exception("Please, update database structure executing /install.php");
+//                    throw new \Exception("Please, update database structure executing /install.php");
                     $manager->executeModelChanges($this);
                 }
             }
