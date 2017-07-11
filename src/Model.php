@@ -103,6 +103,7 @@ class Model
      * @var array Campos extra para el JSON array
      */
     protected $json_extra = array();
+    private $index;
 
     /**
      * Model constructor.
@@ -115,6 +116,7 @@ class Model
         if ($this->table_name === '') {
             throw new \Exception('El nombre de la tabla para el modelo \'' . get_class($this) . '\' no puede estar vacío!');
         }
+        $this->setIndexFromDefinition($this->definition);
         $this->db = new DatabaseManager();
         foreach ($this->getFields() as $field) {
             $this->{$field} = false;
@@ -473,6 +475,14 @@ class Model
         return $fields;
     }
 
+    public function setIndexFromDefinition($definition){
+        if (isset($definition['index'])) {
+            if (is_array($definition['index'])) {
+                $this->index = $definition['index']['field'];
+            }
+            $this->index = $definition['index'];
+        }
+    }
     /**
      * Obtiene el nombre del indice para esta tabla
      *
@@ -480,13 +490,7 @@ class Model
      */
     public function getIndex()
     {
-        if (isset($this->definition['index'])) {
-            if (is_array($this->definition['index'])) {
-                return $this->definition['index']['field'];
-            }
-            return $this->definition['index'];
-        }
-        return null;
+        return $this->index;
     }
 
     /**
@@ -510,7 +514,7 @@ class Model
      */
     public function isIndex($field)
     {
-        return $this->getIndex() === $field;
+        return $this->index == $field;
     }
 
     /**
@@ -568,7 +572,7 @@ class Model
      */
     public function setData($data, $allowEmpty = true, $allowUnset = false)
     {
-        if ($data !== null) {
+        if ($data != null) {
             if (is_array($data)) {
                 $fileds = $this->getFields();
                 foreach ($fileds as $field) {
