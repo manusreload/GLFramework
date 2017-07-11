@@ -1,0 +1,44 @@
+{% set name = name | default("message-default") %}
+{% if not _COOKIE[name] %}
+    <div class="alert alert-info" id="{{ name }}">
+        {% block body %}{% endblock %}
+        {% block close %}<a href="#" class="btn btn-success" id="close-{{ name }}">Entendido!</a>{% endblock %}
+    </div>
+
+{% endif %}
+
+
+
+<script>
+    function createCookie(name,value,days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days*24*60*60*1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + value + expires + "; path=/";
+    }
+
+    function readCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        }
+        return null;
+    }
+
+    function eraseCookie(name) {
+        createCookie(name,"",-1);
+    }
+
+    document.getElementById("close-{{ name }}").onclick = function(ev) {
+        ev.preventDefault();
+        var $elem = $(this).parent();
+        createCookie("{{ name }}", "1", 360);
+        $elem.fadeOut(300, function() { $elem.remove(); });
+    }
+</script>
