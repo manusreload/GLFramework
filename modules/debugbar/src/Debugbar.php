@@ -185,9 +185,10 @@ class Debugbar
         }
     }
 
-    public function onCoreStartUp($time)
+    public function onCoreStartUp($time, $init)
     {
         $this->time->addMeasure('Core start up', $time, microtime(true));
+        $this->time->addMeasure('Core init', $init, microtime(true));
     }
 
     /**
@@ -235,9 +236,9 @@ class Debugbar
     // TODO: see: (https://github.com/maximebf/php-debugbar/issues/330)
     public function onViewCreated(&$twig)
     {
-//        $twig = new TraceableTwigEnvironment($twig, $this->time);
-//        if(!$this->getDebugbar()->hasCollector('twig'))
-//            $this->getDebugbar()->addCollector(new TwigCollector($twig));
+        $twig = new TraceableTwigEnvironment($twig, $this->time);
+        if(!$this->getDebugbar()->hasCollector('twig'))
+            $this->getDebugbar()->addCollector(new TwigCollector($twig));
     }
 
     public function onMailTransport($mailer)

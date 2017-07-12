@@ -46,6 +46,7 @@ class Bootstrap
     private $config;
     private $directory;
     private $startTime;
+    private $initTime;
     private $init = false;
     private $inited = false;
     private $configFile;
@@ -220,6 +221,7 @@ class Bootstrap
      */
     public function init()
     {
+        $this->initTime = microtime(true);
         $this->init = true;
         Log::d('Initializing framework...');
         $this->register_error_handler();
@@ -302,7 +304,7 @@ class Bootstrap
         Log::i('· Current Folder: ' . realpath('.'));
         Log::i('· Extensiones de PHP: ');
         Log::i(get_loaded_extensions());
-        Events::dispatch('onCoreStartUp', $this->startTime);
+        Events::dispatch('onCoreStartUp', array($this->startTime, $this->initTime));
         $this->manager->checkModulesPolicy();
         $response = $this->manager->run($url, $method);
         Log::i('Sending response...');
