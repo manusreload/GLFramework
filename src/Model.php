@@ -479,8 +479,9 @@ class Model
         if (isset($definition['index'])) {
             if (is_array($definition['index'])) {
                 $this->index = $definition['index']['field'];
+            } else {
+                $this->index = $definition['index'];
             }
-            $this->index = $definition['index'];
         }
     }
     /**
