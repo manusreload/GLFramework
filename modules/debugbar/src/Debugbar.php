@@ -236,9 +236,9 @@ class Debugbar
     // TODO: see: (https://github.com/maximebf/php-debugbar/issues/330)
     public function onViewCreated(&$twig)
     {
-        $twig = new TraceableTwigEnvironment($twig, $this->time);
-        if(!$this->getDebugbar()->hasCollector('twig'))
-            $this->getDebugbar()->addCollector(new TwigCollector($twig));
+//        $twig = new TraceableTwigEnvironment($twig, $this->time);
+//        if(!$this->getDebugbar()->hasCollector('twig'))
+//            $this->getDebugbar()->addCollector(new TwigCollector($twig));
     }
 
     public function onMailTransport($mailer)
