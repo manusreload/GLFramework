@@ -51,7 +51,7 @@ class EventReceiver
                 if($result->count() > 0) return true;
             }
         }
-        return $config['allowDefault']?:null;
+        return isset($config['allowDefault'])?$config['allowDefault']:null;
     }
 
     public function getAdminControllers()
