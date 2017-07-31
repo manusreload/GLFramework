@@ -11,12 +11,14 @@ namespace GLFramework\Modules\Admin;
 
 use GLFramework\Controller\AuthController;
 use GLFramework\Mail;
+use GLFramework\Model\Vars;
 
 class system extends AuthController
 {
     var $admin = true;
     var $name = "Sistema";
     var $subtemplate = "system/home.twig";
+    public $vars;
 
     public function run()
     {
@@ -28,6 +30,20 @@ class system extends AuthController
         } elseif ($section == "mail") {
             $this->subtemplate = "system/mail.twig";
             $this->mailSection();
+        } elseif ($section == "vars") {
+            $this->subtemplate = "system/vars.twig";
+            $this->varsSection();
+        }
+    }
+
+    public function varsSection()
+    {
+        $this->vars = new Vars();
+        if (isset($_POST['save'])) {
+            $key = $_POST['save'];
+            $value = $_POST['vars'][$key];
+            Vars::setVar($key, $value);
+            $this->addMessage("Se ha actualizado correctamente");
         }
     }
 
@@ -36,17 +52,12 @@ class system extends AuthController
         $mail = new Mail();
         $this->transport = get_class($mail->getTransport());
         $this->mail_config = $mail->config['mail'];
-        if(isset($_POST['send']))
-        {
+        if (isset($_POST['send'])) {
             $content = $mail->render($this, 'mail/test.twig', array());
-            try
-            {
-                if($mail->send($_POST['email'], "Test Email", $content))
-                {
+            try {
+                if ($mail->send($_POST['email'], "Test Email", $content)) {
                     $this->addMessage("Se ha enviado correctamente el email");
-                }
-                else
-                {
+                } else {
                     $this->addMessage("Se ha producido un error al enviar el email", "danger");
                 }
             } catch (\Exception $ex) {
