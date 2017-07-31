@@ -39,6 +39,7 @@ class FrameworkExtras extends Extra
         $this->addGlobal('_POST', $_POST);
         $this->addGlobal('_REQUEST', $_REQUEST);
         $this->addGlobal('_SERVER', $_SERVER);
+        $this->addGlobal('_COOKIE', $_COOKIE);
         $this->addGlobal('this', $view->getController());
         $this->addGlobal('render', $view);
         $this->addGlobal('manager', ModuleManager::getInstance());

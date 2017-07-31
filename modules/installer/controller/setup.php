@@ -111,7 +111,8 @@ class setup extends Controller
             $config['database']['database'] = $_POST['database'];
             try
             {
-                $this->getDb()->disconnect();
+                if(DatabaseManager::isSelected())
+                    $this->getDb()->disconnect();
                 $this->db_config = new DatabaseManager($config);
                 if(isset($_POST['create_database']))
                 {

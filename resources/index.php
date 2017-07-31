@@ -7,7 +7,7 @@
  */
 if (!file_exists("vendor/autoload.php")) {
     $path = realpath(".");
-    die('I can\'t find \'vendor/autoload.php\' in the current path: ' . $path . '. Ensure that is valid and/or execute \'composer update\' to install the framework!');
+    die('I can\'t find \'vendor/autoload.php\' in the current path: ' . $path . '. Ensure that is valid and/or execute \'composer install\' to install the framework!');
 }
 require_once "vendor/autoload.php";
 return \GLFramework\Bootstrap::router(".");

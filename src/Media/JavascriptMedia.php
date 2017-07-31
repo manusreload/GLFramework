@@ -24,7 +24,10 @@ class JavascriptMedia extends Media
     protected function get($src)
     {
         // TODO: Implement get() method.
+        if(isset($this->options['require'])) {
 
+            return "<script src='$src' data-main='{$this->options['require']}'></script>";
+        }
         return "<script src='$src'></script>";
     }
 }

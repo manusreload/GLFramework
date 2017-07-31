@@ -191,11 +191,11 @@ class Module
         if (is_dir($current)) {
             $files = scandir($current);
             foreach ($files as $file) {
-                if ($file !== '.' && $file !== '..') {
+                if ($file != '.' && $file != '..') {
                     $filename = $current . '/' . $file;
                     $name = $folder . '/' . $file;
                     $ext = substr($file, strrpos($file, '.'));
-                    if ($ext === '.php') {
+                    if ($ext == '.php') {
                         $class = file_get_php_classes($filename);
                         $this->controllers[$class[0]] = $folder . '/' . $file;
                         $this->controllers_map[$class[0]] = $root . '/' . $folder . '/' . $file;

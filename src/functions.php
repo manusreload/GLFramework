@@ -227,8 +227,23 @@ function reArrayPost($array)
  */
 function file_get_php_classes($filepath)
 {
-    $php_code = file_get_contents($filepath);
-    $classes = get_php_classes($php_code);
+    $fp = fopen($filepath, "r");
+    $buffer = "";
+    $classes = array();
+    while($read = fgets($fp)) {
+        $buffer .= $read;
+        $classes = get_php_classes($buffer);
+        if($classes) {
+            break;
+        }
+    }
+    fclose($fp);
+
+//    echo $filepath . ": ".  $it . "\n";
+
+//    $php_code = file_get_contents($filepath);
+//    $classes = get_php_classes($php_code);
+
     return $classes;
 }
 
@@ -243,24 +258,24 @@ function get_php_classes($php_code)
     $classes = array();
     $namespace = '';
     $namespaceBool = false;
-    $tokens = token_get_all($php_code);
+    $tokens = @token_get_all($php_code);
     $count = count($tokens);
     for ($i = 0; $i < $count; $i++) {
-        if ($i >= 2 && $tokens[$i - 2][0] === T_CLASS && $tokens[$i - 1][0] === T_WHITESPACE && $tokens[$i][0] === T_STRING) {
+        if ($i >= 2 && $tokens[$i - 2][0] == T_CLASS && $tokens[$i - 1][0] == T_WHITESPACE && $tokens[$i][0] == T_STRING) {
             $class_name = $namespace . $tokens[$i][1];
             $classes[] = $class_name;
         }
 
-        if ($tokens[$i][0] === T_NAMESPACE
+        if ($tokens[$i][0] == T_NAMESPACE
             //&& $tokens[$i - 1][0] === T_WHITESPACE
             //&& $tokens[$i][0] === T_STRING
         ) {
             $namespaceBool = true;
         }
-        if ($tokens[$i] === ';') {
+        if ($tokens[$i] == ';') {
             $namespaceBool = false;
         }
-        if ($namespaceBool && $tokens[$i][0] === T_STRING) {
+        if ($namespaceBool && $tokens[$i][0] == T_STRING) {
             $namespace .= $tokens[$i][1] . '\\';
         }
     }
