@@ -33,7 +33,11 @@ class admin extends AuthController
         $this->modules_count = count(ModuleManager::getInstance()->getModules());
         $this->info['version'] = Bootstrap::getSingleton()->getVersion();
         $this->info['php'] = PHP_VERSION;
-        $this->info['server'] = $_SERVER['SERVER_SOFTWARE'];
+        $this->info['server']['software'] = $_SERVER['SERVER_SOFTWARE'];
+        $this->info['server']['host'] = gethostname();
+        $this->info['server']['ip'] = gethostbyname(gethostname());
+        $this->info['server']['name'] = $_SERVER['SERVER_NAME'];
+        $this->info['server']['load'] = implode(", ", sys_getloadavg());
         $this->info['extensions'] = implode(", ", get_loaded_extensions());
         $controllers = Events::dispatch('getAdminControllers')->getArray();
         foreach ($controllers as $controller)

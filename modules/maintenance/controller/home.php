@@ -28,10 +28,10 @@ class home extends Controller
      */
     public function beforeControllerRun($controller)
     {
-        if($this->config['maintenance'] && $controller->admin == false) {
+        if ($this->config['maintenance'] && $controller->admin == false) {
             die($this->getView()->display('maintenance.twig'));
         }
-        if(isset($this->config['maintenanceMessage']) && $this->config['maintenanceMessage']) {
+        if (isset($this->config['maintenanceMessage']) && $this->config['maintenanceMessage']) {
             $controller->addMessage($this->config['maintenanceMessage'], 'info');
         }
 //        if($this->config[''])
