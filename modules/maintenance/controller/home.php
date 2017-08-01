@@ -23,8 +23,18 @@ class home extends Controller
         // TODO: Implement run() method.
     }
 
+    /**
+     * @param $controller Controller
+     */
     public function beforeControllerRun($controller)
     {
-        die("OK");
+        if($this->config['maintenance'] && $controller->admin == false) {
+            die($this->getView()->display('maintenance.twig'));
+        }
+        if(isset($this->config['maintenanceMessage']) && $this->config['maintenanceMessage']) {
+            $controller->addMessage($this->config['maintenanceMessage'], 'info');
+        }
+//        if($this->config[''])
+//        die("OK");
     }
 }
