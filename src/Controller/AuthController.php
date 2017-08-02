@@ -150,7 +150,11 @@ class AuthController extends Controller implements Middleware
                     if (!isset($_GET['logout'])) {
                         $_SESSION['return'] = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                     }
-                    $this->quit($this->config['app']['basepath'] . '/login');
+                    $auth = "";
+                    if (isset($_GET['auth'])) {
+                        $auth = "?auth=" . $_GET['auth'];
+                    }
+                    $this->quit($this->config['app']['basepath'] . '/login' . $auth);
                     return false;
                 }
             }

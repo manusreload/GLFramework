@@ -31,6 +31,7 @@ use GLFramework\DaMa\Manipulators\ManipulatorCore;
 use GLFramework\DaMa\Manipulators\XLSManipulator;
 use GLFramework\DaMa\Manipulators\XLSXManipulator;
 use GLFramework\Log;
+use GLFramework\Model;
 
 /**
  * Class Manipulator
@@ -243,16 +244,18 @@ class Manipulator
                         continue;
                     }
                 }
-                if (implode('', $next) !== '') {
+                if (implode('', $next) != '') {
                     $modelSource = null;
                     $model = $this->build($header, $next, $modelSource);
-                    if ($model && $model->valid() && $model->save(true)) {
-                        if ($this->callback) {
-                            call_user_func($this->callback, $model, $modelSource);
+                    if ($model instanceof Model) {
+                        if ($model && $model->valid() && $model->save(true)) {
+                            if ($this->callback) {
+                                call_user_func($this->callback, $model, $modelSource);
+                            }
+                            $models[] = $model;
+                            $this->result[$this->current] = $model;
+                            $count++;
                         }
-                        $models[] = $model;
-                        $this->result[$this->current] = $model;
-                        $count++;
                     }
                 }
                 $this->current++;
@@ -294,7 +297,7 @@ class Manipulator
             $this->current++;
             $buffer .= "<table class='table table-bordered'>";
             while ($next = $this->getNext()) {
-                if (implode('', $next) !== '') {
+                if (implode('', $next) != '') {
                     $model = $this->build($header, $next);
 
                     if ($model && $model->valid()) {
@@ -403,7 +406,7 @@ class Manipulator
         $number = $count;
         if ($header = $this->getCore()->next()) {
             while ($data = $this->getCore()->next()) {
-                if ($data === null) {
+                if ($data == null) {
                     break;
                 }
                 $tmp[] = $data;

@@ -98,7 +98,7 @@ require_once \"vendor/autoload.php\";
         $tasks = $tasks->get(array('enabled' => 1));
         foreach ($tasks->getModels() as $task) {
             $cron = CronExpression::factory($task->cron);
-            if($cron->isDue()) {
+            if ($cron->isDue()) {
                 $task->last_run = now();
                 $task->save();
                 $task->run();

@@ -80,7 +80,19 @@
                         </tr>
                         <tr>
                             <th>OS Version</th>
-                            <td>{{ this.info.server }}</td>
+                            <td>{{ this.info.server.software }}</td>
+                        </tr>
+                        <tr>
+                            <th>Server Host</th>
+                            <td>{{ this.info.server.host }} {{ this.info.server.ip }}</td>
+                        </tr>
+                        <tr>
+                            <th>Server Name</th>
+                            <td>{{ this.info.server.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Server Load</th>
+                            <td>{{ this.info.server.load }}</td>
                         </tr>
                         <tr>
                             <td colspan="2"><a href="?update">Actualizar</a></td>

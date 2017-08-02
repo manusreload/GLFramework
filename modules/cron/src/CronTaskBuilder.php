@@ -16,8 +16,7 @@ class CronTaskBuilder
     private $tasks = array();
     public function addTask($module, $title, $function)
     {
-        if($module instanceof Module)
-        {
+        if ($module instanceof Module) {
             $module = $module->title;
         }
         $this->tasks[] = array('module' => $module, 'title' => $title, 'fn' => $function);

@@ -64,6 +64,11 @@ class cron extends AuthController
             $this->task->delete();
             $this->addMessage("Se ha eliminado correctamente!");
         }
+        if(isset($_GET['test'])) {
+
+            $task = new \Cron($_GET['test']);
+            $task->run();
+        }
         if(isset($_GET['try']))
         {
             $output = shell_exec('crontab -l');

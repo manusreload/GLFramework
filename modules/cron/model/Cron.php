@@ -29,5 +29,6 @@ class Cron extends \GLFramework\Model
     public function run()
     {
         $method = instance_method($this->function);
+        return call_user_func($method);
     }
 }
