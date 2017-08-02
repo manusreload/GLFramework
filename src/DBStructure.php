@@ -64,6 +64,7 @@ class DBStructure
     {
 
         $fields = array();
+        $keys = array();
         $definition = $model->getDefinition();
         if (isset($definition['fields'])) {
             $definitionFields = $definition['fields'];
@@ -108,9 +109,28 @@ class DBStructure
                 }
             }
         }
+        if (isset($definition['keys'])) {
+            foreach ($definition['keys'] as $field => $value) {
+                if (isset($fields[$field])) {
+                   $model1 = key($value); // Para extrar datos del tipo key => value
+                   $column = current($value);
+                   $modelObj = Model::newInstance($model1);
+                   if ($modelObj and $modelObj instanceof Model) {
+                       $keys[] = array(
+                           'field' => $field,
+                           'table' => $modelObj->getTableName(),
+                           'target' => $column
+
+                       );
+                   }
+
+                }
+            }
+        }
         $result = array();
         $result['table'] = $model->getTableName();
         $result['fields'] = $fields;
+        $result['keys'] = $keys;
 
         return $result;
     }
@@ -220,9 +240,29 @@ class DBStructure
                 }
                 $fields[$field['field']] = $field;
             }
+
+            $info = $db->select("SELECT 
+  TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME, REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME
+FROM
+  INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+WHERE
+  REFERENCED_TABLE_SCHEMA = '?' AND
+  REFERENCED_TABLE_NAME = '?'", array($db->getDatabaseName(), $table));
+
+            $keys = array();
+            foreach ($info as $row) {
+                $key = array();
+                $key['field'] = $row['COLUMN_NAME'];
+                $key['table'] = $row['REFERENCED_TABLE_NAME'];
+                $key['target'] = $row['REFERENCED_COLUMN_NAME'];
+                $fields[$key['field']]['index'] = true;
+                $keys[] = $key;
+            }
+
             $result[$table] = array(
                 'table' => $table,
-                'fields' => $fields
+                'fields' => $fields,
+                'keys' => $keys
             );
         }
         return $result;
@@ -277,6 +317,25 @@ class DBStructure
                             }
                         }
                     }
+
+                    $test1 = $value['keys'];
+                    $test2 = $value['keys'];
+                    foreach ($test1 as $key => $item) {
+                        if (!$this->haveKey($item, $test2)) {
+                            $actions[] = array('sql' => $this->getAddKey($table, $item), 'action' => 'add_key');
+                        }
+                    }
+                    //Search for deletion
+                    foreach ($test2 as $key => $item) {
+                        if (!$this->haveKey($item, $test1)) {
+                            $actions[] = array(
+                                'sql' => $this->getDropKey($table, $item),
+                                'action' => 'drop_field'
+                            );
+                        }
+                    }
+
+
                 }
             } else {
                 //                if(!$value instanceof \stdClass) die_stack_trace();
@@ -310,6 +369,31 @@ class DBStructure
         return 0;
     }
 
+    private function haveKey($needle, $haystack) {
+        foreach ($haystack as $value) {
+            if($value['field'] == $needle['field'] &&
+                $value['table'] == $needle['table'] &&
+                $value['target'] == $needle['target']
+
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+    public function getAddKey($table, $index) {
+        $column = $index['field'];
+        $targetTable = $index['table'];
+        $targetColumn = $index['target'];
+        return "ALTER TABLE `$table` ADD FOREIGN KEY (`$column`) REFERENCES `$targetTable`(`$targetColumn`) ON DELETE CASCADE ON UPDATE CASCADE;";
+    }
+
+    public function getDropKey($table, $index) {
+        return "ALTER TABLE `$table` DROP INDEX `{$index['field']}`";
+    }
     /**
      * TODO
      *
@@ -380,8 +464,10 @@ class DBStructure
         if (isset($table['field'])) {
             $fields = array($table);
         }
-        $fun = create_function('$a', 'return implode(\' - \', $a);');
-        $list = array_map($fun, $fields);
+        if (isset($table['keys'])) {
+            $fields = array($table);
+        }
+        $list = array_map(function($a) { return implode(' - ' , $a); }, $fields);
         ksort($list);
         return sha1(strtolower(implode('-', array_keys($list)) . implode('-', $list)));
     }

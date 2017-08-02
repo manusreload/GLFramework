@@ -148,8 +148,10 @@ class Model
             }
         }
         $class = '\\GLFramework\\Model\\' . $baseclass;
-
-        return new $class($args);
+        if (class_exists($class)) {
+            return new $class($args);
+        }
+        return false;
     }
 
     /**
@@ -507,6 +509,7 @@ class Model
         }
     }
 
+
     /**
      * Devuelve true si es el indice del modelo
      *
@@ -516,6 +519,12 @@ class Model
     public function isIndex($field)
     {
         return $this->index == $field;
+    }
+
+    public function getKeys() {
+        if(isset($this->definition['keys'])) {
+            return $this->definition['keys'];
+        }
     }
 
     /**

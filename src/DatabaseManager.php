@@ -108,6 +108,11 @@ class DatabaseManager
         return new MySQLConnection();
     }
 
+    public function getDatabaseName() {
+        $config = $this->getConfig();
+        return $config['database']['database'];
+    }
+
     /**
      * TODO
      *
