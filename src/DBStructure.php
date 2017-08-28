@@ -330,7 +330,7 @@ WHERE
                         if (!$this->haveKey($item, $test1)) {
                             $actions[] = array(
                                 'sql' => $this->getDropKey($table, $item),
-                                'action' => 'drop_field'
+                                'action' => 'drop_key'
                             );
                         }
                     }

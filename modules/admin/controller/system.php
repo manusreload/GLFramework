@@ -9,8 +9,11 @@
 namespace GLFramework\Modules\Admin;
 
 
+use GLFramework\Bootstrap;
 use GLFramework\Controller\AuthController;
+use GLFramework\DBStructure;
 use GLFramework\Mail;
+use GLFramework\Model;
 use GLFramework\Model\Vars;
 
 class system extends AuthController
@@ -19,6 +22,7 @@ class system extends AuthController
     var $name = "Sistema";
     var $subtemplate = "system/home.twig";
     public $vars;
+    public $database;
 
     public function run()
     {
@@ -33,6 +37,9 @@ class system extends AuthController
         } elseif ($section == "vars") {
             $this->subtemplate = "system/vars.twig";
             $this->varsSection();
+        } elseif ($section == "database") {
+            $this->subtemplate = "system/database.twig";
+            $this->databaseSection();
         }
     }
 
@@ -63,6 +70,35 @@ class system extends AuthController
             } catch (\Exception $ex) {
                 $this->addMessage("Error al enviar el email: " . $ex->getMessage() . "\n" . display_exception($ex, 1, false));
             }
+        }
+    }
+
+    public function databaseSection() {
+        $this->database = array();
+
+        if(isset($_GET['recreate'])) {
+            $struct = new DBStructure();
+            $struct->executeModelChanges($this->getDb());
+        }
+        if(isset($_GET['optimize'])) {
+            $res = $this->getDb()->exec("OPTIMIZE TABLE `{$_GET['optimize']}`");
+            if ($res) {
+                $this->addMessage("Tabla optimizada correctamente! ($res)");
+            } else {
+                $this->addMessage("Error optimizando tabla", "danger");
+            }
+        }
+        foreach (Bootstrap::getSingleton()->getModels() as $model) {
+            $instance = Model::newInstance($model, array(), $module);
+            if($instance) {
+                $t = microtime(true);
+                $c = $instance->count();
+                $t = microtime(true) - $t;
+                $this->database[] = array('model' => get_class($instance), 'table' => $instance->getTableName(),
+                    'count' => $c, 't' => $t, 'module' => $module->title
+                );
+            }
+
         }
     }
 

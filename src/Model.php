@@ -132,9 +132,10 @@ class Model
      *
      * @param $baseclass
      * @param array $args
+     * @param null $module GLFramework\Module\Module
      * @return Model
      */
-    public static function newInstance($baseclass, $args = array())
+    public static function newInstance($baseclass, $args = array(), &$module = null)
     {
         $modules = ModuleManager::getInstance()->getModules();
         foreach ($modules as $module) {
@@ -913,5 +914,13 @@ class Model
     public function clearCache($key)
     {
         $this->db->removeCache($this->getCacheId($key));
+    }
+
+    /**
+     * Recuento de filas en la tabla
+     */
+    public function count()
+    {
+        return $this->db->select_count("SELECT count(1) FROM `{$this->getTableName()}` ");
     }
 }

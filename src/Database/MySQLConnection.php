@@ -63,6 +63,7 @@ class MySQLConnection extends Connection
             if (intval($this->pdo->errorCode()) === 0) {
                 $this->pdo->exec('SET NAMES utf8');
                 $this->pdo->exec('SET sql_mode = \'\'');
+                $this->pdo->exec('SET FOREIGN_KEY_CHECKS=0');
                 return true;
             }
         } catch (\Exception $ex) {
