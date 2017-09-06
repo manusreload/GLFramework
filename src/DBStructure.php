@@ -132,6 +132,7 @@ class DBStructure
         $result['table'] = $model->getTableName();
         $result['fields'] = $fields;
         $result['keys'] = $keys;
+        $result['engine'] = 'INNODB';
 
         return $result;
     }
@@ -265,10 +266,14 @@ WHERE
                 }
             }
 
+            $info2 = $db->select_first("SHOW TABLE STATUS WHERE Name = ?;", array ($table));
+
+            $engine = $info2['Engine'];
             $result[$table] = array(
                 'table' => $table,
                 'fields' => $fields,
-                'keys' => $keys
+                'keys' => $keys,
+                'engine' => $engine,
             );
         }
         return $result;
@@ -292,6 +297,14 @@ WHERE
             if (count($current) > 0) {
                 $dbTable = array_shift($current);
                 if ($this->getHash($value) != $this->getHash($dbTable)) {
+
+                    if(strtolower($value['engine']) != strtolower($dbTable['engine'])) {
+                        $actions[] = array(
+                            'sql' => $this->getChangeEngine($table, $value['engine']),
+                            'action' => 'change_engine'
+                        );
+                    }
+
                     $subject1 = array($value['fields']);
                     $subject2 = array($dbTable['fields']);
 
@@ -525,5 +538,10 @@ WHERE
     public function validTableName($table)
     {
         return $table;
+    }
+
+    private function getChangeEngine($table, $engine)
+    {
+        return "ALTER TABLE `$table` ENGINE = $engine;";
     }
 }
