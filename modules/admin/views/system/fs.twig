@@ -1,0 +1,17 @@
+{% embed "templates/box.twig" %}
+    {% block title %}
+        Administracion Filesystem
+    {% endblock %}
+    {% block content %}
+        <table class="table">
+            <tr>
+                <th>Ubicacion Filesystem</th>
+                <td>{{ mainconfig.app.database }}</td>
+                <th>Ubicacion Subidas</th>
+                <td>{{ mainconfig.app.uploads }}</td>
+            </tr>
+        </table>
+
+    {% endblock %}
+
+{% endembed %}
