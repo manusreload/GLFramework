@@ -122,6 +122,7 @@ class DBStructure
                            'target' => $column
 
                        );
+//                       $fields[$field]['index'] = true;
                    }
 
                 }
@@ -131,6 +132,7 @@ class DBStructure
         $result['table'] = $model->getTableName();
         $result['fields'] = $fields;
         $result['keys'] = $keys;
+        $result['engine'] = 'INNODB';
 
         return $result;
     }
@@ -177,6 +179,7 @@ class DBStructure
      */
     public function executeModelChanges($db)
     {
+        $count = 0;
         $models = Bootstrap::getSingleton()->getModels();
         foreach ($models as $model) {
             if (class_exists($model)) {
@@ -186,6 +189,7 @@ class DBStructure
                     foreach ($diff as $action) {
                         try {
                             $this->runAction($db, $instance, $action);
+                            $count++;
                         } catch (\Exception $ex) {
 //                            Debugbar::getInstance()->exceptionHandler($ex);
                             Log::getInstance()->critical($ex);
@@ -196,6 +200,7 @@ class DBStructure
             }
         }
         $this->setDatabaseUpdate();
+        return $count;
     }
 
     /**
@@ -246,23 +251,29 @@ class DBStructure
 FROM
   INFORMATION_SCHEMA.KEY_COLUMN_USAGE
 WHERE
-  REFERENCED_TABLE_SCHEMA = '?' AND
-  REFERENCED_TABLE_NAME = '?'", array($db->getDatabaseName(), $table));
+  TABLE_SCHEMA = ? AND
+  TABLE_NAME = ?", array($db->getDatabaseName(), $table));
 
             $keys = array();
             foreach ($info as $row) {
-                $key = array();
-                $key['field'] = $row['COLUMN_NAME'];
-                $key['table'] = $row['REFERENCED_TABLE_NAME'];
-                $key['target'] = $row['REFERENCED_COLUMN_NAME'];
-                $fields[$key['field']]['index'] = true;
-                $keys[] = $key;
+                if ($row['REFERENCED_TABLE_NAME']) {
+                    $key = array();
+                    $key['field'] = $row['COLUMN_NAME'];
+                    $key['table'] = $row['REFERENCED_TABLE_NAME'];
+                    $key['target'] = $row['REFERENCED_COLUMN_NAME'];
+//                    $fields[$key['field']]['index'] = true;
+                    $keys[] = $key;
+                }
             }
 
+            $info2 = $db->select_first("SHOW TABLE STATUS WHERE Name = ?;", array ($table));
+
+            $engine = $info2['Engine'];
             $result[$table] = array(
                 'table' => $table,
                 'fields' => $fields,
-                'keys' => $keys
+                'keys' => $keys,
+                'engine' => $engine,
             );
         }
         return $result;
@@ -285,7 +296,15 @@ WHERE
             $current = $this->getCurrentStructure($table);
             if (count($current) > 0) {
                 $dbTable = array_shift($current);
-                if ($this->getHash($value) !== $this->getHash($dbTable)) {
+                if ($this->getHash($value) != $this->getHash($dbTable)) {
+
+                    if(strtolower($value['engine']) != strtolower($dbTable['engine'])) {
+                        $actions[] = array(
+                            'sql' => $this->getChangeEngine($table, $value['engine']),
+                            'action' => 'change_engine'
+                        );
+                    }
+
                     $subject1 = array($value['fields']);
                     $subject2 = array($dbTable['fields']);
 
@@ -319,7 +338,7 @@ WHERE
                     }
 
                     $test1 = $value['keys'];
-                    $test2 = $value['keys'];
+                    $test2 = $dbTable['keys'];
                     foreach ($test1 as $key => $item) {
                         if (!$this->haveKey($item, $test2)) {
                             $actions[] = array('sql' => $this->getAddKey($table, $item), 'action' => 'add_key');
@@ -410,6 +429,9 @@ WHERE
         if (isset($field['autoincrement']) && $field['autoincrement']) {
             $type .= ' AUTO_INCREMENT';
         }
+        if (isset($field['default']) && $field['default'] !== null && $field['default'] != '') {
+            $type .= ' DEFAULT \'' . $field['default'] . '\'';
+        }
 
         return 'ALTER TABLE ' . $table . ' CHANGE `' . $name . '` `' . $name . '` ' . $type;
     }
@@ -465,7 +487,7 @@ WHERE
             $fields = array($table);
         }
         if (isset($table['keys'])) {
-            $fields = array($table);
+            $fields += $table['keys'];
         }
         $list = array_map(function($a) { return implode(' - ' , $a); }, $fields);
         ksort($list);
@@ -516,5 +538,10 @@ WHERE
     public function validTableName($table)
     {
         return $table;
+    }
+
+    private function getChangeEngine($table, $engine)
+    {
+        return "ALTER TABLE `$table` ENGINE = $engine;";
     }
 }

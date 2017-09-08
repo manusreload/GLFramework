@@ -242,6 +242,9 @@ class Module
     public function getModels()
     {
         $list = array();
+        if (!isset($this->config['app']['model'])) {
+            return $list;
+        }
         $models = $this->config['app']['model'];
         if (empty($models)) {
             return $list;

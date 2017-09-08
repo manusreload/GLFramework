@@ -78,7 +78,8 @@ class system extends AuthController
 
         if(isset($_GET['recreate'])) {
             $struct = new DBStructure();
-            $struct->executeModelChanges($this->getDb());
+            $count = $struct->executeModelChanges($this->getDb());
+            $this->addMessage("Se han realizado $count cambios en la db!");
         }
         if(isset($_GET['optimize'])) {
             $res = $this->getDb()->exec("OPTIMIZE TABLE `{$_GET['optimize']}`");
