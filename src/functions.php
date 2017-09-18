@@ -123,7 +123,7 @@ function print_array($array, $depth = 1, $indentation = 0)
 function fix_date($date)
 {
     $date = trim($date);
-    if ($date !== '') {
+    if ($date != "") {
         if (preg_match('#(\d{2})/(\d{2})/(\d{4})#', $date, $matches)) {
             return $matches[3] . '-' . $matches[2] . '-' . $matches[1];
         }
