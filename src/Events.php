@@ -200,7 +200,9 @@ class Events
      */
     public function _dispatch($event, $args = array())
     {
-        Log::d("Event " . $event, array('events'));
+        if($event != "onLog") {
+            Log::d("Event " . $event, array('events'));
+        }
         $eventResult = new EventResult();
         global $context;
         $buffer = array();
