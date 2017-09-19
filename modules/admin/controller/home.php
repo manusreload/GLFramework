@@ -73,7 +73,7 @@ class admin extends AuthController
     {
         $context = Events::getContext();
         $config = $context->getConfig();
-        if($user->admin) return true;
+        if($user->admin) return ALLOW_USER;
         $page = new Page();
         $pageUser = new UserPage();
         $current = $page->get_by_controller($controller)->getModel();
@@ -81,12 +81,12 @@ class admin extends AuthController
             $pageUser = $pageUser->getByPageUser($user->id, $current->id)->getModel();
             if($pageUser->id > 0)
             {
-                return $pageUser->allowed?true:false;
+                return $pageUser->allowed?ALLOW_USER:DISALLOW_USER;
             }
         }
-        if($controller->admin) return false;
-        if($controller->allowed) return true;
-        return $config['allowDefault']?:null;
+        if($controller->admin) return DISALLOW_USER;
+        if($controller->allowed) return ALLOW_USER;
+        return $config['allowDefault']?ALLOW_USER:null;
     }
 
 }

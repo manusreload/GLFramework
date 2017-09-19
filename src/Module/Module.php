@@ -31,7 +31,8 @@ use GLFramework\Cron\CronTask;
 use GLFramework\Events;
 use GLFramework\Request;
 use GLFramework\View;
-
+define('ALLOW_USER', 'allow');
+define('DISALLOW_USER', 'disallow');
 /**
  * Class Module
  *
@@ -457,19 +458,29 @@ class Module
         $instance->onCreate();
 
         if ($instance instanceof Controller) {
-            if ($instance instanceof Controller\AuthController) {
-                if ($instance->user) {
-                    $result = Events::dispatch('isUserAllowed', array($instance, $instance->user));
-                    if ($result->anyFalse()) {
-                        throw new \Exception('El usuario no tiene permisos para acceder a este sitio');
-                    }
-                }
-            }
+            $this->checkUserPermissions($instance);
 
             return $instance->call($request);
         }
         return false;
     }
+
+    /**
+     * @param $instance Controller
+     */
+    public function checkUserPermissions($instance) {
+        if ($instance instanceof Controller\AuthController) {
+            if ($instance->user) {
+                $result = Events::dispatch('isUserAllowed', array($instance, $instance->user));
+                foreach ($result->getArray() as $item) {
+                    if($item == DISALLOW_USER) {
+                        throw new \Exception('El usuario no tiene permisos para acceder a este sitio');
+                    }
+                }
+            }
+        }
+    }
+
 
     /**
      * TODO
