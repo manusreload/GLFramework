@@ -118,6 +118,29 @@ class EventResult
         return $this->result === true;
     }
 
+    public function any($type) {
+        if (is_array($this->result)) {
+            foreach ($this->result as $item) {
+                if ($item == $type) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return $this->result == $type;
+    }
+    public function all($type) {
+        if (is_array($this->result)) {
+            foreach ($this->result as $item) {
+                if ($item != $type) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return $this->result == $type;
+    }
+
     /**
      * TODO
      *

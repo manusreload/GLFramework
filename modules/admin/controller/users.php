@@ -9,6 +9,7 @@
 namespace GLFramework\Modules\Admin;
 
 
+use GLFramework\Controller;
 use GLFramework\Controller\AuthController;
 use GLFramework\Events;
 use GLFramework\Mail;
@@ -205,7 +206,8 @@ class users extends AuthController
 
     public function isPagePermission($controller)
     {
-        if(Events::dispatch('isUserAllowed', array($controller, $this->users))->anyFalse())
+        $ins = new $controller();
+        if(Events::dispatch('isUserAllowed', array($ins, $this->users))->any(DISALLOW_USER))
         {
             return false;
         }
