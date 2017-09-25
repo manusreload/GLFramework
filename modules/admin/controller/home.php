@@ -37,7 +37,11 @@ class admin extends AuthController
         $this->info['server']['host'] = gethostname();
         $this->info['server']['ip'] = gethostbyname(gethostname());
         $this->info['server']['name'] = $_SERVER['SERVER_NAME'];
-        $this->info['server']['load'] = implode(", ", sys_getloadavg());
+        if (function_exists("sys_getloadavg")) {
+            $this->info['server']['load'] = implode(", ", sys_getloadavg());
+        } else {
+            $this->info['server']['load'] = "";
+        }
         $this->info['extensions'] = implode(", ", get_loaded_extensions());
         $controllers = Events::dispatch('getAdminControllers')->getArray();
         foreach ($controllers as $controller)
