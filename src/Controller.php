@@ -324,11 +324,12 @@ abstract class Controller
         if (!is_array($folders)) {
             $folders = array($folders);
         }
+        if(substr($name, 0, 1) == "/") $name = substr($name, 1);
         foreach ($folders as $folder) {
-            $path = $module->getDirectory() . '/' . $folder . '/' . $name;
+            $path = $module->getDirectory() . ($folder == ""?"":'/' . $folder) . '/' . $name;
             if (file_exists($path)) {
                 $path = realpath($path);
-                $base = dirname($_SERVER['SCRIPT_FILENAME']);
+                $base = realpath($module->getDirectory());
                 $index = strpos($path, $base);
                 $url = substr($path, $index + strlen($base));
                 $protocol = 'http';
