@@ -309,9 +309,10 @@ abstract class Controller
      *
      * @param $name
      * @param null $module Module
+     * @param bool $asFile
      * @return string
      */
-    public function getResource($name, $module = null)
+    public function getResource($name, $module = null, $asFile = false)
     {
         if ($module === null) {
             $module = $this->module;
@@ -329,6 +330,9 @@ abstract class Controller
             $path = $module->getDirectory() . ($folder == ""?"":'/' . $folder) . '/' . $name;
             if (file_exists($path)) {
                 $path = realpath($path);
+                if ($asFile) {
+                    return $path;
+                }
                 $base = realpath($module->getDirectory());
                 $index = strpos($path, $base);
                 $url = substr($path, $index + strlen($base));
