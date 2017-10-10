@@ -250,7 +250,7 @@ class users extends AuthController
         $recovery->save(true);
         $mail = new Mail();
         $message = $mail->render($this, "mail/welcome.twig", array('user' => $user, 'recovery' => $recovery));
-        if($mail->send($user->email, "Bienvenido a Jarmauto Planning", $message))
+        if($mail->send($user->email, "Bienvenido a " . $this->config['app']['name'], $message))
         {
             $this->addMessage("Se ha enviado un email al usuario con los pasos que tiene que seguir para acceder al servicio");
         }

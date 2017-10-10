@@ -333,9 +333,9 @@ abstract class Controller
                 if ($asFile) {
                     return $path;
                 }
-                $base = realpath($module->getDirectory());
-                $index = strpos($path, $base);
-                $url = substr($path, $index + strlen($base));
+                //$base = realpath($module->getDirectory());
+                //$index = strpos($path, $base);
+                $url = Bootstrap::getSingleton()->toUrl($path);
                 $protocol = 'http';
                 if (strpos($_SERVER['SCRIPT_URI'], 'https') !== false) {
                     $protocol = 'https';
