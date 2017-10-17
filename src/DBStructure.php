@@ -132,7 +132,7 @@ class DBStructure
         $result['table'] = $model->getTableName();
         $result['fields'] = $fields;
         $result['keys'] = $keys;
-        $result['engine'] = 'INNODB';
+        $result['engine'] = $model->getEngine();
 
         return $result;
     }

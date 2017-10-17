@@ -104,6 +104,7 @@ class Model
      */
     protected $json_extra = array();
     private $index;
+    protected $engine = "INNODB";
 
     /**
      * Model constructor.
@@ -922,5 +923,9 @@ class Model
     public function count()
     {
         return $this->db->select_count("SELECT count(1) FROM `{$this->getTableName()}` ");
+    }
+
+    public function getEngine() {
+        return $this->engine;
     }
 }
