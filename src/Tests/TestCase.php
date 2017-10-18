@@ -139,6 +139,9 @@ class TestCase extends \PHPUnit_Framework_TestCase
         if (strpos($uri, '/') !== 0) {
             $uri = '/' . $uri;
         }
+        if(($i = strpos($uri, "#")) > 0) {
+            $uri = substr($uri,0 , $i);
+        }
         $bs = Bootstrap::getSingleton();
         $_COOKIE = $cookies;
         $_REQUEST = $params;
