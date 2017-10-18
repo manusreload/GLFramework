@@ -144,7 +144,8 @@ class TestCase extends \PHPUnit_Framework_TestCase
         $_REQUEST = $params;
         $_POST = $params;
         $_FILES = $this->buildFilesForm($files);
-        $_SERVER['REQUEST_URI'] = $this->internal_host . $uri;
+        $_SERVER['REQUEST_URI'] = $uri;
+        $_SERVER['HTTP_HOST'] = substr($this->internal_host, 7);
         $this->response = $bs->run($uri, $method);
         $this->followRedirects();
         $this->crawler = new Crawler($this->response->getContent(), $this->internal_host . $uri);

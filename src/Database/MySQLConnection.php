@@ -121,22 +121,28 @@ class MySQLConnection extends Connection
      */
     public function select($query, $args = array(), $returnArray = true)
     {
-        if (!GL_INSTALL) {
-            $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        } else {
-            $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING);
-        }
-        $stmt = $this->pdo->prepare($query);
-        $result = $stmt->execute($args);
-        //$list = array();
-        if ($result) {
-            if ($returnArray) {
-                return $stmt->fetchAll();
+        if($this->pdo) {
+
+            if (!GL_INSTALL) {
+                $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            } else {
+                $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING);
             }
-            return true;
+            $stmt = $this->pdo->prepare($query);
+            $result = $stmt->execute($args);
+            //$list = array();
+            if ($result) {
+                if ($returnArray) {
+                    return $stmt->fetchAll();
+                }
+                return true;
+            } else {
+                //            if($this->getLastError())
+                throw new \Exception($query . "\n" . $this->getLastError());
+            }
         } else {
-            //            if($this->getLastError())
-            throw new \Exception($query . "\n" . $this->getLastError());
+            throw new \Exception("Error executing query: $query\nIt seems that the connection was not opened!");
+
         }
     }
 

@@ -672,14 +672,15 @@ class Model
      * Genera las diferencias entre este modelo y lo que hay
      * en la base de datos.
      *
-     * @param bool $drop
+     * @param $db DatabaseManager
+     * @param $drop bool
      * @return array
      */
-    public function getStructureDifferences($drop = false)
+    public function getStructureDifferences($db, $drop = false)
     {
         $diff = new DBStructure();
         $excepted = $diff->getDefinition($this);
-        return $diff->getStructureDifferences($excepted, $drop);
+        return $diff->getStructureDifferences($db, $excepted, $drop);
     }
 
     /**

@@ -185,7 +185,7 @@ class DBStructure
             if (class_exists($model)) {
                 $instance = new $model(null);
                 if ($instance instanceof Model) {
-                    $diff = $instance->getStructureDifferences();
+                    $diff = $instance->getStructureDifferences($db);
                     foreach ($diff as $action) {
                         try {
                             $this->runAction($db, $instance, $action);
@@ -216,12 +216,12 @@ class DBStructure
     /**
      * TODO
      *
+     * @param $db DatabaseManager
      * @param string $table
      * @return array
      */
-    public function getCurrentStructure($table = '')
+    public function getCurrentStructure($db, $table = '')
     {
-        $db = new DatabaseManager();
         $res = $db->select("SHOW TABLES LIKE '$table'");
         $tables = array();
         $result = array();
@@ -282,18 +282,19 @@ WHERE
     /**
      * TODO
      *
+     * @param $db DatabaseManager
      * @param $excepted
      * @param bool $drop
      * @return array
      */
-    public function getStructureDifferences($excepted, $drop = false)
+    public function getStructureDifferences($db, $excepted, $drop = false)
     {
         if (isset($excepted['table'])) {
             $excepted = array($excepted['table'] => $excepted);
         }
         $actions = array();
         foreach ($excepted as $table => $value) {
-            $current = $this->getCurrentStructure($table);
+            $current = $this->getCurrentStructure($db, $table);
             if (count($current) > 0) {
                 $dbTable = array_shift($current);
                 if ($this->getHash($value) != $this->getHash($dbTable)) {
@@ -489,9 +490,12 @@ WHERE
         if (isset($table['keys'])) {
             $fields += $table['keys'];
         }
-        $list = array_map(function($a) { return implode(' - ' , $a); }, $fields);
+        $list = array_map(array($this, 'encode_hash'), $fields);
         ksort($list);
         return sha1(strtolower(implode('-', array_keys($list)) . implode('-', $list)));
+    }
+    private function encode_hash($a) {
+        return implode(' - ', $a);
     }
 
     /**
