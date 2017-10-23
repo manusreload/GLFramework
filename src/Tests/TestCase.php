@@ -157,6 +157,19 @@ class TestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param $method
+     * @param $uri
+     * @param array $params
+     * @param array $cookies
+     * @param array $files
+     */
+    public function ajax($method, $uri, $params = array(), $cookies = array(), $files = array())
+    {
+
+    }
+
+
+    /**
      * TODO
      *
      * @return $this

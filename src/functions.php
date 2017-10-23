@@ -826,3 +826,13 @@ function stop_timer($t)
     $d = microtime(true) - $t['time'];
     \GLFramework\Log::d("[$tag1] " . $d . " s");
 }
+
+function detect_client_ip() {
+    if(isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        return $_SERVER['HTTP_X_FORWARDED_FOR'];
+    }
+    if(isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+        return $_SERVER['HTTP_CF_CONNECTING_IP'];
+    }
+    return $_SERVER['REMOTE_ADDR'];
+}
