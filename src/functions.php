@@ -686,7 +686,10 @@ function time_elapsed_default_translation()
         'seconds' => '%d segundo%s',
         'minutes' => '%d minuto%s',
         'hours' => '%d hora%s',
-        'days' => '%d dias%s',
+        'days' => '%d dia%s',
+        'weeks' => '%d semana%s',
+        'months' => '%d mes%s',
+        'years' => '%d año%s',
     );
 }
 
@@ -712,13 +715,13 @@ function time_elapsed($start, $end = null, $translation = array())
     } else {
         $key = 'days';
         $tokens = array (
-            31536000 => 'year',
-            2592000 => 'month',
-            604800 => 'week',
-            86400 => 'day',
-            3600 => 'hour',
-            60 => 'minute',
-            1 => 'second'
+            31536000 => 'years',
+            2592000 => 'months',
+            604800 => 'weeks',
+            86400 => 'days',
+            3600 => 'hours',
+            60 => 'minutes',
+            1 => 'seconds'
         );
 
         foreach ($tokens as $unit => $text) {
