@@ -710,8 +710,22 @@ function time_elapsed($start, $end = null, $translation = array())
     if ($seconds <= 15) {
         $key = 'few';
     } else {
-        $keys = array('seconds' => 1, 'minutes' => 60, 'hours' => 24 * 60, 'days');
-        $current = 0;
+        $key = 'days';
+        $tokens = array (
+            31536000 => 'year',
+            2592000 => 'month',
+            604800 => 'week',
+            86400 => 'day',
+            3600 => 'hour',
+            60 => 'minute',
+            1 => 'second'
+        );
+
+        foreach ($tokens as $unit => $text) {
+            if ($seconds < $unit) continue;
+            $numberOfUnits = floor($seconds / $unit);
+            return sprintf($translation[$text], $numberOfUnits, ($numberOfUnits>1)?$translation['plural']:"");
+        }
     }
 
     return sprintf($translation[$key], $seconds);

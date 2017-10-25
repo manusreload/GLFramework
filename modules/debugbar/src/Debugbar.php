@@ -187,7 +187,7 @@ class Debugbar
 
     public function onCoreStartUp($time, $init)
     {
-        $this->time->addMeasure('Core start up', $time, microtime(true));
+        $this->time->addMeasure('Core start up', $time, $init);
         $this->time->addMeasure('Core init', $init, microtime(true));
     }
 

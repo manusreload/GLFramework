@@ -216,7 +216,7 @@ class ModuleManager
     /**
      * TODO
      *
-     * @param bool $module
+     * @param bool|Module $module
      * @return array
      */
     public function getViews($module = false)
