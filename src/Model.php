@@ -373,10 +373,10 @@ class Model
      * Busca en forma de texto en la tabla
      *
      * @param $fields
+     * @param int $limit
      * @return ModelResult
-     * @throws \Exception
      */
-    public function search($fields)
+    public function search($fields, $limit = -1)
     {
         if (!is_array($fields)) {
             $fields = array($this->getIndex() => $fields);
@@ -400,6 +400,9 @@ class Model
         }
         if (!empty($sql)) {
             $sql = substr($sql, 0, -4);
+            if($limit > 0) {
+                $sql .= " LIMIT $limit";
+            }
             return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE ' . $sql, $args));
         }
         return $this->build(array());
