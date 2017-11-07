@@ -93,7 +93,7 @@ abstract class Controller
         $base = substr($base, 0, strrpos($base, '.'));
         $this->template = $base . '.twig';
 
-        $this->view = new View($this);
+//        $this->view = new View($this);
         $this->response = new Response();
         $this->addMiddleware(new ControllerMiddleware($this));
         Events::dispatch('afterControllerConstruct', array($this));
@@ -115,7 +115,7 @@ abstract class Controller
      */
     public function display($data, $params)
     {
-        return $this->view->render($data, $params);
+        return $this->getView()->render($data, $params);
     }
 
     /**
@@ -275,6 +275,9 @@ abstract class Controller
      */
     public function getView()
     {
+        if($this->view == null) {
+            $this->view = new View($this);
+        }
         return $this->view;
     }
 

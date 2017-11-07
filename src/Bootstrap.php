@@ -305,6 +305,8 @@ class Bootstrap
         Log::i('· Current Folder: ' . realpath('.'));
         Log::i('· Extensiones de PHP: ');
         Log::i(get_loaded_extensions());
+        Log::i('· Modules priority: ');
+        Log::i(array_map(function($module) { return $module->title; }, $this->manager->getModules()));
         Events::dispatch('onCoreStartUp', array($this->startTime, $this->initTime));
         $this->manager->checkModulesPolicy();
         $response = $this->manager->run($url, $method);

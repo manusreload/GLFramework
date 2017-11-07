@@ -28,6 +28,7 @@ namespace GLFramework\Module;
 
 use GLFramework\Controller;
 use GLFramework\Cron\CronTask;
+use GLFramework\Event\Event;
 use GLFramework\Events;
 use GLFramework\Request;
 use GLFramework\View;
@@ -472,9 +473,12 @@ class Module
         if ($instance instanceof Controller\AuthController) {
             if ($instance->user) {
                 $result = Events::dispatch('isUserAllowed', array($instance, $instance->user));
-                foreach ($result->getArray() as $item) {
+                $evt = $result->getEvents();
+                foreach ($result->getArray() as $i => $item) {
                     if($item == DISALLOW_USER) {
-                        throw new \Exception('El usuario no tiene permisos para acceder a este sitio');
+                        $event = $evt[$i][1];
+                        if($event instanceof Event);
+                        throw new \Exception('El usuario no tiene permisos para acceder a este sitio. Module: ' . $event->getModule());
                     }
                 }
             }

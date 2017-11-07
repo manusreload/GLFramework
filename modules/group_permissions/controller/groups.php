@@ -70,15 +70,18 @@ class groups extends AuthController
             }
             if(isset($_POST['addLink']))
             {
-                $page = new Page();
-                $page = $page->get(array('controller' => $_POST['controller']))->getModel();
-                $page->generate($_POST['controller']);
-                $page->save(true);
+                foreach ($_POST['controller'] as $controller) {
 
-                $this->groupPage = $this->groupPage->get(array('id_group' => $this->params['id'], 'id_page' => $page->id))->getModel();
-                $this->groupPage->id_group = $this->params['id'];
-                $this->groupPage->id_page = $page->id;
-                $this->groupPage->save();
+                    $page = new Page();
+                    $page = $page->get(array('controller' => $controller))->getModel();
+                    $page->generate($controller);
+                    $page->save(true);
+
+                    $this->groupPage = $this->groupPage->get(array('id_group' => $this->params['id'], 'id_page' => $page->id))->getModel();
+                    $this->groupPage->id_group = $this->params['id'];
+                    $this->groupPage->id_page = $page->id;
+                    $this->groupPage->save();
+                }
             }
             $this->groupPage = $this->groupPage->get(array('id_group' => $this->params['id']))->getModels();
         }

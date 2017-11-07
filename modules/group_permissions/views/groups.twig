@@ -104,7 +104,7 @@
                                 <div class="form-group ">
                                     <label class="control-label col-lg-2">Paginas disponibles</label>
                                     <div class="col-lg-10">
-                                        <select name="controller" class="form-control">
+                                        <select name="controller[]" multiple class="form-control" style="height: 380px;">
                                             {% for page in this.controllers %}
 
                                                 <option value="{{ page }}">{% if this.isPagePressent(page) %}* {% endif %}{{ page }} - {{ this.getLink(page) }}</option>

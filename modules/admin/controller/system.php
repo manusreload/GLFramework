@@ -40,6 +40,9 @@ class system extends AuthController
         } elseif ($section == "database") {
             $this->subtemplate = "system/database.twig";
             $this->databaseSection();
+        }elseif ($section == "info") {
+            $this->subtemplate = "system/info.twig";
+            $this->infoSection();
         }
     }
 
@@ -101,6 +104,14 @@ class system extends AuthController
             }
 
         }
+    }
+
+    public function infoSection() {
+    }
+
+    public function phpInfo() {
+        phpinfo();
+
     }
 
 
