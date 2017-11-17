@@ -308,6 +308,8 @@ class ModuleManager
         //      [path_to_module]:
         //          [module_folder]: { [extra_config] }
 
+        // Pre-load modules:
+        $resolv = array();
         foreach ($modules as $folder => $list) {
             // Resolver el tipo de directorio
             if ((string)$folder === 'internal') { // Para especificar un modulo interno
@@ -317,13 +319,12 @@ class ModuleManager
             } else {
                 $folder = $this->directory . fix_folder($folder);
             }
-
             if (!is_array($list)) {
                 $list = array($list);
             }
 
             foreach ($list as $name => $moduleConfig) {
-                if (is_int($name) && empty($moduleConfig)) {
+                if (is_int($name) && empty($moduleConfig)) { // Tipo: [0] => ''
                     continue;
                 }
                 if (!is_string($name) && is_array($moduleConfig)) {
@@ -334,18 +335,27 @@ class ModuleManager
                     $name = $moduleConfig;
                     $moduleConfig = array();
                 }
-                $module = $this->load($folder . '/' . $name, $moduleConfig);
-                if ($module) {
-                    if (!$this->exists($module->title)) {
-                        $this->add($module);
-                        $this->loadModuleDependencies($module);
-                    }
-                } else {
-                    throw new \Exception('Can\'t not load module: ' . $name . ' in directory: \'' .
-                        $folder . '/' . $name . '\'');
+                $path = $folder . '/' . $name;
+                if (!isset($resolv[$path])) {
+                    $resolv[$path] = array('name' => $name, 'config' => array());
                 }
+//                $resolv[$name][] = $moduleConfig;
+                $resolv[$path]['config'] = array_merge_recursive_ex($resolv[$path]['config'], $moduleConfig);
             }
-
+        }
+        foreach ($resolv as $path => $info) {
+            $moduleConfig = $info['config'];
+            $name = $info['name'];
+            $module = $this->load($path, $moduleConfig);
+            if ($module) {
+                if (!$this->exists($module->title)) {
+                    $this->add($module);
+                    $this->loadModuleDependencies($module);
+                }
+            } else {
+                throw new \Exception('Can\'t not load module: ' . $name . ' in directory: \'' .
+                    $path . '\'');
+            }
         }
     }
 
