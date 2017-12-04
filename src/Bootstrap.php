@@ -224,7 +224,7 @@ class Bootstrap
         $this->initTime = microtime(true);
         $this->init = true;
         Log::d('Initializing framework...');
-        $this->register_error_handler();
+//        $this->register_error_handler();
         date_default_timezone_set('Europe/Madrid');
 
         $this->manager = new ModuleManager($this->config, $this->directory);
