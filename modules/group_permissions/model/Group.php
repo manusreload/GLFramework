@@ -42,7 +42,7 @@ class Group extends \GLFramework\Model
         return $this->build($this->db->select("SELECT * FROM " . $this->getTableName() . " WHERE permissions IN ('" . implode("','", $groups) ."') OR `default` = 1"));
     }
 
-    public function search($label)
+    public function search($label, $limit = -1)
     {
         return $this->build($this->db->select("SELECT * FROM " . $this->getTableName() . " WHERE title LIKE '%" . $label . "%'"));
     }
