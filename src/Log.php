@@ -177,7 +177,7 @@ class Log extends AbstractLogger
             $dt = self::$lastLog>0?($ct - self::$lastLog):0;
             $time = number_format( $ct - Bootstrap::getSingleton()->getStartTime(), 5 );
             $dt = number_format($dt, 5);
-            error_log("[$time][-$dt][$level]\t" . (is_string($message)?$message:implode(", ", $message)));
+//            error_log("[$time][-$dt][$level]\t" . (is_string($message)?$message:implode(", ", $message)));
             self::$lastLog = $ct;
         }
         // TODO: Implement log() method.

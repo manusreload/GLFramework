@@ -136,16 +136,18 @@ class Module
     {
         //        Log::d($this->config);
         $this->register_composer();
-        $controllers = $this->config['app']['controllers'];
-        if (!is_array($controllers)) {
-            $controllers = array($controllers);
-        }
-        foreach ($controllers as $controllerFolder) {
-            if ($controllerFolder) {
-                $this->load_controllers($this->directory . '/' . $controllerFolder);
+        if(isset($this->config['app']['controllers'])) {
+            $controllers = $this->config['app']['controllers'];
+            if (!is_array($controllers)) {
+                $controllers = array($controllers);
             }
+            foreach ($controllers as $controllerFolder) {
+                if ($controllerFolder) {
+                    $this->load_controllers($this->directory . '/' . $controllerFolder);
+                }
+            }
+            $this->register_autoload_controllers();
         }
-        $this->register_autoload_controllers();
         $this->register_autoload_model();
         //        $this->register_events();
     }
@@ -163,21 +165,24 @@ class Module
      */
     public function register_autoload_model()
     {
-        $models = $this->config['app']['model'];
-        if (!is_array($models)) {
-            $models = array($models);
-        }
-        $dir = $this->directory;
-        $this->spl_autoload_models = function ($class) use ($models, $dir) {
-            foreach ($models as $directory) {
-                $filename = $dir . '/' . $directory . '/' . $class . '.php';
-                if (file_exists($filename)) {
-                    include_once $filename;
-                    return true;
-                }
+        if(isset($this->config['app']['model'])) {
+
+            $models = $this->config['app']['model'];
+            if (!is_array($models)) {
+                $models = array($models);
             }
-        };
-        spl_autoload_register($this->spl_autoload_models);
+            $dir = $this->directory;
+            $this->spl_autoload_models = function ($class) use ($models, $dir) {
+                foreach ($models as $directory) {
+                    $filename = $dir . '/' . $directory . '/' . $class . '.php';
+                    if (file_exists($filename)) {
+                        include_once $filename;
+                        return true;
+                    }
+                }
+            };
+            spl_autoload_register($this->spl_autoload_models);
+        }
     }
 
     /**
@@ -378,9 +383,11 @@ class Module
             }
         }
 
-        $index = $this->config['app']['index'];
-        if (strpos($file, $index) !== false) {
-            $array[] = $this->cleanUrl(substr($file, 0, strpos($file, $index)));
+        if(isset($this->config['app']['index'])) {
+            $index = $this->config['app']['index'];
+            if (strpos($file, $index) !== false) {
+                $array[] = $this->cleanUrl(substr($file, 0, strpos($file, $index)));
+            }
         }
         $array[] = $this->cleanUrl($file);
 

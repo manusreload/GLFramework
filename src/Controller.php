@@ -89,9 +89,14 @@ abstract class Controller
         if (empty($this->name)) {
             $this->name = get_class($this);
         }
-        $this->directory = dirname($base);
-        $base = substr($base, 0, strrpos($base, '.'));
-        $this->template = $base . '.twig';
+        if(is_string($base)) {
+            $this->directory = dirname($base);
+            $base = substr($base, 0, strrpos($base, '.'));
+            $this->template = $base . '.twig';
+        } else {
+            $this->directory = $module->getDirectory();
+            $this->template = get_class($this) . '.twig';
+        }
 
 //        $this->view = new View($this);
         $this->response = new Response();
