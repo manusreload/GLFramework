@@ -290,6 +290,23 @@ class Module
         return $directories;
     }
 
+    public function getViewsOverride()
+    {
+        $config = $this->config;
+        $directories = array();
+        $dir = $this->directory;
+        if (isset($config['app']['override'])) {
+            $directoriesTmp = $config['app']['override'];
+            if (!is_array($directoriesTmp)) {
+                $directoriesTmp = array($directoriesTmp);
+            }
+            foreach ($directoriesTmp as $directory) {
+                $this->addFolder($directories, $dir . '/' . $directory);
+            }
+        }
+        return $directories;
+    }
+
     /**
      * TODO
      *

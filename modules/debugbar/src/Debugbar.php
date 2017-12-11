@@ -56,7 +56,7 @@ class Debugbar
     private $messages;
 
     /**
-     * @var RequestDataCollector
+     * @var \DebugBar\DataCollector\RequestDataCollector
      */
     private $request;
 
@@ -113,16 +113,16 @@ class Debugbar
     {
         if(self::$debugbar == null)
         {
-            self::$debugbar = new \DebugBar\DebugBar();
+            self::$debugbar = new StandardDebugBar();
 
-            self::$debugbar->addCollector(new PhpInfoCollector());
-            self::$debugbar->addCollector(new MessagesCollector());
-            self::$debugbar->addCollector(new RequestDataCollector());
+//            self::$debugbar->addCollector(new PhpInfoCollector());
+//            self::$debugbar->addCollector(new MessagesCollector());
+//            self::$debugbar->addCollector(new RequestDataCollector());
             self::$debugbar->addCollector(new ControllerCollector());
             self::$debugbar->addCollector(new ResponseCollector());
-            self::$debugbar->addCollector(new TimeDataCollector());
-            self::$debugbar->addCollector(new MemoryCollector());
-            self::$debugbar->addCollector(new ExceptionsCollector());
+//            self::$debugbar->addCollector(new TimeDataCollector());
+//            self::$debugbar->addCollector(new MemoryCollector());
+//            self::$debugbar->addCollector(new ExceptionsCollector());
             self::$debugbar->addCollector(new ErrorCollector());
 //            self::$debugbar->addCollector(new PDOCollector(new TraceablePDO()));
 //            self::$debugbar->addCollector(new SwiftMailCollector());
@@ -150,7 +150,7 @@ class Debugbar
     {
         if(!$this->getDebugbar()->hasCollector('controller')) return;
         $this->controller->setController($instance);
-        $this->request->addRequestData('params', $instance->params);
+//        $this->request->('params', $instance->params);
         $config = Bootstrap::getSingleton()->getConfig();
         if(isset($config['database']['database']))
         {

@@ -222,8 +222,16 @@ class ModuleManager
     public function getViews($module = false)
     {
         $views = array();
+        foreach ($this->getModules() as $module2) {
+            foreach ($module2->getViewsOverride() as $view) {
+                $views[] = $view;
+
+            }
+        }
         if ($module) {
-            $views = $module->getViews();
+            foreach ($module->getViews() as $view) {
+                $views[] = $view;
+            }
         }
         foreach ($this->getModules() as $module2) {
             if ($module2 !== $module) {
