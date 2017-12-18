@@ -90,9 +90,9 @@ class Module
             $settings = $this->config['app']['settings'];
             foreach ($settings as $name => $setting) {
                 $moduleSetting = new ModuleSettings();
-                $moduleSetting->description = $setting['description'];
-                $moduleSetting->type = $setting['type'];
-                $moduleSetting->default = $setting['default'];
+                $moduleSetting->description = isset($setting['description'])?$setting['description']:"";
+                $moduleSetting->type = isset($setting['type'])?$setting['type']:"";
+                $moduleSetting->default = isset($setting['default'])?$setting['default']:"";
                 $moduleSetting->key = $name;
                 $this->settings[] = $moduleSetting;
             }
