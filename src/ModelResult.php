@@ -37,7 +37,7 @@ class ModelResult implements \IteratorAggregate
 {
     var $model_class;
     var $reflection;
-    var $models;
+    var $models = array();
     var $model;
 
     /**
