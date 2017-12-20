@@ -281,7 +281,7 @@ class Bootstrap
             }
             session_save_path(sys_get_temp_dir() . '/glframework_session');
         }
-        session_start();
+        @session_start();
     }
 
     /**
