@@ -99,10 +99,17 @@ class View
             $key = "twig" . microtime(true);
             Debugbar::timer($key, $this->controller->getTemplate());
             $template = $this->twig->load($this->controller->getTemplate());
-            $data = $template->render($data ? $data : array());
+            $data = $template->render($this->getData($data));
             Debugbar::stopTimer($key);
         }
         return $data;
+    }
+
+    private function getData($data) {
+        if($data === true) return array();
+        if($data === false) return array();
+        if($data) return $data;
+        return array();
     }
 
     /**
