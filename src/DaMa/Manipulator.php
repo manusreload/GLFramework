@@ -295,7 +295,7 @@ class Manipulator
         $this->init($config);
         if ($header = $this->getNext()) {
             $this->current++;
-            $buffer .= "<table class='table table-bordered'>";
+            $buffer .= "<table class='table table-bordered' border='1'>";
             while ($next = $this->getNext()) {
                 if (implode('', $next) != '') {
                     $model = $this->build($header, $next);
@@ -350,18 +350,23 @@ class Manipulator
             $associative[$value] = $row[$key];
         }
         $model = new $this->modelName();
-        foreach ($this->association as $association) {
+        // Query for indexs
+        $indexs = array();
+        foreach ($this->association as $association) { // First search for values indexes
             if ($association->index) {
                 if ($association->fill($model, $associative)) {
                     $value = $model->{$association->nameInModel};
                     if ($value && !empty($value)) {
-                        $result = $model->get(array($association->nameInModel => $value));
-                        $model = $result->getModel();
-                        $modelSource = $result->getModel();
-                        break;
+                        $indexs[$association->nameInModel] = $value;
                     }
                 }
             }
+        }
+
+        if (!empty($indexs)) { // The search for theses indexes
+            $result = $model->get($indexs);
+            $model = $result->getModel();
+            $modelSource = $result->getModel();
         }
 
         foreach ($this->association as $association) {
