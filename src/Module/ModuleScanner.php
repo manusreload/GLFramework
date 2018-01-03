@@ -53,6 +53,7 @@ class ModuleScanner
      */
     public function recursive($path, &$list = array())
     {
+        if(!$path) return;
         $files = scandir($path);
         foreach ($files as $file) {
             if ($file !== '.' && $file !== '..') {

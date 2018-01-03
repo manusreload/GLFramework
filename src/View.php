@@ -55,7 +55,7 @@ class View
      */
     private $stylesheetMedia = array();
     private $directories;
-
+    private $config;
     /**
      * View constructor.
      *
@@ -67,7 +67,8 @@ class View
         $this->controller = $controller;
         $this->directories = ModuleManager::getInstance()->getViews($controller->module);
         $loader = new \Twig_Loader_Filesystem($this->directories);
-        if($this->getController()->config['app']['twig_cache'])
+        $this->config = $this->getController()->config;
+        if(isset($this->config['app']['twig_cache']) && $this->config['app']['twig_cache'])
         {
             $fs = new Filesystem('twig_cache');
             $fs->mkdir();
@@ -98,10 +99,17 @@ class View
             $key = "twig" . microtime(true);
             Debugbar::timer($key, $this->controller->getTemplate());
             $template = $this->twig->load($this->controller->getTemplate());
-            $data = $template->render($data ? $data : array());
+            $data = $template->render($this->getData($data));
             Debugbar::stopTimer($key);
         }
         return $data;
+    }
+
+    private function getData($data) {
+        if($data === true) return array();
+        if($data === false) return array();
+        if($data) return $data;
+        return array();
     }
 
     /**

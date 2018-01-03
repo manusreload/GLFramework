@@ -345,7 +345,7 @@ abstract class Controller
                 //$index = strpos($path, $base);
                 $url = Bootstrap::getSingleton()->toUrl($path);
                 $protocol = 'http';
-                if (strpos($_SERVER['SCRIPT_URI'], 'https') !== false) {
+                if (isset($_SERVER['SCRIPT_URI']) && strpos($_SERVER['SCRIPT_URI'], 'https') !== false) {
                     $protocol = 'https';
                 }
 

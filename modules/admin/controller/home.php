@@ -88,8 +88,8 @@ class admin extends AuthController
                 return $pageUser->allowed?ALLOW_USER:DISALLOW_USER;
             }
         }
-        if($controller->admin) return DISALLOW_USER;
-        if($controller->allowed) return ALLOW_USER;
+        if(isset($controller->admin) && $controller->admin) return DISALLOW_USER;
+        if(isset($controller->allowed) && $controller->allowed) return ALLOW_USER;
         return (isset($config['allowDefault']) && $config['allowDefault'])?ALLOW_USER:null;
     }
 

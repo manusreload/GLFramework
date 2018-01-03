@@ -281,7 +281,7 @@ class Bootstrap
             }
             session_save_path(sys_get_temp_dir() . '/glframework_session');
         }
-        session_start();
+        @session_start();
     }
 
     /**
@@ -300,7 +300,7 @@ class Bootstrap
         Log::i('· Version: ' . $this->getVersion());
         Log::i('· PHP Version: ' . PHP_VERSION);
         Log::i('· Server Type: ' . $_SERVER['SERVER_SOFTWARE']);
-        Log::i('· Server IP: ' . $_SERVER['SERVER_ADDR'] . ':' . $_SERVER['SERVER_PORT']);
+        Log::i('· Server IP: ' . (isset($_SERVER['SERVER_ADDR'])?$_SERVER['SERVER_ADDR']:"127.0.0.1") . ':' . $_SERVER['SERVER_PORT']);
         Log::i('· Current User: ' . get_current_user());
         Log::i('· Current Folder: ' . realpath('.'));
         Log::i('· Extensiones de PHP: ');
