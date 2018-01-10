@@ -299,7 +299,7 @@ class Bootstrap
         Log::i('Welcome to GLFramework');
         Log::i('· Version: ' . $this->getVersion());
         Log::i('· PHP Version: ' . PHP_VERSION);
-        Log::i('· Server Type: ' . $_SERVER['SERVER_SOFTWARE']);
+        Log::i('· Server Type: ' . isset($_SERVER['SERVER_SOFTWARE'])?$_SERVER['SERVER_SOFTWARE']:"unknown");
         Log::i('· Server IP: ' . (isset($_SERVER['SERVER_ADDR'])?$_SERVER['SERVER_ADDR']:"127.0.0.1") . ':' . $_SERVER['SERVER_PORT']);
         Log::i('· Current User: ' . get_current_user());
         Log::i('· Current Folder: ' . realpath('.'));
