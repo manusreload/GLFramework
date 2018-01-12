@@ -18,6 +18,11 @@
                     <td><button type="submit" name="save" value="{{ key }}" class="btn btn-default"><i class="fa fa-save"></i></button></td>
                 </tr>
             {% endfor %}
+            <tr>
+                <td><input type="text" class="form-control" name="add[key]" value="" placeholder="Nueva"></td>
+                <td><input type="text" class="form-control" name="add[value]" value=""></td>
+                <td><button type="submit" name="add[save]" value="1" class="btn btn-default"><i class="fa fa-save"></i></button></td>
+            </tr>
         </table>
         </form>
 

@@ -55,6 +55,13 @@ class system extends AuthController
             Vars::setVar($key, $value);
             $this->addMessage("Se ha actualizado correctamente");
         }
+
+        if(isset($_POST['add']) && isset($_POST['add']['save'])) {
+            $key = $_POST['add']['key'];
+            $value = $_POST['add']['value'];
+            Vars::setVar($key, $value);
+            $this->addMessage("Se ha creado correctamente");
+        }
     }
 
     public function mailSection()
