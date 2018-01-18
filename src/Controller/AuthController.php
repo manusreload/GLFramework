@@ -172,10 +172,10 @@ class AuthController extends Controller implements Middleware
      */
     public function processLogin($username = null, $password = null, $encrypt = true)
     {
-        if ($username === null) {
+        if ($username === null && isset($_POST['username'])) {
             $username = $_POST['username'];
         }
-        if ($password === null) {
+        if ($password === null && isset($_POST['password'])) {
             $password = $_POST['password'];
         }
         if (isset($username) && isset($password)) {

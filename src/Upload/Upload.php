@@ -146,10 +146,13 @@ class Upload
      */
     public function error($index = false)
     {
-        if ($index === false) {
-            return $this->upload['error'];
+        if (isset($this->upload['error'])) {
+            if ($index === false) {
+                    return $this->upload['error'];
+            }
+            return $this->upload['error'][$index];
         }
-        return $this->upload['error'][$index];
+        return false;
     }
 
     /**
@@ -160,10 +163,13 @@ class Upload
      */
     public function name($index = false)
     {
-        if ($index === false) {
-            return $this->upload['name'];
+        if (isset($this->upload['error'])) {
+            if ($index === false) {
+                return $this->upload['name'];
+            }
+            return $this->upload['name'][$index];
         }
-        return $this->upload['name'][$index];
+        return false;
     }
 
     /**

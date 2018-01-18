@@ -177,9 +177,13 @@ class TestCase extends \PHPUnit_Framework_TestCase
     public function followRedirects()
     {
         if ($this->response->isRedirect()) {
-            $this->redirections[$this->response->getRedirection()] += 1;
+            $key = $this->response->getRedirection();
+            if (!isset($this->redirections[$key])) {
+                $this->redirections[$key] = 0;
+            }
+            $this->redirections[$key] += 1;
             $this->assertLessThan(10, $this->redirections[$this->response->getRedirection()],
-                "Ciclic redirection: " . $this->response->getRedirection());
+                "Cyclic redirection: " . $this->response->getRedirection());
             $this->call('GET', $this->response->getRedirection());
         }
         return $this;
