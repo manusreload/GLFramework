@@ -26,6 +26,7 @@
 
 namespace GLFramework;
 
+use GLFramework\Globals\Server;
 use GLFramework\Module\ModuleManager;
 
 define("GL_INTERNAL_MODULES_PATH", realpath(__DIR__ . "/../modules"));
@@ -141,8 +142,8 @@ class Bootstrap
             define('GL_TESTING', false);
             define('GL_INSTALL', false);
             $bootstrap = new Bootstrap($directory, $config);
-            $url = $_SERVER['REQUEST_URI'];
-            $method = $_SERVER['REQUEST_METHOD'];
+            $url = Server::get('REQUEST_URI');
+            $method = Server::get('REQUEST_METHOD');
             $bootstrap->run($url, $method)->display();
         } catch (\Exception $ex) {
             display_exception($ex);
@@ -158,8 +159,8 @@ class Bootstrap
      */
     public static function router($directory, $config = 'config.yml')
     {
-        $request = $_SERVER['PHP_SELF'];
-        $root = $_SERVER['DOCUMENT_ROOT'];
+        $request = Server::get('PHP_SELF');
+        $root = Server::get('DOCUMENT_ROOT');
         $file = $root . $request;
         if(file_exists($file) && !is_dir($file))
         {
@@ -199,7 +200,7 @@ class Bootstrap
      */
     public static function autoDetectConfig($folder = '', $default = 'config.yml')
     {
-        $host = $_SERVER['HTTP_HOST'];
+        $host = Server::get('HTTP_HOST');
         if (strpos($host, ':') !== false) {
             $host = substr($host, 0, strpos($host, ':'));
         }
@@ -299,8 +300,8 @@ class Bootstrap
         Log::i('Welcome to GLFramework');
         Log::i('· Version: ' . $this->getVersion());
         Log::i('· PHP Version: ' . PHP_VERSION);
-        Log::i('· Server Type: ' . (isset($_SERVER['SERVER_SOFTWARE'])?$_SERVER['SERVER_SOFTWARE']:"unknown"));
-        Log::i('· Server IP: ' . (isset($_SERVER['SERVER_ADDR'])?$_SERVER['SERVER_ADDR']:"127.0.0.1") . ':' . (isset($_SERVER['SERVER_PORT'])?$_SERVER['SERVER_PORT']:"0"));
+        Log::i('· Server Type: ' . Server::get('SERVER_SOFTWARE', 'unknown'));
+        Log::i('· Server IP: ' . Server::get('SERVER_ADDR', '127.0.0.1') . ':' . (Server::get('SERVER_PORT', '0')));
         Log::i('· Current User: ' . get_current_user());
         Log::i('· Current Folder: ' . realpath('.'));
         Log::i('· Extensiones de PHP: ');

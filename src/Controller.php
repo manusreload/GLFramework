@@ -26,6 +26,7 @@
 
 namespace GLFramework;
 
+use GLFramework\Globals\Session;
 use GLFramework\Middleware\ControllerMiddleware;
 use GLFramework\Module\Module;
 use GLFramework\Module\ModuleManager;
@@ -203,9 +204,9 @@ abstract class Controller
      */
     public function restoreMessages()
     {
-        if (isset($_SESSION['messages'])) {
-            $this->messages = $_SESSION['messages'];
-            unset($_SESSION['messages']);
+        if (Session::has('messages')) {
+            $this->messages = Session::get('messages');
+            Session::delete('messages');
         }
     }
 
@@ -214,7 +215,7 @@ abstract class Controller
      */
     public function shareMessages()
     {
-        $_SESSION['messages'] = $this->messages;
+        Session::set('messages', $this->messages);
     }
 
     /**
