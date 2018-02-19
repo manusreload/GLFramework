@@ -28,21 +28,31 @@
                         <th>Activado</th>
 
                     </tr>
-                    {% for module in this.modules %}
+                    {% for k, module in this.modules %}
                         <tr>
                             <td>{{ module.getListName() }}</td>
                             <td><a href="{{ this.getLink(this, {name: module.title}) }}">{{ module.title }}</a></td>
                             <td>{{ module.description }}</td>
                             <td>{{ module.directory }}</td>
-                            {% if module.isEnabled() %}
                             <td>
-                                <a href="{{ this.getLink(this, {name: module.title, state: 'disable'}) }}">Si</a>
+                                <span class="status"></span>
+                                <div class="moduleswitch">
+                                    <input data-url="{{ this.getLink(this, {name: module.title}) }}" {{ module.isEnabled()?"checked":"" }} type="checkbox" name="moduleswitch" class="moduleswitch-checkbox" id="mymoduleswitch-{{ k}}">
+                                    <label class="moduleswitch-label" for="mymoduleswitch-{{ k }}">
+                                        <span class="moduleswitch-inner"></span>
+                                        <span class="moduleswitch-switch"></span>
+                                    </label>
+                                </div>
                             </td>
-                            {% else %}
-                                <td>
-                                <a href="{{ this.getLink(this, {name: module.title, state: 'enable'}) }}">No</a>
-                                </td>
-                            {% endif %}
+                            {#{% if module.isEnabled() %}#}
+                            {#<td>#}
+                                {#<a href="{{ this.getLink(this, {name: module.title, state: 'disable'}) }}">Si</a>#}
+                            {#</td>#}
+                            {#{% else %}#}
+                                {#<td>#}
+                                {#<a href="{{ this.getLink(this, {name: module.title, state: 'enable'}) }}">No</a>#}
+                                {#</td>#}
+                            {#{% endif %}#}
 
 
                         </tr>
@@ -53,5 +63,63 @@
     </div>
 </div>
 {% endblock %}
-{% block scripts %}{% endblock %}
-{% block styles %}{% endblock %}
+{% block scripts %}
+<script>
+$("[name=moduleswitch]").change(function() {
+    var $status = $(this).parent().parent().find(".status");
+    var url = $(this).data('url');
+    var state = $(this).is(":checked")?"enable":"disable";
+    var that = this;
+    $status.html("<i class='fa fa-spinner fa-spin'></i>");
+    $.get(url + "/" + state, {}, function() {
+        $(that).parent().parent().find(".status").html("OK");
+        $status.html("<i class='fa fa-check'></i>");
+
+        // $(that).tooltip({'title': "Actualizado correctamente"}).tooltip('show');
+    });
+})
+</script>
+{% endblock %}
+{% block styles %}
+    <style>
+
+        .status {
+            float: right;
+            margin-top: 5px;
+        }
+        .moduleswitch {
+            margin: 0 auto;
+            position: relative; width: 66px;
+            -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+        }
+        .moduleswitch-checkbox {
+            display: none;
+        }
+        .moduleswitch-label {
+            display: block; overflow: hidden; cursor: pointer;
+            height: 31px; padding: 0; line-height: 31px;
+            border: 2px solid #EEEEEE; border-radius: 31px;
+            background-color: #D1D1D1;
+            transition: background-color 0.3s ease-in;
+        }
+        .moduleswitch-label:before {
+            content: "";
+            display: block; width: 31px; margin: 0px;
+            background: #FFFFFF;
+            position: absolute; top: 0; bottom: 0;
+            right: 33px;
+            border: 2px solid #EEEEEE; border-radius: 31px;
+            transition: all 0.3s ease-in 0s;
+        }
+        .moduleswitch-checkbox:checked + .moduleswitch-label {
+            background-color: #51C234;
+        }
+        .moduleswitch-checkbox:checked + .moduleswitch-label, .moduleswitch-checkbox:checked + .moduleswitch-label:before {
+            border-color: #51C234;
+        }
+        .moduleswitch-checkbox:checked + .moduleswitch-label:before {
+            right: 0px;
+        }
+    </style>
+
+{% endblock %}

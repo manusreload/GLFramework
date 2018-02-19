@@ -72,7 +72,7 @@ class FrameworkExtras extends Extra
      */
     public function fireEvent($name, $args = array())
     {
-        return implode("\n", Events::dispatch($name, $args)->getArray());
+        return Events::dispatch($name, $args)->getString();
     }
 
     /**
