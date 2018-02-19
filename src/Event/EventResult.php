@@ -159,7 +159,7 @@ class EventResult
     function __toString()
     {
         // TODO: Implement __toString() method.
-        return implode('', $this->result);
+        return implode('', $this->getArray());
     }
 
     /**
