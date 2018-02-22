@@ -60,6 +60,8 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+{{ js(this.getResource('tracker.js', 'incidencias')) | raw }}
+
 <script>
     $(document).ready(function()
     {
@@ -79,6 +81,13 @@
         data += "cookieEnabled: " + navigator.cookieEnabled + "\n";
         data += "cookies: " + document.cookie + "\n";
         data += "\n";
+        data += "======== Navigation ========\n";
+        data += "\n";
+        var nav = getNavigation();
+        for(var i in nav) {
+            var item = nav[i];
+            data += new Date(item.time).toISOString() + " " + item.url + "\n";
+        }
         data += "======== User Info ========\n";
         data += "\n";
         {% if this.user %}

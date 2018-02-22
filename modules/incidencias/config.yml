@@ -5,6 +5,7 @@ indev: true
 app:
   controllers: controller
   views: view
+  resources: assets
 
   routes:
     GLFramework\Modules\Incidencias\send: /incidencia/send
