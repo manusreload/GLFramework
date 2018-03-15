@@ -41,6 +41,8 @@ class Mail
     private $fromName;
     private $logger;
 
+    private $replyTo = false;
+
     /**
      * Mail constructor.
      *
@@ -63,6 +65,10 @@ class Mail
         }
         $this->from = $from;
         $this->fromName = $fromName;
+    }
+
+    public function setReplyTo($address, $name) {
+        $this->replyTo[$address] = $name;
     }
 
     /**
@@ -116,6 +122,11 @@ class Mail
         $mail->setFrom($this->from, $this->fromName);
         $mail->setTo($to);
         $mail->setCc($cc);
+        if($this->replyTo) {
+            foreach ($this->replyTo as $addr => $name) {
+                $mail->setReplyTo($addr, $name);
+            }
+        }
         foreach ($attachments as $key => $attachment) {
             $atta = \Swift_Attachment::fromPath($attachment);
             if (!is_int($key)) {
