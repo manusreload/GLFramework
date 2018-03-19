@@ -48,6 +48,10 @@ class MySQLConnection extends Connection
     private $pdo;
 
     /**
+     * @var Exception
+     */
+    private $lastError;
+    /**
      * TODO
      *
      * @param $hostname
@@ -69,6 +73,7 @@ class MySQLConnection extends Connection
         } catch (\Exception $ex) {
 //            print_debug($ex);
             Events::dispatch('onException', $ex);
+            $this->lastError = $ex;
 //            throw $ex;
         }
         return false;
@@ -163,6 +168,9 @@ class MySQLConnection extends Connection
      */
     public function getLastError()
     {
+        if($this->lastError) {
+            return $this->lastError->getMessage();
+        }
         $error = $this->pdo->errorInfo();
         if ($error[1]) {
             print_debug($error);

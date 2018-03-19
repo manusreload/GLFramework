@@ -52,6 +52,8 @@ class Bootstrap
     private $inited = false;
     private $configFile;
 
+    private $requireExtensions = array('ctype', 'json', 'hash', 'curl', 'pdo', 'pdo_mysql', 'iconv');
+
     /**
      * Bootstrap constructor.
      *

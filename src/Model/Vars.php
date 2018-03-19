@@ -23,7 +23,7 @@ class Vars extends Model
     protected $definition = array(
         'index' => array('field' => 'key', 'type' => 'varchar(255)'),
         'fields' => array(
-            'value' => 'varchar(255)',
+            'value' => 'varchar(128)',
             'updated_at' => 'datetime',
             'created_at' => 'datetime',
         )

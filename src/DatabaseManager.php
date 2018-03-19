@@ -137,8 +137,9 @@ class DatabaseManager
                     return true;
                 }
             } else {
-                throw new \Exception(sprintf('Can not establish connection to database! {host=%s, user=%s, database=%s}',
-                    $config['database']['hostname'], $config['database']['username'], $config['database']['database']));
+                $err = self::$connection->getLastError();
+                throw new \Exception(sprintf('Can not establish connection to database! {host=%s, user=%s, database=%s} Error: %s',
+                    $config['database']['hostname'], $config['database']['username'], $config['database']['database'], $err));
             }
         }
         return true;
