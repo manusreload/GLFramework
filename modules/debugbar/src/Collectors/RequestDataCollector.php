@@ -16,7 +16,7 @@ class RequestDataCollector extends \DebugBar\DataCollector\RequestDataCollector
 
     public function collect()
     {
-        $vars = array('_GET', '_POST', '_SESSION', '_COOKIE', '_SERVER');
+        $vars = array('_GET', '_POST', '_SESSION', '_COOKIE', '_SERVER', '_FILES');
         $data = array();
 
         foreach ($vars as $var) {
