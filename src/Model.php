@@ -804,25 +804,29 @@ class Model
                             if (is_array($mt)) {
                                 $name = $mt['name'];
                                 $model = $mt['model'];
-                                $object = new $model();
-                                if (isset($fields[$name])) {
-                                    $filter = $fields[$name];
-                                }
-                                $recursive2 = isset($mt['recursive']) ? $mt['recursive'] : $recursive;
-                                if (isset($mt['field'])) {
-                                    $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))
-                                        ->export($filter, $recursive2, $limit - 1);
-                                } else {
-                                    $item = new $object($this->getFieldValue($field));
-                                    $json[$name] = $item->export($filter, $recursive2, $limit - 1);
+                                if(class_exists($model)) {
+                                    $object = new $model();
+                                    if (isset($fields[$name])) {
+                                        $filter = $fields[$name];
+                                    }
+                                    $recursive2 = isset($mt['recursive']) ? $mt['recursive'] : $recursive;
+                                    if (isset($mt['field'])) {
+                                        $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))
+                                            ->export($filter, $recursive2, $limit - 1);
+                                    } else {
+                                        $item = new $object($this->getFieldValue($field));
+                                        $json[$name] = $item->export($filter, $recursive2, $limit - 1);
+                                    }
                                 }
                             } else {
                                 $name = $this->underescapeName($mt);
                                 if (isset($fields[$name])) {
                                     $filter = $fields[$name];
                                 }
-                                $object = new $mt($this->getFieldValue($field));
-                                $json[$name] = $object->json($filter, $recursive, $limit);
+                                if(class_exists($mt)) {
+                                    $object = new $mt($this->getFieldValue($field));
+                                    $json[$name] = $object->json($filter, $recursive, $limit);
+                                }
                             }
                         }
                     }
