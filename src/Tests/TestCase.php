@@ -39,7 +39,7 @@ use Symfony\Component\DomCrawler\Form;
  * Class TestCase
  * @package GLFramework\Tests
  */
-class TestCase extends PHPUnit\Framework\TestCase
+class TestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var Crawler

@@ -249,6 +249,10 @@ class Bootstrap
     {
         define('GL_TESTING', true);
         define('GL_INSTALL', false);
+        if(!isset($_SESSION)) {
+            global $_SESSION;
+            $_SESSION = array();
+        }
         //        if(file_exists($this->directory . '/config.dev.yml'))
         //        {
         //            $this->overrideConfig($this->directory . '/config.dev.yml');
