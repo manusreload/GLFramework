@@ -17,7 +17,7 @@ class send extends Controller\AuthController
 {
     public function __construct($base = null, $module = null)
     {
-        parent::__construct($base, $module);
+        parent::__construct($base = '', $module = null);
         $this->setRequireLogin(false);
     }
 
