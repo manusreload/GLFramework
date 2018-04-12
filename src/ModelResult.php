@@ -295,7 +295,7 @@ class ModelResult implements \IteratorAggregate
      */
     public function filter($callback)
     {
-        $filter = array_filter($this->models, $callback);
+        $filter = array_values(array_filter($this->models, $callback));
         return new ModelResult($this->model_class, $filter);
     }
 }
