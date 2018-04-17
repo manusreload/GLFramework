@@ -757,7 +757,7 @@ class Model
             }
         }
 
-        if ($recursive) {
+        if ($recursive && $this->json_extra) {
             foreach ($this->json_extra as $key => $function) {
                 $json[$key] = call_user_func(array($this, $function));
             }

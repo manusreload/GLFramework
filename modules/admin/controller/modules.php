@@ -16,6 +16,8 @@ use GLFramework\Filesystem;
 use GLFramework\Module\Module;
 use GLFramework\Module\ModuleManager;
 use GLFramework\Module\ModuleScanner;
+use GLFramework\Upload\Upload;
+use GLFramework\Upload\Uploads;
 use GLFramework\Zip\ZipManager;
 
 class modules extends AuthController {
@@ -63,6 +65,7 @@ class modules extends AuthController {
                 $this->module->init();
                 if (isset($_POST['settings'])) {
                     $config = $configManager->load();
+                    $this->parseUploads();
                     $configManager->setModuleSettings($config, $module, $_POST['settings']);
                     if ($configManager->save($config)) {
                         $this->addMessage("Se ha guardado correctamente");
@@ -94,6 +97,20 @@ class modules extends AuthController {
         }
     }
 
+    public function parseUploads() {
+        if(isset($_FILES['settings']['name'])) {
+
+            foreach ($_FILES['settings']['name'] as $key => $value) {
+                $upload = new Upload($this->getUploads(), $_FILES['settings']);
+                if($upload->isSuccess($key)) {
+
+                    $upload->move($key);
+                    $_POST['settings'][$key] = $upload->getFilename($key);
+                }
+            }
+        }
+
+    }
 
     /**
      * @param $config

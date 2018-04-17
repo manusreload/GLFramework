@@ -12,7 +12,10 @@ use GLFramework\View;
 
 define('PDF_ORIENTATION_VERTICAL', 'P');
 define('PDF_ORIENTATION_HORIZONTAL', 'L');
-define('K_TCPDF_THROW_EXCEPTION_ERROR', true);
+//if(!defined('K_TCPDF_THROW_EXCEPTION_ERROR')) {
+//    define('K_TCPDF_THROW_EXCEPTION_ERROR', true);
+//}
+//
 
 /**
  * Class PDF

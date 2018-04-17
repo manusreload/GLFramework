@@ -49,7 +49,7 @@ class APIController extends Controller
      * @param string $base
      * @param Module|null $module
      */
-    public function __construct($base = null, $module = null)
+    public function __construct($base = '', $module = null)
     {
         parent::__construct($base, $module);
         $this->addMiddleware(new APIAuthorizationMiddleware());

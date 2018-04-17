@@ -216,7 +216,9 @@ class Filesystem
      */
     public function mkdir()
     {
-        mkdir($this->getAbsolutePath(), 0777, true);
+        if (!file_exists($this->getAbsolutePath())) {
+            mkdir($this->getAbsolutePath(), 0777, true);
+        }
     }
 
     /**

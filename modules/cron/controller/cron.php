@@ -25,7 +25,7 @@ class cron extends AuthController
     var $system_user;
     var $time;
 
-    public function __construct($base, $module)
+    public function __construct($base = '', $module = null)
     {
         parent::__construct($base, $module);
         $this->manager = new \GLFramework\Modules\Cron\Cron();
