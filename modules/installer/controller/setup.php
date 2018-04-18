@@ -12,6 +12,7 @@ use GLFramework\Model\User;
 use GLFramework\Module\Module;
 use GLFramework\Module\ModuleManager;
 use GLFramework\Module\ModuleScanner;
+use GLFramework\Upload\Upload;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -67,6 +68,20 @@ class setup extends Controller
         $this->view = $view;
     }
 
+    public function parseUploads() {
+        if(isset($_FILES['settings']['name'])) {
+
+            foreach ($_FILES['settings']['name'] as $key => $value) {
+                $upload = new Upload($this->getUploads(), $_FILES['settings']);
+                if($upload->isSuccess($key)) {
+
+                    $upload->move($key);
+                    $_POST['settings'][$key] = $upload->getFilename($key);
+                }
+            }
+        }
+
+    }
     private function step1()
     {
 
@@ -74,6 +89,8 @@ class setup extends Controller
         {
             $upload = $this->getUploads()->allocate('banner');
             $config = $this->loadCurrentConfig();
+            $this->parseUploads();
+            $config['app'] = array_merge($config['app'], $_POST['settings']);
             if($upload->isSuccess())
             {
                 if($upload->move())

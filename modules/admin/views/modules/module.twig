@@ -1,4 +1,5 @@
 {% extends "templates/base.twig" %}
+{% import "components/macros.twig" as macros %}
 {#
  # Created by PhpStorm.
  # User: manus
@@ -45,29 +46,7 @@
                     <form method="post" name="config" enctype="multipart/form-data">
                         {% set module_config = this.getModuleConfiguration(mainconfig, this.module) %}
                         {% for setting in this.module.getModuleSettings() %}
-                            {% set value = module_config[setting.key] | default( setting.default ) %}
-                            <div class="form-group">
-                                <label>{{ setting.key }} ({{ setting.type }})</label>
-                                {% if setting.type == "boolean" %}
-                                    <select class="form-control" name="settings[{{ setting.key }}]">
-                                        <option value="1" {{ value=="1"?"selected":"" }}>TRUE</option>
-                                        <option value="0" {{ value=="0"?"selected":"" }}>FALSE</option>
-                                    </select>
-                                {% endif %}
-                                {% if setting.type == "string" %}
-                                    <input class="form-control" type="text" name="settings[{{ setting.key }}]" value="{{ value }}">
-                                {% endif %}
-                                {% if setting.type == "number" %}
-                                    <input class="form-control" type="number" name="settings[{{ setting.key }}]" value="{{ value }}">
-                                {% endif %}
-                                {% if setting.type == "file" %}
-                                    <pre>{{ value }}</pre>
-                                    <input class="form-control" type="hidden" name="settings[{{ setting.key }}]" value="{{ value }}">
-                                    <input class="form-control" type="file" name="settings[{{ setting.key }}]">
-                                    <a href="#" onclick="$(this).parent().find('[type=\'hidden\']').val(''); $(this).parent().find('pre').html('')">Quitar</a>
-                                {% endif %}
-                                <small>{{ setting.description }}</small>
-                            </div>
+                            {{ macros.settings(setting, module_config) }}
                         {% endfor %}
                         <button type="submit" class="btn btn-default" name="save">Guardar</button>
                     </form>
