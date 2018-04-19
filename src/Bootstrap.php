@@ -187,11 +187,15 @@ class Bootstrap
     {
         $bs = self::getSingleton();
         $config = $bs->getConfig();
-        $string = $config['app']['name'];
+        $string = $bs->getAppName();
         $string .= $bs->getConfigFile();
         $string .= $bs->getDirectory();
         $string .= __FILE__;
         return substr(md5($string), 0, 16);
+    }
+
+    public function getAppName() {
+        return isset( $config['app'] ) && isset( $config['app']['name'] ) ? $config['app']['name'] : "";
     }
 
     /**

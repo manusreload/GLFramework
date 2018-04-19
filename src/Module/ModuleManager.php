@@ -76,7 +76,7 @@ class ModuleManager
      * @return \AltoRouter
      */
     private function newRouter() {
-        $router = new \AltoRouter(array(), $this->config['app']['basepath']);
+        $router = new \AltoRouter(array(), $this->getBasePath());
         $router->addMatchTypes(array(
             'idd' => '([0-9]+|add)?',
         ));
@@ -91,6 +91,11 @@ class ModuleManager
     public static function getInstance()
     {
         return self::$instance;
+    }
+
+
+    public function getBasePath() {
+        return isset($this->config['app']) && isset($this->config['app']['basepath']) ? $this->config['app']['basepath'] : "";
     }
 
     /**

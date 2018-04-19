@@ -60,12 +60,12 @@ class ExceptionController extends ErrorController
      */
     public function expandException($ex, &$result = array(), $limit = 10)
     {
+        $result[] = $ex;
         if ($ex->getPrevious()) {
             if ($limit > 0) {
-                $this->expandException($ex, $result, $limit - 1);
+                $this->expandException($ex->getPrevious(), $result, $limit - 1);
             }
         }
-        $result[] = $ex;
         return $result;
     }
 
