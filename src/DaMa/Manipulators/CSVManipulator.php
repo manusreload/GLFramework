@@ -36,6 +36,7 @@ class CSVManipulator extends ManipulatorCore
 
     private $handle;
     private $separator = ';';
+    private $encoding = "";
 
     /**
      * TODO
@@ -57,7 +58,16 @@ class CSVManipulator extends ManipulatorCore
      */
     public function next()
     {
-        return fgetcsv($this->handle, null, $this->separator, '"');
+        return $this->map(fgetcsv($this->handle, null, $this->separator, '"'));
+    }
+
+    private function map($items) {
+
+        foreach ($items as &$item) {
+            $item = mb_convert_encoding($item, "UTF-8", $this->encoding);
+        }
+        return $items;
+
     }
 
     /**
@@ -68,11 +78,13 @@ class CSVManipulator extends ManipulatorCore
      */
     private function detectSeparator($file)
     {
-        $matches = array(';', ',', '|', '\t');
+        $matches = array(';', ',', '|', "\t");
         $handle = fopen($file, 'rb');
         if ($handle) {
             $minSeparator = $matches[0];
             if (($line = fgets($handle)) !== false) {
+                $this->encoding = mb_detect_encoding($line);
+                $line = mb_convert_encoding($line, "UTF-8", $this->encoding);
                 $minOffset = strlen($line);
                 foreach ($matches as $item) {
                     $i = strpos($line, $item);
@@ -82,7 +94,6 @@ class CSVManipulator extends ManipulatorCore
                     }
                 }
             }
-
             fclose($handle);
             return $minSeparator;
         }
