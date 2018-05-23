@@ -145,9 +145,14 @@ class DBStructure
     public function getCurrentModelDefinitionHash()
     {
         $md5 = '';
-        foreach (Bootstrap::getSingleton()->getModels() as $model) {
+        $bs = Bootstrap::getSingleton();
+        $config = $bs->getConfig();
+        foreach ($bs->getModels() as $model) {
             $instance = new $model();
             $md5 .= md5(json_encode($this->getDefinition($instance)));
+        }
+        if (isset($config['database'])) {
+            $md5 .= implode("", $config['database']);
         }
         return md5($md5);
     }
