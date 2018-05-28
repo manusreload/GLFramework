@@ -190,22 +190,26 @@ class DBStructure
             if (class_exists($model)) {
                 $instance = new $model(null);
                 if ($instance instanceof Model) {
-                    $diff = $instance->getStructureDifferences($db);
-                    foreach ($diff as $action) {
-                        try {
-                            $this->runAction($db, $instance, $action);
-                            $count++;
-                        } catch (\Exception $ex) {
-//                            Debugbar::getInstance()->exceptionHandler($ex);
-                            Log::getInstance()->critical($ex);
-//                            return $ex;
-                        }
-                    }
+                    $this->executeModel($db, $instance);
                 }
             }
         }
         $this->setDatabaseUpdate();
         return $count;
+    }
+
+    public function executeModel($db, $model) {
+        $diff = $model->getStructureDifferences($db);
+        foreach ($diff as $action) {
+            try {
+                $this->runAction($db, $model, $action);
+                $count++;
+            } catch (\Exception $ex) {
+//                            Debugbar::getInstance()->exceptionHandler($ex);
+                Log::getInstance()->critical($ex);
+//                            return $ex;
+            }
+        }
     }
 
     /**

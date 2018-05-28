@@ -47,14 +47,14 @@ class Event
         $key = "event" . microtime(true) . $this->name;
         $context = $this->context;
         $tag = $this->module . " " . $this->definition;
-        Debugbar::timer($key, $this->name . " " . $tag);
+//        Debugbar::timer($key, $this->name . " " . $tag);
         if (is_callable($this->fn)) {
             $result = call_user_func_array($this->fn, $args);
         } else {
             Log::getInstance()
                ->error('Can not call event: ' . $this->name . ' from: ' . $this->module . " " . $this->definition, array('events'));
         }
-        Debugbar::stopTimer($key);
+//        Debugbar::stopTimer($key);
         return $result;
     }
 

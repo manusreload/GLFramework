@@ -97,10 +97,10 @@ class View
             }
             $this->twig->addGlobal('params', $params);
             $key = "twig" . microtime(true);
-            Debugbar::timer($key, $this->controller->getTemplate());
+//            Debugbar::timer($key, $this->controller->getTemplate());
             $template = $this->twig->load($this->controller->getTemplate());
             $data = $template->render($this->getData($data));
-            Debugbar::stopTimer($key);
+//            Debugbar::stopTimer($key);
         }
         return $data;
     }

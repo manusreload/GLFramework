@@ -378,7 +378,7 @@ class DatabaseManager
      */
     private function createCache()
     {
-        $config = $this->getConfig();
+        $config = Bootstrap::getSingleton()->getConfig();
         if (isset($config['database']['cache'])) {
             $configCache = $config['database']['cache'];
             if (isset($configCache['connector'])) {
