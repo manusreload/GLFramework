@@ -142,6 +142,10 @@ class TestCase extends \PHPUnit\Framework\TestCase
         if(($i = strpos($uri, "#")) > 0) {
             $uri = substr($uri,0 , $i);
         }
+        if (strpos($uri, '?') !== FALSE) {
+            // Load GET data
+            $_GET = $this->parseGetData($uri);
+        }
         $bs = Bootstrap::getSingleton();
         $_COOKIE = $cookies;
         $_REQUEST = $params;
@@ -154,6 +158,22 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $this->crawler = new Crawler($this->response->getContent(), $this->internal_host . $uri);
 
         return $this;
+    }
+
+    private function parseGetData($uri) {
+        if (strpos($uri, "?") !== FALSE) {
+            $uri = substr($uri, strpos($uri, "?") + 1 );
+        }
+        $parts = explode("&", $uri);
+        $result = [];
+
+        foreach ($parts as $part) {
+            $i = strpos($part, "=");
+            $key = substr($part, 0, $i);
+            $value = substr($part, $i + 1);
+            $result[$key] = urldecode($value);
+        }
+        return $result;
     }
 
     /**
