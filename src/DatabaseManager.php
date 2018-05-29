@@ -43,6 +43,7 @@ class DatabaseManager
     //    private static $link;
     private static $selected;
     private static $checked = false;
+    private static $checking = false;
     /**
      * @var Connection
      */
@@ -72,6 +73,24 @@ class DatabaseManager
         $this->config = $config;
         $this->connect();
     }
+
+    /**
+     * @return bool
+     */
+    public static function isChecked()
+    {
+        return self::$checked;
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isChecking()
+    {
+        return self::$checking;
+    }
+
+
 
     /**
      * TODO
@@ -203,6 +222,7 @@ class DatabaseManager
 
         if (!self::$checked && Bootstrap::getSingleton()->isInited()) {
             self::$checked = true;
+            self::$checking = true;
             $config = $this->getConfig();
             if (!isset($config['database']['ignoreStructure'])) {
                 $manager = new DBStructure();
@@ -211,6 +231,7 @@ class DatabaseManager
                     $manager->executeModelChanges($this);
                 }
             }
+            self::$checking = false;
         }
     }
 

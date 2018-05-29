@@ -62,6 +62,7 @@ class DBStructure
      */
     public function getDefinition($model)
     {
+        if(!($model instanceof Model)) return false;
 
         $fields = array();
         $keys = array();
@@ -148,8 +149,15 @@ class DBStructure
         $bs = Bootstrap::getSingleton();
         $config = $bs->getConfig();
         foreach ($bs->getModels() as $model) {
-            $instance = new $model();
-            $md5 .= md5(json_encode($this->getDefinition($instance)));
+            if(class_exists($model, false)) {
+                try {
+
+                    $instance = new $model();
+                    $md5 .= md5(json_encode($this->getDefinition($instance)));
+                } catch (\ArgumentCountError $exception) {
+                    Log::d($exception);
+                }
+            }
         }
         if (isset($config['database'])) {
             $md5 .= implode("", $config['database']);

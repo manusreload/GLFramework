@@ -252,6 +252,10 @@ abstract class Controller
         return $this->db;
     }
 
+    public function setDb($db) {
+        $this->db = $db;
+    }
+
     /**
      * Muestra un mesaje en pantalla, con el estilo indicado
      *
