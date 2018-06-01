@@ -160,7 +160,7 @@ class DBStructure
             }
         }
         if (isset($config['database'])) {
-            $md5 .= implode("", $config['database']);
+            $md5 .= @implode("", $config['database']);
         }
         return md5($md5);
     }
@@ -207,6 +207,7 @@ class DBStructure
     }
 
     public function executeModel($db, $model) {
+        $count = 0;
         $diff = $model->getStructureDifferences($db);
         foreach ($diff as $action) {
             try {
