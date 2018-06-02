@@ -29,6 +29,7 @@ namespace GLFramework;
 use GLFramework\Middleware\ControllerMiddleware;
 use GLFramework\Module\Module;
 use GLFramework\Module\ModuleManager;
+use GLFramework\Resources\ResourceManager;
 use GLFramework\Upload\Uploads;
 
 /**
@@ -318,26 +319,7 @@ abstract class Controller
         if (is_string($module)) {
             $module = ModuleManager::getModuleInstanceByName($module);
         }
-        $config = $module->getConfig();
-        $folders = $config['app']['resources'];
-        if (!is_array($folders)) {
-            $folders = array($folders);
-        }
-        foreach ($folders as $folder) {
-            $path = $module->getDirectory() . '/' . $folder . '/' . $name;
-            if (file_exists($path)) {
-                $path = realpath($path);
-                $base = dirname($_SERVER['SCRIPT_FILENAME']);
-                $index = strpos($path, $base);
-                $url = substr($path, $index + strlen($base));
-                $protocol = 'http';
-                if (strpos($_SERVER['SCRIPT_URI'], 'https') !== false) {
-                    $protocol = 'https';
-                }
-
-                return $protocol . '://' . $_SERVER['HTTP_HOST'] . $url;
-            }
-        }
+        return ResourceManager::getResource($name, $module);
     }
 
     /**
