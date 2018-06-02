@@ -12,7 +12,10 @@ use GLFramework\View;
 
 define('PDF_ORIENTATION_VERTICAL', 'P');
 define('PDF_ORIENTATION_HORIZONTAL', 'L');
-define('K_TCPDF_THROW_EXCEPTION_ERROR', true);
+//if(!defined('K_TCPDF_THROW_EXCEPTION_ERROR')) {
+//    define('K_TCPDF_THROW_EXCEPTION_ERROR', true);
+//}
+//
 
 /**
  * Class PDF
@@ -34,6 +37,11 @@ class PDF
     {
         $this->pdf = new \TCPDF($orientation, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $this->pdf->SetFont('helvetica', '', 10);
+    }
+
+    public function setHeader($bool)
+    {
+        $this->pdf->setPrintHeader($bool);
     }
 
     /**

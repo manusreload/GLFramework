@@ -54,6 +54,32 @@ abstract class Media
      */
     public function getBrowserCode()
     {
+        return $this->get($this->getSrc());
+    }
+
+    /**
+     * TODO
+     *
+     * @param $url
+     * @param $key
+     * @param $value
+     * @return string
+     */
+    public function addParameterToURL($url, $key, $value)
+    {
+        $key = urlencode($key);
+        $value = urlencode($value);
+        if (strrpos($url, '?') > 0) {
+            $url .= "&$key=$value";
+        } else {
+            $url .= "?$key=$value";
+        }
+
+        return $url;
+    }
+
+    public function getSrc()
+    {
         if (file_exists($this->file)) {
             $src = Bootstrap::getSingleton()->toUrl($this->file);
         } else {
@@ -85,29 +111,7 @@ abstract class Media
         } elseif (is_string($this->options)) {
             $src = $this->addParameterToURL($src, 'o', $this->options);
         }
-
-        return $this->get($src);
-    }
-
-    /**
-     * TODO
-     *
-     * @param $url
-     * @param $key
-     * @param $value
-     * @return string
-     */
-    public function addParameterToURL($url, $key, $value)
-    {
-        $key = urlencode($key);
-        $value = urlencode($value);
-        if (strrpos($url, '?') > 0) {
-            $url .= "&$key=$value";
-        } else {
-            $url .= "?$key=$value";
-        }
-
-        return $url;
+        return $src;
     }
 
     /**

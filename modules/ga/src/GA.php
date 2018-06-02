@@ -75,11 +75,21 @@ class GA
 
     public function collect($params = array(), $type = "event")
     {
-        $params['v'] = "1";
-        $params['t'] = $type;
-        $params['tid'] = $this->config['tracker'];
-        $params['cid'] = $_COOKIE['_ga'];
-        $params['dr'] = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-        post('https://www.google-analytics.com/collect', $params);
+        if (isset($_COOKIE['_ga'])) {
+            $params['v'] = "1";
+            $params['t'] = $type;
+            $params['tid'] = $this->config['tracker'];
+            $params['cid'] = $_COOKIE['_ga'];
+            $params['dr'] = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+            post('https://www.google-analytics.com/collect', $params);
+        }
+    }
+
+    /**
+     * @param $render View
+     * @return mixed
+     */
+    public function addTrackerJS($render) {
+        return $render->display('ga.twig', array('config' => $this->config));
     }
 }

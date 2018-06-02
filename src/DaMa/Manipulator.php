@@ -31,6 +31,7 @@ use GLFramework\DaMa\Manipulators\ManipulatorCore;
 use GLFramework\DaMa\Manipulators\XLSManipulator;
 use GLFramework\DaMa\Manipulators\XLSXManipulator;
 use GLFramework\Log;
+use GLFramework\Model;
 
 /**
  * Class Manipulator
@@ -243,16 +244,18 @@ class Manipulator
                         continue;
                     }
                 }
-                if (implode('', $next) !== '') {
+                if (implode('', $next) != '') {
                     $modelSource = null;
                     $model = $this->build($header, $next, $modelSource);
-                    if ($model && $model->valid() && $model->save(true)) {
-                        if ($this->callback) {
-                            call_user_func($this->callback, $model, $modelSource);
+                    if ($model instanceof Model) {
+                        if ($model && $model->valid() && $model->save(true)) {
+                            if ($this->callback) {
+                                call_user_func($this->callback, $model, $modelSource);
+                            }
+                            $models[] = $model;
+                            $this->result[$this->current] = $model;
+                            $count++;
                         }
-                        $models[] = $model;
-                        $this->result[$this->current] = $model;
-                        $count++;
                     }
                 }
                 $this->current++;
@@ -292,16 +295,16 @@ class Manipulator
         $this->init($config);
         if ($header = $this->getNext()) {
             $this->current++;
-            $buffer .= "<table class='table table-bordered'>";
+            $buffer .= "<table class='table table-bordered' border='1'>";
             while ($next = $this->getNext()) {
-                if (implode('', $next) !== '') {
+                if (implode('', $next) != '') {
                     $model = $this->build($header, $next);
 
                     if ($model && $model->valid()) {
                         if ($count == 0) {
                             $buffer .= '<tr>';
                             foreach ($model->getFields() as $item) {
-                                $buffer .= '<th>$item</th>';
+                                $buffer .= "<th>$item</th>";
                             }
                             $buffer .= '<th>Actualizar</th>';
                             $buffer .= '</tr>';
@@ -347,18 +350,23 @@ class Manipulator
             $associative[$value] = $row[$key];
         }
         $model = new $this->modelName();
-        foreach ($this->association as $association) {
+        // Query for indexs
+        $indexs = array();
+        foreach ($this->association as $association) { // First search for values indexes
             if ($association->index) {
                 if ($association->fill($model, $associative)) {
                     $value = $model->{$association->nameInModel};
                     if ($value && !empty($value)) {
-                        $result = $model->get(array($association->nameInModel => $value));
-                        $model = $result->getModel();
-                        $modelSource = $result->getModel();
-                        break;
+                        $indexs[$association->nameInModel] = $value;
                     }
                 }
             }
+        }
+
+        if (!empty($indexs)) { // The search for theses indexes
+            $result = $model->get($indexs);
+            $model = $result->getModel();
+            $modelSource = $result->getModel();
         }
 
         foreach ($this->association as $association) {
@@ -403,7 +411,7 @@ class Manipulator
         $number = $count;
         if ($header = $this->getCore()->next()) {
             while ($data = $this->getCore()->next()) {
-                if ($data === null) {
+                if ($data == null) {
                     break;
                 }
                 $tmp[] = $data;
@@ -447,17 +455,17 @@ class Manipulator
         if (!$extension) {
             $extension = strtolower(substr($file, strrpos($file, '.')));
         }
-        if (strpos($file, '.') !== false) {
-            if ($extension === '.csv') {
+        if (strpos($extension, '.') !== false) {
+            if ($extension == '.csv') {
                 return DATA_MANIPULATION_CREATE_MODE_CSV;
             }
-            if ($extension === '.xls') {
+            if ($extension == '.xls') {
                 return DATA_MANIPULATION_CREATE_MODE_XLS;
             }
-            if ($extension === '.xlsx') {
+            if ($extension == '.xlsx') {
                 return DATA_MANIPULATION_CREATE_MODE_XLSX;
             }
-            if ($extension === '.ods') {
+            if ($extension == '.ods') {
                 return DATA_MANIPULATION_CREATE_MODE_ODS;
             }
         }

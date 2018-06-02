@@ -151,6 +151,10 @@ class ExcelDocument
             }
             $row++;
         }
+        $colum = 0;
+        foreach ($header as $name => $item) {
+            $this->sheet->getColumnDimensionByColumn($colum++)->setAutoSize(true);
+        }
 
         return $row;
     }

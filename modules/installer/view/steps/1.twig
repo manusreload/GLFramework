@@ -1,3 +1,4 @@
+{% import "components/macros.twig" as macros %}
 
 <div class="row">
     <div class="col-lg-8">
@@ -31,6 +32,17 @@
                                 <input type="checkbox" name="debug" value="true" {{ mainconfig.app.debug?"checked":"" }}> Modo desarrollador activado
                             </label>
                         </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-4 col-sm-8">
+
+                        {% for key,value in manager.getMainModule().getModuleSettings() %}
+                            {{ macros.settings_row(value, mainconfig.app) }}
+                            <br>
+                            <br>
+                        {% endfor %}
                     </div>
                 </div>
 

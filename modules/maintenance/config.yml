@@ -7,9 +7,20 @@ app:
   index: home
   controllers: controller
   model: model
-  views: views
+  views: view
 
   resources: resources
 
   listeners:
-    - afterControllerConstruct: GLFramework\Modules\Maintenance\home->beforeControllerRun
+    beforeControllerRun: GLFramework\Modules\Maintenance\home->beforeControllerRun
+
+  settings:
+    maintenanceMessage:
+      description: Añadir un mensaje de mantenimiento a todas las páginas
+      type: string
+      default: ~
+
+    maintenance:
+      description: Entrar en mantenimiento (Solo los admins pueden acceder al sitio)
+      type: boolean
+      default: false

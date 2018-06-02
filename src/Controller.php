@@ -26,6 +26,7 @@
 
 namespace GLFramework;
 
+use GLFramework\Globals\Session;
 use GLFramework\Middleware\ControllerMiddleware;
 use GLFramework\Module\Module;
 use GLFramework\Module\ModuleManager;
@@ -65,6 +66,7 @@ abstract class Controller
      * @var Middleware[]
      */
     private $middleware = array();
+    private $created = false;
 
     /**
      * Controller constructor.
@@ -89,11 +91,16 @@ abstract class Controller
         if (empty($this->name)) {
             $this->name = get_class($this);
         }
-        $this->directory = dirname($base);
-        $base = substr($base, 0, strrpos($base, '.'));
-        $this->template = $base . '.twig';
+        if(is_string($base)) {
+            $this->directory = dirname($base);
+            $base = substr($base, 0, strrpos($base, '.'));
+            $this->template = $base . '.twig';
+        } else {
+            $this->directory = $module->getDirectory();
+            $this->template = get_class($this) . '.twig';
+        }
 
-        $this->view = new View($this);
+//        $this->view = new View($this);
         $this->response = new Response();
         $this->addMiddleware(new ControllerMiddleware($this));
         Events::dispatch('afterControllerConstruct', array($this));
@@ -115,7 +122,7 @@ abstract class Controller
      */
     public function display($data, $params)
     {
-        return $this->view->render($data, $params);
+        return $this->getView()->render($data, $params);
     }
 
     /**
@@ -198,9 +205,9 @@ abstract class Controller
      */
     public function restoreMessages()
     {
-        if (isset($_SESSION['messages'])) {
-            $this->messages = $_SESSION['messages'];
-            unset($_SESSION['messages']);
+        if (Session::has('messages')) {
+            $this->messages = Session::get('messages');
+            Session::delete('messages');
         }
     }
 
@@ -209,7 +216,7 @@ abstract class Controller
      */
     public function shareMessages()
     {
-        $_SESSION['messages'] = $this->messages;
+        Session::set('messages', $this->messages);
     }
 
     /**
@@ -246,6 +253,10 @@ abstract class Controller
         return $this->db;
     }
 
+    public function setDb($db) {
+        $this->db = $db;
+    }
+
     /**
      * Muestra un mesaje en pantalla, con el estilo indicado
      *
@@ -275,6 +286,9 @@ abstract class Controller
      */
     public function getView()
     {
+        if($this->view == null) {
+            $this->view = new View($this);
+        }
         return $this->view;
     }
 
@@ -309,9 +323,10 @@ abstract class Controller
      *
      * @param $name
      * @param null $module Module
+     * @param bool $asFile
      * @return string
      */
-    public function getResource($name, $module = null)
+    public function getResource($name, $module = null, $asFile = false)
     {
         if ($module === null) {
             $module = $this->module;
@@ -319,7 +334,7 @@ abstract class Controller
         if (is_string($module)) {
             $module = ModuleManager::getModuleInstanceByName($module);
         }
-        return ResourceManager::getResource($name, $module);
+        return ResourceManager::getResource($name, $module, $asFile);
     }
 
     /**
@@ -401,5 +416,12 @@ abstract class Controller
     public function onCreate()
     {
         $this->restoreMessages();
+        $this->created = true;
+    }
+
+    public function requestCreate() {
+        if(!$this->created) {
+            $this->onCreate();
+        }
     }
 }

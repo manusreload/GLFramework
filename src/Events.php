@@ -26,8 +26,10 @@
 
 namespace GLFramework;
 
+use GLFramework\Event\Event;
+use GLFramework\Event\EventResult;
 use GLFramework\Module\Module;
-use Socket\Raw\Exception;
+use GLFramework\Modules\Debugbar\Debugbar;
 
 /**
  * Class Events
@@ -37,7 +39,11 @@ use Socket\Raw\Exception;
 class Events
 {
     private static $instance;
+    /**
+     * @var Event[][]
+     */
     private $handlers = array();
+    private $count = 0;
 
     /**
      * Events constructor.
@@ -82,7 +88,7 @@ class Events
      *
      * @param $event
      * @param array $args
-     * @return Event
+     * @return EventResult
      */
     public static function dispatch($event, $args = array())
     {
@@ -120,16 +126,29 @@ class Events
      * Se pone a la escucha de un evento, se puede añadir en la configuración del módulo
      *  dentro de *app:listeners*
      *
-     * @param $event
+     * @param $name
      * @param $fn
      * @param array $context
+     * @return Event
      */
-    public function listen($event, $fn, $context = array())
+    public function listen($name, $fn, $context = array())
     {
-        if (!isset($this->handlers[$event])) {
-            $this->handlers[$event] = array();
+        $event = new Event($name, $fn, $context);
+        if (!isset($this->handlers[$name])) {
+            $this->handlers[$name] = array();
         }
-        $this->handlers[$event][] = array('fn' => $fn, 'context' => $context);
+        $this->handlers[$name][] = $event;// array('fn' => $fn, 'context' => $context);
+        return $event;
+    }
+
+    /**
+     * @param $event Event
+     */
+    public function remove($event) {
+        $i = array_search($event, $this->handlers[$event->getName()]);
+        if($i >= 0) {
+            unset($this->handlers[$event->getName()][$i]);
+        }
     }
 
     /**
@@ -141,6 +160,7 @@ class Events
      */
     public function _fire($event, $args = array())
     {
+        Log::d("Event " . $event, array('events'));
         global $context;
         $buffer = array();
         if (!is_array($args)) {
@@ -176,11 +196,14 @@ class Events
      *
      * @param $event
      * @param array $args
-     * @return Event
+     * @return EventResult
      */
     public function _dispatch($event, $args = array())
     {
-        $eventResult = new Event();
+        if($event != "onLog") {
+            Log::d("Event " . $event, array('events'));
+        }
+        $eventResult = new EventResult();
         global $context;
         $buffer = array();
         if (!is_array($args)) {
@@ -190,14 +213,9 @@ class Events
             $handlers = $this->handlers[$event];
             foreach ($handlers as $item) {
                 $eventResult->addHandler($item);
-                $fn = $item['fn'];
-                $context = $item['context'];
-                if (is_callable($fn)) {
-                    $result = call_user_func_array($fn, $args);
-                    $eventResult->addResult($result);
-                } else {
-                    Log::getInstance()
-                       ->error('Can not call event: ' . $event . ' function: ' . function_dump($fn), array('events'));
+                $result = $item->run($args);
+                if($result !== false) {
+                    $eventResult->addResult($result, $item);
                 }
             }
         }

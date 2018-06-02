@@ -30,3 +30,7 @@ app:
         description: true o false para que DebugBar almacene todas la peticiones para que se pueda depurar en un futuro.
         type: boolean
         default: false
+      headerSize:
+        description: Tamaño maximo de las cabezeras
+        type: number
+        default: 4096

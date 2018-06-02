@@ -48,10 +48,10 @@ class EventReceiver
             foreach($groups->getModels() as $group)
             {
                 $result = $groupPages->get(array('id_group' => $group->id, 'id_page' => $page->id));
-                if($result->count() > 0) return true;
+                if($result->count() > 0) return ALLOW_USER;
             }
         }
-        return $config['allowDefault']?:null;
+        return isset($config['allowDefault'])?(!$config['allowDefault']?DISALLOW_USER:""):null;
     }
 
     public function getAdminControllers()

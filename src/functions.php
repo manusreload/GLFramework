@@ -123,7 +123,7 @@ function print_array($array, $depth = 1, $indentation = 0)
 function fix_date($date)
 {
     $date = trim($date);
-    if ($date !== '') {
+    if ($date != "") {
         if (preg_match('#(\d{2})/(\d{2})/(\d{4})#', $date, $matches)) {
             return $matches[3] . '-' . $matches[2] . '-' . $matches[1];
         }
@@ -135,6 +135,12 @@ function fix_date($date)
         return date('Y-m-d', strtotime($date));
     }
     return $date;
+}
+
+function fix_datetime($date)
+{
+    $day = fix_date($date);
+    return $day . " " . substr($date, strrpos($date," ") + 1);
 }
 
 /**
@@ -221,8 +227,23 @@ function reArrayPost($array)
  */
 function file_get_php_classes($filepath)
 {
-    $php_code = file_get_contents($filepath);
-    $classes = get_php_classes($php_code);
+    $fp = fopen($filepath, "r");
+    $buffer = "";
+    $classes = array();
+    while($read = fgets($fp)) {
+        $buffer .= $read;
+        $classes = get_php_classes($buffer);
+        if($classes) {
+            break;
+        }
+    }
+    fclose($fp);
+
+//    echo $filepath . ": ".  $it . "\n";
+
+//    $php_code = file_get_contents($filepath);
+//    $classes = get_php_classes($php_code);
+
     return $classes;
 }
 
@@ -237,24 +258,24 @@ function get_php_classes($php_code)
     $classes = array();
     $namespace = '';
     $namespaceBool = false;
-    $tokens = token_get_all($php_code);
+    $tokens = @token_get_all($php_code);
     $count = count($tokens);
     for ($i = 0; $i < $count; $i++) {
-        if ($i >= 2 && $tokens[$i - 2][0] === T_CLASS && $tokens[$i - 1][0] === T_WHITESPACE && $tokens[$i][0] === T_STRING) {
+        if ($i >= 2 && $tokens[$i - 2][0] == T_CLASS && $tokens[$i - 1][0] == T_WHITESPACE && $tokens[$i][0] == T_STRING) {
             $class_name = $namespace . $tokens[$i][1];
             $classes[] = $class_name;
         }
 
-        if ($tokens[$i][0] === T_NAMESPACE
+        if ($tokens[$i][0] == T_NAMESPACE
             //&& $tokens[$i - 1][0] === T_WHITESPACE
             //&& $tokens[$i][0] === T_STRING
         ) {
             $namespaceBool = true;
         }
-        if ($tokens[$i] === ';') {
+        if ($tokens[$i] == ';') {
             $namespaceBool = false;
         }
-        if ($namespaceBool && $tokens[$i][0] === T_STRING) {
+        if ($namespaceBool && $tokens[$i][0] == T_STRING) {
             $namespace .= $tokens[$i][1] . '\\';
         }
     }
@@ -634,15 +655,22 @@ function fix_url($url)
  *
  * @param Exception $ex
  * @param int $i
+ * @return string
  */
-function display_exception(Exception $ex, $i = 1)
+function display_exception(Exception $ex, $i = 1, $output = true)
 {
-    echo '<h3>(' . $i . ') ' . $ex->getMessage() . '</h3> at ' . $ex->getFile() . ':' . $ex->getLine();
-    echo '<pre>' . $ex->getTraceAsString() . '</pre><br>';
+    $data = '';
+    $data .= '<h3>(' . $i . ') ' . $ex->getMessage() . '</h3> at ' . $ex->getFile() . ':' . $ex->getLine();
+    $data .= '<pre>' . $ex->getTraceAsString() . '</pre><br>';
 
-    if ($ex->getPrevious()) {
-        display_exception($ex->getPrevious(), $i + 1);
+    if($output)
+    {
+        echo $data;
     }
+    if ($ex->getPrevious()) {
+        $data .= display_exception($ex->getPrevious(), $i + 1, $output);
+    }
+    return $data;
 }
 
 /**
@@ -658,7 +686,10 @@ function time_elapsed_default_translation()
         'seconds' => '%d segundo%s',
         'minutes' => '%d minuto%s',
         'hours' => '%d hora%s',
-        'days' => '%d dias%s',
+        'days' => '%d dia%s',
+        'weeks' => '%d semana%s',
+        'months' => '%d mes%s',
+        'years' => '%d año%s',
     );
 }
 
@@ -682,8 +713,22 @@ function time_elapsed($start, $end = null, $translation = array())
     if ($seconds <= 15) {
         $key = 'few';
     } else {
-        $keys = array('seconds' => 1, 'minutes' => 60, 'hours' => 24 * 60, 'days');
-        $current = 0;
+        $key = 'days';
+        $tokens = array (
+            31536000 => 'years',
+            2592000 => 'months',
+            604800 => 'weeks',
+            86400 => 'days',
+            3600 => 'hours',
+            60 => 'minutes',
+            1 => 'seconds'
+        );
+
+        foreach ($tokens as $unit => $text) {
+            if ($seconds < $unit) continue;
+            $numberOfUnits = floor($seconds / $unit);
+            return sprintf($translation[$text], $numberOfUnits, ($numberOfUnits>1)?$translation['plural']:"");
+        }
     }
 
     return sprintf($translation[$key], $seconds);
@@ -753,6 +798,18 @@ function fecha($date, $format = 'd/m/Y')
     return date($format, strtotime($date));
 }
 
+/**
+ * TODO
+ *
+ * @param $date
+ * @param string $format
+ * @return false|string
+ */
+function fechahora($date, $format = 'd/m/Y H:i:s')
+{
+    return date($format, strtotime($date));
+}
+
 function fix_folder($folder)
 {
     if(strpos("/", $folder)  === 0)
@@ -760,4 +817,39 @@ function fix_folder($folder)
         return $folder;
     }
     return '/' . $folder;
+}
+
+function remove_file_extension($file)
+{
+    return substr($file, 0, strrpos($file, "."));
+}
+
+function get_file_extension($file)
+{
+    return substr($file, strrpos($file, "."));
+}
+
+function start_timer($tag = "")
+{
+    return array(
+        'time' => microtime(true),
+        'tag' => $tag
+    );
+}
+
+function stop_timer($t)
+{
+    $tag1 = $t['tag'];
+    $d = microtime(true) - $t['time'];
+    \GLFramework\Log::d("[$tag1] " . $d . " s");
+}
+
+function detect_client_ip() {
+    if(isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        return $_SERVER['HTTP_X_FORWARDED_FOR'];
+    }
+    if(isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+        return $_SERVER['HTTP_CF_CONNECTING_IP'];
+    }
+    return $_SERVER['REMOTE_ADDR'];
 }

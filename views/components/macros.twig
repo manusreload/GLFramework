@@ -1,0 +1,39 @@
+{% macro settings(setting, config) %}
+    {% import _self as forms %}
+{% set value = config[setting.key] | default( setting.default ) %}
+
+<div class="form-group">
+    <label>{{ setting.key }} ({{ setting.type }})</label>
+    {{ forms.render_prop(setting, value) }}
+</div>
+{% endmacro %}
+{% macro settings_row(setting, config) %}
+    {% import _self as forms %}
+    {% set value = config[setting.key] | default( setting.default ) %}
+
+        <label>{{ setting.key }} ({{ setting.type }})</label>
+        {{ forms.render_prop(setting, value) }}
+
+{% endmacro %}
+{% macro render_prop(setting, value) %}
+    {% if setting.type == "boolean" %}
+        <select class="form-control" name="settings[{{ setting.key }}]">
+            <option value="1" {{ value=="1"?"selected":"" }}>TRUE</option>
+            <option value="0" {{ value=="0"?"selected":"" }}>FALSE</option>
+        </select>
+    {% endif %}
+    {% if setting.type == "string" %}
+        <input class="form-control" type="text" name="settings[{{ setting.key }}]" value="{{ value }}">
+    {% endif %}
+    {% if setting.type == "number" %}
+        <input class="form-control" type="number" name="settings[{{ setting.key }}]" value="{{ value }}">
+    {% endif %}
+    {% if setting.type == "file" %}
+        <pre>{{ value }}</pre>
+        <input class="form-control" type="hidden" name="settings[{{ setting.key }}]" value="{{ value }}">
+        <input class="form-control" type="file" name="settings[{{ setting.key }}]">
+        <a href="#" onclick="$(this).parent().find('[type=\'hidden\']').val(''); $(this).parent().find('pre').html('')">Quitar</a>
+    {% endif %}
+    <small>{{ setting.description }}</small>
+
+{% endmacro %}

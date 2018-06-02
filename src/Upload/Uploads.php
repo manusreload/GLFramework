@@ -52,7 +52,7 @@ class Uploads
             $this->folder = $config['app']['upload'];
         }
 
-        if (!is_dir($this->getUploadDir())) {
+        if (!is_dir($this->getUploadDir()) && is_dir(dirname($this->getUploadDir()))) {
             mkdir($this->getUploadDir());
         }
     }
@@ -76,6 +76,6 @@ class Uploads
      */
     public function allocate($name, $folder = null)
     {
-        return new Upload($this, $_FILES[$name], $folder);
+        return new Upload($this, isset($_FILES[$name])?$_FILES[$name]:array(), $folder);
     }
 }

@@ -94,7 +94,7 @@ class DataManipulation
         $manipulator->setFileInput($upload['tmp_name'], DATA_MANIPULATION_CREATE_MODE_AUTO,
             $this->getFileExtension($upload['name']));
         if ($store) {
-            $fs = new Filesystem($upload['name'] . '_' . date('d-m-Y_H-i-s'), 'uploads/' . $store);
+            $fs = new Filesystem(remove_file_extension($upload['name']) . '_' . date('d-m-Y_H-i-s') . get_file_extension($upload['name']), 'uploads/' . $store);
             copy($upload['tmp_name'], $fs->getAbsolutePath());
         }
         return $manipulator;

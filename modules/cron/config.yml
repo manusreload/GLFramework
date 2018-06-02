@@ -1,0 +1,14 @@
+title: cron
+description: Gestiona tareas programadas
+version: 0.0.1
+
+app:
+  controllers: controller
+  model: model
+  views: views
+  routes:
+      - { GLFramework\Modules\Controller\Cron\cron: "/admin/cron/[idd:id]?" }
+
+  listeners:
+    getAdminControllers: GLFramework\Modules\Cron\Cron->getAdminControllers
+    getCronTasks: GLFramework\Modules\Cron\Cron->getCronTasks

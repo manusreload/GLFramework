@@ -39,6 +39,9 @@ class Mail
     public $config;
     private $from;
     private $fromName;
+    private $logger;
+
+    private $replyTo = false;
 
     /**
      * Mail constructor.
@@ -62,6 +65,10 @@ class Mail
         }
         $this->from = $from;
         $this->fromName = $fromName;
+    }
+
+    public function setReplyTo($address, $name) {
+        $this->replyTo[$address] = $name;
     }
 
     /**
@@ -92,6 +99,7 @@ class Mail
     public function getTransport()
     {
         if (!self::$mailer) {
+
             self::$mailer = $this->getMailSystem()->getTransport();
             Events::dispatch('onMailTransport', array('transport' => self::$mailer));
         }
@@ -110,12 +118,15 @@ class Mail
      */
     public function send($to, $subject, $message, $attachments = array(), $cc = array())
     {
-        $transport = $this->getTransport();
-
         $mail = new \Swift_Message($subject, $message, 'text/html', 'UTF-8');
         $mail->setFrom($this->from, $this->fromName);
         $mail->setTo($to);
         $mail->setCc($cc);
+        if($this->replyTo) {
+            foreach ($this->replyTo as $addr => $name) {
+                $mail->setReplyTo($addr, $name);
+            }
+        }
         foreach ($attachments as $key => $attachment) {
             $atta = \Swift_Attachment::fromPath($attachment);
             if (!is_int($key)) {
@@ -152,13 +163,16 @@ class Mail
     public function done($mail)
     {
         $transport = $this->getTransport();
+        $mailer = new \Swift_Mailer($transport);
+
         Events::dispatch('onEmail', array(
             'emails' => $mail->getTo(),
             'subject' => $mail->getSubject(),
             'message' => $mail->getBody(),
             'transport' => $transport
         ));
-        return $transport->send($mail);
+        $result = $mailer->send($mail, $fail);
+        return $result;
     }
 
     /**
@@ -187,7 +201,7 @@ class Mail
     {
         if (isset($this->config['mail']) && isset($this->config['mail']['mailsystem'])) {
             $system = $this->config['mail']['mailsystem'];
-            $class = 'GLPlanning/Mail/' . $system;
+            $class = 'GLFramework\\Mail\\' . $system;
             if (class_exists($class)) {
                 return new $class($this->config);
             }

@@ -41,6 +41,6 @@ class Mail extends MailSystem
     public function getTransport()
     {
         // TODO: Implement getTransport() method.
-        return new \Swift_MailTransport();
+        return new \Swift_MailTransport('-f %s');
     }
 }

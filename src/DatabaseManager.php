@@ -43,6 +43,7 @@ class DatabaseManager
     //    private static $link;
     private static $selected;
     private static $checked = false;
+    private static $checking = false;
     /**
      * @var Connection
      */
@@ -59,15 +60,37 @@ class DatabaseManager
      * DBConnection constructor.
      *
      * @param null $config
+     * @throws \Exception
      */
     public function __construct($config = null)
     {
         if (!$config) {
             $config = Bootstrap::getSingleton()->getConfig();
         }
+        if(!Bootstrap::getSingleton()->isInited()) throw new \Exception("Try to create database connection
+        'before' init the framework!");
+
         $this->config = $config;
         $this->connect();
     }
+
+    /**
+     * @return bool
+     */
+    public static function isChecked()
+    {
+        return self::$checked;
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isChecking()
+    {
+        return self::$checking;
+    }
+
+
 
     /**
      * TODO
@@ -104,6 +127,11 @@ class DatabaseManager
         return new MySQLConnection();
     }
 
+    public function getDatabaseName() {
+        $config = $this->getConfig();
+        return $config['database']['database'];
+    }
+
     /**
      * TODO
      *
@@ -128,8 +156,9 @@ class DatabaseManager
                     return true;
                 }
             } else {
-                throw new \Exception(sprintf('Can not establish connection to database! {host=%s, user=%s, database=%s}',
-                    $config['database']['hostname'], $config['database']['username'], $config['database']['database']));
+                $err = self::$connection->getLastError();
+                throw new \Exception(sprintf('Can not establish connection to database! {host=%s, user=%s, database=%s} Error: %s',
+                    $config['database']['hostname'], $config['database']['username'], $config['database']['database'], $err));
             }
         }
         return true;
@@ -191,16 +220,18 @@ class DatabaseManager
     public function checkDatabaseStructure()
     {
 
-        if (!self::$checked) {
+        if (!self::$checked && Bootstrap::getSingleton()->isInited()) {
             self::$checked = true;
+            self::$checking = true;
             $config = $this->getConfig();
             if (!isset($config['database']['ignoreStructure'])) {
                 $manager = new DBStructure();
                 if ($manager->haveModelChanges()) {
-                    //throw new \Exception("Please, update database structure executing /install.php");
+//                    throw new \Exception("Please, update database structure executing /install.php");
                     $manager->executeModelChanges($this);
                 }
             }
+            self::$checking = false;
         }
     }
 
@@ -368,7 +399,7 @@ class DatabaseManager
      */
     private function createCache()
     {
-        $config = $this->getConfig();
+        $config = Bootstrap::getSingleton()->getConfig();
         if (isset($config['database']['cache'])) {
             $configCache = $config['database']['cache'];
             if (isset($configCache['connector'])) {
@@ -386,5 +417,16 @@ class DatabaseManager
     {
         self::$cache = new $name();
         self::$cache->connect($this->getConfig());
+    }
+
+    public function removeCache($key)
+    {
+        if(self::$cache) {
+            self::$cache->remove($key);
+        }
+    }
+
+    public function disableCache() {
+        self::$cache = null;
     }
 }

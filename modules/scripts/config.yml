@@ -10,6 +10,7 @@ app:
   views: views
 
   routes:
-    GLFramework\Modules\Scripts\scripts: /scripts/[*:script]
+    - { GLFramework\Modules\Scripts\scripts: "/scripts/[*:script]" }
+    - { GLFramework\Modules\Scripts\scripts: "/_scripts/[*:script]" }
 
 

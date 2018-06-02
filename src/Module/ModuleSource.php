@@ -31,4 +31,30 @@ class ModuleSource
             $this->config = $this->instance->getConfig();
         }
     }
+
+    /**
+     * @return mixed
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @return Module
+     */
+    public function getInstance()
+    {
+        return $this->instance;
+    }
+
+
 }

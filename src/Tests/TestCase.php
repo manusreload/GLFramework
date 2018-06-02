@@ -39,7 +39,7 @@ use Symfony\Component\DomCrawler\Form;
  * Class TestCase
  * @package GLFramework\Tests
  */
-class TestCase extends \PHPUnit_Framework_TestCase
+class TestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var Crawler
@@ -139,18 +139,55 @@ class TestCase extends \PHPUnit_Framework_TestCase
         if (strpos($uri, '/') !== 0) {
             $uri = '/' . $uri;
         }
+        if(($i = strpos($uri, "#")) > 0) {
+            $uri = substr($uri,0 , $i);
+        }
+        if (strpos($uri, '?') !== FALSE) {
+            // Load GET data
+            $_GET = $this->parseGetData($uri);
+        }
         $bs = Bootstrap::getSingleton();
         $_COOKIE = $cookies;
         $_REQUEST = $params;
         $_POST = $params;
         $_FILES = $this->buildFilesForm($files);
-        $_SERVER['REQUEST_URI'] = $this->internal_host . $uri;
+        $_SERVER['REQUEST_URI'] = $uri;
+        $_SERVER['HTTP_HOST'] = substr($this->internal_host, 7);
         $this->response = $bs->run($uri, $method);
         $this->followRedirects();
         $this->crawler = new Crawler($this->response->getContent(), $this->internal_host . $uri);
 
         return $this;
     }
+
+    private function parseGetData($uri) {
+        if (strpos($uri, "?") !== FALSE) {
+            $uri = substr($uri, strpos($uri, "?") + 1 );
+        }
+        $parts = explode("&", $uri);
+        $result = [];
+
+        foreach ($parts as $part) {
+            $i = strpos($part, "=");
+            $key = substr($part, 0, $i);
+            $value = substr($part, $i + 1);
+            $result[$key] = urldecode($value);
+        }
+        return $result;
+    }
+
+    /**
+     * @param $method
+     * @param $uri
+     * @param array $params
+     * @param array $cookies
+     * @param array $files
+     */
+    public function ajax($method, $uri, $params = array(), $cookies = array(), $files = array())
+    {
+
+    }
+
 
     /**
      * TODO
@@ -160,9 +197,13 @@ class TestCase extends \PHPUnit_Framework_TestCase
     public function followRedirects()
     {
         if ($this->response->isRedirect()) {
-            $this->redirections[$this->response->getRedirection()] += 1;
+            $key = $this->response->getRedirection();
+            if (!isset($this->redirections[$key])) {
+                $this->redirections[$key] = 0;
+            }
+            $this->redirections[$key] += 1;
             $this->assertLessThan(10, $this->redirections[$this->response->getRedirection()],
-                "Ciclic redirection: " . $this->response->getRedirection());
+                "Cyclic redirection: " . $this->response->getRedirection());
             $this->call('GET', $this->response->getRedirection());
         }
         return $this;

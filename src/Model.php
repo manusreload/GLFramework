@@ -103,6 +103,8 @@ class Model
      * @var array Campos extra para el JSON array
      */
     protected $json_extra = array();
+    private $index;
+    protected $engine = "INNODB";
 
     /**
      * Model constructor.
@@ -115,6 +117,7 @@ class Model
         if ($this->table_name === '') {
             throw new \Exception('El nombre de la tabla para el modelo \'' . get_class($this) . '\' no puede estar vacío!');
         }
+        $this->setIndexFromDefinition($this->definition);
         $this->db = new DatabaseManager();
         foreach ($this->getFields() as $field) {
             $this->{$field} = false;
@@ -130,9 +133,10 @@ class Model
      *
      * @param $baseclass
      * @param array $args
+     * @param null $module GLFramework\Module\Module
      * @return Model
      */
-    public static function newInstance($baseclass, $args = array())
+    public static function newInstance($baseclass, $args = array(), &$module = null)
     {
         $modules = ModuleManager::getInstance()->getModules();
         foreach ($modules as $module) {
@@ -146,8 +150,10 @@ class Model
             }
         }
         $class = '\\GLFramework\\Model\\' . $baseclass;
-
-        return new $class($args);
+        if (class_exists($class)) {
+            return new $class($args);
+        }
+        return false;
     }
 
     /**
@@ -220,14 +226,17 @@ class Model
     /**
      * Eliminar el modelo de la base de datos
      *
+     * @param null $cache
      * @return bool
-     * @throws \Exception
      */
-    public function delete()
+    public function delete($cache = null)
     {
         $index = $this->getIndex();
         $value = $this->getFieldValue($index);
         if ($value) {
+            if($cache) {
+                $this->db->removeCache($this->getCacheId($cache));
+            }
             return $this->db->exec("DELETE FROM {$this->table_name} WHERE `$index` = ?", array($value), $this->getCacheId($value));
         }
         return false;
@@ -254,6 +263,15 @@ class Model
      */
     public function getCacheId($id)
     {
+//        if(is_array($id))
+//        {
+//            $tmp = "";
+//            foreach ($id as $key => $value)
+//            {
+//                $tmp .= $key . "_" . $value;
+//            }
+//            $id = $tmp;
+//        }
         return $this->table_name . '_' . $id;
     }
 
@@ -355,10 +373,10 @@ class Model
      * Busca en forma de texto en la tabla
      *
      * @param $fields
+     * @param int $limit
      * @return ModelResult
-     * @throws \Exception
      */
-    public function search($fields)
+    public function search($fields, $limit = -1)
     {
         if (!is_array($fields)) {
             $fields = array($this->getIndex() => $fields);
@@ -382,6 +400,9 @@ class Model
         }
         if (!empty($sql)) {
             $sql = substr($sql, 0, -4);
+            if($limit > 0) {
+                $sql .= " LIMIT $limit";
+            }
             return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE ' . $sql, $args));
         }
         return $this->build(array());
@@ -461,6 +482,15 @@ class Model
         return $fields;
     }
 
+    public function setIndexFromDefinition($definition){
+        if (isset($definition['index'])) {
+            if (is_array($definition['index'])) {
+                $this->index = $definition['index']['field'];
+            } else {
+                $this->index = $definition['index'];
+            }
+        }
+    }
     /**
      * Obtiene el nombre del indice para esta tabla
      *
@@ -468,13 +498,7 @@ class Model
      */
     public function getIndex()
     {
-        if (isset($this->definition['index'])) {
-            if (is_array($this->definition['index'])) {
-                return $this->definition['index']['field'];
-            }
-            return $this->definition['index'];
-        }
-        return null;
+        return $this->index;
     }
 
     /**
@@ -490,6 +514,7 @@ class Model
         }
     }
 
+
     /**
      * Devuelve true si es el indice del modelo
      *
@@ -498,7 +523,13 @@ class Model
      */
     public function isIndex($field)
     {
-        return $this->getIndex() === $field;
+        return $this->index == $field;
+    }
+
+    public function getKeys() {
+        if(isset($this->definition['keys'])) {
+            return $this->definition['keys'];
+        }
     }
 
     /**
@@ -521,14 +552,28 @@ class Model
     }
 
     /**
-     * TODO
+     * Rellenar los datos desde un array. Si se especifica un indice, se tomara como: { columna1: [valor, valor...], columna2: [valor, valor...] }
      *
      * @param $data
-     * @param string $prefix
-     * @param string $suffix
+     * @param bool $index
      */
-    public function setDataFromArray($data, $prefix = '', $suffix = '')
+    public function setDataFromArray($data, $index = false)
     {
+        if($index !== false)
+        {
+            $fields = $this->getFields();
+            foreach ($fields as $field)
+            {
+                if (isset($data[$field][$index]))
+                {
+                    $this->{$field} = $data[$field][$index];
+                }
+            }
+        }
+        else
+        {
+            $this->setData($data);
+        }
     }
 
     /**
@@ -542,7 +587,7 @@ class Model
      */
     public function setData($data, $allowEmpty = true, $allowUnset = false)
     {
-        if ($data !== null) {
+        if ($data != null) {
             if (is_array($data)) {
                 $fileds = $this->getFields();
                 foreach ($fileds as $field) {
@@ -630,14 +675,15 @@ class Model
      * Genera las diferencias entre este modelo y lo que hay
      * en la base de datos.
      *
-     * @param bool $drop
+     * @param $db DatabaseManager
+     * @param $drop bool
      * @return array
      */
-    public function getStructureDifferences($drop = false)
+    public function getStructureDifferences($db, $drop = false)
     {
         $diff = new DBStructure();
         $excepted = $diff->getDefinition($this);
-        return $diff->getStructureDifferences($excepted, $drop);
+        return $diff->getStructureDifferences($db, $excepted, $drop);
     }
 
     /**
@@ -703,6 +749,84 @@ class Model
                                 }
                                 $object = new $mt($this->getFieldValue($field));
                                 $json[$name] = $object->json($filter, $recursive, $limit);
+                            }
+                        }
+                    }
+                }
+                $json[$field] = $this->getFieldValue($field);
+            }
+        }
+
+        if ($recursive && $this->json_extra) {
+            foreach ($this->json_extra as $key => $function) {
+                $json[$key] = call_user_func(array($this, $function));
+            }
+        }
+        return $json;
+    }
+
+    /**
+     * @param array $fields
+     * @param bool $recursive
+     * @param int $limit
+     * @return array
+     */
+    public function export($fields = array(), $recursive = true, $limit = 16)
+    {
+        if ($limit === 0) {
+            return null;
+        }
+        $json = array();
+        if ($url = $this->url()) {
+            $json['url'] = fix_url($url);
+        }
+        if (empty($fields)) {
+            $fields = $this->getFields();
+        }
+        foreach ($fields as $field) {
+            if (!in_array($field, $this->hidden)) {
+                $found = false;
+                $list = array();
+                foreach ($this->models as $item) {
+                    if (isset($item['from']) && $item['from'] === $field) {
+                        $list[] = $item;
+                        $found = true;
+                    }
+                }
+                if ($found || isset($this->models[$field])) {
+                    if ($recursive) {
+                        $modelTransform = $list;
+                        if (!$found) {
+                            $modelTransform = array($this->models[$field]);
+                        }
+                        foreach ($modelTransform as $mt) {
+                            $filter = array();
+                            if (is_array($mt)) {
+                                $name = $mt['name'];
+                                $model = $mt['model'];
+                                if(class_exists($model)) {
+                                    $object = new $model();
+                                    if (isset($fields[$name])) {
+                                        $filter = $fields[$name];
+                                    }
+                                    $recursive2 = isset($mt['recursive']) ? $mt['recursive'] : $recursive;
+                                    if (isset($mt['field'])) {
+                                        $json[$name] = $object->get(array($mt['field'] => $this->getFieldValue($field)))
+                                            ->export($filter, $recursive2, $limit - 1);
+                                    } else {
+                                        $item = new $object($this->getFieldValue($field));
+                                        $json[$name] = $item->export($filter, $recursive2, $limit - 1);
+                                    }
+                                }
+                            } else {
+                                $name = $this->underescapeName($mt);
+                                if (isset($fields[$name])) {
+                                    $filter = $fields[$name];
+                                }
+                                if(class_exists($mt)) {
+                                    $object = new $mt($this->getFieldValue($field));
+                                    $json[$name] = $object->json($filter, $recursive, $limit);
+                                }
                             }
                         }
                     }
@@ -794,5 +918,22 @@ class Model
      */
     public function onCreate()
     {
+    }
+
+    public function clearCache($key)
+    {
+        $this->db->removeCache($this->getCacheId($key));
+    }
+
+    /**
+     * Recuento de filas en la tabla
+     */
+    public function count()
+    {
+        return $this->db->select_count("SELECT count(1) FROM `{$this->getTableName()}` ");
+    }
+
+    public function getEngine() {
+        return $this->engine;
     }
 }

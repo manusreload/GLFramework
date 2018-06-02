@@ -9,6 +9,7 @@
 namespace GLFramework\Modules\Admin;
 
 
+use GLFramework\Controller;
 use GLFramework\Controller\AuthController;
 use GLFramework\Events;
 use GLFramework\Mail;
@@ -40,7 +41,7 @@ class users extends AuthController
         $modulues = ModuleManager::getInstance()->getModules();
         $this->pages = new Page();
         $this->users = $this->instanceUser(null);
-        $this->users_all = $this->users->get_all()->getModels();
+        $this->users_all = $this->users->get_all()->order('id')->getModels();
         $this->userPages = new UserPage();
         foreach($modulues as $module)
         {
@@ -205,7 +206,8 @@ class users extends AuthController
 
     public function isPagePermission($controller)
     {
-        if(Events::dispatch('isUserAllowed', array($controller, $this->users))->anyFalse())
+        $ins = new $controller();
+        if(Events::dispatch('isUserAllowed', array($ins, $this->users))->any(DISALLOW_USER))
         {
             return false;
         }
@@ -248,7 +250,7 @@ class users extends AuthController
         $recovery->save(true);
         $mail = new Mail();
         $message = $mail->render($this, "mail/welcome.twig", array('user' => $user, 'recovery' => $recovery));
-        if($mail->send($user->email, "Bienvenido a Jarmauto Planning", $message))
+        if($mail->send($user->email, "Bienvenido a " . $this->config['app']['name'], $message))
         {
             $this->addMessage("Se ha enviado un email al usuario con los pasos que tiene que seguir para acceder al servicio");
         }

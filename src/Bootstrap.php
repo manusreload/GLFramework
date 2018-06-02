@@ -26,8 +26,9 @@
 
 namespace GLFramework;
 
+use GLFramework\Globals\Server;
 use GLFramework\Module\ModuleManager;
-use Symfony\Component\Yaml\Yaml;
+
 define("GL_INTERNAL_MODULES_PATH", realpath(__DIR__ . "/../modules"));
 /**
  * Class Bootstrap
@@ -46,7 +47,13 @@ class Bootstrap
     private $config;
     private $directory;
     private $startTime;
+    private $initTime;
     private $init = false;
+    private $inited = false;
+    private $configFile;
+
+    private $requireExtensions = array('ctype', 'json', 'hash', 'curl', 'pdo', 'pdo_mysql', 'iconv', 'zip', 'filter');
+    private $requireExtensionsTest = array('mbstring');
 
     /**
      * Bootstrap constructor.
@@ -60,6 +67,7 @@ class Bootstrap
         $this->startTime = microtime(true);
         $this->events = new Events();
         $this->directory = $directory;
+        $this->configFile = $config;
         $this->config = self::loadConfig($this->directory, $config);
         self::$singelton = $this;
     }
@@ -78,7 +86,7 @@ class Bootstrap
         if (!file_exists($filename)) {
             return array();
         }
-        $config = Yaml::parse(file_get_contents($filename));
+        $config = Yaml::parse($filename);
         if (isset($config['include'])) {
             $value = $config['include'];
             if (!is_array($value)) {
@@ -137,13 +145,38 @@ class Bootstrap
             define('GL_TESTING', false);
             define('GL_INSTALL', false);
             $bootstrap = new Bootstrap($directory, $config);
-            $url = $_SERVER['REQUEST_URI'];
-            $method = $_SERVER['REQUEST_METHOD'];
+            $url = Server::get('REQUEST_URI');
+            $method = Server::get('REQUEST_METHOD');
             $bootstrap->run($url, $method)->display();
         } catch (\Exception $ex) {
             display_exception($ex);
         }
     }
+
+    /**
+     * Simple script router
+     *
+     * @param $directory
+     * @param string $config
+     * @return bool
+     */
+    public static function router($directory, $config = 'config.yml')
+    {
+        $request = Server::get('PHP_SELF');
+        $root = Server::get('DOCUMENT_ROOT');
+        $file = $root . $request;
+        if(file_exists($file) && !is_dir($file))
+        {
+            return false;
+        }
+        else
+        {
+            Bootstrap::start($directory, $config);
+            return true;
+        }
+
+    }
+
 
     /**
      * TODO
@@ -152,10 +185,17 @@ class Bootstrap
      */
     public static function getAppHash()
     {
-        $config = self::getSingleton()->getConfig();
-        $string = $config['app']['name'];
+        $bs = self::getSingleton();
+        $config = $bs->getConfig();
+        $string = $bs->getAppName();
+        $string .= $bs->getConfigFile();
+        $string .= $bs->getDirectory();
         $string .= __FILE__;
         return substr(md5($string), 0, 16);
+    }
+
+    public function getAppName() {
+        return isset( $config['app'] ) && isset( $config['app']['name'] ) ? $config['app']['name'] : "";
     }
 
     /**
@@ -167,11 +207,11 @@ class Bootstrap
      */
     public static function autoDetectConfig($folder = '', $default = 'config.yml')
     {
-        $host = $_SERVER['HTTP_HOST'];
+        $host = Server::get('HTTP_HOST');
         if (strpos($host, ':') !== false) {
             $host = substr($host, 0, strpos($host, ':'));
         }
-        if ($host === 'localhost') {
+        if ($host === 'localhost' or filter_var($host, FILTER_VALIDATE_IP)) {
             $host = 'default';
         }
         if (file_exists($folder . $host . '.yml')) {
@@ -189,17 +229,21 @@ class Bootstrap
      */
     public function init()
     {
+        $this->initTime = microtime(true);
         $this->init = true;
         Log::d('Initializing framework...');
-        $this->register_error_handler();
+//        $this->register_error_handler();
         date_default_timezone_set('Europe/Madrid');
 
         $this->manager = new ModuleManager($this->config, $this->directory);
         $this->manager->init();
-        Log::d('Modules initialized: ' . count($this->manager->getModules()));
-        Log::d(array_map(function ($a) {
-            return $a->title;
-        }, $this->manager->getModules()));
+        Log::d('Module manager initialized');
+        $this->inited = true;
+
+//        Log::d('Modules initialized: ' . count($this->manager->getModules()));
+//        Log::d(array_map(function ($a) {
+//            return $a->title;
+//        }, $this->manager->getModules()));
     }
 
     /**
@@ -209,6 +253,10 @@ class Bootstrap
     {
         define('GL_TESTING', true);
         define('GL_INSTALL', false);
+        if(!isset($_SESSION)) {
+            global $_SESSION;
+            $_SESSION = array();
+        }
         //        if(file_exists($this->directory . '/config.dev.yml'))
         //        {
         //            $this->overrideConfig($this->directory . '/config.dev.yml');
@@ -225,7 +273,7 @@ class Bootstrap
     public function overrideConfig($file)
     {
         if (!$this->init) {
-            $config = Yaml::parse(file_get_contents($file));
+            $config = Yaml::parse($file);
             $this->config = array_merge_recursive_ex($this->config, $config);
         } else {
             throw new \Exception('Trying to override configuration after init()');
@@ -245,7 +293,7 @@ class Bootstrap
             }
             session_save_path(sys_get_temp_dir() . '/glframework_session');
         }
-        session_start();
+        @session_start();
     }
 
     /**
@@ -258,18 +306,23 @@ class Bootstrap
     public function run($url = null, $method = null)
     {
         $this->startSession();
-        $this->init();
+        if(!$this->inited)
+            $this->init();
         Log::i('Welcome to GLFramework');
         Log::i('· Version: ' . $this->getVersion());
         Log::i('· PHP Version: ' . PHP_VERSION);
-        Log::i('· Server Type: ' . $_SERVER['SERVER_SOFTWARE']);
-        Log::i('· Server IP: ' . $_SERVER['SERVER_ADDR'] . ':' . $_SERVER['SERVER_PORT']);
+        Log::i('· Server Type: ' . Server::get('SERVER_SOFTWARE', 'unknown'));
+        Log::i('· Server IP: ' . Server::get('SERVER_ADDR', '127.0.0.1') . ':' . (Server::get('SERVER_PORT', '0')));
         Log::i('· Current User: ' . get_current_user());
         Log::i('· Current Folder: ' . realpath('.'));
         Log::i('· Extensiones de PHP: ');
         Log::i(get_loaded_extensions());
-        Events::dispatch('onCoreStartUp', $this->startTime);
+        Log::i('· Modules priority: ');
+        Log::i(array_map(function($module) { return $module->title; }, $this->manager->getModules()));
+        Events::dispatch('onCoreStartUp', array($this->startTime, $this->initTime));
+        $this->manager->checkModulesPolicy();
         $response = $this->manager->run($url, $method);
+        Log::i('Sending response...');
         if ($response) {
             $response->setUri($url);
         }
@@ -297,7 +350,7 @@ class Bootstrap
             foreach ($models as $model) {
                 $instance = new $model(null);
                 if ($instance instanceof Model) {
-                    $diff = $instance->getStructureDifferences(isset($_GET['drop']));
+                    $diff = $instance->getStructureDifferences($db, isset($_GET['drop']));
                     $this->log('Installing table \'' . $instance->getTableName() . '\' generated by ' . get_class($instance) . '...',
                         2);
                     foreach ($diff as $action) {
@@ -469,15 +522,15 @@ class Bootstrap
   <tbody>
   <tr>
     <th>Error</th>
-    <td><pre>$errstr</pre></td>
+    <td><pre>' . $errstr . '</pre></td>
   </tr>
   <tr>
     <th>Errno</th>
-    <td><pre>$errno</pre></td>
+    <td><pre>' . $errno . '</pre></td>
   </tr>
   <tr>
     <th>File</th>
-    <td>$errfile</td>
+    <td>' . $errfile . '</td>
   </tr>
   <tr>
     <th>Line</th>
@@ -552,4 +605,51 @@ class Bootstrap
         set_error_handler(array($this, 'fatal_handler'));
         register_shutdown_function(array($this, 'fatal_handler'));
     }
+
+    public function relative($path)
+    {
+        $a = realpath($this->getDirectory());
+        $b = realpath($path);
+        return str_replace($a . "/", $b, "");
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStartTime()
+    {
+        return $this->startTime;
+    }
+
+    /**
+     * @return string
+     */
+    public function getConfigFile()
+    {
+        return $this->configFile;
+    }
+
+    public function getCurrentPath()
+    {
+        return realpath(".");
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInit()
+    {
+        return $this->init;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInited()
+    {
+        return $this->inited;
+    }
+
+
+
 }

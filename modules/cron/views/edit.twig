@@ -1,0 +1,70 @@
+{% extends "templates/base.twig" %}
+
+{#
+ # Created by PhpStorm.
+ # User: mmunoz
+ # Date: 19/06/17
+ # Time: 13:46
+ #
+ #}
+{% block title %}Editar Cron{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% embed "templates/box.twig" %}
+                {% block title %}
+                    Editar tarea
+                {% endblock %}
+                {% block content %}
+                    <a href="/admin/cron" class="btn btn-default">Volver Listado</a>
+                    <br>
+                    <form method="post">
+                        <div class="form-group">
+                            <label>Nombre de la tarea</label>
+                            <input type="text" class="form-control" name="title" value="{{ this.task.title }}">
+                        </div>
+                        <div class="form-group">
+                            <pre>
+# Example of job definition:
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  *
+                            </pre>
+                            <label>Tiempo</label>
+                            <input type="text"  pattern="^.* .* .* .* .*$" class="form-control" name="cron" value="{{ this.task.cron }}" placeholder="* * * * *">
+                        </div>
+                        <div class="form-group">
+                            <label>Nombre de la tarea</label>
+                            <select class="form-control" name="function">
+                                {% for item in this.manager.getTasks() %}
+                                <option value="{{ item.fn }}" {{ this.task.function == item.fn?"selected":"" }}>[{{ item.module }}] {{ item.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="enabled" value="1" {{ this.task.enabled?"checked":"" }}>
+                                Activar
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="enabled" value="0"  {{ not this.task.enabled?"checked":"" }}>
+                                Desactivar
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-default" name="save">Guardar</button>
+                    </form>
+                {% endblock %}
+            {% endembed %}
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}{% endblock %}
+{% block styles %}{% endblock %}

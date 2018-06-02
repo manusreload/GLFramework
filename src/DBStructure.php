@@ -26,6 +26,7 @@
 
 namespace GLFramework;
 
+use GLFramework\Modules\Debugbar\Debugbar;
 use TijsVerkoyen\CssToInlineStyles\Exception;
 
 /**
@@ -61,8 +62,10 @@ class DBStructure
      */
     public function getDefinition($model)
     {
+        if(!($model instanceof Model)) return false;
 
         $fields = array();
+        $keys = array();
         $definition = $model->getDefinition();
         if (isset($definition['fields'])) {
             $definitionFields = $definition['fields'];
@@ -107,9 +110,30 @@ class DBStructure
                 }
             }
         }
+        if (isset($definition['keys'])) {
+            foreach ($definition['keys'] as $field => $value) {
+                if (isset($fields[$field])) {
+                   $model1 = key($value); // Para extrar datos del tipo key => value
+                   $column = current($value);
+                   $modelObj = Model::newInstance($model1);
+                   if ($modelObj and $modelObj instanceof Model) {
+                       $keys[] = array(
+                           'field' => $field,
+                           'table' => $modelObj->getTableName(),
+                           'target' => $column
+
+                       );
+//                       $fields[$field]['index'] = true;
+                   }
+
+                }
+            }
+        }
         $result = array();
         $result['table'] = $model->getTableName();
         $result['fields'] = $fields;
+        $result['keys'] = $keys;
+        $result['engine'] = $model->getEngine();
 
         return $result;
     }
@@ -122,9 +146,21 @@ class DBStructure
     public function getCurrentModelDefinitionHash()
     {
         $md5 = '';
-        foreach (Bootstrap::getSingleton()->getModels() as $model) {
-            $instance = new $model();
-            $md5 .= md5(json_encode($this->getDefinition($instance)));
+        $bs = Bootstrap::getSingleton();
+        $config = $bs->getConfig();
+        foreach ($bs->getModels() as $model) {
+            if(class_exists($model, false)) {
+                try {
+
+                    $instance = new $model();
+                    $md5 .= md5(json_encode($this->getDefinition($instance)));
+                } catch (\ArgumentCountError $exception) {
+                    Log::d($exception);
+                }
+            }
+        }
+        if (isset($config['database'])) {
+            $md5 .= @implode("", $config['database']);
         }
         return md5($md5);
     }
@@ -156,23 +192,33 @@ class DBStructure
      */
     public function executeModelChanges($db)
     {
+        $count = 0;
         $models = Bootstrap::getSingleton()->getModels();
         foreach ($models as $model) {
             if (class_exists($model)) {
                 $instance = new $model(null);
                 if ($instance instanceof Model) {
-                    $diff = $instance->getStructureDifferences();
-                    foreach ($diff as $action) {
-                        try {
-                            $this->runAction($db, $instance, $action);
-                        } catch (\Exception $ex) {
-                            return $ex;
-                        }
-                    }
+                    $this->executeModel($db, $instance);
                 }
             }
         }
         $this->setDatabaseUpdate();
+        return $count;
+    }
+
+    public function executeModel($db, $model) {
+        $count = 0;
+        $diff = $model->getStructureDifferences($db);
+        foreach ($diff as $action) {
+            try {
+                $this->runAction($db, $model, $action);
+                $count++;
+            } catch (\Exception $ex) {
+//                            Debugbar::getInstance()->exceptionHandler($ex);
+                Log::getInstance()->critical($ex);
+//                            return $ex;
+            }
+        }
     }
 
     /**
@@ -188,12 +234,12 @@ class DBStructure
     /**
      * TODO
      *
+     * @param $db DatabaseManager
      * @param string $table
      * @return array
      */
-    public function getCurrentStructure($table = '')
+    public function getCurrentStructure($db, $table = '')
     {
-        $db = new DatabaseManager();
         $res = $db->select("SHOW TABLES LIKE '$table'");
         $tables = array();
         $result = array();
@@ -217,9 +263,35 @@ class DBStructure
                 }
                 $fields[$field['field']] = $field;
             }
+
+            $info = $db->select("SELECT 
+  TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME, REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME
+FROM
+  INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+WHERE
+  TABLE_SCHEMA = ? AND
+  TABLE_NAME = ?", array($db->getDatabaseName(), $table));
+
+            $keys = array();
+            foreach ($info as $row) {
+                if ($row['REFERENCED_TABLE_NAME']) {
+                    $key = array();
+                    $key['field'] = $row['COLUMN_NAME'];
+                    $key['table'] = $row['REFERENCED_TABLE_NAME'];
+                    $key['target'] = $row['REFERENCED_COLUMN_NAME'];
+//                    $fields[$key['field']]['index'] = true;
+                    $keys[] = $key;
+                }
+            }
+
+            $info2 = $db->select_first("SHOW TABLE STATUS WHERE Name = ?;", array ($table));
+
+            $engine = $info2['Engine'];
             $result[$table] = array(
                 'table' => $table,
-                'fields' => $fields
+                'fields' => $fields,
+                'keys' => $keys,
+                'engine' => $engine,
             );
         }
         return $result;
@@ -228,21 +300,30 @@ class DBStructure
     /**
      * TODO
      *
+     * @param $db DatabaseManager
      * @param $excepted
      * @param bool $drop
      * @return array
      */
-    public function getStructureDifferences($excepted, $drop = false)
+    public function getStructureDifferences($db, $excepted, $drop = false)
     {
         if (isset($excepted['table'])) {
             $excepted = array($excepted['table'] => $excepted);
         }
         $actions = array();
         foreach ($excepted as $table => $value) {
-            $current = $this->getCurrentStructure($table);
+            $current = $this->getCurrentStructure($db, $table);
             if (count($current) > 0) {
                 $dbTable = array_shift($current);
-                if ($this->getHash($value) !== $this->getHash($dbTable)) {
+                if ($this->getHash($value) != $this->getHash($dbTable)) {
+
+                    if(strtolower($value['engine']) != strtolower($dbTable['engine'])) {
+                        $actions[] = array(
+                            'sql' => $this->getChangeEngine($table, $value['engine']),
+                            'action' => 'change_engine'
+                        );
+                    }
+
                     $subject1 = array($value['fields']);
                     $subject2 = array($dbTable['fields']);
 
@@ -274,6 +355,25 @@ class DBStructure
                             }
                         }
                     }
+
+                    $test1 = $value['keys'];
+                    $test2 = $dbTable['keys'];
+                    foreach ($test1 as $key => $item) {
+                        if (!$this->haveKey($item, $test2)) {
+                            $actions[] = array('sql' => $this->getAddKey($table, $item), 'action' => 'add_key');
+                        }
+                    }
+                    //Search for deletion
+                    foreach ($test2 as $key => $item) {
+                        if (!$this->haveKey($item, $test1)) {
+                            $actions[] = array(
+                                'sql' => $this->getDropKey($table, $item),
+                                'action' => 'drop_key'
+                            );
+                        }
+                    }
+
+
                 }
             } else {
                 //                if(!$value instanceof \stdClass) die_stack_trace();
@@ -307,6 +407,31 @@ class DBStructure
         return 0;
     }
 
+    private function haveKey($needle, $haystack) {
+        foreach ($haystack as $value) {
+            if($value['field'] == $needle['field'] &&
+                $value['table'] == $needle['table'] &&
+                $value['target'] == $needle['target']
+
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+    public function getAddKey($table, $index) {
+        $column = $index['field'];
+        $targetTable = $index['table'];
+        $targetColumn = $index['target'];
+        return "ALTER TABLE `$table` ADD FOREIGN KEY (`$column`) REFERENCES `$targetTable`(`$targetColumn`) ON DELETE CASCADE ON UPDATE CASCADE;";
+    }
+
+    public function getDropKey($table, $index) {
+        return "ALTER TABLE `$table` DROP INDEX `{$index['field']}`";
+    }
     /**
      * TODO
      *
@@ -322,6 +447,9 @@ class DBStructure
         $type = $field['type'];
         if (isset($field['autoincrement']) && $field['autoincrement']) {
             $type .= ' AUTO_INCREMENT';
+        }
+        if (isset($field['default']) && $field['default'] !== null && $field['default'] != '') {
+            $type .= ' DEFAULT \'' . $field['default'] . '\'';
         }
 
         return 'ALTER TABLE ' . $table . ' CHANGE `' . $name . '` `' . $name . '` ' . $type;
@@ -377,10 +505,15 @@ class DBStructure
         if (isset($table['field'])) {
             $fields = array($table);
         }
-        $fun = create_function('$a', 'return implode(\' - \', $a);');
-        $list = array_map($fun, $fields);
+        if (isset($table['keys'])) {
+            $fields += $table['keys'];
+        }
+        $list = array_map(array($this, 'encode_hash'), $fields);
         ksort($list);
         return sha1(strtolower(implode('-', array_keys($list)) . implode('-', $list)));
+    }
+    private function encode_hash($a) {
+        return implode(' - ', $a);
     }
 
     /**
@@ -427,5 +560,10 @@ class DBStructure
     public function validTableName($table)
     {
         return $table;
+    }
+
+    private function getChangeEngine($table, $engine)
+    {
+        return "ALTER TABLE `$table` ENGINE = $engine;";
     }
 }

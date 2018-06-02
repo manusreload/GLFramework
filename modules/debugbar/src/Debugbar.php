@@ -40,6 +40,7 @@ use GLFramework\Module\Module;
 class Debugbar
 {
 
+    private $config;
     private static $instance;
     /**
      * @var \DebugBar\DebugBar
@@ -55,7 +56,7 @@ class Debugbar
     private $messages;
 
     /**
-     * @var RequestDataCollector
+     * @var \DebugBar\DataCollector\RequestDataCollector
      */
     private $request;
 
@@ -89,7 +90,7 @@ class Debugbar
         self::$instance = $this;
         $debugbar = $this->getDebugbar();
         $config = $args->getConfig();
-        if($config['filesystem'])
+        if(isset($config['filesytem']) && $config['filesystem'])
         {
             $fs = new Filesystem("debugbar");
             $fs->mkdir();
@@ -112,16 +113,16 @@ class Debugbar
     {
         if(self::$debugbar == null)
         {
-            self::$debugbar = new \DebugBar\DebugBar();
+            self::$debugbar = new StandardDebugBar();
 
-            self::$debugbar->addCollector(new PhpInfoCollector());
-            self::$debugbar->addCollector(new MessagesCollector());
-            self::$debugbar->addCollector(new RequestDataCollector());
+//            self::$debugbar->addCollector(new PhpInfoCollector());
+//            self::$debugbar->addCollector(new MessagesCollector());
+//            self::$debugbar->addCollector(new RequestDataCollector());
             self::$debugbar->addCollector(new ControllerCollector());
             self::$debugbar->addCollector(new ResponseCollector());
-            self::$debugbar->addCollector(new TimeDataCollector());
-            self::$debugbar->addCollector(new MemoryCollector());
-            self::$debugbar->addCollector(new ExceptionsCollector());
+//            self::$debugbar->addCollector(new TimeDataCollector());
+//            self::$debugbar->addCollector(new MemoryCollector());
+//            self::$debugbar->addCollector(new ExceptionsCollector());
             self::$debugbar->addCollector(new ErrorCollector());
 //            self::$debugbar->addCollector(new PDOCollector(new TraceablePDO()));
 //            self::$debugbar->addCollector(new SwiftMailCollector());
@@ -149,7 +150,7 @@ class Debugbar
     {
         if(!$this->getDebugbar()->hasCollector('controller')) return;
         $this->controller->setController($instance);
-        $this->request->addRequestData('params', $instance->params);
+//        $this->request->('params', $instance->params);
         $config = Bootstrap::getSingleton()->getConfig();
         if(isset($config['database']['database']))
         {
@@ -179,13 +180,15 @@ class Debugbar
         if($response->getAjax() && Bootstrap::isDebug())
         {
             if(!$this->stop)
-                $this->getDebugbar()->sendDataInHeaders();
+                $this->getDebugbar()->sendDataInHeaders(null, 'phpdebugbar', $this->config
+                ['headerSize']?:4096);
         }
     }
 
-    public function onCoreStartUp($time)
+    public function onCoreStartUp($time, $init)
     {
-        $this->time->addMeasure('Core start up', $time, microtime(true));
+        $this->time->addMeasure('Core start up', $time, $init);
+        $this->time->addMeasure('Core init', $init, microtime(true));
     }
 
     /**
@@ -233,9 +236,11 @@ class Debugbar
     // TODO: see: (https://github.com/maximebf/php-debugbar/issues/330)
     public function onViewCreated(&$twig)
     {
-//        $twig = new TraceableTwigEnvironment($twig, $this->time);
 //        if(!$this->getDebugbar()->hasCollector('twig'))
+//        {
+//            $twig = new TraceableTwigEnvironment($twig, $this->time);
 //            $this->getDebugbar()->addCollector(new TwigCollector($twig));
+//        }
     }
 
     public function onMailTransport($mailer)
@@ -253,7 +258,7 @@ class Debugbar
 
     public function errorHandler($errno, $errstr, $errfile, $errline)
     {
-//        $this->errors->addError(new GeneratedError($errstr, $errno, $errfile, $errline));
+        $this->errors->addError(new GeneratedError($errstr, $errno, $errfile, $errline));
     }
 
     /**
@@ -298,7 +303,7 @@ class Debugbar
 
     public static function stopTimer($name)
     {
-        if(self::$instance && self::$instance->time)
+        if(self::$instance && self::$instance->time && self::$instance->time->hasStartedMeasure($name))
             self::$instance->time->stopMeasure($name);
     }
 

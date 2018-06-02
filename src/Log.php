@@ -36,6 +36,7 @@ use Psr\Log\AbstractLogger;
 class Log extends AbstractLogger
 {
     private static $instance;
+    private static $lastLog;
 
     private $debugMode = false;
 
@@ -170,18 +171,27 @@ class Log extends AbstractLogger
      */
     public function log($level, $message, array $context = array())
     {
-        error_log("[$level] " . (is_string($message)?$message:implode(", ", $message)));
+        if($this->debugMode)
+        {
+            $ct = microtime(true);
+            $dt = self::$lastLog>0?($ct - self::$lastLog):0;
+            $time = number_format( $ct - Bootstrap::getSingleton()->getStartTime(), 5 );
+            $dt = number_format($dt, 5);
+//            error_log("[$time][-$dt][$level]\t" . (is_string($message)?$message:implode(", ", $message)));
+            self::$lastLog = $ct;
+        }
         // TODO: Implement log() method.
         if (!in_array('events', $context)) {
             Events::dispatch('onLog', array($message, $level));
-        } else {
-            if ($this->debugMode) {
-                echo '<pre>';
-                echo($level . ' ' . $message . "\n");
-                debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-                echo '</pre>';
-                die();
-            }
         }
+//        else {
+//            if ($this->debugMode) {
+//                echo '<pre>';
+//                echo($level . ' ' . $message . "\n");
+//                debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+//                echo '</pre>';
+//                die();
+//            }
+//        }
     }
 }

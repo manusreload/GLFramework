@@ -27,10 +27,13 @@
 namespace GLFramework\Module;
 
 use GLFramework\Controller;
+use GLFramework\Cron\CronTask;
+use GLFramework\Event\Event;
 use GLFramework\Events;
 use GLFramework\Request;
 use GLFramework\View;
-
+define('ALLOW_USER', 'allow');
+define('DISALLOW_USER', 'disallow');
 /**
  * Class Module
  *
@@ -39,19 +42,29 @@ use GLFramework\View;
 class Module
 {
 
-    var $title;
-    var $description;
-    var $version;
-    var $test;
+    public $title;
+    public $description;
+    public $version;
+    public $test;
     private $config;
     private $directory;
     private $settings = array();
+    /**
+     * Para registrar una tarea en cron, el modulo tiene que definir que ejecutar.
+     * @var array
+     */
+    private $cron = array();
 
     private $controllers = array();
     private $controllers_map = array();
     private $controllers_routes = array();
     private $controllers_url_routes = array();
+    private $events = array();
+    private $router;
+    private $spl_autoload_controllers;
+    private $spl_autoload_models;
 
+    static $routes = [];
     /**
      * Module constructor.
      * @param $config
@@ -78,11 +91,21 @@ class Module
             $settings = $this->config['app']['settings'];
             foreach ($settings as $name => $setting) {
                 $moduleSetting = new ModuleSettings();
-                $moduleSetting->description = $setting['description'];
-                $moduleSetting->type = $setting['type'];
-                $moduleSetting->default = $setting['default'];
+                $moduleSetting->description = isset($setting['description'])?$setting['description']:"";
+                $moduleSetting->type = isset($setting['type'])?$setting['type']:"";
+                $moduleSetting->default = isset($setting['default'])?$setting['default']:"";
                 $moduleSetting->key = $name;
                 $this->settings[] = $moduleSetting;
+            }
+        }
+        if (isset($this->config['app']['cron'])) {
+            $cron = $this->config['app']['cron'];
+            if (!is_array($cron)) {
+                $cron = array($cron);
+            }
+
+            foreach ($cron as $title => $fn) {
+                $this->cron[] = new CronTask($this, $title, $fn);
             }
         }
         //        $this->config = array_merge_recursive_ex($this->config, Bootstrap::getSingleton()->getConfig());
@@ -114,18 +137,28 @@ class Module
     {
         //        Log::d($this->config);
         $this->register_composer();
-        $controllers = $this->config['app']['controllers'];
-        if (!is_array($controllers)) {
-            $controllers = array($controllers);
-        }
-        foreach ($controllers as $controllerFolder) {
-            if ($controllerFolder) {
-                $this->load_controllers($this->directory . '/' . $controllerFolder);
+        if(isset($this->config['app']['controllers'])) {
+            $controllers = $this->config['app']['controllers'];
+            if (!is_array($controllers)) {
+                $controllers = array($controllers);
             }
+            foreach ($controllers as $controllerFolder) {
+                if ($controllerFolder) {
+                    $this->load_controllers($this->directory . '/' . $controllerFolder);
+                }
+            }
+            $this->register_autoload_controllers();
         }
-        $this->register_autoload_controllers();
         $this->register_autoload_model();
         //        $this->register_events();
+    }
+
+    public function unload() {
+        spl_autoload_unregister($this->spl_autoload_models);
+        spl_autoload_unregister($this->spl_autoload_controllers);
+        foreach ($this->events as $event) {
+            Events::getInstance()->remove($event);
+        }
     }
 
     /**
@@ -133,21 +166,32 @@ class Module
      */
     public function register_autoload_model()
     {
-        $models = $this->config['app']['model'];
-        if (!is_array($models)) {
-            $models = array($models);
-        }
-        $dir = $this->directory;
+        if(isset($this->config['app']['model'])) {
 
-        spl_autoload_register(function ($class) use ($models, $dir) {
-            foreach ($models as $directory) {
-                $filename = $dir . '/' . $directory . '/' . $class . '.php';
-                if (file_exists($filename)) {
-                    include_once $filename;
-                    return true;
-                }
+            $models = $this->config['app']['model'];
+            if (!is_array($models)) {
+                $models = array($models);
             }
-        });
+            $dir = $this->directory;
+            $this->spl_autoload_models = function ($class) use ($models, $dir) {
+                foreach ($models as $directory) {
+                    $filename = $dir . '/' . $directory . '/' . $class . '.php';
+                    if (file_exists($filename)) {
+                        include_once $filename;
+                        return true;
+                    }
+                    if(strpos($class, "\\") !== FALSE) {
+                        $name = substr($class, strrpos($class, "\\") + 1);
+                        $filename = $dir . '/' . $directory . '/' . $name . '.php';
+                        if (file_exists($filename)) {
+                            include_once $filename;
+                            return true;
+                        }
+                    }
+                }
+            };
+            spl_autoload_register($this->spl_autoload_models);
+        }
     }
 
     /**
@@ -163,11 +207,11 @@ class Module
         if (is_dir($current)) {
             $files = scandir($current);
             foreach ($files as $file) {
-                if ($file !== '.' && $file !== '..') {
+                if ($file != '.' && $file != '..') {
                     $filename = $current . '/' . $file;
                     $name = $folder . '/' . $file;
                     $ext = substr($file, strrpos($file, '.'));
-                    if ($ext === '.php') {
+                    if ($ext == '.php') {
                         $class = file_get_php_classes($filename);
                         $this->controllers[$class[0]] = $folder . '/' . $file;
                         $this->controllers_map[$class[0]] = $root . '/' . $folder . '/' . $file;
@@ -185,14 +229,15 @@ class Module
     public function register_autoload_controllers()
     {
         $map = $this->controllers_map;
-        spl_autoload_register(function ($class) use ($map) {
+        $this->spl_autoload_controllers = function ($class) use ($map) {
             if (isset($map[$class])) {
                 $file = $map[$class];
                 require_once $file;
                 return true;
             }
             return false;
-        });
+        };
+        spl_autoload_register($this->spl_autoload_controllers);
     }
 
     /**
@@ -213,6 +258,9 @@ class Module
     public function getModels()
     {
         $list = array();
+        if (!isset($this->config['app']['model'])) {
+            return $list;
+        }
         $models = $this->config['app']['model'];
         if (empty($models)) {
             return $list;
@@ -246,6 +294,23 @@ class Module
         $dir = $this->directory;
         if (isset($config['app']['views'])) {
             $directoriesTmp = $config['app']['views'];
+            if (!is_array($directoriesTmp)) {
+                $directoriesTmp = array($directoriesTmp);
+            }
+            foreach ($directoriesTmp as $directory) {
+                $this->addFolder($directories, $dir . '/' . $directory);
+            }
+        }
+        return $directories;
+    }
+
+    public function getViewsOverride()
+    {
+        $config = $this->config;
+        $directories = array();
+        $dir = $this->directory;
+        if (isset($config['app']['override'])) {
+            $directoriesTmp = $config['app']['override'];
             if (!is_array($directoriesTmp)) {
                 $directoriesTmp = array($directoriesTmp);
             }
@@ -292,6 +357,7 @@ class Module
      */
     public function register_router($router)
     {
+        $this->router = $router;
         $list = array();
         $controllers = $this->getControllers();
         foreach ($controllers as $controller => $file) {
@@ -326,9 +392,11 @@ class Module
             }
         }
 
-        $index = $this->config['app']['index'];
-        if (strpos($file, $index) !== false) {
-            $array[] = $this->cleanUrl(substr($file, 0, strpos($file, $index)));
+        if(isset($this->config['app']['index'])) {
+            $index = $this->config['app']['index'];
+            if (strpos($file, $index) !== false) {
+                $array[] = $this->cleanUrl(substr($file, 0, strpos($file, $index)));
+            }
         }
         $array[] = $this->cleanUrl($file);
 
@@ -356,7 +424,13 @@ class Module
             $this->controllers_routes[] = $name;
         }
         $this->controllers_url_routes[] = $controller . ' ' . $route . ' [' . $method . ']';
-        $router->map($method, $route, array($this, $controller), $name);
+        if(!isset(self::$routes[$name])) {
+            $router->map($method, $route, array($this, $controller), $name);
+            self::$routes[$name] = true;
+        } else {
+            $router->map($method, $route, array($this, $controller));
+
+        }
     }
 
     /**
@@ -376,10 +450,22 @@ class Module
                 }
                 foreach ($listener as $fn) {
                     $context['event'] = $event;
-                    Events::getInstance()->listen($event, instance_method($fn, $context, array($this)), $this);
+                    $context['fn'] = $fn;
+                    $event = Events::getInstance()->listen($event, instance_method($fn, $context, array($this)), $this);
+                    $event->setModule($this->title);
+                    $event->setDefinition($fn);
+                    $this->events[] = $event;
                 }
             }
         }
+    }
+
+    /**
+     * Get router
+     * @return \AltoRouter
+     */
+    public function getRouter() {
+        return $this->router;
     }
 
     /**
@@ -412,19 +498,32 @@ class Module
         $instance->onCreate();
 
         if ($instance instanceof Controller) {
-            if ($instance instanceof Controller\AuthController) {
-                if ($instance->user) {
-                    $result = Events::dispatch('isUserAllowed', array($instance, $instance->user));
-                    if ($result->anyFalse()) {
-                        throw new \Exception('El usuario no tiene permisos para acceder a este sitio');
-                    }
-                }
-            }
+            $this->checkUserPermissions($instance);
 
             return $instance->call($request);
         }
         return false;
     }
+
+    /**
+     * @param $instance Controller
+     */
+    public function checkUserPermissions($instance) {
+        if ($instance instanceof Controller\AuthController) {
+            if ($instance->user) {
+                $result = Events::dispatch('isUserAllowed', array($instance, $instance->user));
+                $evt = $result->getEvents();
+                foreach ($result->getArray() as $i => $item) {
+                    if($item == DISALLOW_USER) {
+                        $event = $evt[$i][1];
+                        if($event instanceof Event);
+                        throw new \Exception('El usuario no tiene permisos para acceder a este sitio. Module: ' . $event->getModule());
+                    }
+                }
+            }
+        }
+    }
+
 
     /**
      * TODO

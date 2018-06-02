@@ -1,0 +1,42 @@
+{% embed "templates/box.twig" %}
+    {% block title %}
+        Administracion Database
+    {% endblock %}
+    {% block content %}
+        <table class="table">
+            <tr>
+                <th>Database</th>
+                <td>{{ mainconfig.database.database }}</td>
+                <th>Usuario</th>
+                <td>{{ mainconfig.database.username }}</td>
+                <th>Hostname</th>
+                <td>{{ mainconfig.database.hostname }}</td>
+            </tr>
+        </table>
+
+
+        <div>
+            <a href="?recreate" class="btn btn-default">Recrear database</a>
+        </div>
+
+        <table class="table">
+            <tr>
+                <th width="20%">Modelo</th>
+                <th>Tabla</th>
+                <th>Módulo</th>
+                <th>Filas</th>
+                <th></th>
+            </tr>
+            {% for item in this.database %}
+                <tr>
+                    <td>{{ item.model }}</td>
+                    <td>{{ item.table }}</td>
+                    <td>{{ item.module }}</td>
+                    <td>{{ item.count }}</td>
+                    <td><a href="?optimize={{ item.table }}" class="btn btn-default">Optimize</a> </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endblock %}
+
+{% endembed %}

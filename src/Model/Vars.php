@@ -21,7 +21,7 @@ class Vars extends Model
     var $value;
     protected $table_name = 'vars';
     protected $definition = array(
-        'index' => array('field' => 'key', 'type' => 'varchar(255)'),
+        'index' => array('field' => 'key', 'type' => 'varchar(128)'),
         'fields' => array(
             'value' => 'varchar(255)',
             'updated_at' => 'datetime',

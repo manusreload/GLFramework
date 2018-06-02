@@ -1,0 +1,12 @@
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-120229508-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ config.tracker }}');
+    {% if config.user_id and this.user.valid() %}
+    gtag('set', {'user_id': '{{ this.user.id }}'});
+    {% endif %}
+
+</script>

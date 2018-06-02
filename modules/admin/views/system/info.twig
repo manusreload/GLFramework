@@ -1,0 +1,9 @@
+{% embed "templates/box.twig" %}
+    {% block title %}
+        PHP Info
+    {% endblock %}
+    {% block content %}
+        {{ this.phpInfo() }}
+    {% endblock %}
+
+{% endembed %}

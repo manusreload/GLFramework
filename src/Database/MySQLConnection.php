@@ -48,6 +48,10 @@ class MySQLConnection extends Connection
     private $pdo;
 
     /**
+     * @var Exception
+     */
+    private $lastError;
+    /**
      * TODO
      *
      * @param $hostname
@@ -63,11 +67,14 @@ class MySQLConnection extends Connection
             if (intval($this->pdo->errorCode()) === 0) {
                 $this->pdo->exec('SET NAMES utf8');
                 $this->pdo->exec('SET sql_mode = \'\'');
+                $this->pdo->exec('SET FOREIGN_KEY_CHECKS=0');
                 return true;
             }
         } catch (\Exception $ex) {
-            print_debug($ex);
+//            print_debug($ex);
             Events::dispatch('onException', $ex);
+            $this->lastError = $ex;
+//            throw $ex;
         }
         return false;
     }
@@ -119,22 +126,28 @@ class MySQLConnection extends Connection
      */
     public function select($query, $args = array(), $returnArray = true)
     {
-        if (!GL_INSTALL) {
-            $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        } else {
-            $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING);
-        }
-        $stmt = $this->pdo->prepare($query);
-        $result = $stmt->execute($args);
-        //$list = array();
-        if ($result) {
-            if ($returnArray) {
-                return $stmt->fetchAll();
+        if($this->pdo) {
+
+            if (!GL_INSTALL) {
+                $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            } else {
+                $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING);
             }
-            return true;
+            $stmt = $this->pdo->prepare($query);
+            $result = $stmt->execute($args);
+            //$list = array();
+            if ($result) {
+                if ($returnArray) {
+                    return $stmt->fetchAll();
+                }
+                return true;
+            } else {
+                //            if($this->getLastError())
+                throw new \Exception($query . "\n" . $this->getLastError());
+            }
         } else {
-            //            if($this->getLastError())
-            throw new \Exception($query . "\n" . $this->getLastError());
+            throw new \Exception("Error executing query: $query\nIt seems that the connection was not opened!");
+
         }
     }
 
@@ -155,6 +168,9 @@ class MySQLConnection extends Connection
      */
     public function getLastError()
     {
+        if($this->lastError) {
+            return $this->lastError->getMessage();
+        }
         $error = $this->pdo->errorInfo();
         if ($error[1]) {
             print_debug($error);

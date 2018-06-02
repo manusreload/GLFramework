@@ -30,6 +30,7 @@ use GLFramework\Media\JavascriptMedia;
 use GLFramework\Media\StylesheetMedia;
 use GLFramework\Module\Module;
 use GLFramework\Module\ModuleManager;
+use GLFramework\Modules\Debugbar\Debugbar;
 use GLFramework\Twig\FrameworkExtras;
 use GLFramework\Twig\IExtra;
 
@@ -54,7 +55,7 @@ class View
      */
     private $stylesheetMedia = array();
     private $directories;
-
+    private $config;
     /**
      * View constructor.
      *
@@ -62,14 +63,18 @@ class View
      */
     public function __construct($controller)
     {
+        $config = array();
         $this->controller = $controller;
         $this->directories = ModuleManager::getInstance()->getViews($controller->module);
         $loader = new \Twig_Loader_Filesystem($this->directories);
-        $fs = new Filesystem('twig_cache');
-        $fs->mkdir();
-        $config = array();
-        $config['cache'] = $fs->getAbsolutePath();
-        $this->twig = new \Twig_Environment($loader, array());
+        $this->config = $this->getController()->config;
+        if(isset($this->config['app']['twig_cache']) && $this->config['app']['twig_cache'])
+        {
+            $fs = new Filesystem('twig_cache');
+            $fs->mkdir();
+            $config['cache'] = $fs->getAbsolutePath();
+        }
+        $this->twig = new \Twig_Environment($loader, $config);
         Events::dispatch('onViewCreated', array(&$this->twig));
         Events::getInstance()->listen('displayScripts', array($this, 'getJavascripts'));
         Events::getInstance()->listen('displayStyle', array($this, 'getStylesheets'));
@@ -91,10 +96,20 @@ class View
                 $this->twig->addFilter($filter);
             }
             $this->twig->addGlobal('params', $params);
-            $template = $this->twig->loadTemplate($this->controller->getTemplate());
-            return $template->render($data ? $data : array());
+            $key = "twig" . microtime(true);
+//            Debugbar::timer($key, $this->controller->getTemplate());
+            $template = $this->twig->load($this->controller->getTemplate());
+            $data = $template->render($this->getData($data));
+//            Debugbar::stopTimer($key);
         }
         return $data;
+    }
+
+    private function getData($data) {
+        if($data === true) return array();
+        if($data === false) return array();
+        if($data) return $data;
+        return array();
     }
 
     /**
@@ -249,8 +264,11 @@ class View
      * @param $view View
      * @return array|string
      */
-    public function getStylesheets($view)
+    public function getStylesheets($view = null)
     {
+        if($view === null) {
+            $view = $this;
+        }
         $result = '';
         foreach ($view->stylesheetMedia as $css) {
             $result .= $css->getBrowserCode() . "\n";
@@ -258,6 +276,24 @@ class View
         $view->stylesheetMedia = array();
         return $result;
     }
+
+    /**
+     * @return JavascriptMedia[]
+     */
+    public function getJavascriptMedia()
+    {
+        return $this->javascriptMedia;
+    }
+
+    /**
+     * @return StylesheetMedia[]
+     */
+    public function getStylesheetMedia()
+    {
+        return $this->stylesheetMedia;
+    }
+
+
 
     /**
      * TODO

@@ -29,7 +29,7 @@ class ModuleScanner
         if (!is_array($base)) {
             $base = array($base);
         }
-        $base[] = GL_INTERNAL_MODULES_PATH;
+        $base[] = Bootstrap::getSingleton()->relative(GL_INTERNAL_MODULES_PATH);
         foreach ($base as $folder) {
             $this->recursive($folder, $list);
         }
@@ -53,6 +53,7 @@ class ModuleScanner
      */
     public function recursive($path, &$list = array())
     {
+        if(!$path) return;
         $files = scandir($path);
         foreach ($files as $file) {
             if ($file !== '.' && $file !== '..') {

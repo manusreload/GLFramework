@@ -39,6 +39,7 @@ class FrameworkExtras extends Extra
         $this->addGlobal('_POST', $_POST);
         $this->addGlobal('_REQUEST', $_REQUEST);
         $this->addGlobal('_SERVER', $_SERVER);
+        $this->addGlobal('_COOKIE', $_COOKIE);
         $this->addGlobal('this', $view->getController());
         $this->addGlobal('render', $view);
         $this->addGlobal('manager', ModuleManager::getInstance());
@@ -51,6 +52,7 @@ class FrameworkExtras extends Extra
         $this->addFunction(new \Twig_SimpleFunction('css', array($this, 'css')));
         $this->addFunction(new \Twig_SimpleFunction('vars', array($this, 'vars')));
         $this->addFunction(new \Twig_SimpleFunction('meses', array($this, 'meses')));
+        $this->addFunction(new \Twig_SimpleFunction('meses', array($this, 'meses')));
         $this->addFilter(new \Twig_SimpleFilter('active', array($this, 'isHrefActive')));
         $this->addFilter(new \Twig_SimpleFilter('fecha_hora', array($this, 'parseFechaHora')));
         $this->addFilter(new \Twig_SimpleFilter('fecha', array($this, 'parseFecha')));
@@ -59,6 +61,7 @@ class FrameworkExtras extends Extra
         $this->addFilter(new \Twig_SimpleFilter('number', array($this, 'isNumber')));
         $this->addFilter(new \Twig_SimpleFilter('implode', array($this, 'implode')));
         $this->addFilter(new \Twig_SimpleFilter('icon', array($this, 'icon')));
+        $this->addFilter(new \Twig_SimpleFilter('mes', array($this, 'mes')));
     }
 
     /**
@@ -70,7 +73,7 @@ class FrameworkExtras extends Extra
      */
     public function fireEvent($name, $args = array())
     {
-        return implode("\n", Events::dispatch($name, $args)->getArray());
+        return Events::dispatch($name, $args)->getString();
     }
 
     /**
@@ -228,6 +231,12 @@ class FrameworkExtras extends Extra
             'Nombiembre',
             'Diciembre'
         );
+    }
+
+    public function mes($index, $base = 1)
+    {
+        $meses = $this->meses();
+        return $meses[$index - $base];
     }
 
     /**

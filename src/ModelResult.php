@@ -37,7 +37,7 @@ class ModelResult implements \IteratorAggregate
 {
     var $model_class;
     var $reflection;
-    var $models;
+    var $models = array();
     var $model;
 
     /**
@@ -59,7 +59,7 @@ class ModelResult implements \IteratorAggregate
     /**
      * Obtiene el primer modelo disponible
      *
-     * @return object
+     * @return Model
      */
     public function getModel()
     {
@@ -156,6 +156,14 @@ class ModelResult implements \IteratorAggregate
         }
         return $list;
     }
+    public function export($fields = array(), $recursive = true)
+    {
+        $list = array();
+        foreach ($this->getModels() as $model) {
+            $list[] = $model->export($fields, $recursive);
+        }
+        return $list;
+    }
 
     /**
      * Devuelve la lista al reves
@@ -178,7 +186,7 @@ class ModelResult implements \IteratorAggregate
     public function order($field, $desc = false)
     {
         usort($this->models, function ($a, $b) use ($field) {
-            if ((int)$a[$field] === $a[$field]) {
+            if ((int)$a[$field] == $a[$field]) {
                 return $a[$field] - $b[$field];
             }
             if (is_string($a[$field])) {
@@ -218,11 +226,12 @@ class ModelResult implements \IteratorAggregate
 
     /**
      * TODO
+     * @param null $cache
      */
-    public function delete()
+    public function delete($cache = null)
     {
         foreach ($this->getModels() as $model) {
-            $model->delete();
+            $model->delete($cache);
         }
     }
 
@@ -260,7 +269,7 @@ class ModelResult implements \IteratorAggregate
     public function append($model)
     {
         $this->models[] = (array)$model;
-        if (count($this->models) === 1) {
+        if (count($this->models) > 0) {
             $this->model = $this->models[0];
         }
     }
@@ -286,7 +295,7 @@ class ModelResult implements \IteratorAggregate
      */
     public function filter($callback)
     {
-        $filter = array_filter($this->models, $callback);
+        $filter = array_values(array_filter($this->models, $callback));
         return new ModelResult($this->model_class, $filter);
     }
 }
