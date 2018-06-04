@@ -31,7 +31,7 @@ class FixedLengthFile extends WriterBase
         $line = '';
         foreach ($map as $key => $assoc) {
             $params = $assoc->getFirstNameInFile();
-            $value = $assoc->get($model, $key);
+            $value = $assoc->get($model, $key, $map);
             $line .= $this->fixed_size($value, $params);
         }
         fwrite($this->fp, $line . "\r\n");

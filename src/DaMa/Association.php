@@ -293,9 +293,9 @@ class Association
      * @param $field
      * @return mixed
      */
-    public function get($model, $field)
+    public function get($model, $field, $row)
     {
         $value = $model->getFieldValue($field);
-        return $this->parse($value);
+        return $this->parse($value, $row);
     }
 }
