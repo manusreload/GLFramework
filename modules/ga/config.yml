@@ -15,9 +15,12 @@ version: 0.0.1
 
 app:
 
+  views: view
+
   listeners:
     onMessageDisplay: GLFramework\Modules\GoogleAnalytics\GA->onMessageDisplay
     onLoginSuccess: GLFramework\Modules\GoogleAnalytics\GA->onLoginSuccess
+    displayScripts: GLFramework\Modules\GoogleAnalytics\GA->addTrackerJS
 
   settings:
     # Name and description about the possible configuration override by the main config
@@ -25,3 +28,12 @@ app:
       description: Google analytics tracker.
       type: string
       default:
+    # Name and description about the possible configuration override by the main config
+    auto_ga:
+      description: Add Google analytics  JS script automatically.
+      type: boolean
+      default: false
+    user_id:
+      description: Track user id.
+      type: boolean
+      default: false

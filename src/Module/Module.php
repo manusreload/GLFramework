@@ -64,6 +64,7 @@ class Module
     private $spl_autoload_controllers;
     private $spl_autoload_models;
 
+    static $routes = [];
     /**
      * Module constructor.
      * @param $config
@@ -178,6 +179,14 @@ class Module
                     if (file_exists($filename)) {
                         include_once $filename;
                         return true;
+                    }
+                    if(strpos($class, "\\") !== FALSE) {
+                        $name = substr($class, strrpos($class, "\\") + 1);
+                        $filename = $dir . '/' . $directory . '/' . $name . '.php';
+                        if (file_exists($filename)) {
+                            include_once $filename;
+                            return true;
+                        }
                     }
                 }
             };
@@ -415,7 +424,13 @@ class Module
             $this->controllers_routes[] = $name;
         }
         $this->controllers_url_routes[] = $controller . ' ' . $route . ' [' . $method . ']';
-        $router->map($method, $route, array($this, $controller), $name);
+        if(!isset(self::$routes[$name])) {
+            $router->map($method, $route, array($this, $controller), $name);
+            self::$routes[$name] = true;
+        } else {
+            $router->map($method, $route, array($this, $controller));
+
+        }
     }
 
     /**

@@ -84,4 +84,12 @@ class GA
             post('https://www.google-analytics.com/collect', $params);
         }
     }
+
+    /**
+     * @param $render View
+     * @return mixed
+     */
+    public function addTrackerJS($render) {
+        return $render->display('ga.twig', array('config' => $this->config));
+    }
 }

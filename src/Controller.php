@@ -30,6 +30,7 @@ use GLFramework\Globals\Session;
 use GLFramework\Middleware\ControllerMiddleware;
 use GLFramework\Module\Module;
 use GLFramework\Module\ModuleManager;
+use GLFramework\Resources\ResourceManager;
 use GLFramework\Upload\Uploads;
 
 /**
@@ -252,6 +253,10 @@ abstract class Controller
         return $this->db;
     }
 
+    public function setDb($db) {
+        $this->db = $db;
+    }
+
     /**
      * Muestra un mesaje en pantalla, con el estilo indicado
      *
@@ -329,30 +334,7 @@ abstract class Controller
         if (is_string($module)) {
             $module = ModuleManager::getModuleInstanceByName($module);
         }
-        $config = $module->getConfig();
-        $folders = $config['app']['resources'];
-        if (!is_array($folders)) {
-            $folders = array($folders);
-        }
-        if(substr($name, 0, 1) == "/") $name = substr($name, 1);
-        foreach ($folders as $folder) {
-            $path = $module->getDirectory() . ($folder == ""?"":'/' . $folder) . '/' . $name;
-            if (file_exists($path)) {
-                $path = realpath($path);
-                if ($asFile) {
-                    return $path;
-                }
-                //$base = realpath($module->getDirectory());
-                //$index = strpos($path, $base);
-                $url = Bootstrap::getSingleton()->toUrl($path);
-                $protocol = 'http';
-                if (isset($_SERVER['SCRIPT_URI']) && strpos($_SERVER['SCRIPT_URI'], 'https') !== false) {
-                    $protocol = 'https';
-                }
-
-                return $protocol . '://' . $_SERVER['HTTP_HOST'] . $url;
-            }
-        }
+        return ResourceManager::getResource($name, $module, $asFile);
     }
 
     /**

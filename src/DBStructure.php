@@ -62,6 +62,7 @@ class DBStructure
      */
     public function getDefinition($model)
     {
+        if(!($model instanceof Model)) return false;
 
         $fields = array();
         $keys = array();
@@ -148,11 +149,18 @@ class DBStructure
         $bs = Bootstrap::getSingleton();
         $config = $bs->getConfig();
         foreach ($bs->getModels() as $model) {
-            $instance = new $model();
-            $md5 .= md5(json_encode($this->getDefinition($instance)));
+            if(class_exists($model, false)) {
+                try {
+
+                    $instance = new $model();
+                    $md5 .= md5(json_encode($this->getDefinition($instance)));
+                } catch (\ArgumentCountError $exception) {
+                    Log::d($exception);
+                }
+            }
         }
         if (isset($config['database'])) {
-            $md5 .= implode("", $config['database']);
+            $md5 .= @implode("", $config['database']);
         }
         return md5($md5);
     }
@@ -190,22 +198,27 @@ class DBStructure
             if (class_exists($model)) {
                 $instance = new $model(null);
                 if ($instance instanceof Model) {
-                    $diff = $instance->getStructureDifferences($db);
-                    foreach ($diff as $action) {
-                        try {
-                            $this->runAction($db, $instance, $action);
-                            $count++;
-                        } catch (\Exception $ex) {
-//                            Debugbar::getInstance()->exceptionHandler($ex);
-                            Log::getInstance()->critical($ex);
-//                            return $ex;
-                        }
-                    }
+                    $this->executeModel($db, $instance);
                 }
             }
         }
         $this->setDatabaseUpdate();
         return $count;
+    }
+
+    public function executeModel($db, $model) {
+        $count = 0;
+        $diff = $model->getStructureDifferences($db);
+        foreach ($diff as $action) {
+            try {
+                $this->runAction($db, $model, $action);
+                $count++;
+            } catch (\Exception $ex) {
+//                            Debugbar::getInstance()->exceptionHandler($ex);
+                Log::getInstance()->critical($ex);
+//                            return $ex;
+            }
+        }
     }
 
     /**

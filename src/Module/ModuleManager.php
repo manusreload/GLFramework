@@ -31,9 +31,7 @@ use GLFramework\Controller\ErrorController;
 use GLFramework\Controller\ExceptionController;
 use GLFramework\Events;
 use GLFramework\Filesystem;
-use GLFramework\Log;
 use GLFramework\Request;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class ModuleManager
@@ -47,7 +45,7 @@ class ModuleManager
      * @var Module[]
      */
     private $modules = array();
-    private $modulesDisabled = array();
+//    private $modulesDisabled = array();
     private $config;
     private $directory;
     private $router;
@@ -75,7 +73,8 @@ class ModuleManager
     /**
      * @return \AltoRouter
      */
-    private function newRouter() {
+    private function newRouter()
+    {
         $router = new \AltoRouter(array(), $this->getBasePath());
         $router->addMatchTypes(array(
             'idd' => '([0-9]+|add)?',
@@ -84,7 +83,7 @@ class ModuleManager
     }
 
     /**
-     * TODO
+     * Obtiene la instancia a Gestor de Módulos
      *
      * @return ModuleManager
      */
@@ -94,12 +93,14 @@ class ModuleManager
     }
 
 
-    public function getBasePath() {
-        return isset($this->config['app']) && isset($this->config['app']['basepath']) ? $this->config['app']['basepath'] : "";
+    public function getBasePath()
+    {
+        return isset($this->config['app']) && isset($this->config['app']['basepath']) ?
+            $this->config['app']['basepath'] : "";
     }
 
     /**
-     * TODO
+     * Obtener un módulo por su nombre
      *
      * @param $name
      * @return Module
@@ -112,12 +113,13 @@ class ModuleManager
                 return $module;
             }
         }
+        return null;
     }
 
     /**
-     * TODO
+     * Si el modulo existe, entonces devuelve true, en cualquier otro caso false.
      *
-     * @param $string
+     * @param $string string Titulo del modulo
      * @return bool
      */
     public static function exists($string)
@@ -132,7 +134,7 @@ class ModuleManager
     }
 
     /**
-     * TODO
+     * Comprueba que exista el controlador
      *
      * @param $key
      * @return bool
@@ -151,7 +153,7 @@ class ModuleManager
     }
 
     /**
-     * TODO
+     * Instancia un nuevo controlador
      *
      * @param $key
      * @return bool|\GLFramework\Controller
@@ -170,7 +172,7 @@ class ModuleManager
     }
 
     /**
-     * TODO
+     * Para un controlador dado, devuelve su módulo
      *
      * @param $key
      * @return bool|Module
@@ -189,7 +191,7 @@ class ModuleManager
     }
 
     /**
-     * TODO
+     * Obtener el enrutador
      *
      * @return \AltoRouter
      */
@@ -199,7 +201,7 @@ class ModuleManager
     }
 
     /**
-     * TODO
+     * Lista los módulos presentes
      *
      * @return Module[]
      */
@@ -209,7 +211,7 @@ class ModuleManager
     }
 
     /**
-     * TODO
+     * Obtener el módulo principal
      *
      * @return Module
      */
@@ -219,7 +221,7 @@ class ModuleManager
     }
 
     /**
-     * TODO
+     * Dado un módulo, obtiene las vistas asociadas, si no hay módulo se listan todas las vistas
      *
      * @param bool|Module $module
      * @return array
@@ -230,7 +232,6 @@ class ModuleManager
         foreach ($this->getModules() as $module2) {
             foreach ($module2->getViewsOverride() as $view) {
                 $views[] = $view;
-
             }
         }
         if ($module) {
@@ -258,13 +259,12 @@ class ModuleManager
     }
 
     /**
-     * TODO
+     * Inicializar el gestor de módulos
      *
      * @throws \Exception
      */
     public function init()
     {
-        $time = microtime();
         $module = $this->load($this->directory, array(), true);
         if ($module) {
             $this->mainModule = $module;
@@ -280,7 +280,7 @@ class ModuleManager
                     $module->register_router($this->router);
             }
             foreach ($this->modules as $module) {
-                if ($module != $this->mainModule) {
+                if ($module !== $this->mainModule) {
                     $module->register_events();
                 }
             }
@@ -291,10 +291,11 @@ class ModuleManager
         }
     }
 
-    public function checkModulesPolicy() {
+    public function checkModulesPolicy()
+    {
         $remove = array();
         foreach ($this->modules as $module) {
-            if(Events::dispatch('isModuleEnabled', array($module))->anyFalse()) {
+            if (Events::dispatch('isModuleEnabled', array($module))->anyFalse()) {
                 $remove[] = $module;
             }
         }
@@ -373,7 +374,7 @@ class ModuleManager
     }
 
     /**
-     * TODO
+     * Cargar un módulo para un directorio
      *
      * @param $folder
      * @param null $extra
@@ -401,7 +402,7 @@ class ModuleManager
     }
 
     /**
-     * TODO
+     * Cargar dependencias del módulo
      *
      * @param $module Module
      */
@@ -414,7 +415,7 @@ class ModuleManager
     }
 
     /**
-     * TODO
+     * Añadir instancia de módulo a la lista
      *
      * @param $module Module
      */
@@ -425,10 +426,11 @@ class ModuleManager
         }
     }
 
-    public function remove($module) {
-        if($module !== null) {
+    public function remove($module)
+    {
+        if ($module !== null) {
             $i = array_search($module, $this->modules);
-            if($i >= 0) {
+            if ($i >= 0) {
                 $this->modules[$i]->unload();
                 unset($this->modules[$i]);
             }
@@ -436,7 +438,7 @@ class ModuleManager
     }
 
     /**
-     * TODO
+     * Devuelve true si el módulo está habilitado
      *
      * @param $name
      * @return bool
@@ -453,7 +455,7 @@ class ModuleManager
 
 
     /**
-     * TODO
+     * Ejecutar la ruta
      *
      * @param null $url
      * @param null $method
@@ -473,13 +475,12 @@ class ModuleManager
                     $target = $match['target'];
                     $module = $target[0];
                     if ($module instanceof Module) {
-                        if($this->isEnabled($module->title)) {
+                        if ($this->isEnabled($module->title)) {
                             $this->runningModule = $module;
                             $controller = $target[1];
                             $request->setParams($match['params']);
                             return $module->run($controller, $request);
                         } else {
-
                             return $this->mainModule->run(new ErrorController("This module is disabled by your 
                             policy"),
                                 $request);
@@ -495,16 +496,14 @@ class ModuleManager
         } catch (\Exception $ex) {
             Events::dispatch('onException', $ex);
             return $this->mainModule->run(new ExceptionController($ex), $request);
-
         } catch (\Throwable $ex) {
             Events::dispatch('onError', $ex);
             return $this->mainModule->run(new ExceptionController($ex), $request);
         }
-//        return false;
     }
 
     /**
-     * TODO
+     * Listado de rutas
      *
      * @return string
      */
@@ -521,10 +520,11 @@ class ModuleManager
             $html .= '</pre>';
             return $html;
         }
+        return "";
     }
 
     /**
-     * TODO
+     * Llamada a los archivos del sistema
      *
      * @param $args
      * @param $request
@@ -548,7 +548,7 @@ class ModuleManager
     }
 
     /**
-     * TODO
+     * Obtiene el módulo en ejecución.
      *
      * @return mixed
      */

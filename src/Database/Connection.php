@@ -86,7 +86,7 @@ abstract class Connection
     /**
      * TODO
      *
-     * @return mixed
+     * @return \PDO
      */
     abstract public function getPDO();
 
