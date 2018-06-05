@@ -64,7 +64,7 @@ class CSVManipulator extends ManipulatorCore
     private function map($items) {
 
         foreach ($items as &$item) {
-            $item = mb_convert_encoding($item, "UTF-8", $this->encoding);
+            $item = trim(mb_convert_encoding($item, "UTF-8", $this->encoding));
         }
         return $items;
 

@@ -347,6 +347,9 @@ class Manipulator
     {
         $associative = array();
         foreach ($header as $key => $value) {
+            if(bin2hex(substr($value, 0, 3)) == "efbbbf") {
+                $value = substr($value, 3);
+            }
             $associative[$value] = $row[$key];
         }
         $model = new $this->modelName();
