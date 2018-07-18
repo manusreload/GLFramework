@@ -203,12 +203,7 @@ class AuthController extends Controller implements Middleware
                         setcookie($this->session_key, serialize(Session::get($this->session_key)),
                             time() + 60 * 60 * 24 * 30, '/');
                     }
-                    if (isset($_SESSION['return'])) {
-                        $this->redirection(Session::get('return'));
-                    } else {
-                        $this->redirection($this->default_redirect);
-                    }
-                    Session::delete('return');
+                    $this->redirectLogin();
                     return true;
 
                 } else {
@@ -219,6 +214,15 @@ class AuthController extends Controller implements Middleware
             }
         }
         return false;
+    }
+
+    public function redirectLogin() {
+        if (isset($_SESSION['return'])) {
+            $this->redirection(Session::get('return'));
+        } else {
+            $this->redirection($this->default_redirect);
+        }
+        Session::delete('return');
     }
 
     /**

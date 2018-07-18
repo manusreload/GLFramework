@@ -12,7 +12,18 @@
             Error al iniciar la sesión. Usuario/contraseña incorrecta.
         </div>
         {% endif %}
+        {% if this.user.valid() %}
+            <div class="panel panel-info">
+                <div class="panel-body">
+                    <b>Sesión iniciada como:</b>
+                    <i class="fa fa-user"></i> {{ this.user.nombre }}
+                </div>
+                <div class="panel-footer">
+                    <a class="btn btn-primary" href="?continue">Continuar</a> <a href="?logout" class="btn btn-default">Cerrar sesión</a>
+                </div>
+            </div>
         <h3 class="form-signin-heading">Iniciar Sesion</h3>
+        {% endif %}
         <input name="username" id="myusername" type="text" class="form-control" placeholder="Usuario" autofocus>
         <input name="password" id="mypassword" type="password" class="form-control" placeholder="Contraseña">
 
