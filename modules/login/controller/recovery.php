@@ -94,7 +94,7 @@ class recovery extends Controller
                         $message = $mail->render($this, "mail/recover_account.twig", array('user' => $user, 'recovery' => $recovery));
                         if($mail->send($user->email, "Contraseña perdida", $message))
                         {
-                            $this->addMessage("Se ha enviado un email al usuario. con los pasos que tiene que seguir para recuperar la cuenta");
+                            $this->addMessage("Se ha enviado un email al usuario con los pasos que tiene que seguir para recuperar la cuenta");
                         }
                         else
                         {

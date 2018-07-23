@@ -26,6 +26,7 @@
 
 namespace GLFramework;
 
+use GLFramework\Database\DoctrineConnection;
 use GLFramework\Globals\Session;
 use GLFramework\Middleware\ControllerMiddleware;
 use GLFramework\Module\Module;
@@ -423,5 +424,9 @@ abstract class Controller
         if(!$this->created) {
             $this->onCreate();
         }
+    }
+
+    public function getEntityManager() {
+        return DoctrineConnection::getEntityManager();
     }
 }

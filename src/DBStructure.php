@@ -149,20 +149,22 @@ class DBStructure
         $bs = Bootstrap::getSingleton();
         $config = $bs->getConfig();
         foreach ($bs->getModels() as $model) {
-            if(class_exists($model, false)) {
+            if(class_exists($model)) {
                 try {
 
                     $instance = new $model();
-                    $md5 .= md5(json_encode($this->getDefinition($instance)));
+                    $md5 .= (json_encode($this->getDefinition($instance)) . "\n");
                 } catch (\ArgumentCountError $exception) {
                     Log::d($exception);
                 }
             }
         }
         if (isset($config['database'])) {
-            $md5 .= @implode("", $config['database']);
+            $md5 .= json_encode($config['database']);
         }
-        return md5($md5);
+//        return md5($md5);
+
+        return $md5;
     }
 
     /**

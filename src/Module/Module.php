@@ -258,17 +258,7 @@ class Module
     public function getModels()
     {
         $list = array();
-        if (!isset($this->config['app']['model'])) {
-            return $list;
-        }
-        $models = $this->config['app']['model'];
-        if (empty($models)) {
-            return $list;
-        }
-        if (!is_array($models)) {
-            $models = array($models);
-        }
-        foreach ($models as $model) {
+        foreach ($this->getModelsFolder() as $model) {
             $folder = $this->directory . "/$model";
             if (is_dir($folder)) {
                 $files = scandir($folder);
@@ -280,6 +270,21 @@ class Module
             }
         }
         return $list;
+    }
+
+    public function getModelsFolder() {
+        $list = array();
+        if (!isset($this->config['app']['model'])) {
+            return $list;
+        }
+        $models = $this->config['app']['model'];
+        if (empty($models)) {
+            return $list;
+        }
+        if (!is_array($models)) {
+            $models = array($models);
+        }
+        return $models;
     }
 
     /**

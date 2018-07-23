@@ -119,7 +119,13 @@ class Mail
     public function send($to, $subject, $message, $attachments = array(), $cc = array())
     {
         $mail = new \Swift_Message($subject, $message, 'text/html', 'UTF-8');
-        $mail->setFrom($this->from, $this->fromName);
+        if($this->from != '')
+        {
+            $mail->setFrom($this->from, $this->fromName);
+        } else {
+            $mail->setFrom('framework@gestionlan.com', "Manuel de Gestionlan");
+
+        }
         $mail->setTo($to);
         $mail->setCc($cc);
         if($this->replyTo) {

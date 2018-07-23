@@ -150,7 +150,7 @@ class DatabaseManager
                     self::$selected = true;
                     $this->createCache();
 
-                    if (!GL_INSTALL) {
+                    if (!defined("GL_INSTALL") || !GL_INSTALL) {
                         $this->checkDatabaseStructure();
                     }
                     return true;
