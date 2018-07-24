@@ -32,6 +32,7 @@ use GLFramework\Controller\ExceptionController;
 use GLFramework\Events;
 use GLFramework\Filesystem;
 use GLFramework\Request;
+use GLFramework\Utils\Profiler;
 
 /**
  * Class ModuleManager
@@ -276,8 +277,8 @@ class ModuleManager
             }
 
             foreach ($this->modules as $module) {
-                    $module->init();
-                    $module->register_router($this->router);
+                $module->init();
+                $module->register_router($this->router);
             }
             foreach ($this->modules as $module) {
                 if ($module !== $this->mainModule) {
@@ -383,6 +384,7 @@ class ModuleManager
      */
     public function load($folder, $extra = null, $main = false)
     {
+        Profiler::flag("Before Load " . $folder);
         $configFile = $folder . '/config.yml';
         if (file_exists($configFile)) {
             $config = Bootstrap::loadConfig($folder, 'config.yml');
@@ -398,6 +400,7 @@ class ModuleManager
         if (is_array($extra)) {
             $config = array_merge_recursive_ex($config, $extra);
         }
+//        Profiler::flag("After Load " . $folder);
         return new Module($config, $folder);
     }
 

@@ -29,6 +29,7 @@ namespace GLFramework;
 use GLFramework\Cache\Cache;
 use GLFramework\Database\Connection;
 use GLFramework\Database\MySQLConnection;
+use GLFramework\Utils\Profiler;
 
 /**
  * Class DatabaseManager
@@ -141,6 +142,7 @@ class DatabaseManager
     public function connect()
     {
         if (!self::$connection) {
+            Profiler::flag("Before DBConnect");
             $config = $this->getConfig();
             self::$connection = $this->instanceConnector();
             if (self::$connection->connect($config['database']['hostname'], $config['database']['username'],
@@ -160,6 +162,7 @@ class DatabaseManager
                 throw new \Exception(sprintf('Can not establish connection to database! {host=%s, user=%s, database=%s} Error: %s',
                     $config['database']['hostname'], $config['database']['username'], $config['database']['database'], $err));
             }
+            Profiler::flag("After DBConnect");
         }
         return true;
     }

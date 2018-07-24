@@ -30,8 +30,12 @@ use GLFramework\Controller;
 use GLFramework\Cron\CronTask;
 use GLFramework\Event\Event;
 use GLFramework\Events;
+use GLFramework\Log;
+use GLFramework\Modules\Debugbar\Debugbar;
 use GLFramework\Request;
+use GLFramework\Utils\ExecutionTime;
 use GLFramework\View;
+
 define('ALLOW_USER', 'allow');
 define('DISALLOW_USER', 'disallow');
 /**
@@ -63,6 +67,7 @@ class Module
     private $router;
     private $spl_autoload_controllers;
     private $spl_autoload_models;
+    private $init = false;
 
     static $routes = [];
     /**
@@ -135,21 +140,30 @@ class Module
      */
     public function init()
     {
-        //        Log::d($this->config);
-        $this->register_composer();
-        if(isset($this->config['app']['controllers'])) {
-            $controllers = $this->config['app']['controllers'];
-            if (!is_array($controllers)) {
-                $controllers = array($controllers);
-            }
-            foreach ($controllers as $controllerFolder) {
-                if ($controllerFolder) {
-                    $this->load_controllers($this->directory . '/' . $controllerFolder);
+        if(!$this->init) {
+            $this->init = true;
+            //        Log::d($this->config);
+            $time = new ExecutionTime();
+            $time->Start();
+            $this->register_composer();
+            if(isset($this->config['app']['controllers'])) {
+                $controllers = $this->config['app']['controllers'];
+                if (!is_array($controllers)) {
+                    $controllers = array($controllers);
                 }
+                foreach ($controllers as $controllerFolder) {
+                    if ($controllerFolder) {
+                        $this->load_controllers($this->directory . '/' . $controllerFolder);
+                    }
+                }
+                $this->register_autoload_controllers();
             }
-            $this->register_autoload_controllers();
+            $this->register_autoload_model();
+            $time->End();
+            echo $this->title . " = " . $time . "\n";
+        } else {
+            Log::w("Module: " . $this->getDirectory() . " already inited!");
         }
-        $this->register_autoload_model();
         //        $this->register_events();
     }
 
@@ -173,24 +187,39 @@ class Module
                 $models = array($models);
             }
             $dir = $this->directory;
-            $this->spl_autoload_models = function ($class) use ($models, $dir) {
-                foreach ($models as $directory) {
-                    $filename = $dir . '/' . $directory . '/' . $class . '.php';
-                    if (file_exists($filename)) {
-                        include_once $filename;
-                        return true;
-                    }
-                    if(strpos($class, "\\") !== FALSE) {
-                        $name = substr($class, strrpos($class, "\\") + 1);
-                        $filename = $dir . '/' . $directory . '/' . $name . '.php';
-                        if (file_exists($filename)) {
+            $result = [];
+            foreach ($models as $directory) {
+                $folder = $dir . '/' . $directory;
+                if (is_dir($folder)) {
+                    $files = scandir($folder);
+                    foreach ($files as $file) {
+                        if($file != "." && $file != "..") {
+                            $filename = $dir . '/' . $directory . '/' . $file;
                             include_once $filename;
-                            return true;
                         }
                     }
                 }
-            };
-            spl_autoload_register($this->spl_autoload_models);
+//                if (file_exists($filename)) {
+//                    include_once $filename;
+//                    return true;
+//                }
+//                if(strpos($class, "\\") !== FALSE) {
+//                    $name = substr($class, strrpos($class, "\\") + 1);
+//                    $filename = $dir . '/' . $directory . '/' . $name . '.php';
+//                    if (file_exists($filename)) {
+//                        include_once $filename;
+//                        return true;
+//                    }
+//                }
+            }
+//            $this->spl_autoload_models = function ($class) use ($result) {
+//                if(in_array($class, $result)) {
+//                    include_once $result[$class];
+//                    return true;
+//                }
+//                return false;
+//            };
+//            spl_autoload_register($this->spl_autoload_models);
         }
     }
 

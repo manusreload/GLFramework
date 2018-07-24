@@ -71,7 +71,7 @@ class ControllerMiddleware implements Middleware
         $next($request, $response);
         Events::dispatch('afterControllerRun', array($this->controller, $this->controller->response));
         Events::dispatch('beforeViewDisplay', array($this->controller));
-        $response->setContent($this->controller->display($data, $request->params));
+        print $this->controller->display($data, $request->params);
         Events::dispatch('afterViewDisplay', array($this->controller));
     }
 }

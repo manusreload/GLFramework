@@ -190,4 +190,12 @@ class Response
     {
         $this->responseCode = $responseCode;
     }
+
+    /**
+     * Añadir contenido al final de la respuesta
+     * @param $content
+     */
+    public function addContent($content) {
+        $this->content .= $content;
+    }
 }

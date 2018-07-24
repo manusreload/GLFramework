@@ -28,6 +28,9 @@ namespace GLFramework;
 
 use GLFramework\Globals\Server;
 use GLFramework\Module\ModuleManager;
+use GLFramework\Modules\Debugbar\Debugbar;
+use GLFramework\Utils\Profiler;
+use GLJarmauto\ExecutionTime;
 
 define("GL_INTERNAL_MODULES_PATH", realpath(__DIR__ . "/../modules"));
 /**
@@ -305,9 +308,10 @@ class Bootstrap
      */
     public function run($url = null, $method = null)
     {
+        ob_start(); Profiler::flag('Init');
         $this->startSession();
         if(!$this->inited)
-            $this->init();
+            $this->init(); Profiler::flag('Init End');
         Log::i('Welcome to GLFramework');
         Log::i('· Version: ' . $this->getVersion());
         Log::i('· PHP Version: ' . PHP_VERSION);
@@ -320,12 +324,15 @@ class Bootstrap
         Log::i('· Modules priority: ');
         Log::i(array_map(function($module) { return $module->title; }, $this->manager->getModules()));
         Events::dispatch('onCoreStartUp', array($this->startTime, $this->initTime));
-        $this->manager->checkModulesPolicy();
-        $response = $this->manager->run($url, $method);
+        Profiler::flag('Before checkModulesPolicy'); $this->manager->checkModulesPolicy(); Profiler::flag('checkModulesPolicy');
+        Profiler::flag('Before manager->run'); $response = $this->manager->run($url, $method); Profiler::flag('manager->run');
         Log::i('Sending response...');
         if ($response) {
             $response->setUri($url);
         }
+        Profiler::flag('Done');
+        $data = ob_get_clean(); $data .= Profiler::printProfiler();
+        $response->addContent($data);
         return $response;
     }
 
