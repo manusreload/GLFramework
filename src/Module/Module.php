@@ -34,6 +34,7 @@ use GLFramework\Log;
 use GLFramework\Modules\Debugbar\Debugbar;
 use GLFramework\Request;
 use GLFramework\Utils\ExecutionTime;
+use GLFramework\Utils\Profiler;
 use GLFramework\View;
 
 define('ALLOW_USER', 'allow');
@@ -68,6 +69,9 @@ class Module
     private $spl_autoload_controllers;
     private $spl_autoload_models;
     private $init = false;
+    private $routerMap = [];
+
+    private $cacheId = "";
 
     static $routes = [];
     /**
@@ -113,6 +117,7 @@ class Module
                 $this->cron[] = new CronTask($this, $title, $fn);
             }
         }
+        $this->cacheId = md5(json_encode($this->config));
         //        $this->config = array_merge_recursive_ex($this->config, Bootstrap::getSingleton()->getConfig());
     }
 
@@ -141,26 +146,31 @@ class Module
     public function init()
     {
         if(!$this->init) {
+            Profiler::flag("modules", "init ", $this->directory);
             $this->init = true;
             //        Log::d($this->config);
-            $time = new ExecutionTime();
-            $time->Start();
             $this->register_composer();
-            if(isset($this->config['app']['controllers'])) {
-                $controllers = $this->config['app']['controllers'];
-                if (!is_array($controllers)) {
-                    $controllers = array($controllers);
-                }
-                foreach ($controllers as $controllerFolder) {
-                    if ($controllerFolder) {
-                        $this->load_controllers($this->directory . '/' . $controllerFolder);
-                    }
-                }
+
+            if($this->hasCompiledVersion() && $this->loadCompiled()) {
+                ;
                 $this->register_autoload_controllers();
+            } else {
+                if(isset($this->config['app']['controllers'])) {
+                    $controllers = $this->config['app']['controllers'];
+                    if (!is_array($controllers)) {
+                        $controllers = array($controllers);
+                    }
+                    foreach ($controllers as $controllerFolder) {
+                        if ($controllerFolder) {
+                            $this->load_controllers($this->directory . '/' . $controllerFolder);
+                        }
+                    }
+                    $this->register_autoload_controllers();
+                }
+                $this->routerMap = $this->getRouterData();
+                $this->saveCompiledVersion();
             }
             $this->register_autoload_model();
-            $time->End();
-            echo $this->title . " = " . $time . "\n";
         } else {
             Log::w("Module: " . $this->getDirectory() . " already inited!");
         }
@@ -393,13 +403,22 @@ class Module
     {
         $this->router = $router;
         $list = array();
-        $controllers = $this->getControllers();
-        foreach ($controllers as $controller => $file) {
-            $routes = $this->getControllerDefaultRoutes($controller, $file);
-            $list[] = $routes;
+        $controllers = $this->routerMap;
+        foreach ($controllers as $controller => $routes) {
             foreach ($routes as $route) {
                 $this->register_router_controller($router, $route, $controller);
             }
+        }
+        return $list;
+    }
+
+    private function getRouterData() {
+
+        $list = array();
+        $controllers = $this->getControllers();
+        foreach ($controllers as $controller => $file) {
+            $routes = $this->getControllerDefaultRoutes($controller, $file);
+            $list[$controller] = $routes;
         }
         return $list;
     }
@@ -660,5 +679,34 @@ class Module
         if (file_exists($composer)) {
             include_once $composer;
         }
+    }
+
+    private function hasCompiledVersion() {
+//        return file_exists($this->getDirectory() . "/module.raw.php");
+        return false;
+    }
+    private function loadCompiled() {
+        $data = json_decode(file_get_contents($this->getDirectory() . "/module.raw.php"), true);
+
+        if($data) {
+            $this->controllers_map = $data['controller']['map'];
+            $this->controllers = $data['controller']['data'];
+            $this->routerMap = $data['router'];
+        } else {
+            return false;
+        }
+    }
+
+    public function saveCompiledVersion() {
+        if($this->getFolderContainer() === 'internal') return false;
+        $data = [
+            'controller' => [
+                'map' => $this->controllers_map,
+                'data' => $this->controllers,
+            ],
+            'router' => $this->routerMap
+        ];
+        $text = json_encode($data);
+        file_put_contents($this->getDirectory() . "/module.raw.php", $text);
     }
 }

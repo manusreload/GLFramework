@@ -331,7 +331,7 @@ class Bootstrap
             $response->setUri($url);
         }
         Profiler::flag('Done');
-        $data = ob_get_clean(); $data .= Profiler::printProfiler();
+        $data = ob_get_clean(); $data .= "<div class='clearfix'><pre>" . Profiler::printProfiler() . "</pre></div>";
         $response->addContent($data);
         return $response;
     }

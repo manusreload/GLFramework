@@ -21,17 +21,26 @@ class Profiler
         }
         return self::$instance;
     }
-    public static function flag($name) {
-        return self::getInstance()->internalFlag($name);
+    public static function flag($path) {
+        return self::getInstance()->internalFlag(func_get_args());
     }
+
+    public static function timer(... $path) {
+        return ['path' => $path, 'time' => microtime(true)];
+    }
+
 
     public static function printProfiler() {
         return self::getInstance()->internalPrint();
     }
 
-    private function internalFlag($name) {
+    private function internalFlag($path) {
+        if(!is_array($path))
+        {
+            $path = [$path];
+        }
         $this->timing[] = microtime(true);
-        $this->names[] = $name;
+        $this->names[] = implode("::", $path);
     }
 
     private function internalPrint() {

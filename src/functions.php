@@ -230,7 +230,7 @@ function file_get_php_classes($filepath)
     $fp = fopen($filepath, "r");
     $buffer = "";
     $classes = array();
-    while($read = fgets($fp)) {
+    while($read = fgets($fp, 1024)) {
         $buffer .= $read;
         $classes = get_php_classes($buffer);
         if($classes) {

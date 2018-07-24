@@ -266,6 +266,7 @@ class ModuleManager
      */
     public function init()
     {
+        Profiler::flag('ModuleManager init');
         $module = $this->load($this->directory, array(), true);
         if ($module) {
             $this->mainModule = $module;
@@ -290,6 +291,7 @@ class ModuleManager
             throw new \Exception('Can\'t not load the main module! Looking for: \'' . $file . '\'. folder 
             realpath: ' . realpath($this->directory));
         }
+        Profiler::flag('END ModuleManager init');
     }
 
     public function checkModulesPolicy()

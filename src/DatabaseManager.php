@@ -155,6 +155,7 @@ class DatabaseManager
                     if (!defined("GL_INSTALL") || !GL_INSTALL) {
                         $this->checkDatabaseStructure();
                     }
+                    Profiler::flag("After DBConnect");
                     return true;
                 }
             } else {
@@ -162,7 +163,6 @@ class DatabaseManager
                 throw new \Exception(sprintf('Can not establish connection to database! {host=%s, user=%s, database=%s} Error: %s',
                     $config['database']['hostname'], $config['database']['username'], $config['database']['database'], $err));
             }
-            Profiler::flag("After DBConnect");
         }
         return true;
     }
