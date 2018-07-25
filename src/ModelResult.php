@@ -186,7 +186,7 @@ class ModelResult implements \IteratorAggregate
     public function order($field, $desc = false)
     {
         usort($this->models, function ($a, $b) use ($field) {
-            if ((int)$a[$field] == $a[$field]) {
+            if (is_numeric($a[$field]) && (int)$a[$field] == $a[$field]) {
                 return $a[$field] - $b[$field];
             }
             if (is_string($a[$field])) {

@@ -117,7 +117,7 @@ class Module
                 $this->cron[] = new CronTask($this, $title, $fn);
             }
         }
-        $this->cacheId = md5(json_encode($this->config));
+//        $this->cacheId = md5(json_encode($this->config));
         //        $this->config = array_merge_recursive_ex($this->config, Bootstrap::getSingleton()->getConfig());
     }
 
@@ -178,7 +178,7 @@ class Module
     }
 
     public function unload() {
-        spl_autoload_unregister($this->spl_autoload_models);
+//        spl_autoload_unregister($this->spl_autoload_models);
         spl_autoload_unregister($this->spl_autoload_controllers);
         foreach ($this->events as $event) {
             Events::getInstance()->remove($event);
@@ -704,7 +704,8 @@ class Module
                 'map' => $this->controllers_map,
                 'data' => $this->controllers,
             ],
-            'router' => $this->routerMap
+            'router' => $this->routerMap,
+            'config' => $this->config,
         ];
         $text = json_encode($data);
         file_put_contents($this->getDirectory() . "/module.raw.php", $text);
