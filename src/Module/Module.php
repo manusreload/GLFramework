@@ -30,6 +30,7 @@ use GLFramework\Controller;
 use GLFramework\Cron\CronTask;
 use GLFramework\Event\Event;
 use GLFramework\Events;
+use GLFramework\Log;
 use GLFramework\Request;
 use GLFramework\View;
 define('ALLOW_USER', 'allow');
@@ -213,8 +214,12 @@ class Module
                     $ext = substr($file, strrpos($file, '.'));
                     if ($ext == '.php') {
                         $class = file_get_php_classes($filename);
-                        $this->controllers[$class[0]] = $folder . '/' . $file;
-                        $this->controllers_map[$class[0]] = $root . '/' . $folder . '/' . $file;
+                        if(count($class) != 0) {
+                            $this->controllers[$class[0]] = $folder . '/' . $file;
+                            $this->controllers_map[$class[0]] = $root . '/' . $folder . '/' . $file;
+                        } else {
+                            Log::w($filename . " is not a valid controller!");
+                        }
                     } elseif (is_dir($filename)) {
                         $this->load_controllers($root, $name);
                     }
