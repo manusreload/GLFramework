@@ -85,10 +85,17 @@ class ControllerCollector extends DataCollector implements Renderable
         {
             if($item->isPublic())
             {
-                $array[$item->name] = (string) $this->controllerStorage->{$item->name};
+                $value = $this->controllerStorage->{$item->name};
+                if(is_array($value)) {
+                    $array[$item->name] = json_encode($value);
+                } else if(is_string($value)) {
+                    $array[$item->name] = $value;
+                } else {
+                    $array[$item->name] = (array) ($value);
+                }
             }
         }
-        return ($array);
+        return json_encode($array, 128);
 
     }
     
