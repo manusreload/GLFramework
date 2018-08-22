@@ -88,6 +88,6 @@ class XLSXManipulator extends ManipulatorCore
      */
     public function map($item)
     {
-        return $item;
+        return trim($item);
     }
 }

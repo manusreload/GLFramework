@@ -453,6 +453,16 @@ class Bootstrap
         return $list;
     }
 
+    public function getModelsFolder() {
+        $list = array();
+        foreach ($this->getManager()->getModules() as $module) {
+            foreach ($module->getModelsFolder() as $model) {
+                $list[] = $model;
+            }
+        }
+        return $list;
+    }
+
     /**
      * TODO
      *

@@ -26,5 +26,9 @@ class login extends AuthController
             }
         }
 
+        if(isset($_GET['continue'])) {
+            $this->redirectLogin();
+        }
+
     }
 }

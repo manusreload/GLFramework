@@ -1,0 +1,13 @@
+title: oauth
+description: Login con Google, Facebook, ...
+
+depends:
+  - admin
+
+app:
+  controllers: controller
+  views: view
+  model: model
+
+  routes:
+    GLFramework\Modules\OAuth\oauth: /oauth

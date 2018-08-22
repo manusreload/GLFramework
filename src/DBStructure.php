@@ -152,16 +152,18 @@ class DBStructure
             try {
                 $instance = Model::newInstance($model);
 //                $instance = new $model();
-                $md5 .= md5(json_encode($this->getDefinition($instance)));
+                $md5 .= (json_encode($this->getDefinition($instance))) . "\n";
             } catch (\ArgumentCountError $exception) {
                 Log::d($exception);
             }
 
         }
         if (isset($config['database'])) {
-            $md5 .= implode("", $config['database']);
+            $md5 .= json_encode($config['database']);
         }
-        return md5($md5);
+//        return md5($md5);
+
+        return $md5;
     }
 
     /**
@@ -206,6 +208,7 @@ class DBStructure
     }
 
     public function executeModel($db, $model) {
+        $count = 0;
         $diff = $model->getStructureDifferences($db);
         foreach ($diff as $action) {
             try {
