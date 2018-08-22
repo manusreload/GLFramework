@@ -68,6 +68,9 @@ class ResourceManager
                 return $protocol . '://' . $_SERVER['HTTP_HOST'] . $url;
             }
         }
+        if($module !== ModuleManager::getInstance()->getMainModule()) {
+            return self::getResource($name, ModuleManager::getInstance()->getMainModule(), $asFile);
+        }
         return false;
     }
 }
