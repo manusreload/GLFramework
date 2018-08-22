@@ -46,6 +46,7 @@ class Module
     public $description;
     public $version;
     public $test;
+    public $modelNamespace;
     private $config;
     private $directory;
     private $settings = array();
@@ -76,6 +77,11 @@ class Module
         $this->directory = $directory;
         if (isset($this->config['title'])) {
             $this->title = $this->config['title'];
+        }
+        if (isset($this->config['model_namespace'])) {
+            $this->modelNamespace = $this->config['model_namespace'];
+        } else {
+            $this->modelNamespace = $this->title;
         }
         if (isset($this->config['description'])) {
             $this->description = $this->config['description'];
@@ -174,7 +180,9 @@ class Module
             }
             $dir = $this->directory;
             $this->spl_autoload_models = function ($class) use ($models, $dir) {
+
                 foreach ($models as $directory) {
+
                     $filename = $dir . '/' . $directory . '/' . $class . '.php';
                     if (file_exists($filename)) {
                         include_once $filename;

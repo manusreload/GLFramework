@@ -321,12 +321,21 @@ class Bootstrap
         Log::i(array_map(function($module) { return $module->title; }, $this->manager->getModules()));
         Events::dispatch('onCoreStartUp', array($this->startTime, $this->initTime));
         $this->manager->checkModulesPolicy();
+        $this->setupDatabase();
         $response = $this->manager->run($url, $method);
         Log::i('Sending response...');
         if ($response) {
             $response->setUri($url);
         }
         return $response;
+    }
+
+    private function setupDatabase() {
+        $db = new DatabaseManager();
+        if ($db->connect()) {
+            $db->checkDatabaseStructure();
+        }
+
     }
 
     /**

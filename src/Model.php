@@ -141,7 +141,8 @@ class Model
         $modules = ModuleManager::getInstance()->getModules();
         foreach ($modules as $module) {
             if (in_array($baseclass, $module->getModels())) {
-                $classes = array('\\' . $module->title . '\\' . $baseclass, $baseclass);
+                $classes = array('\\' . $module->modelNamespace . '\\' . $baseclass, $baseclass);
+                if($module->modelNamespace)
                 foreach ($classes as $class) {
                     if (class_exists($class)) {
                         return new $class($args);
