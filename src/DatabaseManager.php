@@ -149,10 +149,10 @@ class DatabaseManager
                 if (self::$connection->select_database($config['database']['database'])) {
                     self::$selected = true;
                     $this->createCache();
-
-                    if (!defined("GL_INSTALL") || !GL_INSTALL) {
-                        $this->checkDatabaseStructure();
-                    }
+//
+//                    if (!defined("GL_INSTALL") || !GL_INSTALL) {
+//                        $this->checkDatabaseStructure();
+//                    }
                     return true;
                 }
             } else {

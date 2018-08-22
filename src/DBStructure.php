@@ -47,7 +47,7 @@ class DBStructure
      */
     public static function runAction($db, $model, $action)
     {
-        $res = $db->exec($action['sql']);
+        $res = $db->getConnection()->select($action['sql']);
         if ($action['action'] === 'create_table') {
             $model->onCreate();
         }
@@ -133,7 +133,7 @@ class DBStructure
         $result['table'] = $model->getTableName();
         $result['fields'] = $fields;
         $result['keys'] = $keys;
-        $result['engine'] = $model->getEngine();
+//        $result['engine'] = $model->getEngine();
 
         return $result;
     }
@@ -149,15 +149,14 @@ class DBStructure
         $bs = Bootstrap::getSingleton();
         $config = $bs->getConfig();
         foreach ($bs->getModels() as $model) {
-            if(class_exists($model)) {
-                try {
-
-                    $instance = new $model();
-                    $md5 .= (json_encode($this->getDefinition($instance)) . "\n");
-                } catch (\ArgumentCountError $exception) {
-                    Log::d($exception);
-                }
+            try {
+                $instance = Model::newInstance($model);
+//                $instance = new $model();
+                $md5 .= (json_encode($this->getDefinition($instance))) . "\n";
+            } catch (\ArgumentCountError $exception) {
+                Log::d($exception);
             }
+
         }
         if (isset($config['database'])) {
             $md5 .= json_encode($config['database']);
@@ -213,6 +212,7 @@ class DBStructure
         $diff = $model->getStructureDifferences($db);
         foreach ($diff as $action) {
             try {
+                Log::d('Model: ' . $model->table_name . " " . $action);
                 $this->runAction($db, $model, $action);
                 $count++;
             } catch (\Exception $ex) {
@@ -242,7 +242,7 @@ class DBStructure
      */
     public function getCurrentStructure($db, $table = '')
     {
-        $res = $db->select("SHOW TABLES LIKE '$table'");
+        $res = $db->getConnection()->select("SHOW TABLES LIKE '$table'");
         $tables = array();
         $result = array();
         foreach ($res as $row) {
@@ -251,7 +251,7 @@ class DBStructure
         foreach ($tables as $table) {
             $table = $db->escape_string($table);
 
-            $info = $db->select('DESCRIBE `' . $table . '`');
+            $info = $db->getConnection()->select('DESCRIBE `' . $table . '`');
             $fields = array();
             foreach ($info as $row) {
                 $field = array();
@@ -266,7 +266,7 @@ class DBStructure
                 $fields[$field['field']] = $field;
             }
 
-            $info = $db->select("SELECT 
+            $info = $db->getConnection()->select("SELECT 
   TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME, REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME
 FROM
   INFORMATION_SCHEMA.KEY_COLUMN_USAGE
@@ -286,14 +286,17 @@ WHERE
                 }
             }
 
-            $info2 = $db->select_first("SHOW TABLE STATUS WHERE Name = ?;", array ($table));
+            $info2 = $db->getConnection()->select("SHOW TABLE STATUS WHERE Name = ?;", array ($table));
+            if ($info2 && count($info2) > 0) {
+                $info2 = $result[0];
+            }
 
             $engine = $info2['Engine'];
             $result[$table] = array(
                 'table' => $table,
                 'fields' => $fields,
                 'keys' => $keys,
-                'engine' => $engine,
+//                'engine' => $engine,
             );
         }
         return $result;
@@ -319,12 +322,12 @@ WHERE
                 $dbTable = array_shift($current);
                 if ($this->getHash($value) != $this->getHash($dbTable)) {
 
-                    if(strtolower($value['engine']) != strtolower($dbTable['engine'])) {
-                        $actions[] = array(
-                            'sql' => $this->getChangeEngine($table, $value['engine']),
-                            'action' => 'change_engine'
-                        );
-                    }
+//                    if(strtolower($value['engine']) != strtolower($dbTable['engine'])) {
+//                        $actions[] = array(
+//                            'sql' => $this->getChangeEngine($table, $value['engine']),
+//                            'action' => 'change_engine'
+//                        );
+//                    }
 
                     $subject1 = array($value['fields']);
                     $subject2 = array($dbTable['fields']);

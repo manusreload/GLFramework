@@ -30,6 +30,7 @@ use GLFramework\Controller;
 use GLFramework\Cron\CronTask;
 use GLFramework\Event\Event;
 use GLFramework\Events;
+use GLFramework\Log;
 use GLFramework\Request;
 use GLFramework\View;
 define('ALLOW_USER', 'allow');
@@ -46,6 +47,7 @@ class Module
     public $description;
     public $version;
     public $test;
+    public $modelNamespace;
     private $config;
     private $directory;
     private $settings = array();
@@ -76,6 +78,11 @@ class Module
         $this->directory = $directory;
         if (isset($this->config['title'])) {
             $this->title = $this->config['title'];
+        }
+        if (isset($this->config['model_namespace'])) {
+            $this->modelNamespace = $this->config['model_namespace'];
+        } else {
+            $this->modelNamespace = $this->title;
         }
         if (isset($this->config['description'])) {
             $this->description = $this->config['description'];
@@ -174,7 +181,9 @@ class Module
             }
             $dir = $this->directory;
             $this->spl_autoload_models = function ($class) use ($models, $dir) {
+
                 foreach ($models as $directory) {
+
                     $filename = $dir . '/' . $directory . '/' . $class . '.php';
                     if (file_exists($filename)) {
                         include_once $filename;
@@ -213,8 +222,12 @@ class Module
                     $ext = substr($file, strrpos($file, '.'));
                     if ($ext == '.php') {
                         $class = file_get_php_classes($filename);
-                        $this->controllers[$class[0]] = $folder . '/' . $file;
-                        $this->controllers_map[$class[0]] = $root . '/' . $folder . '/' . $file;
+                        if(count($class) != 0) {
+                            $this->controllers[$class[0]] = $folder . '/' . $file;
+                            $this->controllers_map[$class[0]] = $root . '/' . $folder . '/' . $file;
+                        } else {
+                            Log::w($filename . " is not a valid controller!");
+                        }
                     } elseif (is_dir($filename)) {
                         $this->load_controllers($root, $name);
                     }

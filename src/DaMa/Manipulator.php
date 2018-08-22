@@ -124,6 +124,23 @@ class Manipulator
     }
 
     /**
+     * @return Association[]
+     */
+    public function getAssociation()
+    {
+        return $this->association;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getModelName()
+    {
+        return $this->modelName;
+    }
+
+
+    /**
      * TODO
      *
      * @param $nameInFile
