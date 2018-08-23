@@ -51,6 +51,7 @@ class Bootstrap
     private $init = false;
     private $inited = false;
     private $configFile;
+    private $translation;
 
     private $requireExtensions = array('ctype', 'json', 'hash', 'curl', 'pdo', 'pdo_mysql', 'iconv', 'zip', 'filter');
     private $requireExtensionsTest = array('mbstring');
@@ -244,6 +245,9 @@ class Bootstrap
 //        Log::d(array_map(function ($a) {
 //            return $a->title;
 //        }, $this->manager->getModules()));
+
+
+        $this->translation = new Translation();
     }
 
     /**

@@ -207,12 +207,16 @@ class DBStructure
         return $count;
     }
 
+    /**
+     * @param $db
+     * @param $model Model
+     */
     public function executeModel($db, $model) {
         $count = 0;
         $diff = $model->getStructureDifferences($db);
         foreach ($diff as $action) {
             try {
-                Log::d('Model: ' . $model->table_name . " " . $action);
+                Log::d('Model: ' . $model->getTableName() . " " . $action);
                 $this->runAction($db, $model, $action);
                 $count++;
             } catch (\Exception $ex) {
