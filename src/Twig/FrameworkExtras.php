@@ -14,6 +14,7 @@ use GLFramework\Media\JavascriptMedia;
 use GLFramework\Model\Vars;
 use GLFramework\Module\ModuleManager;
 use GLFramework\View;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Class FrameworkExtras
@@ -46,22 +47,25 @@ class FrameworkExtras extends Extra
         $this->addGlobal('mainconfig', Bootstrap::getSingleton()->getConfig());
         $this->addGlobal('bootstrap', Bootstrap::getSingleton());
 
-        $this->addFunction(new \Twig_SimpleFunction('fire', array($this, 'fireEvent')));
+        $this->addFunction(new \Twig_SimpleFunction('fire', array($this, 'fireEvent'), array('is_safe' => true)));
         $this->addFunction(new \Twig_SimpleFunction('phpversion', 'phpversion'));
-        $this->addFunction(new \Twig_SimpleFunction('js', array($this, 'js')));
-        $this->addFunction(new \Twig_SimpleFunction('css', array($this, 'css')));
+        $this->addFunction(new \Twig_SimpleFunction('js', array($this, 'js'), array('is_safe' => true)));
+        $this->addFunction(new \Twig_SimpleFunction('css', array($this, 'css'), array('is_safe' => true)));
         $this->addFunction(new \Twig_SimpleFunction('vars', array($this, 'vars')));
         $this->addFunction(new \Twig_SimpleFunction('meses', array($this, 'meses')));
         $this->addFunction(new \Twig_SimpleFunction('meses', array($this, 'meses')));
+        $this->addFunction(new \Twig_SimpleFunction('dump', array($this, 'dump'), array('is_safe' => true)));
+        $this->addFunction(new \Twig_SimpleFunction('tr', array($this, 'tr'), array('is_safe' => true)));
         $this->addFilter(new \Twig_SimpleFilter('active', array($this, 'isHrefActive')));
         $this->addFilter(new \Twig_SimpleFilter('fecha_hora', array($this, 'parseFechaHora')));
         $this->addFilter(new \Twig_SimpleFilter('fecha', array($this, 'parseFecha')));
         $this->addFilter(new \Twig_SimpleFilter('hora', array($this, 'parseHora')));
-        $this->addFilter(new \Twig_SimpleFilter('debug', array($this, 'debug')));
+        $this->addFilter(new \Twig_SimpleFilter('debug', array($this, 'debug'), array('is_safe' => true)));
         $this->addFilter(new \Twig_SimpleFilter('number', array($this, 'isNumber')));
         $this->addFilter(new \Twig_SimpleFilter('implode', array($this, 'implode')));
         $this->addFilter(new \Twig_SimpleFilter('icon', array($this, 'icon')));
         $this->addFilter(new \Twig_SimpleFilter('mes', array($this, 'mes')));
+        $this->addFilter(new \Twig_SimpleFilter('tr', array($this, 'tr'), array('is_safe' => true)));
     }
 
     /**
@@ -148,7 +152,7 @@ class FrameworkExtras extends Extra
      */
     public function debug($data)
     {
-        print_debug($data);
+        return $this->dump($data);
     }
 
     /**
@@ -257,5 +261,14 @@ class FrameworkExtras extends Extra
     public function icon($text)
     {
         $names = array();
+    }
+
+    public function dump($data) {
+        return VarDumper::dump($data);
+    }
+
+    public function tr() {
+        $translation = Bootstrap::getSingleton()->getTranslation();
+        return call_user_func_array(array($translation, 'tr'), func_get_args());
     }
 }

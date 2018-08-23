@@ -235,6 +235,7 @@ class Bootstrap
         Log::d('Initializing framework...');
 //        $this->register_error_handler();
         date_default_timezone_set('Europe/Madrid');
+        $this->setupLanguage();
 
         $this->manager = new ModuleManager($this->config, $this->directory);
         $this->manager->init();
@@ -245,9 +246,6 @@ class Bootstrap
 //        Log::d(array_map(function ($a) {
 //            return $a->title;
 //        }, $this->manager->getModules()));
-
-
-        $this->translation = new Translation();
     }
 
     /**
@@ -339,7 +337,9 @@ class Bootstrap
         if ($db->connect()) {
             $db->checkDatabaseStructure();
         }
-
+    }
+    private function setupLanguage() {
+        $this->translation = new Translation();
     }
 
     /**
@@ -672,6 +672,16 @@ class Bootstrap
     {
         return $this->inited;
     }
+
+    /**
+     * @return Translation
+     */
+    public function getTranslation()
+    {
+        return $this->translation;
+    }
+
+
 
 
 

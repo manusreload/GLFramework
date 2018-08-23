@@ -26,6 +26,7 @@
 
 namespace GLFramework\Module;
 
+use GLFramework\Bootstrap;
 use GLFramework\Controller;
 use GLFramework\Cron\CronTask;
 use GLFramework\Event\Event;
@@ -157,6 +158,7 @@ class Module
             $this->register_autoload_controllers();
         }
         $this->register_autoload_model();
+        $this->register_language();
         //        $this->register_events();
     }
 
@@ -165,6 +167,15 @@ class Module
         spl_autoload_unregister($this->spl_autoload_controllers);
         foreach ($this->events as $event) {
             Events::getInstance()->remove($event);
+        }
+    }
+
+    public function register_language() {
+        if(isset($this->config['lang']) && isset($this->config['lang']['resources'])) {
+            foreach ($this->config['lang']['resources'] as $item) {
+                $path = $this->directory . "/" . $item['path'];
+                Bootstrap::getSingleton()->getTranslation()->addResource($path, $item['locale']);
+            }
         }
     }
 
