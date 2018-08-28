@@ -131,12 +131,13 @@ class setup extends Controller
                 if(DatabaseManager::isSelected())
                     $this->getDb()->disconnect();
                 $this->db_config = new DatabaseManager($config);
+                $this->db_config->connectAndSelect();
                 if(isset($_POST['create_database']))
                 {
                     if($this->db_config->exec("CREATE DATABASE `{$config['database']['database']}`"))
                     {
                         $this->db_config->reset();
-                        if($this->db_config->connect())
+                        if($this->db_config->connectAndSelect())
                         {
                             $this->addMessage("Se ha creado la base de datos con éxito");
                         }

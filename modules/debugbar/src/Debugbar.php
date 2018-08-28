@@ -154,7 +154,7 @@ class Debugbar
         $config = Bootstrap::getSingleton()->getConfig();
         if(isset($config['database']['database']))
         {
-            $db = new DatabaseManager();
+            $db = Bootstrap::getSingleton()->getDatabase();
         }
         if(!$this->getDebugbar()->hasCollector('config'))
             $this->getDebugbar()->addCollector(new ConfigCollector($this->protectConfig($config)));

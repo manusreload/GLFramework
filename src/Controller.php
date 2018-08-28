@@ -249,7 +249,7 @@ abstract class Controller
     public function getDb()
     {
         if (!$this->db) {
-            $this->db = new DatabaseManager();
+            $this->db = Bootstrap::getSingleton()->getDatabase();
         }
         return $this->db;
     }

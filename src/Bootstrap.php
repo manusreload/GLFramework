@@ -52,6 +52,7 @@ class Bootstrap
     private $inited = false;
     private $configFile;
     private $translation;
+    private $database;
 
     private $requireExtensions = array('ctype', 'json', 'hash', 'curl', 'pdo', 'pdo_mysql', 'iconv', 'zip', 'filter');
     private $requireExtensionsTest = array('mbstring');
@@ -333,9 +334,9 @@ class Bootstrap
     }
 
     private function setupDatabase() {
-        $db = new DatabaseManager();
-        if ($db->connect()) {
-            $db->checkDatabaseStructure();
+        $this->database = new DatabaseManager();
+        if ($this->database->connectAndSelect()) {
+            $this->database->checkDatabaseStructure();
         }
     }
     private function setupLanguage() {
@@ -355,7 +356,7 @@ class Bootstrap
         echo '<pre>';
         $fail = false;
         $db = new DatabaseManager();
-        if ($db->connect()) {
+        if ($db->connectAndSelect()) {
             $this->log('Connection to database ok');
 
             $this->log('Installing Database...');
@@ -680,6 +681,16 @@ class Bootstrap
     {
         return $this->translation;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getDatabase()
+    {
+        return $this->database;
+    }
+
+
 
 
 

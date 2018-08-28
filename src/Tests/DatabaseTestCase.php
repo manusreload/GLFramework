@@ -43,6 +43,7 @@ class DatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
     public function getConnection()
     {
         $db = new DatabaseManager();
+        $db->connectAndSelect();
         $config = $db->getConfig();
         return $this->createDefaultDBConnection($db->getConnection()->getPDO(), $config['database']['database']);
     }
