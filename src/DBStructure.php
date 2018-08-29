@@ -47,7 +47,7 @@ class DBStructure
      */
     public static function runAction($db, $model, $action)
     {
-        $res = $db->getConnection()->select($action['sql'], array(), false);
+        $res = $db->getConnection()->select($action['sql'], [], false);
         if ($action['action'] === 'create_table') {
             $model->onCreate();
         }

@@ -118,7 +118,7 @@ class Model
             throw new \Exception('El nombre de la tabla para el modelo \'' . get_class($this) . '\' no puede estar vacío!');
         }
         $this->setIndexFromDefinition($this->definition);
-        $this->db = new DatabaseManager();
+        $this->db = Bootstrap::getSingleton()->getDatabase();
         foreach ($this->getFields() as $field) {
             $this->{$field} = false;
             if ($this->isIndex($field)) {

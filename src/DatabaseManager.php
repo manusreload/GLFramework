@@ -47,7 +47,11 @@ class DatabaseManager
     /**
      * @var Connection
      */
-    private static $connection;
+    private $connection;
+    /**
+     * @var Connection
+     */
+//    private static $connection;
 
     /**
      * @var Cache
@@ -71,7 +75,7 @@ class DatabaseManager
         'before' init the framework!");
 
         $this->config = $config;
-        $this->connect();
+//        $this->connect();
     }
 
     /**
@@ -100,6 +104,10 @@ class DatabaseManager
     public static function isSelected()
     {
         return self::$selected;
+    }
+
+    public function isConnected() {
+        return $this->connection !== null;
     }
 
     /**
@@ -140,28 +148,55 @@ class DatabaseManager
      */
     public function connect()
     {
-        if (!self::$connection) {
-            $config = $this->getConfig();
-            self::$connection = $this->instanceConnector();
-            if (self::$connection->connect($config['database']['hostname'], $config['database']['username'],
-                $config['database']['password'])
-            ) {
-                if (self::$connection->select_database($config['database']['database'])) {
-                    self::$selected = true;
-                    $this->createCache();
-//
-//                    if (!defined("GL_INSTALL") || !GL_INSTALL) {
-//                        $this->checkDatabaseStructure();
-//                    }
-                    return true;
-                }
-            } else {
-                $err = self::$connection->getLastError();
-                throw new \Exception(sprintf('Can not establish connection to database! {host=%s, user=%s, database=%s} Error: %s',
+        $config = $this->getConfig();
+        $conn = $this->instanceConnector();
+        $host = $config['database']['hostname'];
+        $user = $config['database']['username'];
+        $pass = $config['database']['password'];
+        if ($conn->connect($host, $user, $pass)) {
+            $this->connection = $conn;
+            $this->createCache();
+            return true;
+        }
+        $err = $conn->getLastError();
+        throw new \Exception(sprintf('Can not establish connection to database! {host=%s, user=%s, database=%s} Error: %s',
                     $config['database']['hostname'], $config['database']['username'], $config['database']['database'], $err));
+
+
+//        if (!$this->connection) {
+//
+//            if ($conn->connect()
+//            ) {
+//                if ($conn->select_database($config['database']['database'])) {
+//                    $this->connection = $conn;
+//                    self::$selected = true;
+//                    $this->createCache();
+////
+////                    if (!defined("GL_INSTALL") || !GL_INSTALL) {
+////                        $this->checkDatabaseStructure();
+////                    }
+//                    return true;
+//                }
+//                return false;
+//            } else {
+//                $err =$conn->getLastError();
+//                throw new \Exception(sprintf('Can not establish connection to database! {host=%s, user=%s, database=%s} Error: %s',
+//                    $config['database']['hostname'], $config['database']['username'], $config['database']['database'], $err));
+//            }
+//        }
+//        return true;
+    }
+
+    public function connectAndSelect() {
+        $config = $this->getConfig();
+        $database = $config['database']['database'];
+        if($this->connect()) {
+            if ($this->connection->select_database($config['database']['database'])) {
+                self::$selected = true;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     /**
@@ -172,14 +207,14 @@ class DatabaseManager
      */
     public function escape_string($string)
     {
-        if (!self::$connection) {
+        if (!$this->connection) {
             return $string;
         }
 
         if ($string === null) {
             return $string;
         }
-        return self::$connection->escape_string($string);
+        return $this->connection->escape_string($string);
     }
 
     /**
@@ -247,11 +282,11 @@ class DatabaseManager
      */
     public function select($query, $args = array(), $cache = null, $duration = null)
     {
-        if (self::$connection) {
+        if ($this->connection) {
             if ($this->pre_cache($result, $cache)) {
                 return $result;
             }
-            return $this->cache(self::$connection->select($query, $args, true), $cache, $duration);
+            return $this->cache($this->connection->select($query, $args, true), $cache, $duration);
         }
         throw new \Exception('Database connection is not open!');
     }
@@ -301,11 +336,11 @@ class DatabaseManager
      */
     public function exec($query, $args = array(), $removeCache = null)
     {
-        if (self::$connection) {
+        if ($this->connection) {
             if ($this->getCache() && $removeCache) {
                 $this->getCache()->remove($removeCache);
             }
-            return self::$connection->select($query, $args, false);
+            return $this->connection->select($query, $args, false);
         }
         throw new \Exception('Database connection is not open!');
     }
@@ -363,7 +398,7 @@ class DatabaseManager
      */
     public function getConnection()
     {
-        return self::$connection;
+        return $this->connection;
     }
 
     /**
@@ -381,7 +416,7 @@ class DatabaseManager
      */
     public function reset()
     {
-        self::$connection = null;
+        $this->connection = null;
         self::$selected = false;
     }
 

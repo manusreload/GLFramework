@@ -33,6 +33,7 @@ class FrameworkExtras extends Extra
     public function __construct($view)
     {
         parent::__construct($view);
+        $safe =  array('is_safe' => array('html'));
 
         $safe = array('is_safe' => array('html'));
         $this->view = $view;
