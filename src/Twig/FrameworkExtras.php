@@ -34,6 +34,7 @@ class FrameworkExtras extends Extra
     {
         parent::__construct($view);
 
+        $safe = array('is_safe' => array('html'));
         $this->view = $view;
         $this->addGlobal('config', $view->getController()->config);
         $this->addGlobal('_GET', $_GET);
@@ -47,25 +48,25 @@ class FrameworkExtras extends Extra
         $this->addGlobal('mainconfig', Bootstrap::getSingleton()->getConfig());
         $this->addGlobal('bootstrap', Bootstrap::getSingleton());
 
-        $this->addFunction(new \Twig_SimpleFunction('fire', array($this, 'fireEvent'), array('is_safe' => true)));
+        $this->addFunction(new \Twig_SimpleFunction('fire', array($this, 'fireEvent'), $safe));
         $this->addFunction(new \Twig_SimpleFunction('phpversion', 'phpversion'));
-        $this->addFunction(new \Twig_SimpleFunction('js', array($this, 'js'), array('is_safe' => true)));
-        $this->addFunction(new \Twig_SimpleFunction('css', array($this, 'css'), array('is_safe' => true)));
+        $this->addFunction(new \Twig_SimpleFunction('js', array($this, 'js'), $safe));
+        $this->addFunction(new \Twig_SimpleFunction('css', array($this, 'css'), $safe));
         $this->addFunction(new \Twig_SimpleFunction('vars', array($this, 'vars')));
         $this->addFunction(new \Twig_SimpleFunction('meses', array($this, 'meses')));
         $this->addFunction(new \Twig_SimpleFunction('meses', array($this, 'meses')));
-        $this->addFunction(new \Twig_SimpleFunction('dump', array($this, 'dump'), array('is_safe' => true)));
-        $this->addFunction(new \Twig_SimpleFunction('tr', array($this, 'tr'), array('is_safe' => true)));
+        $this->addFunction(new \Twig_SimpleFunction('dump', array($this, 'dump'), $safe));
+        $this->addFunction(new \Twig_SimpleFunction('tr', array($this, 'tr'), $safe));
         $this->addFilter(new \Twig_SimpleFilter('active', array($this, 'isHrefActive')));
         $this->addFilter(new \Twig_SimpleFilter('fecha_hora', array($this, 'parseFechaHora')));
         $this->addFilter(new \Twig_SimpleFilter('fecha', array($this, 'parseFecha')));
         $this->addFilter(new \Twig_SimpleFilter('hora', array($this, 'parseHora')));
-        $this->addFilter(new \Twig_SimpleFilter('debug', array($this, 'debug'), array('is_safe' => true)));
+        $this->addFilter(new \Twig_SimpleFilter('debug', array($this, 'debug'), $safe));
         $this->addFilter(new \Twig_SimpleFilter('number', array($this, 'isNumber')));
         $this->addFilter(new \Twig_SimpleFilter('implode', array($this, 'implode')));
         $this->addFilter(new \Twig_SimpleFilter('icon', array($this, 'icon')));
         $this->addFilter(new \Twig_SimpleFilter('mes', array($this, 'mes')));
-        $this->addFilter(new \Twig_SimpleFilter('tr', array($this, 'tr'), array('is_safe' => true)));
+        $this->addFilter(new \Twig_SimpleFilter('tr', array($this, 'tr'), $safe));
     }
 
     /**

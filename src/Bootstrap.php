@@ -51,6 +51,9 @@ class Bootstrap
     private $init = false;
     private $inited = false;
     private $configFile;
+    /**
+     * @var Translation
+     */
     private $translation;
 
     private $requireExtensions = array('ctype', 'json', 'hash', 'curl', 'pdo', 'pdo_mysql', 'iconv', 'zip', 'filter');
@@ -325,6 +328,7 @@ class Bootstrap
         $this->manager->checkModulesPolicy();
         $this->setupDatabase();
         $response = $this->manager->run($url, $method);
+        Log::d($this->translation->getMessages());
         Log::i('Sending response...');
         if ($response) {
             $response->setUri($url);

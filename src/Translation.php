@@ -53,4 +53,13 @@ class Translation
         $this->translator->addResource('yaml', $path, $locale);
     }
 
+    public function getMessages() {
+        $catalogue = $this->translator->getCatalogue();
+        $messages = $catalogue->all();
+        while ($catalogue = $catalogue->getFallbackCatalogue()) {
+            $messages = array_replace_recursive($catalogue->all(), $messages);
+        }
+        return $messages;
+    }
+
 }

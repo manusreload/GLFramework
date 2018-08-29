@@ -15,6 +15,7 @@ use GLFramework\DBStructure;
 use GLFramework\Mail;
 use GLFramework\Model;
 use GLFramework\Model\Vars;
+use GLFramework\Module\ModuleManager;
 
 class system extends AuthController
 {
@@ -43,6 +44,9 @@ class system extends AuthController
         }elseif ($section == "info") {
             $this->subtemplate = "system/info.twig";
             $this->infoSection();
+        }elseif ($section == "trans") {
+            $this->subtemplate = "system/trans.twig";
+            $this->transSection();
         }
     }
 
@@ -113,12 +117,43 @@ class system extends AuthController
         }
     }
 
+    public function transSection() {
+        if(isset($_GET['scan'])) {
+            $modules = ModuleManager::getInstance()->getModules();
+            foreach ($modules as $module) {
+                $files = $this->listDir($module->getDirectory());
+                foreach ($files as $file) {
+                    $data = file_get_contents($file);
+
+//                    preg_match_all("#\"(.*?)\" |#")
+
+                }
+            }
+        }
+    }
+
     public function infoSection() {
     }
 
     public function phpInfo() {
         phpinfo();
+    }
 
+
+    private function listDir($dir, $depth = 128, &$list = []) {
+        if($depth == 0) return $list;
+        $files = scandir($dir);
+        foreach ($files as $file) {
+            if($file != "." && $file != "..") {
+                $path = $dir . "/" . $file;
+                if(is_dir($path)) {
+                    $this->listDir($path, $depth - 1, $list);
+                } else {
+                    $list[] = $path;
+                }
+            }
+        }
+        return $list;
     }
 
 
