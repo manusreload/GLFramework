@@ -126,7 +126,9 @@ class Debugbar
             self::$debugbar->addCollector(new ErrorCollector());
 //            self::$debugbar->addCollector(new PDOCollector(new TraceablePDO()));
 //            self::$debugbar->addCollector(new SwiftMailCollector());
+
         }
+        
         return self::$debugbar;
     }
 
@@ -236,11 +238,11 @@ class Debugbar
     // TODO: see: (https://github.com/maximebf/php-debugbar/issues/330)
     public function onViewCreated(&$twig)
     {
-//        if(!$this->getDebugbar()->hasCollector('twig'))
-//        {
-//            $twig = new TraceableTwigEnvironment($twig, $this->time);
-//            $this->getDebugbar()->addCollector(new TwigCollector($twig));
-//        }
+        if(!$this->getDebugbar()->hasCollector('twig'))
+        {
+            $twig = new TraceableTwigEnvironment($twig, $this->time);
+            $this->getDebugbar()->addCollector(new TwigCollector($twig));
+        }
     }
 
     public function onMailTransport($mailer)

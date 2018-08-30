@@ -27,6 +27,7 @@
 namespace GLFramework;
 
 use GLFramework\Module\ModuleManager;
+use GLFramework\Utils\Profiler;
 
 define("MODEL_FIELD_TYPE_STRING", 1);
 define("MODEL_FIELD_TYPE_INT", 2);
@@ -138,6 +139,7 @@ class Model
      */
     public static function newInstance($baseclass, $args = array(), &$module = null)
     {
+        Profiler::start('new Instance ' . $baseclass);
         $modules = ModuleManager::getInstance()->getModules();
         foreach ($modules as $module) {
             if (in_array($baseclass, $module->getModels())) {
@@ -145,6 +147,8 @@ class Model
                 if($module->modelNamespace)
                 foreach ($classes as $class) {
                     if (class_exists($class)) {
+                        Profiler::stop('new Instance ' . $baseclass);
+
                         return new $class($args);
                     }
                 }
@@ -152,8 +156,10 @@ class Model
         }
         $class = '\\GLFramework\\Model\\' . $baseclass;
         if (class_exists($class)) {
+            Profiler::stop('new Instance ' . $baseclass);
             return new $class($args);
         }
+        Profiler::stop('new Instance ' . $baseclass);
         return false;
     }
 

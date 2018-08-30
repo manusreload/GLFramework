@@ -33,6 +33,7 @@ use GLFramework\Event\Event;
 use GLFramework\Events;
 use GLFramework\Log;
 use GLFramework\Request;
+use GLFramework\Utils\Profiler;
 use GLFramework\View;
 define('ALLOW_USER', 'allow');
 define('DISALLOW_USER', 'disallow');
@@ -144,6 +145,7 @@ class Module
     public function init()
     {
         //        Log::d($this->config);
+        Profiler::start('Module Init ' . $this->title);
         $this->register_composer();
         if(isset($this->config['app']['controllers'])) {
             $controllers = $this->config['app']['controllers'];
@@ -159,6 +161,7 @@ class Module
         }
         $this->register_autoload_model();
         $this->register_language();
+        Profiler::stop('Module Init ' . $this->title);
         //        $this->register_events();
     }
 
@@ -222,7 +225,6 @@ class Module
      */
     public function load_controllers($root, $folder = null)
     {
-
         $current = $root . ($folder ? '/' . $folder : '');
         if (is_dir($current)) {
             $files = scandir($current);

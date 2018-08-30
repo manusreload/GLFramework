@@ -27,6 +27,7 @@
 namespace GLFramework;
 
 use GLFramework\Modules\Debugbar\Debugbar;
+use GLFramework\Utils\Profiler;
 use TijsVerkoyen\CssToInlineStyles\Exception;
 
 /**
@@ -152,7 +153,7 @@ class DBStructure
             try {
                 $instance = Model::newInstance($model);
 //                $instance = new $model();
-                $md5 .= (json_encode($this->getDefinition($instance))) . "\n";
+                $md5 .= (md5($this->getDefinition($instance))) . "\n";
             } catch (\ArgumentCountError $exception) {
                 Log::d($exception);
             }
@@ -161,7 +162,7 @@ class DBStructure
         if (isset($config['database'])) {
             $md5 .= json_encode($config['database']);
         }
-//        return md5($md5);
+        return md5($md5);
 
         return $md5;
     }
@@ -175,13 +176,16 @@ class DBStructure
     {
         $filename = new Filesystem('database_structure.md5');
 
+        Profiler::start('haveModelChanges');
         if ($filename->exists()) {
             $md5 = $this->getCurrentModelDefinitionHash();
             if ($filename->read() === $md5) {
+                Profiler::stop('haveModelChanges');
                 return false;
             }
         }
 
+        Profiler::stop('haveModelChanges');
         return true;
     }
 
