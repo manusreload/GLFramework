@@ -853,3 +853,19 @@ function detect_client_ip() {
     }
     return $_SERVER['REMOTE_ADDR'];
 }
+
+function list_dir($dir, &$files = [], $depth = 16) {
+    if($depth == 0) return $files;
+    $items = scandir($dir);
+    foreach ($items as $item) {
+        if($item !== '.' && $item !== '..') {
+            $current = $dir . "/" . $item;
+            if(is_dir($current)) {
+                list_dir($current, $files, $depth - 1);
+            } else {
+                $files[] = $current;
+            }
+        }
+    }
+    return $files;
+}

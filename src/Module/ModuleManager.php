@@ -272,7 +272,7 @@ class ModuleManager
         if ($module) {
             $this->mainModule = $module;
             $this->add($module);
-            Profiler::start('moduleManager Init');
+//            Profiler::start('moduleManager Init');
             $this->mainModule->init();
             $this->mainModule->register_events();
             if (isset($this->config['modules'])) {
@@ -288,7 +288,7 @@ class ModuleManager
                     $module->register_events();
                 }
             }
-            Profiler::stop('moduleManager Init');
+//            Profiler::stop('moduleManager Init');
         } else {
             $file = $this->directory . "/config.yml";
             throw new \Exception('Can\'t not load the main module! Looking for: \'' . $file . '\'. folder 
@@ -389,7 +389,7 @@ class ModuleManager
      */
     public function load($folder, $extra = null, $main = false)
     {
-        Profiler::start('load ' . $folder);
+//        Profiler::start('load ' . $folder);
         $configFile = $folder . '/config.yml';
         if (file_exists($configFile)) {
             $config = $this->loadAndCache($folder, 'config.yml');
@@ -406,7 +406,7 @@ class ModuleManager
             $config = array_merge_recursive_ex($config, $extra);
         }
         $module = new Module($config, $folder);
-        Profiler::stop('load ' . $folder);
+//        Profiler::stop('load ' . $folder);
 
         return $module;
     }

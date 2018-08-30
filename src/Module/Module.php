@@ -145,7 +145,7 @@ class Module
     public function init()
     {
         //        Log::d($this->config);
-        Profiler::start('Module Init ' . $this->title);
+//        Profiler::start('Module Init ' . $this->title);
         $this->register_composer();
         if(isset($this->config['app']['controllers'])) {
             $controllers = $this->config['app']['controllers'];
@@ -161,7 +161,7 @@ class Module
         }
         $this->register_autoload_model();
         $this->register_language();
-        Profiler::stop('Module Init ' . $this->title);
+//        Profiler::stop('Module Init ' . $this->title);
         //        $this->register_events();
     }
 
@@ -194,26 +194,35 @@ class Module
                 $models = array($models);
             }
             $dir = $this->directory;
-            $this->spl_autoload_models = function ($class) use ($models, $dir) {
-
-                foreach ($models as $directory) {
-
-                    $filename = $dir . '/' . $directory . '/' . $class . '.php';
-                    if (file_exists($filename)) {
-                        include_once $filename;
-                        return true;
-                    }
-                    if(strpos($class, "\\") !== FALSE) {
-                        $name = substr($class, strrpos($class, "\\") + 1);
-                        $filename = $dir . '/' . $directory . '/' . $name . '.php';
-                        if (file_exists($filename)) {
-                            include_once $filename;
-                            return true;
-                        }
+            foreach ($models as $directory) {
+                $files = list_dir($dir . "/" . $directory);
+                foreach ($files as $file) {
+                    if(strrpos($file, ".php") !== false) {
+                        include_once $file;
                     }
                 }
-            };
-            spl_autoload_register($this->spl_autoload_models);
+            }
+
+//            $this->spl_autoload_models = function ($class) use ($models, $dir) {
+//
+//                foreach ($models as $directory) {
+//
+//                    $filename = $dir . '/' . $directory . '/' . $class . '.php';
+//                    if (file_exists($filename)) {
+//                        include_once $filename;
+//                        return true;
+//                    }
+//                    if(strpos($class, "\\") !== FALSE) {
+//                        $name = substr($class, strrpos($class, "\\") + 1);
+//                        $filename = $dir . '/' . $directory . '/' . $name . '.php';
+//                        if (file_exists($filename)) {
+//                            include_once $filename;
+//                            return true;
+//                        }
+//                    }
+//                }
+//            };
+//            spl_autoload_register($this->spl_autoload_models);
         }
     }
 

@@ -12,6 +12,7 @@ namespace GLFramework;
 class Yaml
 {
 
+    private static $folder = false;
     public static function parse($file)
     {
         if(($res = self::preCache($file)) === false) {
@@ -57,8 +58,9 @@ class Yaml
 
 
     private static function preCache($filename) {
+        if(!self::$folder) return false;
         $stat = stat($filename);
-        $compiled = "filesystem/cache/" . md5($filename) . ".php";
+        $compiled = self::$folder . "/" . md5($filename) . ".php";
         if(file_exists($compiled)) {
             $config = include $compiled;
             if($config['_hash']['mtime'] === $stat['mtime'] &&
@@ -71,11 +73,19 @@ class Yaml
     }
 
     private static function postCache($filename, $config) {
+        if(!self::$folder) return false;
         $stat = stat($filename);
-        $compiled = "filesystem/cache/" . md5($filename) . ".php";
+        $compiled = self::$folder . "/" . md5($filename) . ".php";
         $config['_hash'] = $stat;
         $data = "<?php return " . var_export($config, true) . ";\n// Generated from: $filename";
         file_put_contents($compiled, $data);
         unset($config['_hash']);
+    }
+
+    public static function setupCache($folder) {
+        if(!is_dir($folder)) {
+            mkdir($folder, 0777, true);
+        }
+        self::$folder = $folder;
     }
 }

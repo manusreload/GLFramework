@@ -150,13 +150,19 @@ class DBStructure
         $bs = Bootstrap::getSingleton();
         $config = $bs->getConfig();
         foreach ($bs->getModels() as $model) {
+            Profiler::start('getCurrentModelDefinitionHash::'.$model, 'getCurrentModelDefinitionHash');
             try {
+                Profiler::start('newInstance::'.$model, 'newInstance');
                 $instance = Model::newInstance($model);
 //                $instance = new $model();
-                $md5 .= (md5($this->getDefinition($instance))) . "\n";
+                Profiler::stop('newInstance::'.$model);
+                Profiler::start('getDefinition::'.$model, 'getDefinition');
+                $md5 .= (json_encode($this->getDefinition($instance))) . "\n";
+                Profiler::stop('getDefinition::'.$model);
             } catch (\ArgumentCountError $exception) {
                 Log::d($exception);
             }
+            Profiler::stop('getCurrentModelDefinitionHash::'.$model);
 
         }
         if (isset($config['database'])) {

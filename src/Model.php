@@ -55,6 +55,7 @@ class Model
      * @var array
      */
     protected $definition = array();
+    private static $modelCache = [];
     /*  Ejemplo de definicion
 
     protected $definition = array(
@@ -122,10 +123,8 @@ class Model
         $this->db = Bootstrap::getSingleton()->getDatabase();
         foreach ($this->getFields() as $field) {
             $this->{$field} = false;
-            if ($this->isIndex($field)) {
-                $this->{$field} = null;
-            }
         }
+        $this->{$this->getIndex()} = null;
         $this->setData($data);
     }
 
@@ -139,15 +138,12 @@ class Model
      */
     public static function newInstance($baseclass, $args = array(), &$module = null)
     {
-        Profiler::start('new Instance ' . $baseclass);
         $modules = ModuleManager::getInstance()->getModules();
         foreach ($modules as $module) {
             if (in_array($baseclass, $module->getModels())) {
                 $classes = array('\\' . $module->modelNamespace . '\\' . $baseclass, $baseclass);
-                if($module->modelNamespace)
                 foreach ($classes as $class) {
                     if (class_exists($class)) {
-                        Profiler::stop('new Instance ' . $baseclass);
 
                         return new $class($args);
                     }
@@ -156,10 +152,8 @@ class Model
         }
         $class = '\\GLFramework\\Model\\' . $baseclass;
         if (class_exists($class)) {
-            Profiler::stop('new Instance ' . $baseclass);
             return new $class($args);
         }
-        Profiler::stop('new Instance ' . $baseclass);
         return false;
     }
 

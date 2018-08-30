@@ -12,11 +12,11 @@ namespace GLFramework\Utils;
 class Profiler
 {
     
-    private static $enable = true;
+    private static $enable = false;
     private static $timers = [];
 
-    public static function start($timer, $label = false) {
-        self::$timers[$timer] = ['start' => microtime(true), 'label' => $label];
+    public static function start($timer, $group = false) {
+        self::$timers[$timer] = ['start' => microtime(true), 'group' => $group];
     }
 
     public static function stop($timer) {
@@ -25,13 +25,38 @@ class Profiler
 
     public static function dump() {
         if(!self::$enable) return;
+        $groups = [];
+        echo "<pre>\n";
         foreach (self::$timers as $timer => $value) {
             echo "$timer:\n";
             echo "\t" . self::time($value['stop'] - $value['start']) . "\n";
+            if($value['group']) {
+                $groups[$value['group']] = $groups[$value['group']]??0;
+                $groups[$value['group']] += ($value['stop'] - $value['start']);
+            }
         }
+
+        if($groups) {
+
+            echo "=======================\n";
+            echo "Groups\n";
+            echo "=======================\n";
+
+            foreach ($groups as $group => $time) {
+                echo "$group:\n";
+                echo "\t" . self::time($time) . "\n";
+
+            }
+        }
+
+        echo "\n</pre>";
     }
 
     private static function time($time) {
         return number_format($time * 1000, 4) . "ms";
+    }
+
+    public static function setProfilerEnabled($state) {
+        self::$enable = $state;
     }
 }
