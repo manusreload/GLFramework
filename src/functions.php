@@ -856,6 +856,7 @@ function detect_client_ip() {
 
 function list_dir($dir, &$files = [], $depth = 16) {
     if($depth == 0) return $files;
+    if(!is_dir($dir)) return $files;
     $items = scandir($dir);
     foreach ($items as $item) {
         if($item !== '.' && $item !== '..') {
