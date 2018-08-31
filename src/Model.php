@@ -142,7 +142,6 @@ class Model
         foreach ($modules as $module) {
             if (in_array($baseclass, $module->getModels())) {
                 $classes = array('\\' . $module->modelNamespace . '\\' . $baseclass, $baseclass);
-                if($module->modelNamespace)
                 foreach ($classes as $class) {
                     if (class_exists($class)) {
                         return new $class($args);
