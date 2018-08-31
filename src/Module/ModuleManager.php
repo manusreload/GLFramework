@@ -31,7 +31,9 @@ use GLFramework\Controller\ErrorController;
 use GLFramework\Controller\ExceptionController;
 use GLFramework\Events;
 use GLFramework\Filesystem;
+use GLFramework\Modules\Debugbar\Debugbar;
 use GLFramework\Request;
+use GLFramework\Utils\Profiler;
 
 /**
  * Class ModuleManager
@@ -265,10 +267,12 @@ class ModuleManager
      */
     public function init()
     {
+        Profiler::start('moduleManager');
         $module = $this->load($this->directory, array(), true);
         if ($module) {
             $this->mainModule = $module;
             $this->add($module);
+//            Profiler::start('moduleManager Init');
             $this->mainModule->init();
             $this->mainModule->register_events();
             if (isset($this->config['modules'])) {
@@ -284,11 +288,13 @@ class ModuleManager
                     $module->register_events();
                 }
             }
+//            Profiler::stop('moduleManager Init');
         } else {
             $file = $this->directory . "/config.yml";
             throw new \Exception('Can\'t not load the main module! Looking for: \'' . $file . '\'. folder 
             realpath: ' . realpath($this->directory));
         }
+        Profiler::stop('moduleManager');
     }
 
     public function checkModulesPolicy()
@@ -383,9 +389,10 @@ class ModuleManager
      */
     public function load($folder, $extra = null, $main = false)
     {
+//        Profiler::start('load ' . $folder);
         $configFile = $folder . '/config.yml';
         if (file_exists($configFile)) {
-            $config = Bootstrap::loadConfig($folder, 'config.yml');
+            $config = $this->loadAndCache($folder, 'config.yml');
         } else {
             if (!$main) {
                 return null;
@@ -398,7 +405,17 @@ class ModuleManager
         if (is_array($extra)) {
             $config = array_merge_recursive_ex($config, $extra);
         }
-        return new Module($config, $folder);
+        $module = new Module($config, $folder);
+//        Profiler::stop('load ' . $folder);
+
+        return $module;
+    }
+
+    private function loadAndCache($folder, $file) {
+
+        $config = Bootstrap::loadConfig($folder, 'config.yml');
+
+        return $config;
     }
 
     /**

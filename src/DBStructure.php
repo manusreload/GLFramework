@@ -27,6 +27,7 @@
 namespace GLFramework;
 
 use GLFramework\Modules\Debugbar\Debugbar;
+use GLFramework\Utils\Profiler;
 use TijsVerkoyen\CssToInlineStyles\Exception;
 
 /**
@@ -149,19 +150,25 @@ class DBStructure
         $bs = Bootstrap::getSingleton();
         $config = $bs->getConfig();
         foreach ($bs->getModels() as $model) {
+            Profiler::start('getCurrentModelDefinitionHash::'.$model, 'getCurrentModelDefinitionHash');
             try {
+                Profiler::start('newInstance::'.$model, 'newInstance');
                 $instance = Model::newInstance($model);
 //                $instance = new $model();
+                Profiler::stop('newInstance::'.$model);
+                Profiler::start('getDefinition::'.$model, 'getDefinition');
                 $md5 .= (json_encode($this->getDefinition($instance))) . "\n";
+                Profiler::stop('getDefinition::'.$model);
             } catch (\ArgumentCountError $exception) {
                 Log::d($exception);
             }
+            Profiler::stop('getCurrentModelDefinitionHash::'.$model);
 
         }
         if (isset($config['database'])) {
             $md5 .= json_encode($config['database']);
         }
-//        return md5($md5);
+        return md5($md5);
 
         return $md5;
     }
@@ -175,13 +182,16 @@ class DBStructure
     {
         $filename = new Filesystem('database_structure.md5');
 
+        Profiler::start('haveModelChanges');
         if ($filename->exists()) {
             $md5 = $this->getCurrentModelDefinitionHash();
             if ($filename->read() === $md5) {
+                Profiler::stop('haveModelChanges');
                 return false;
             }
         }
 
+        Profiler::stop('haveModelChanges');
         return true;
     }
 

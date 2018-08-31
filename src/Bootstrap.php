@@ -28,6 +28,7 @@ namespace GLFramework;
 
 use GLFramework\Globals\Server;
 use GLFramework\Module\ModuleManager;
+use GLFramework\Utils\Profiler;
 
 define("GL_INTERNAL_MODULES_PATH", realpath(__DIR__ . "/../modules"));
 /**
@@ -91,6 +92,7 @@ class Bootstrap
         if (!file_exists($filename)) {
             return array();
         }
+
         $config = Yaml::parse($filename);
         if (isset($config['include'])) {
             $value = $config['include'];
@@ -325,9 +327,11 @@ class Bootstrap
         Log::i(get_loaded_extensions());
         Log::i('· Modules priority: ');
         Log::i(array_map(function($module) { return $module->title; }, $this->manager->getModules()));
-        Events::dispatch('onCoreStartUp', array($this->startTime, $this->initTime));
         $this->manager->checkModulesPolicy();
+        Profiler::start('database');
         $this->setupDatabase();
+        Profiler::stop('database');
+        Events::dispatch('onCoreStartUp', array($this->startTime, $this->initTime));
         $response = $this->manager->run($url, $method);
         Log::d($this->translation->getMessages());
         Log::i('Sending response...');
@@ -340,7 +344,9 @@ class Bootstrap
     private function setupDatabase() {
         $this->database = new DatabaseManager();
         if ($this->database->connectAndSelect()) {
+            Profiler::start('databaseStructure');
             $this->database->checkDatabaseStructure();
+            Profiler::stop('databaseStructure');
         }
     }
     private function setupLanguage() {

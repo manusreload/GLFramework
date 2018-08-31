@@ -29,6 +29,7 @@ namespace GLFramework;
 use GLFramework\Cache\Cache;
 use GLFramework\Database\Connection;
 use GLFramework\Database\MySQLConnection;
+use GLFramework\Utils\Profiler;
 
 /**
  * Class DatabaseManager

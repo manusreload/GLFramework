@@ -25,6 +25,7 @@
  */
 
 namespace GLFramework;
+use GLFramework\Utils\Profiler;
 
 /**
  * Class Response
@@ -118,6 +119,7 @@ class Response
 //        print_r($_SESSION);
         session_write_close();
         print $this->content;
+        Profiler::dump();
     }
 
     /**
