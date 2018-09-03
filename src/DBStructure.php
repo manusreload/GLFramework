@@ -149,15 +149,15 @@ class DBStructure
         $md5 = '';
         $bs = Bootstrap::getSingleton();
         $config = $bs->getConfig();
-        foreach ($bs->getModels() as $model) {
+        foreach ($bs->getModels(true) as $model) {
             Profiler::start('getCurrentModelDefinitionHash::'.$model, 'getCurrentModelDefinitionHash');
             try {
                 Profiler::start('newInstance::'.$model, 'newInstance');
-                $instance = Model::newInstance($model);
+                $instance = $this->getModelHash($model);
 //                $instance = new $model();
                 Profiler::stop('newInstance::'.$model);
                 Profiler::start('getDefinition::'.$model, 'getDefinition');
-                $md5 .= (json_encode($this->getDefinition($instance))) . "\n";
+                $md5 .= (json_encode(($instance))) . "\n";
                 Profiler::stop('getDefinition::'.$model);
             } catch (\ArgumentCountError $exception) {
                 Log::d($exception);
@@ -171,6 +171,11 @@ class DBStructure
         return md5($md5);
 
         return $md5;
+    }
+
+    private function getModelHash($file) {
+        $stat = stat($file);
+        return $stat['mtime'] . '-' . $stat['size'];
     }
 
     /**

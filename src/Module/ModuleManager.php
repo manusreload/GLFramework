@@ -267,7 +267,7 @@ class ModuleManager
      */
     public function init()
     {
-        Profiler::start('moduleManager');
+        Profiler::start('moduleManager', 'init');
         $module = $this->load($this->directory, array(), true);
         if ($module) {
             $this->mainModule = $module;
@@ -485,8 +485,11 @@ class ModuleManager
 //            foreach ($this->modules as $module) {
 //
 //            }
+
+            Profiler::start('router');
             if ($match = $this->router->match($url, $method)) {
                 if ($match['name'] === 'handleFilesystem') {
+                    Profiler::stop('router');
                     return $this->handleFilesystem($match['params'], $request);
                 } else {
                     $target = $match['target'];
@@ -496,8 +499,10 @@ class ModuleManager
                             $this->runningModule = $module;
                             $controller = $target[1];
                             $request->setParams($match['params']);
+                            Profiler::stop('router');
                             return $module->run($controller, $request);
                         } else {
+                            Profiler::stop('router');
                             return $this->mainModule->run(new ErrorController("This module is disabled by your 
                             policy"),
                                 $request);
@@ -505,6 +510,7 @@ class ModuleManager
                     }
                 }
             }
+            Profiler::stop('router');
 
 
             return $this->mainModule->run(new ErrorController("Controller for '$url' not found. " .
