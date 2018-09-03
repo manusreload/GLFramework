@@ -855,8 +855,10 @@ function detect_client_ip() {
 }
 
 function list_dir($dir, &$files = [], $depth = 16) {
-    if($depth == 0) return $files;
+    if($depth == 0) return [];
+    if($depth == 16 && !is_dir($dir)) return [];
     $items = scandir($dir);
+    if(!$items) return [];
     foreach ($items as $item) {
         if($item !== '.' && $item !== '..') {
             $current = $dir . "/" . $item;

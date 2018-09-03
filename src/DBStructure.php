@@ -208,6 +208,7 @@ class DBStructure
         foreach ($models as $model) {
             if (class_exists($model)) {
                 $instance = new $model(null);
+                $instance->db = $db;
                 if ($instance instanceof Model) {
                     $this->executeModel($db, $instance);
                 }

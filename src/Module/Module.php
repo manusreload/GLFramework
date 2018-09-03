@@ -145,7 +145,7 @@ class Module
     public function init()
     {
         //        Log::d($this->config);
-//        Profiler::start('Module Init ' . $this->title);
+        Profiler::start('Module Init ' . $this->title);
         $this->register_composer();
         if(isset($this->config['app']['controllers'])) {
             $controllers = $this->config['app']['controllers'];
@@ -161,7 +161,7 @@ class Module
         }
         $this->register_autoload_model();
         $this->register_language();
-//        Profiler::stop('Module Init ' . $this->title);
+        Profiler::stop('Module Init ' . $this->title);
         //        $this->register_events();
     }
 
