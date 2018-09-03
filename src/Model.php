@@ -27,6 +27,7 @@
 namespace GLFramework;
 
 use GLFramework\Module\ModuleManager;
+use GLFramework\Utils\Profiler;
 
 define("MODEL_FIELD_TYPE_STRING", 1);
 define("MODEL_FIELD_TYPE_INT", 2);
@@ -54,6 +55,7 @@ class Model
      * @var array
      */
     protected $definition = array();
+    private static $modelCache = [];
     /*  Ejemplo de definicion
 
     protected $definition = array(
@@ -121,10 +123,8 @@ class Model
         $this->db = Bootstrap::getSingleton()->getDatabase();
         foreach ($this->getFields() as $field) {
             $this->{$field} = false;
-            if ($this->isIndex($field)) {
-                $this->{$field} = null;
-            }
         }
+        $this->{$this->getIndex()} = null;
         $this->setData($data);
     }
 
@@ -142,9 +142,9 @@ class Model
         foreach ($modules as $module) {
             if (in_array($baseclass, $module->getModels())) {
                 $classes = array('\\' . $module->modelNamespace . '\\' . $baseclass, $baseclass);
-                if($module->modelNamespace)
                 foreach ($classes as $class) {
                     if (class_exists($class)) {
+
                         return new $class($args);
                     }
                 }

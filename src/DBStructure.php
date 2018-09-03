@@ -27,6 +27,7 @@
 namespace GLFramework;
 
 use GLFramework\Modules\Debugbar\Debugbar;
+use GLFramework\Utils\Profiler;
 use TijsVerkoyen\CssToInlineStyles\Exception;
 
 /**
@@ -148,22 +149,33 @@ class DBStructure
         $md5 = '';
         $bs = Bootstrap::getSingleton();
         $config = $bs->getConfig();
-        foreach ($bs->getModels() as $model) {
+        foreach ($bs->getModels(true) as $model) {
+            Profiler::start('getCurrentModelDefinitionHash::'.$model, 'getCurrentModelDefinitionHash');
             try {
-                $instance = Model::newInstance($model);
+                Profiler::start('newInstance::'.$model, 'newInstance');
+                $instance = $this->getModelHash($model);
 //                $instance = new $model();
-                $md5 .= (json_encode($this->getDefinition($instance))) . "\n";
+                Profiler::stop('newInstance::'.$model);
+                Profiler::start('getDefinition::'.$model, 'getDefinition');
+                $md5 .= (json_encode(($instance))) . "\n";
+                Profiler::stop('getDefinition::'.$model);
             } catch (\ArgumentCountError $exception) {
                 Log::d($exception);
             }
+            Profiler::stop('getCurrentModelDefinitionHash::'.$model);
 
         }
         if (isset($config['database'])) {
             $md5 .= json_encode($config['database']);
         }
-//        return md5($md5);
+        return md5($md5);
 
         return $md5;
+    }
+
+    private function getModelHash($file) {
+        $stat = stat($file);
+        return $stat['mtime'] . '-' . $stat['size'];
     }
 
     /**
@@ -175,13 +187,16 @@ class DBStructure
     {
         $filename = new Filesystem('database_structure.md5');
 
+        Profiler::start('haveModelChanges');
         if ($filename->exists()) {
             $md5 = $this->getCurrentModelDefinitionHash();
             if ($filename->read() === $md5) {
+                Profiler::stop('haveModelChanges');
                 return false;
             }
         }
 
+        Profiler::stop('haveModelChanges');
         return true;
     }
 
@@ -198,6 +213,7 @@ class DBStructure
         foreach ($models as $model) {
             if (class_exists($model)) {
                 $instance = new $model(null);
+                $instance->db = $db;
                 if ($instance instanceof Model) {
                     $this->executeModel($db, $instance);
                 }
