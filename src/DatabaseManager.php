@@ -149,19 +149,22 @@ class DatabaseManager
     public function connect()
     {
         $config = $this->getConfig();
-        $conn = $this->instanceConnector();
-        $host = $config['database']['hostname'];
-        $user = $config['database']['username'];
-        $pass = $config['database']['password'];
-        if ($conn->connect($host, $user, $pass)) {
-            $this->connection = $conn;
-            $this->createCache();
-            return true;
+        if(isset($config['database']['database'])) {
+            $conn = $this->instanceConnector();
+            $host = $config['database']['hostname'];
+            $user = $config['database']['username'];
+            $pass = $config['database']['password'];
+            if ($conn->connect($host, $user, $pass)) {
+                $this->connection = $conn;
+                $this->createCache();
+                return true;
+            }
+            $err = $conn->getLastError();
+            throw new \Exception(sprintf('Can not establish connection to database! {host=%s, user=%s, database=%s} Error: %s',
+                        $config['database']['hostname'], $config['database']['username'], $config['database']['database'], $err));
         }
-        $err = $conn->getLastError();
-        throw new \Exception(sprintf('Can not establish connection to database! {host=%s, user=%s, database=%s} Error: %s',
-                    $config['database']['hostname'], $config['database']['username'], $config['database']['database'], $err));
 
+        return false;
 
 //        if (!$this->connection) {
 //
@@ -189,11 +192,13 @@ class DatabaseManager
 
     public function connectAndSelect() {
         $config = $this->getConfig();
-        $database = $config['database']['database'];
-        if($this->connect()) {
-            if ($this->connection->select_database($config['database']['database'])) {
-                self::$selected = true;
-                return true;
+        if(isset($config['database']['database'])) {
+            $database = $config['database']['database'];
+            if ($this->connect()) {
+                if ($this->connection->select_database($config['database']['database'])) {
+                    self::$selected = true;
+                    return true;
+                }
             }
         }
         return false;
