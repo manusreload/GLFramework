@@ -268,11 +268,15 @@ class Debugbar
      */
     public function throwlableHandler($throwlable)
     {
+        echo "<h1>Exception ocurred!</h1>";
+        echo "<pre>";
         echo $throwlable->getMessage() . " at " . $throwlable->getFile() . ":" . $throwlable->getLine() . "\n";
         echo $throwlable->getTraceAsString();
 
         $this->errors->addError(new GeneratedError($throwlable->getMessage(), $throwlable->getCode(),
             $throwlable->getFile(), $throwlable->getLine()));
+
+        echo "</pre>";
     }
 
     /**

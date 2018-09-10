@@ -67,6 +67,7 @@ class DBStructure
 
         $fields = array();
         $keys = array();
+        $unique = array();
         $definition = $model->getDefinition();
         if (isset($definition['fields'])) {
             $definitionFields = $definition['fields'];
@@ -130,10 +131,18 @@ class DBStructure
                 }
             }
         }
+
+        if (isset($definition['unique'])) {
+            foreach ($definition['unique'] as $field) {
+                $unique[] = array('field' => $field);
+            }
+        }
+
         $result = array();
         $result['table'] = $model->getTableName();
         $result['fields'] = $fields;
         $result['keys'] = $keys;
+        $result['unique'] = $unique;
 //        $result['engine'] = $model->getEngine();
 
         return $result;
@@ -295,6 +304,7 @@ WHERE
   TABLE_NAME = ?", array($db->getDatabaseName(), $table));
 
             $keys = array();
+            $unique = array();
             foreach ($info as $row) {
                 if ($row['REFERENCED_TABLE_NAME']) {
                     $key = array();
@@ -303,6 +313,8 @@ WHERE
                     $key['target'] = $row['REFERENCED_COLUMN_NAME'];
 //                    $fields[$key['field']]['index'] = true;
                     $keys[] = $key;
+                } elseif ($row['CONSTRAINT_NAME'] != 'PRIMARY') {
+                    $unique[] = $row['COLUMN_NAME'];
                 }
             }
 
@@ -316,6 +328,7 @@ WHERE
                 'table' => $table,
                 'fields' => $fields,
                 'keys' => $keys,
+                'unique' => $unique,
 //                'engine' => $engine,
             );
         }
@@ -398,6 +411,22 @@ WHERE
                         }
                     }
 
+                    $test1 = $value['unique'];
+                    $test2 = $dbTable['unique'];
+                    foreach ($test1 as $key => $item) {
+                        if (!$this->haveUnique($item, $test2)) {
+                            $actions[] = array('sql' => $this->getAddKey($table, $item), 'action' => 'add_unique');
+                        }
+                    }
+                    //Search for deletion
+                    foreach ($test2 as $key => $item) {
+                        if (!$this->haveKey($item, $test1)) {
+                            $actions[] = array(
+                                'sql' => $this->getDropKey($table, $item),
+                                'action' => 'drop_unique'
+                            );
+                        }
+                    }
 
                 }
             } else {
@@ -444,6 +473,14 @@ WHERE
         }
         return false;
     }
+    private function haveUnique($needle, $haystack) {
+        foreach ($haystack as $value) {
+            if($value == $needle) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
 
@@ -454,8 +491,18 @@ WHERE
         return "ALTER TABLE `$table` ADD FOREIGN KEY (`$column`) REFERENCES `$targetTable`(`$targetColumn`) ON DELETE CASCADE ON UPDATE CASCADE;";
     }
 
+
     public function getDropKey($table, $index) {
         return "ALTER TABLE `$table` DROP INDEX `{$index['field']}`";
+    }
+
+    public function getAddUnique($table, $field)
+    {
+        return "ALTER TABLE `$table` ADD CONSTRAINT UNIQUE (`$field`);";
+    }
+
+    public function getDropUnique($table, $field) {
+        return "ALTER TABLE `$table` ADD CONSTRAINT UNIQUE (`$field`);";
     }
     /**
      * TODO

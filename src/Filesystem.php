@@ -312,4 +312,12 @@ class Filesystem
 
         return $folder;
     }
+
+    public function unlink() {
+        return unlink($this->getFilePath());
+    }
+
+    public function glob($type = "*") {
+        return glob($this->getAbsolutePath() . "/" . $type);
+    }
 }

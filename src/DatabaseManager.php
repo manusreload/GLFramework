@@ -479,4 +479,9 @@ class DatabaseManager
     {
         return 'CAST(' . $col_name . ' as UNSIGNED)';
     }
+
+
+    public function date_style() {
+        return "Y-m-d";
+    }
 }

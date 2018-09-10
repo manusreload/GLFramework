@@ -60,6 +60,9 @@ class Events
      */
     public static function getInstance()
     {
+        if(self::$instance == null) {
+            self::$instance = new Events();
+        }
         return self::$instance;
     }
 

@@ -33,6 +33,7 @@ class ControllerCollector extends DataCollector implements Renderable
         if($this->controllerStorage)
         {
             return array(
+                'file' => $this->controllerStorage->directory,
                 'name' => $this->controllerStorage->name,
                 'controller' => $this->getVariables()
             );

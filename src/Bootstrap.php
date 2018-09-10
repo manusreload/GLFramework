@@ -72,7 +72,7 @@ class Bootstrap
     {
         self::setErrorLevel(self::$errorLevel);
         $this->startTime = microtime(true);
-        $this->events = new Events();
+        $this->events = Events::getInstance();
         $this->directory = $directory;
         $this->configFile = $config;
         $this->config = self::loadConfig($this->directory, $config);
@@ -337,6 +337,7 @@ class Bootstrap
 //        Log::i('· Modules priority: ');
 //        Log::i(array_map(function($module) { return $module->title; }, $this->manager->getModules()));
         $this->manager->checkModulesPolicy();
+        Events::dispatch('onCoreInit');
         Profiler::stop('boot');
         Profiler::start('database');
         $this->setupDatabase();

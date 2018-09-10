@@ -112,7 +112,6 @@ class Model
      * Model constructor.
      *
      * @param null $data
-     * @throws \Exception
      */
     public function __construct($data = null)
     {
