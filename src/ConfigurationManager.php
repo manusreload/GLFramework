@@ -9,6 +9,8 @@
 namespace GLFramework;
 
 use GLFramework\Module\Module;
+use GLFramework\Module\ModuleManager;
+
 //use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -130,5 +132,21 @@ class ConfigurationManager
     public function setModuleSettings(&$config, $module, $settings)
     {
         $config['modules'][$module->getFolderContainer()][$module->getListName()] = $settings;
+    }
+
+    /**
+     * @param $module Module
+     */
+    public function canEnableModule($module, &$result) {
+        try {
+            $manager = ModuleManager::getInstance();
+            if($manager->loadConfig($module->getConfig())) {
+
+            }
+            return true;
+        } catch (\Exception $ex) {
+            $result = $ex->getMessage();
+        }
+        return false;
     }
 }
