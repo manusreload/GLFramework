@@ -38,6 +38,24 @@ use TijsVerkoyen\CssToInlineStyles\Exception;
 class DBStructure
 {
 
+    private $hashFile = "database_structure.md5";
+
+    /**
+     * @param string $hashFile
+     */
+    public function setHashFile(string $hashFile): void
+    {
+        $this->hashFile = $hashFile;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHashFile(): string
+    {
+        return $this->hashFile;
+    }
+
     /**
      * TODO
      *
@@ -194,7 +212,7 @@ class DBStructure
      */
     public function haveModelChanges()
     {
-        $filename = new Filesystem('database_structure.md5');
+        $filename = new Filesystem($this->hashFile);
 
         Profiler::start('haveModelChanges');
         if ($filename->exists()) {
@@ -257,7 +275,7 @@ class DBStructure
      */
     public function setDatabaseUpdate()
     {
-        $filename = new Filesystem("database_structure.md5");
+        $filename = new Filesystem($this->hashFile);
         $md5 = $this->getCurrentModelDefinitionHash();
         $filename->write($md5);
     }

@@ -355,6 +355,7 @@ class Bootstrap
     private function setupDatabase() {
         $this->database = new DatabaseManager();
         if ($this->database->connectAndSelect()) {
+            $result = Events::dispatch('onDatabaseConnected', array($this->database));
             Profiler::start('databaseStructure');
             $this->database->checkDatabaseStructure();
             Profiler::stop('databaseStructure');
