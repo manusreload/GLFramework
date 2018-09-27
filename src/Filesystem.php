@@ -95,10 +95,15 @@ class Filesystem
      * Obtiene la ruta relativa al archivo
      *
      * @return string
+     * @deprecated Usar {getPath()}
      */
     public function getFilePath()
     {
         return basename($this->getStorage()) . '/' . $this->file;
+    }
+
+    public function getPath() {
+        return $this->getStorage() . '/' . $this->file;
     }
 
     /**
