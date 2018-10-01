@@ -339,7 +339,7 @@ class Bootstrap
         Events::dispatch('onCoreInit');
         Profiler::stop('boot');
         Profiler::start('database');
-        $this->setupDatabase(false);
+        $this->setupDatabase();
         Profiler::stop('database');
         Events::dispatch('onCoreStartUp', array($this->startTime, $this->initTime));
         $response = $this->manager->run($url, $method);
