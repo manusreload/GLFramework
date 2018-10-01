@@ -238,7 +238,6 @@ class Bootstrap
     /**
      * Inicializar la apliacion de forma interna
      *
-     * @throws \Exception
      */
     public function init()
     {
@@ -340,7 +339,7 @@ class Bootstrap
         Events::dispatch('onCoreInit');
         Profiler::stop('boot');
         Profiler::start('database');
-        $this->setupDatabase();
+        $this->setupDatabase(false);
         Profiler::stop('database');
         Events::dispatch('onCoreStartUp', array($this->startTime, $this->initTime));
         $response = $this->manager->run($url, $method);
@@ -352,13 +351,15 @@ class Bootstrap
         return $response;
     }
 
-    private function setupDatabase() {
+    public function setupDatabase($checkStructure = true) {
         $this->database = new DatabaseManager();
         if ($this->database->connectAndSelect()) {
             $result = Events::dispatch('onDatabaseConnected', array($this->database));
-            Profiler::start('databaseStructure');
-            $this->database->checkDatabaseStructure();
-            Profiler::stop('databaseStructure');
+            if($checkStructure) {
+                Profiler::start('databaseStructure');
+                $this->database->checkDatabaseStructure();
+                Profiler::stop('databaseStructure');
+            }
         }
     }
     private function setupLanguage() {

@@ -103,18 +103,27 @@ class system extends AuthController
                 $this->addMessage("Error optimizando tabla", "danger");
             }
         }
-        foreach (Bootstrap::getSingleton()->getModels() as $model) {
-            $instance = Model::newInstance($model, array(), $module);
-            if($instance) {
-                $t = microtime(true);
-                $c = $instance->count();
-                $t = microtime(true) - $t;
-                $this->database[] = array('model' => get_class($instance), 'table' => $instance->getTableName(),
-                    'count' => $c, 't' => $t, 'module' => $module->title
-                );
-            }
-
+        $res = $this->getDb()->select("SHOW TABLES");
+        foreach ($res as $item) {
+            $table = $item[0];
+            $this->database[] = array('model' => '', 'table' => $item[0], 'count' => $c, 't' => $t, 'module' => '');
         }
+//        foreach (Bootstrap::getSingleton()->getModels() as $model) {
+//            try{
+//                $instance = Model::newInstance($model, array(), $module);
+//                if($instance) {
+//    //                $t = microtime(true);
+//    //                $c = $instance->count();
+//    //                $t = microtime(true) - $t;
+//                    $this->database[] = array('model' => get_class($instance), 'table' => $instance->getTableName(),
+//                        'count' => 0, 't' => $t, 'module' => $module->title
+//                    );
+//                }
+//            } catch (\Exception $ex) {
+//
+//            }
+//
+//        }
     }
 
     public function transSection() {
