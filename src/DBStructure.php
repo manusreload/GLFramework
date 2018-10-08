@@ -250,7 +250,7 @@ class DBStructure
         }
         $this->checkForDuplicatedTables($instanceModels);
         foreach ($instanceModels as $model) {
-            $this->executeModel($db, $instance);
+            $this->executeModel($db, $model);
         }
         $this->setDatabaseUpdate();
         return $count;
