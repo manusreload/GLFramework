@@ -39,6 +39,7 @@ class DBStructure
 {
 
     private $hashFile = "database_structure.md5";
+    private $tables = [];
 
     /**
      * @param string $hashFile
@@ -195,7 +196,7 @@ class DBStructure
         if (isset($config['database'])) {
             $md5 .= json_encode($config['database']);
         }
-        return md5($md5);
+        return md5($md5 . Bootstrap::$VERSION);
 
         return $md5;
     }
@@ -237,17 +238,40 @@ class DBStructure
     {
         $count = 0;
         $models = Bootstrap::getSingleton()->getModels();
+        $instanceModels = [];
         foreach ($models as $model) {
             if (class_exists($model)) {
                 $instance = new $model(null);
                 $instance->db = $db;
                 if ($instance instanceof Model) {
-                    $this->executeModel($db, $instance);
+                    $instanceModels[] = $instance;
                 }
             }
         }
+        $this->checkForDuplicatedTables($instanceModels);
+        foreach ($instanceModels as $model) {
+            $this->executeModel($db, $instance);
+        }
         $this->setDatabaseUpdate();
         return $count;
+    }
+    
+    
+    private function checkForDuplicatedTables($models) {
+
+        $tables = [];
+        foreach ($models as $model) {
+            $class = get_class($model);
+            if(!isset($tables[$class])) {
+                $tables[$class] = $model->getTableName();
+            }
+
+            foreach ($tables as $class1 => $tname) {
+                if($tname == $model->getTableName() && $class1 != $class) {
+                    throw new \Exception("Table Name for model $class is in use by $class1. Please ensure that you dont use same tablename for multiple models.");
+                }
+            }
+        }
     }
 
     /**
