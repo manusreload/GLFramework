@@ -343,7 +343,7 @@ class Bootstrap
         Profiler::stop('database');
         Events::dispatch('onCoreStartUp', array($this->startTime, $this->initTime));
         $response = $this->manager->run($url, $method);
-        Log::d($this->translation->getMessages());
+        Events::dispatch('onAppStop');
         Log::i('Sending response...');
         if ($response) {
             $response->setUri($url);
