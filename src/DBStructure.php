@@ -268,7 +268,7 @@ class DBStructure
 
             foreach ($tables as $class1 => $tname) {
                 if($tname == $model->getTableName() && $class1 != $class) {
-                    throw new \Exception("Table Name for model $class is in use by $class1. Please ensure that you dont use same tablename for multiple models.");
+//                    throw new \Exception("Table Name for model $class is in use by $class1. Please ensure that you dont use same tablename for multiple models.");
                 }
             }
         }
