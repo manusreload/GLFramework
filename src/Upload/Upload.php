@@ -133,7 +133,7 @@ class Upload
         $dest = $this->getAbsolutePath($index);
         $parent = substr($dest, 0, strrpos($dest, '/'));
         if (!is_dir($parent)) {
-            mkdir($parent);
+            mkdir($parent, 0777, true);
         }
         return move_uploaded_file($source, $dest);
     }
