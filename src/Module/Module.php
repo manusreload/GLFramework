@@ -555,6 +555,10 @@ class Module extends SoftCache
             $instance = $this->instanceController($controller);
         }
 
+        if(!($instance instanceof Controller)) {
+            throw new \Exception('Controller: ' . $controller . ' is not an instanceOf ' . Controller::class);
+        }
+
         $instance->onCreate();
 
         if ($instance instanceof Controller) {
