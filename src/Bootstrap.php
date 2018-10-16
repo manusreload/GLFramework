@@ -335,12 +335,12 @@ class Bootstrap
 //        Log::i(get_loaded_extensions());
 //        Log::i('· Modules priority: ');
 //        Log::i(array_map(function($module) { return $module->title; }, $this->manager->getModules()));
-        $this->manager->checkModulesPolicy();
         Events::dispatch('onCoreInit');
         Profiler::stop('boot');
         Profiler::start('database');
         $this->setupDatabase();
         Profiler::stop('database');
+        $this->manager->checkModulesPolicy();
         Events::dispatch('onCoreStartUp', array($this->startTime, $this->initTime));
         $response = $this->manager->run($url, $method);
         Events::dispatch('onAppStop');
