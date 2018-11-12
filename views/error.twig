@@ -17,17 +17,19 @@
 
     {{ fire('displayExtraErrorView',[render ]) | raw }}
 
-    {% set current = this.exception %}
+    {% if this.exception is defined %}
+        {% set current = this.exception %}
 
-    {% if this.exceptions %}
-        {% for exception in this.exception %}
-            <h3>({{ i + 1 }}/{{ this.exceptions | length }}) {{ exception.getMessage() }} <small><i>{{ exception.getFile() }}:{{ exception.getLine() }}</i></small></h3>
-            <pre>{{ exception.getTraceAsString() }}</pre>
-        {% endfor %}
-    {% endif %}
-    {% if this.trace %}
-        <h1>Stacktrace</h1>
-        <pre>{{ this.trace }}</pre>
+        {% if this.exceptions %}
+            {% for exception in this.exception %}
+                <h3>({{ i + 1 }}/{{ this.exceptions | length }}) {{ exception.getMessage() }} <small><i>{{ exception.getFile() }}:{{ exception.getLine() }}</i></small></h3>
+                <pre>{{ exception.getTraceAsString() }}</pre>
+            {% endfor %}
+        {% endif %}
+        {% if this.trace %}
+            <h1>Stacktrace</h1>
+            <pre>{{ this.trace }}</pre>
+        {% endif %}
     {% endif %}
 {% endblock %}
 {% block scripts %}{% endblock %}
