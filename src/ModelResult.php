@@ -37,8 +37,16 @@ class ModelResult implements \IteratorAggregate
 {
     var $model_class;
     var $reflection;
+    /**
+     * @var Model[]
+     */
     var $models = array();
+    /**
+     * @var Model
+     */
     var $model;
+
+    private $instance;
 
     /**
      * ModelResult constructor.
@@ -185,17 +193,18 @@ class ModelResult implements \IteratorAggregate
      */
     public function order($field, $desc = false)
     {
-        usort($this->models, function ($a, $b) use ($field) {
-            if ((int)$a[$field] == $a[$field]) {
+        if(count($this->models) > 0) {
+            $instance = $this->reflection->newInstance();
+            $string = $instance->isString($field);
+            usort($this->models, function ($a, $b) use ($field, $string) {
+                if($string) {
+                    return strcmp($a[$field], $b[$field]);
+                }
                 return $a[$field] - $b[$field];
+            });
+            if ($desc) {
+                $this->models = array_reverse($this->models);
             }
-            if (is_string($a[$field])) {
-                return strcmp($a[$field], $b[$field]);
-            }
-            return $a[$field] - $b[$field];
-        });
-        if ($desc) {
-            $this->models = array_reverse($this->models);
         }
         return $this;
     }

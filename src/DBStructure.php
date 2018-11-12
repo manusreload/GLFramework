@@ -283,7 +283,7 @@ class DBStructure
         $diff = $model->getStructureDifferences($db);
         foreach ($diff as $action) {
             try {
-                Log::d('Model: ' . $model->getTableName() . " " . $action);
+//                Log::d('Model: ' . $model->getTableName() . " " . $action);
                 $this->runAction($db, $model, $action);
                 $count++;
             } catch (\Exception $ex) {
@@ -362,7 +362,7 @@ WHERE
 
             $info2 = $db->getConnection()->select("SHOW TABLE STATUS WHERE Name = ?;", array ($table));
             if ($info2 && count($info2) > 0) {
-                $info2 = $result[0];
+                $info2 = $info2[0];
             }
 
             $engine = $info2['Engine'];
