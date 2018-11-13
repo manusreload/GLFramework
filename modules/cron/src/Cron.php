@@ -47,6 +47,7 @@ chdir(\"$currentDir\");
 require_once \"vendor/autoload.php\";
 \$bs = new GLFramework\\Bootstrap(\"$dir\", \"$config\");
 \$bs->init();
+\$bs->setupDatabase();
 \\GLFramework\\Modules\\Cron\\Cron::run();
 
 ");
@@ -93,6 +94,7 @@ require_once \"vendor/autoload.php\";
     public static function run()
     {
         $hash = Bootstrap::getAppHash();
+        Bootstrap::getSingleton();
         Vars::setVar('cron_' . $hash, time());
         $tasks = new \Cron();
         $tasks = $tasks->get(array('enabled' => 1));

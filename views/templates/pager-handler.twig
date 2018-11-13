@@ -1,0 +1,18 @@
+<div class="pull-right">
+    <form class="form-inline search">
+        Buscar: <input type="text" class="form-control" value="{{ _options.term }}"><input type="submit" value="Buscar" class="btn btn-success">
+    </form>
+</div>
+<br>
+{{ include(template_from_string(_template)) }}
+
+Página: {{ _options.page + 1 }} de {{ _pages + 1 }} | Mostrando {{ _options.limit }} por página | Total: {{ _count }}
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        {% for i in 0.._pages %}
+
+            <li class="page-item {{ i == _options.page?"active":"" }}"><a class="page-link" data-page="{{ i }}" href="#">{{ i + 1 }}</a></li>
+        {% endfor %}
+
+    </ul>
+</nav>

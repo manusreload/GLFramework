@@ -871,3 +871,25 @@ function list_dir($dir, &$files = [], $depth = 16) {
     }
     return $files;
 }
+
+function compare_version($a, $b) {
+    $a1 = explode(".", $a);
+    $b1 = explode(".", $b);
+    if(count($a1) == count($b1)) {
+        $diff = 0;
+        foreach ($a1 as $k => $v) {
+            $diff += ($b1[$k] - $a1[$k]);
+        }
+        return $diff;
+    }
+    return false;
+}
+
+function require_version($version) {
+    $current = \GLFramework\Bootstrap::$VERSION;
+    $res = compare_version($current, $version);
+    if($res) {
+        die("Please update GLFramework: Use 'composer update'. Current version: $current. Requiered version: $version");
+    }
+
+}
