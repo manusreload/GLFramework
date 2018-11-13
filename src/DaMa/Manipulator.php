@@ -126,7 +126,7 @@ class Manipulator
     /**
      * @return Association[]
      */
-    public function getAssociation()
+    public function getAssociationValue()
     {
         return $this->association;
     }
