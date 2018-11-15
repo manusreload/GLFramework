@@ -38,7 +38,7 @@ define("GL_INTERNAL_MODULES_PATH", realpath(__DIR__ . "/../modules"));
  */
 class Bootstrap
 {
-    public static $VERSION = '0.2.3';
+    public static $VERSION = '0.2.4';
     private static $singelton;
     private static $errorLevel = 0;
     /**
@@ -53,6 +53,7 @@ class Bootstrap
     private $init = false;
     private $inited = false;
     private $configFile;
+    private $response;
     /**
      * @var Translation
      */
@@ -348,6 +349,7 @@ class Bootstrap
         if ($response) {
             $response->setUri($url);
         }
+        $this->response = $response;
         return $response;
     }
 
@@ -717,6 +719,23 @@ class Bootstrap
     {
         return $this->database;
     }
+
+    /**
+     * @return Events
+     */
+    public function getEvents(): Events
+    {
+        return $this->events;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
 
 
 
