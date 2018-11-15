@@ -90,7 +90,7 @@ class Debugbar
         self::$instance = $this;
         $debugbar = $this->getDebugbar();
         $config = $args->getConfig();
-        if(isset($config['filesytem']) && $config['filesystem'])
+        if(isset($config['filesystem']) && $config['filesystem'])
         {
             $fs = new Filesystem("debugbar");
             $fs->mkdir();

@@ -88,11 +88,11 @@ class ControllerCollector extends DataCollector implements Renderable
             {
                 $value = $this->controllerStorage->{$item->name};
                 if(is_array($value)) {
-                    $array[$item->name] = json_encode($value);
+                    $array[$item->name] = get_class($value);
                 } else if(is_string($value)) {
                     $array[$item->name] = $value;
                 } else {
-                    $array[$item->name] = (array) ($value);
+                    $array[$item->name] = (string) ($value);
                 }
             }
         }
