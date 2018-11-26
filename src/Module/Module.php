@@ -33,6 +33,7 @@ use GLFramework\Event\Event;
 use GLFramework\Events;
 use GLFramework\Log;
 use GLFramework\Request;
+use GLFramework\SoftCache;
 use GLFramework\Utils\Profiler;
 use GLFramework\View;
 define('ALLOW_USER', 'allow');
@@ -42,7 +43,7 @@ define('DISALLOW_USER', 'disallow');
  *
  * @package GLFramework\Module
  */
-class Module
+class Module extends SoftCache
 {
 
     public $title;
@@ -120,6 +121,13 @@ class Module
         //        $this->config = array_merge_recursive_ex($this->config, Bootstrap::getSingleton()->getConfig());
     }
 
+    public function getType()
+    {
+        // TODO: Implement getType() method.
+        return "module";
+    }
+
+
     /**
      * TODO
      *
@@ -145,9 +153,10 @@ class Module
     public function init()
     {
         //        Log::d($this->config);
-//        Profiler::start('Module Init ' . $this->title);
+        Profiler::start('Module Init ' . $this->title, 'modules');
         $this->register_composer();
         if(isset($this->config['app']['controllers'])) {
+            Profiler::start('Module Init Controller ' . $this->title, 'controller');
             $controllers = $this->config['app']['controllers'];
             if (!is_array($controllers)) {
                 $controllers = array($controllers);
@@ -158,10 +167,13 @@ class Module
                 }
             }
             $this->register_autoload_controllers();
+            Profiler::stop('Module Init Controller ' . $this->title);
         }
+        Profiler::start('Module Init Model ' . $this->title, 'models');
         $this->register_autoload_model();
+        Profiler::stop('Module Init Model ' . $this->title);
         $this->register_language();
-//        Profiler::stop('Module Init ' . $this->title);
+        Profiler::stop('Module Init ' . $this->title);
         //        $this->register_events();
     }
 
@@ -243,7 +255,10 @@ class Module
                     $name = $folder . '/' . $file;
                     $ext = substr($file, strrpos($file, '.'));
                     if ($ext == '.php') {
-                        $class = file_get_php_classes($filename);
+                        if(($class = $this->preCache($filename)) === false) {
+                            $class = file_get_php_classes($filename);
+                            $this->postCache($filename, $class);
+                        }
                         if(count($class) != 0) {
                             $this->controllers[$class[0]] = $folder . '/' . $file;
                             $this->controllers_map[$class[0]] = $root . '/' . $folder . '/' . $file;
@@ -290,7 +305,7 @@ class Module
      *
      * @return array
      */
-    public function getModels()
+    public function getModels($filePath = false)
     {
         $list = array();
         foreach ($this->getModelsFolder() as $model) {
@@ -299,7 +314,11 @@ class Module
                 $files = scandir($folder);
                 foreach ($files as $file) {
                     if (strpos($file, '.php') !== false) {
-                        $list[] = substr($file, 0, -4);
+                        if($filePath) {
+                            $list[] = $folder . '/' . $file;
+                        } else {
+                            $list[] = substr($file, 0, -4);
+                        }
                     }
                 }
             }
@@ -517,6 +536,7 @@ class Module
     public function instanceController($controller)
     {
         $folder = $this->controllers[$controller];
+//        $ref = new \ReflectionClass($controller);
         return new $controller($folder, $this);
     }
 
@@ -533,6 +553,10 @@ class Module
         $instance = $controller;
         if (!is_object($controller)) {
             $instance = $this->instanceController($controller);
+        }
+
+        if(!($instance instanceof Controller)) {
+            throw new \Exception('Controller: ' . $controller . ' is not an instanceOf ' . Controller::class);
         }
 
         $instance->onCreate();

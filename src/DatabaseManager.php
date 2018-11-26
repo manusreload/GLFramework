@@ -42,9 +42,9 @@ class DatabaseManager
      * @var \mysqli
      */
     //    private static $link;
-    private static $selected;
-    private static $checked = false;
-    private static $checking = false;
+    private $selected;
+    private $checked = false;
+    private $checking = false;
     /**
      * @var Connection
      */
@@ -82,17 +82,17 @@ class DatabaseManager
     /**
      * @return bool
      */
-    public static function isChecked()
+    public function isChecked()
     {
-        return self::$checked;
+        return $this->checked;
     }
 
     /**
      * @return bool
      */
-    public static function isChecking()
+    public function isChecking()
     {
-        return self::$checking;
+        return $this->checking;
     }
 
 
@@ -102,9 +102,9 @@ class DatabaseManager
      *
      * @return \mysqli
      */
-    public static function isSelected()
+    public function isSelected()
     {
-        return self::$selected;
+        return $this->selected;
     }
 
     public function isConnected() {
@@ -150,19 +150,22 @@ class DatabaseManager
     public function connect()
     {
         $config = $this->getConfig();
-        $conn = $this->instanceConnector();
-        $host = $config['database']['hostname'];
-        $user = $config['database']['username'];
-        $pass = $config['database']['password'];
-        if ($conn->connect($host, $user, $pass)) {
-            $this->connection = $conn;
-            $this->createCache();
-            return true;
+        if(isset($config['database']['database'])) {
+            $conn = $this->instanceConnector();
+            $host = $config['database']['hostname'];
+            $user = $config['database']['username'];
+            $pass = $config['database']['password'];
+            if ($conn->connect($host, $user, $pass)) {
+                $this->connection = $conn;
+                $this->createCache();
+                return true;
+            }
+            $err = $conn->getLastError();
+            throw new \Exception(sprintf('Can not establish connection to database! {host=%s, user=%s, database=%s} Error: %s',
+                        $config['database']['hostname'], $config['database']['username'], $config['database']['database'], $err));
         }
-        $err = $conn->getLastError();
-        throw new \Exception(sprintf('Can not establish connection to database! {host=%s, user=%s, database=%s} Error: %s',
-                    $config['database']['hostname'], $config['database']['username'], $config['database']['database'], $err));
 
+        return false;
 
 //        if (!$this->connection) {
 //
@@ -193,7 +196,7 @@ class DatabaseManager
         $database = $config['database']['database'];
         if($this->connect()) {
             if ($this->connection->select_database($config['database']['database'])) {
-                self::$selected = true;
+                $this->selected = true;
                 return true;
             }
         }
@@ -256,9 +259,9 @@ class DatabaseManager
     public function checkDatabaseStructure()
     {
 
-        if (!self::$checked && Bootstrap::getSingleton()->isInited()) {
-            self::$checked = true;
-            self::$checking = true;
+        if (!$this->checked && Bootstrap::getSingleton()->isInited()) {
+            $this->checked = true;
+            $this->checking = true;
             $config = $this->getConfig();
             if (!isset($config['database']['ignoreStructure'])) {
                 $manager = new DBStructure();
@@ -267,7 +270,7 @@ class DatabaseManager
                     $manager->executeModelChanges($this);
                 }
             }
-            self::$checking = false;
+            $this->checking = false;
         }
     }
 
@@ -418,7 +421,7 @@ class DatabaseManager
     public function reset()
     {
         $this->connection = null;
-        self::$selected = false;
+        $this->selected = false;
     }
 
     /**
@@ -464,5 +467,21 @@ class DatabaseManager
 
     public function disableCache() {
         self::$cache = null;
+    }
+
+
+    /**
+     * Devuelve el SQL necesario para convertir la columna a entero.
+     * @param string $col_name
+     * @return string
+     */
+    public function sql_to_int($col_name)
+    {
+        return 'CAST(' . $col_name . ' as UNSIGNED)';
+    }
+
+
+    public function date_style() {
+        return "Y-m-d";
     }
 }

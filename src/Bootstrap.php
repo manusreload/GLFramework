@@ -38,8 +38,9 @@ define("GL_INTERNAL_MODULES_PATH", realpath(__DIR__ . "/../modules"));
  */
 class Bootstrap
 {
-    public static $VERSION = '0.2.1';
+    public static $VERSION = '0.2.4';
     private static $singelton;
+    private static $errorLevel = 0;
     /**
      * @var ModuleManager
      */
@@ -52,6 +53,7 @@ class Bootstrap
     private $init = false;
     private $inited = false;
     private $configFile;
+    private $response;
     /**
      * @var Translation
      */
@@ -69,13 +71,18 @@ class Bootstrap
      */
     public function __construct($directory, $config = 'config.yml')
     {
-        error_reporting(E_ALL);
+        self::setErrorLevel(self::$errorLevel);
         $this->startTime = microtime(true);
-        $this->events = new Events();
+        $this->events = Events::getInstance();
         $this->directory = $directory;
         $this->configFile = $config;
         $this->config = self::loadConfig($this->directory, $config);
         self::$singelton = $this;
+    }
+
+    public static function setErrorLevel($error) {
+        self::$errorLevel = $error;
+        error_reporting(self::$errorLevel);
     }
 
     /**
@@ -232,10 +239,10 @@ class Bootstrap
     /**
      * Inicializar la apliacion de forma interna
      *
-     * @throws \Exception
      */
     public function init()
     {
+        Profiler::start('init', 'init');
         $this->initTime = microtime(true);
         $this->init = true;
         Log::d('Initializing framework...');
@@ -243,6 +250,7 @@ class Bootstrap
         date_default_timezone_set('Europe/Madrid');
         $this->setupLanguage();
 
+        Profiler::stop('init');
         $this->manager = new ModuleManager($this->config, $this->directory);
         $this->manager->init();
         Log::d('Module manager initialized');
@@ -316,37 +324,44 @@ class Bootstrap
         $this->startSession();
         if(!$this->inited)
             $this->init();
-        Log::i('Welcome to GLFramework');
-        Log::i('· Version: ' . $this->getVersion());
-        Log::i('· PHP Version: ' . PHP_VERSION);
-        Log::i('· Server Type: ' . Server::get('SERVER_SOFTWARE', 'unknown'));
-        Log::i('· Server IP: ' . Server::get('SERVER_ADDR', '127.0.0.1') . ':' . (Server::get('SERVER_PORT', '0')));
-        Log::i('· Current User: ' . get_current_user());
-        Log::i('· Current Folder: ' . realpath('.'));
-        Log::i('· Extensiones de PHP: ');
-        Log::i(get_loaded_extensions());
-        Log::i('· Modules priority: ');
-        Log::i(array_map(function($module) { return $module->title; }, $this->manager->getModules()));
-        $this->manager->checkModulesPolicy();
+        Profiler::start('boot', 'boot');
+//        Log::i('Welcome to GLFramework');
+//        Log::i('· Version: ' . $this->getVersion());
+//        Log::i('· PHP Version: ' . PHP_VERSION);
+//        Log::i('· Server Type: ' . Server::get('SERVER_SOFTWARE', 'unknown'));
+//        Log::i('· Server IP: ' . Server::get('SERVER_ADDR', '127.0.0.1') . ':' . (Server::get('SERVER_PORT', '0')));
+//        Log::i('· Current User: ' . get_current_user());
+//        Log::i('· Current Folder: ' . realpath('.'));
+//        Log::i('· Extensiones de PHP: ');
+//        Log::i(get_loaded_extensions());
+//        Log::i('· Modules priority: ');
+//        Log::i(array_map(function($module) { return $module->title; }, $this->manager->getModules()));
+        Events::dispatch('onCoreInit');
+        Profiler::stop('boot');
         Profiler::start('database');
         $this->setupDatabase();
         Profiler::stop('database');
+        $this->manager->checkModulesPolicy();
         Events::dispatch('onCoreStartUp', array($this->startTime, $this->initTime));
         $response = $this->manager->run($url, $method);
-        Log::d($this->translation->getMessages());
+        Events::dispatch('onAppStop');
         Log::i('Sending response...');
         if ($response) {
             $response->setUri($url);
         }
+        $this->response = $response;
         return $response;
     }
 
-    private function setupDatabase() {
+    public function setupDatabase($checkStructure = true) {
         $this->database = new DatabaseManager();
         if ($this->database->connectAndSelect()) {
-            Profiler::start('databaseStructure');
-            $this->database->checkDatabaseStructure();
-            Profiler::stop('databaseStructure');
+            $result = Events::dispatch('onDatabaseConnected', array($this->database));
+            if($checkStructure) {
+                Profiler::start('databaseStructure');
+                $this->database->checkDatabaseStructure();
+                Profiler::stop('databaseStructure');
+            }
         }
     }
     private function setupLanguage() {
@@ -450,20 +465,25 @@ class Bootstrap
      *
      * @return array
      */
-    public function getModels()
+    public function getModels($filePath = false)
     {
         $list = array();
         foreach ($this->getManager()->getModules() as $module) {
-            foreach ($module->getModels() as $model) {
+            foreach ($module->getModels($filePath) as $model) {
                 $list[] = $model;
             }
         }
-        $files = scandir(__DIR__ . '/Model');
+        $dir = __DIR__ . '/Model';
+        $files = scandir($dir);
         foreach ($files as $file) {
             if ($file === '.' || $file === '..') {
                 continue;
             }
-            $list[] = 'GLFramework\\Model\\' . substr($file, 0, -4);
+            if($filePath) {
+                $list[] = $dir . '/' . $file;
+            } else {
+                $list[] = 'GLFramework\\Model\\' . substr($file, 0, -4);
+            }
         }
         return $list;
     }
@@ -699,6 +719,23 @@ class Bootstrap
     {
         return $this->database;
     }
+
+    /**
+     * @return Events
+     */
+    public function getEvents(): Events
+    {
+        return $this->events;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
 
 
 

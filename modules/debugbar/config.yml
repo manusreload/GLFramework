@@ -1,5 +1,5 @@
 title: debugbar
-description: Barra para depurara aplicaciones con el framework
+description: Barra para depurar aplicaciones con el framework
 version: 0.0.1
 
 app:
@@ -11,6 +11,8 @@ app:
     onCoreRunFinish: GLFramework\Modules\Debugbar\Debugbar->onCoreRunFinish
     beforeControllerRun: GLFramework\Modules\Debugbar\Debugbar->beforeControllerRun
     afterControllerRun: GLFramework\Modules\Debugbar\Debugbar->afterControllerRun
+    beforeViewDisplay: GLFramework\Modules\Debugbar\Debugbar->beforeViewDisplay
+    afterViewDisplay: GLFramework\Modules\Debugbar\Debugbar->afterViewDisplay
     onLog: GLFramework\Modules\Debugbar\Debugbar->onLog
 
     onMessageDisplay: GLFramework\Modules\Debugbar\Debugbar->onMessageDisplay
@@ -19,6 +21,7 @@ app:
     onPDOCreated: GLFramework\Modules\Debugbar\Debugbar->onPDOCreated
     onViewCreated: GLFramework\Modules\Debugbar\Debugbar->onViewCreated
     beforeResponseSend: GLFramework\Modules\Debugbar\Debugbar->beforeResponseSend
+    afterResponseSend: GLFramework\Modules\Debugbar\Debugbar->afterResponseSend
     onMailTransport: GLFramework\Modules\Debugbar\Debugbar->onMailTransport
     onException: GLFramework\Modules\Debugbar\Debugbar->exceptionHandler
 

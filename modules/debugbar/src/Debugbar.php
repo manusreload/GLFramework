@@ -90,7 +90,7 @@ class Debugbar
         self::$instance = $this;
         $debugbar = $this->getDebugbar();
         $config = $args->getConfig();
-        if(isset($config['filesytem']) && $config['filesystem'])
+        if(isset($config['filesystem']) && $config['filesystem'])
         {
             $fs = new Filesystem("debugbar");
             $fs->mkdir();
@@ -171,7 +171,17 @@ class Debugbar
         $this->response->setResponse($instance->response);
         if(!$this->getDebugbar()->hasCollector('controller')) return;
         $this->time->stopMeasure('controller');
+    }
 
+    /**
+     * @param $controller Controller
+     */
+    public function beforeViewDisplay($controller) {
+//        $this->time->startMeasure('render' . $controller->name, 'Render time');
+
+    }
+    public function afterViewDisplay($controller, $t0) {
+        $this->time->addMeasure('render' . $controller->name, $t0, microtime(true));
     }
 
     /**
@@ -184,6 +194,19 @@ class Debugbar
             if(!$this->stop)
                 $this->getDebugbar()->sendDataInHeaders(null, 'phpdebugbar', $this->config
                 ['headerSize']?:4096);
+        }
+    }
+    /**
+     * @param $response Response
+     */
+    public function afterResponseSend($response)
+    {
+        if(!$response->getAjax() && Bootstrap::isDebug())
+        {
+            if(!$this->stop) {
+                $render = $this->getDebugbar()->getJavascriptRenderer();
+                echo $render->render();
+            }
         }
     }
 
@@ -217,12 +240,12 @@ class Debugbar
      */
     public function displayScripts($render)
     {
-        $render = $this->getDebugbar()->getJavascriptRenderer();
-        if(Bootstrap::isDebug())
-        {
-            if(!$this->stop)
-                echo $render->render();
-        }
+//        $render = $this->getDebugbar()->getJavascriptRenderer();
+//        if(Bootstrap::isDebug())
+//        {
+//            if(!$this->stop)
+//                echo $render->render();
+//        }
     }
 
     public function onPDOCreated(&$pdo)
@@ -268,11 +291,15 @@ class Debugbar
      */
     public function throwlableHandler($throwlable)
     {
+        echo "<h1>Exception ocurred!</h1>";
+        echo "<pre>";
         echo $throwlable->getMessage() . " at " . $throwlable->getFile() . ":" . $throwlable->getLine() . "\n";
         echo $throwlable->getTraceAsString();
 
         $this->errors->addError(new GeneratedError($throwlable->getMessage(), $throwlable->getCode(),
             $throwlable->getFile(), $throwlable->getLine()));
+
+        echo "</pre>";
     }
 
     /**

@@ -38,6 +38,25 @@ use TijsVerkoyen\CssToInlineStyles\Exception;
 class DBStructure
 {
 
+    private $hashFile = "database_structure.md5";
+    private $tables = [];
+
+    /**
+     * @param string $hashFile
+     */
+    public function setHashFile(string $hashFile): void
+    {
+        $this->hashFile = $hashFile;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHashFile(): string
+    {
+        return $this->hashFile;
+    }
+
     /**
      * TODO
      *
@@ -67,6 +86,7 @@ class DBStructure
 
         $fields = array();
         $keys = array();
+        $unique = array();
         $definition = $model->getDefinition();
         if (isset($definition['fields'])) {
             $definitionFields = $definition['fields'];
@@ -130,10 +150,18 @@ class DBStructure
                 }
             }
         }
+
+        if (isset($definition['unique'])) {
+            foreach ($definition['unique'] as $field) {
+                $unique[] = array('field' => $field);
+            }
+        }
+
         $result = array();
         $result['table'] = $model->getTableName();
         $result['fields'] = $fields;
         $result['keys'] = $keys;
+        $result['unique'] = $unique;
 //        $result['engine'] = $model->getEngine();
 
         return $result;
@@ -149,15 +177,15 @@ class DBStructure
         $md5 = '';
         $bs = Bootstrap::getSingleton();
         $config = $bs->getConfig();
-        foreach ($bs->getModels() as $model) {
+        foreach ($bs->getModels(true) as $model) {
             Profiler::start('getCurrentModelDefinitionHash::'.$model, 'getCurrentModelDefinitionHash');
             try {
                 Profiler::start('newInstance::'.$model, 'newInstance');
-                $instance = Model::newInstance($model);
+                $instance = $this->getModelHash($model);
 //                $instance = new $model();
                 Profiler::stop('newInstance::'.$model);
                 Profiler::start('getDefinition::'.$model, 'getDefinition');
-                $md5 .= (json_encode($this->getDefinition($instance))) . "\n";
+                $md5 .= (json_encode(($instance))) . "\n";
                 Profiler::stop('getDefinition::'.$model);
             } catch (\ArgumentCountError $exception) {
                 Log::d($exception);
@@ -168,9 +196,14 @@ class DBStructure
         if (isset($config['database'])) {
             $md5 .= json_encode($config['database']);
         }
-        return md5($md5);
+        return md5($md5 . Bootstrap::$VERSION);
 
         return $md5;
+    }
+
+    private function getModelHash($file) {
+        $stat = stat($file);
+        return $stat['mtime'] . '-' . $stat['size'];
     }
 
     /**
@@ -180,7 +213,7 @@ class DBStructure
      */
     public function haveModelChanges()
     {
-        $filename = new Filesystem('database_structure.md5');
+        $filename = new Filesystem($this->hashFile);
 
         Profiler::start('haveModelChanges');
         if ($filename->exists()) {
@@ -205,16 +238,40 @@ class DBStructure
     {
         $count = 0;
         $models = Bootstrap::getSingleton()->getModels();
+        $instanceModels = [];
         foreach ($models as $model) {
             if (class_exists($model)) {
                 $instance = new $model(null);
+                $instance->db = $db;
                 if ($instance instanceof Model) {
-                    $this->executeModel($db, $instance);
+                    $instanceModels[] = $instance;
                 }
             }
         }
+        $this->checkForDuplicatedTables($instanceModels);
+        foreach ($instanceModels as $model) {
+            $this->executeModel($db, $model);
+        }
         $this->setDatabaseUpdate();
         return $count;
+    }
+    
+    
+    private function checkForDuplicatedTables($models) {
+
+        $tables = [];
+        foreach ($models as $model) {
+            $class = get_class($model);
+            if(!isset($tables[$class])) {
+                $tables[$class] = $model->getTableName();
+            }
+
+            foreach ($tables as $class1 => $tname) {
+                if($tname == $model->getTableName() && $class1 != $class) {
+//                    throw new \Exception("Table Name for model $class is in use by $class1. Please ensure that you dont use same tablename for multiple models.");
+                }
+            }
+        }
     }
 
     /**
@@ -226,7 +283,7 @@ class DBStructure
         $diff = $model->getStructureDifferences($db);
         foreach ($diff as $action) {
             try {
-                Log::d('Model: ' . $model->getTableName() . " " . $action);
+//                Log::d('Model: ' . $model->getTableName() . " " . $action);
                 $this->runAction($db, $model, $action);
                 $count++;
             } catch (\Exception $ex) {
@@ -242,7 +299,7 @@ class DBStructure
      */
     public function setDatabaseUpdate()
     {
-        $filename = new Filesystem("database_structure.md5");
+        $filename = new Filesystem($this->hashFile);
         $md5 = $this->getCurrentModelDefinitionHash();
         $filename->write($md5);
     }
@@ -289,6 +346,7 @@ WHERE
   TABLE_NAME = ?", array($db->getDatabaseName(), $table));
 
             $keys = array();
+            $unique = array();
             foreach ($info as $row) {
                 if ($row['REFERENCED_TABLE_NAME']) {
                     $key = array();
@@ -297,12 +355,14 @@ WHERE
                     $key['target'] = $row['REFERENCED_COLUMN_NAME'];
 //                    $fields[$key['field']]['index'] = true;
                     $keys[] = $key;
+                } elseif ($row['CONSTRAINT_NAME'] != 'PRIMARY') {
+                    $unique[] = $row['COLUMN_NAME'];
                 }
             }
 
             $info2 = $db->getConnection()->select("SHOW TABLE STATUS WHERE Name = ?;", array ($table));
             if ($info2 && count($info2) > 0) {
-                $info2 = $result[0];
+                $info2 = $info2[0];
             }
 
             $engine = $info2['Engine'];
@@ -310,6 +370,7 @@ WHERE
                 'table' => $table,
                 'fields' => $fields,
                 'keys' => $keys,
+                'unique' => $unique,
 //                'engine' => $engine,
             );
         }
@@ -392,6 +453,22 @@ WHERE
                         }
                     }
 
+                    $test1 = $value['unique'];
+                    $test2 = $dbTable['unique'];
+                    foreach ($test1 as $key => $item) {
+                        if (!$this->haveUnique($item, $test2)) {
+                            $actions[] = array('sql' => $this->getAddKey($table, $item), 'action' => 'add_unique');
+                        }
+                    }
+                    //Search for deletion
+                    foreach ($test2 as $key => $item) {
+                        if (!$this->haveKey($item, $test1)) {
+                            $actions[] = array(
+                                'sql' => $this->getDropKey($table, $item),
+                                'action' => 'drop_unique'
+                            );
+                        }
+                    }
 
                 }
             } else {
@@ -438,6 +515,14 @@ WHERE
         }
         return false;
     }
+    private function haveUnique($needle, $haystack) {
+        foreach ($haystack as $value) {
+            if($value == $needle) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
 
@@ -448,8 +533,18 @@ WHERE
         return "ALTER TABLE `$table` ADD FOREIGN KEY (`$column`) REFERENCES `$targetTable`(`$targetColumn`) ON DELETE CASCADE ON UPDATE CASCADE;";
     }
 
+
     public function getDropKey($table, $index) {
         return "ALTER TABLE `$table` DROP INDEX `{$index['field']}`";
+    }
+
+    public function getAddUnique($table, $field)
+    {
+        return "ALTER TABLE `$table` ADD CONSTRAINT UNIQUE (`$field`);";
+    }
+
+    public function getDropUnique($table, $field) {
+        return "ALTER TABLE `$table` ADD CONSTRAINT UNIQUE (`$field`);";
     }
     /**
      * TODO

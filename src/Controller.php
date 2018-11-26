@@ -68,6 +68,7 @@ abstract class Controller
      */
     private $middleware = array();
     private $created = false;
+    private $class = "";
 
     /**
      * Controller constructor.
@@ -89,6 +90,7 @@ abstract class Controller
         $this->module = $module;
         $this->config = $this->module->getConfig();
         $this->mainConfig = Bootstrap::getSingleton()->getConfig();
+        $this->class = get_class($this);
         if (empty($this->name)) {
             $this->name = get_class($this);
         }

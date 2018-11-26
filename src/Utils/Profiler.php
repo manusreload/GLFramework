@@ -26,6 +26,7 @@ class Profiler
     public static function dump() {
         if(!self::$enable) return;
         $groups = [];
+        echo "<h1>Profiler Output</h1>";
         echo "<pre>\n";
         foreach (self::$timers as $timer => $value) {
             echo "$timer:\n";

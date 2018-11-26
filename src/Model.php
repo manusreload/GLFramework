@@ -112,7 +112,6 @@ class Model
      * Model constructor.
      *
      * @param null $data
-     * @throws \Exception
      */
     public function __construct($data = null)
     {
@@ -165,6 +164,7 @@ class Model
      */
     public function insert($data = null)
     {
+        $currentIndex = $this->getFieldValue($this->getIndex());
         $fields = $this->getFields();
         $sql1 = '';
         $sql2 = '';
@@ -182,7 +182,9 @@ class Model
         if (!empty($sql1)) {
             $sql1 = substr($sql1, 0, -2);
             $sql2 = substr($sql2, 0, -2);
-
+            if($currentIndex) {
+                $this->db->removeCache($this->getCacheId($currentIndex));
+            }
             return $this->db->insert('INSERT INTO '.$this->table_name.' ('.$sql1.') VALUES ('.$sql2.')', $args);
         }
         return false;
