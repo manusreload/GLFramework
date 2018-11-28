@@ -138,7 +138,7 @@ class MySQLConnection extends Connection
             //$list = array();
             if ($result) {
                 if ($returnArray) {
-                    return $stmt->fetchAll();
+                    return $stmt->fetchAll(\PDO::FETCH_ASSOC);
                 }
                 return true;
             } else {
