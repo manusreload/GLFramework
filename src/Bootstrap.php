@@ -713,11 +713,16 @@ class Bootstrap
     }
 
     /**
-     * @return mixed
+     * @return DatabaseManager
      */
     public function getDatabase()
     {
         return $this->database;
+    }
+
+    public function setDatabase($database)
+    {
+        $this->database = $database;
     }
 
     /**
