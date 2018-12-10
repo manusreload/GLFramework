@@ -26,10 +26,10 @@
                 <pre>{{ exception.getTraceAsString() }}</pre>
             {% endfor %}
         {% endif %}
-        {% if this.trace %}
-            <h1>Stacktrace</h1>
-            <pre>{{ this.trace }}</pre>
-        {% endif %}
+    {% endif %}
+    {% if this.trace is defined  %}
+        <h1>Stacktrace</h1>
+        <pre>{{ this.trace }}</pre>
     {% endif %}
 {% endblock %}
 {% block scripts %}{% endblock %}
