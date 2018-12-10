@@ -310,6 +310,9 @@ abstract class Controller
             $controller = get_class($controller);
         }
         $controller = (string)$controller;
+        if(substr($controller, 0, 1) === "\\") {
+            $controller = substr($controller, 1);
+        }
         $url = Bootstrap::getSingleton()->getManager()->getRouter()->generate($controller, $params);
         if ($fullPath) {
             $protocol = 'http';
