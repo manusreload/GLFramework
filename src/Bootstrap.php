@@ -382,6 +382,7 @@ class Bootstrap
         $fail = false;
         $db = new DatabaseManager();
         if ($db->connectAndSelect()) {
+            $this->setDatabase($db);
             $this->log('Connection to database ok');
 
             $this->log('Installing Database...');
