@@ -5,7 +5,7 @@
 {% block body %}
 
     {{ parent() }}
-    <h1>Ha ocurrido algo inesperado :(</h1>
+    <h1>Se ha capturado un error en el sistema</h1>
     <div class="alert alert-danger">
 
         Se ha producido un error al cargar el contenido. <br><strong>{{ this.error | raw }}</strong>
@@ -19,17 +19,18 @@
 
     {% if this.exception is defined %}
         {% set current = this.exception %}
-
-        {% if this.exceptions %}
-            {% for exception in this.exception %}
-                <h3>({{ i + 1 }}/{{ this.exceptions | length }}) {{ exception.getMessage() }} <small><i>{{ exception.getFile() }}:{{ exception.getLine() }}</i></small></h3>
-                <pre>{{ exception.getTraceAsString() }}</pre>
-            {% endfor %}
-        {% endif %}
     {% endif %}
-    {% if this.trace is defined  %}
-        <h1>Stacktrace</h1>
-        <pre>{{ this.trace }}</pre>
+    {% if this.exceptions is defined %}
+        {% for exception in this.exceptions  %}
+            <h3>({{ i + 1 }}/{{ this.exceptions | length }}) {{ exception.getMessage() }} <small><i>{{ exception.getFile() }}:{{ exception.getLine() }}</i></small></h3>
+            <pre>{{ exception.getTraceAsString() }}</pre>
+            {% set i = i +1 %}
+        {% endfor %}
+    {% else %}
+        {% if this.trace is defined  %}
+            <h1>Stacktrace</h1>
+            <pre>{{ this.trace }}</pre>
+        {% endif %}
     {% endif %}
 {% endblock %}
 {% block scripts %}{% endblock %}
