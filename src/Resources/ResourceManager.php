@@ -53,7 +53,7 @@ class ResourceManager
         foreach ($folders as $folder) {
             $path = $module->getDirectory() . ($folder == ""?"":'/' . $folder) . '/' . $name;
             if (file_exists($path)) {
-                $path = realpath($path);
+//                $path = realpath($path);
                 if ($asFile) {
                     return $path;
                 }
