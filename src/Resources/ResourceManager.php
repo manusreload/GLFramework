@@ -57,7 +57,7 @@ class ResourceManager
                 if ($asFile) {
                     return $path;
                 }
-                if(substr($path, 0, 1) == ".") {
+                if(substr($path, 0, 1) === ".") {
                     $path = substr($path, 1);
                 }
                 //$base = realpath($module->getDirectory());
