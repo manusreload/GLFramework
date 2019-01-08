@@ -21,6 +21,7 @@
         {% set current = this.exception %}
     {% endif %}
     {% if this.exceptions is defined %}
+        {% set i = 0 %}
         {% for exception in this.exceptions  %}
             <h3>({{ i + 1 }}/{{ this.exceptions | length }}) {{ exception.getMessage() }} <small><i>{{ exception.getFile() }}:{{ exception.getLine() }}</i></small></h3>
             <pre>{{ exception.getTraceAsString() }}</pre>
