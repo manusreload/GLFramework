@@ -164,11 +164,11 @@ class ModelResult implements \IteratorAggregate
         }
         return $list;
     }
-    public function export($fields = array(), $recursive = true)
+    public function export($fields = array(), $recursive = true, $limit = 16)
     {
         $list = array();
         foreach ($this->getModels() as $model) {
-            $list[] = $model->export($fields, $recursive);
+            $list[] = $model->export($fields, $recursive, $limit);
         }
         return $list;
     }
