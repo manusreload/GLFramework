@@ -188,6 +188,7 @@ class setup extends Controller
                 $config['mail']['port'] = $_POST['port'];
                 $config['mail']['username'] = $_POST['username'];
                 $config['mail']['password'] = $_POST['password'];
+                $config['mail']['encryption'] = $_POST['encryption'];
             }
 
             $config['mail']['from']['title'] = $_POST['from']['title'];

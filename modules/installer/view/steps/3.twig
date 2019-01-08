@@ -33,6 +33,18 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="control-label col-lg-4">Seguridad</label>
+                        <div class="col-lg-8">
+                            {% set values = {'': 'Ninguna', 'tls': 'TLS', 'ssl': "SSL"} %}
+                            <select class="form-control" name="encryption">
+                                {% set current = _POST.encryption | default(mainconfig.mail.encryption | default("")) %}
+                                {% for key, value in values %}
+                                <option value="{{ key }}" {{ current == key?"selected":"" }}>{{ value }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="control-label col-lg-4">Usuario</label>
                         <div class="col-lg-8">
                             <input class="form-control" name="username" value="{{  _POST.username | default(mainconfig.mail.username | default("")) }}">
@@ -95,6 +107,16 @@
                 <li><b>Puerto</b>: Numero del puerto en el que está el servicio (25 defecto)</li>
                 <li><b>Usuario</b>: Usuario para logear en el servidor.</li>
                 <li><b>Contraseña</b>: Contraseña para autenticar al usuario.</li>
+
+            </ul>
+
+            <ul>
+                <li><b>Si usar gmail:</b></li>
+                <li><b>Dominio:</b> <code>smtp.gmail.com</code></li>
+                <li><b>Puerto:</b> <code>587</code></li>
+                <li><b>Seguridad:</b> <code>TLS</code></li>
+                <li><b>Usuario:</b> <code><i>email@gmail.com</i></code></li>
+                <li><b>Contraseña:</b> Contraseña generada desde: <a href="https://myaccount.google.com/apppasswords">https://myaccount.google.com/apppasswords</a> </li>
             </ul>
         </div>
         <hr>
@@ -113,9 +135,13 @@
         $("[data-mail]").addClass("hidden");
         $("[data-mail='" +  current + "']").removeClass("hidden");
     }
-    $("[name=mailsystem]").change(function()
-    {
+
+    window.addEventListener('load', function() {
+
+        $("[name=mailsystem]").change(function()
+        {
+            updateConfig();
+        });
         updateConfig();
-    });
-    updateConfig();
+    })
 </script>
