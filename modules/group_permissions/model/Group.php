@@ -39,7 +39,7 @@ class Group extends \GLFramework\Model
     {
         $groups = explode(",", $user->privilegios);
         $groups = array_map('trim', $groups);
-        return $this->build($this->db->select("SELECT * FROM " . $this->getTableName() . " WHERE permissions IN ('" . implode("','", $groups) ."') OR `default` = 1"));
+        return $this->build($this->db->select("SELECT * FROM `" . $this->getTableName() . "` WHERE permissions IN ('" . implode("','", $groups) ."') OR `default` = 1"));
     }
 
     public function search($label, $limit = -1)
