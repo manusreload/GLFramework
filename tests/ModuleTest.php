@@ -10,7 +10,7 @@
 /**
  * Class ModuleTest
  */
-class ModuleTest extends PHPUnit_Framework_TestCase
+class ModuleTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * TODO

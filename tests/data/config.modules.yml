@@ -5,3 +5,11 @@ modules:
     test
   extra_modules:
     test
+
+database:
+  database: dummy
+  hostname: 'localhost'
+  username: 'root'
+  password: ''
+  cache:
+    connector: GLFramework\Cache\MemoryCache
