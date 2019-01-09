@@ -290,7 +290,11 @@ class DatabaseManager
             if ($this->pre_cache($result, $cache)) {
                 return $result;
             }
-            return $this->cache($this->connection->select($query, $args, true), $cache, $duration);
+
+            Profiler::start('query', 'database');
+            $result = $this->connection->select($query, $args, true);
+            Profiler::stop('query');
+            return $this->cache($result, $cache, $duration);
         }
         throw new \Exception('Database connection is not open!');
     }

@@ -220,7 +220,6 @@ class Model
                 return false;
             }
             $args[] = $indexValue;
-
             return $this->db->exec("UPDATE {$this->table_name} SET $sql1 WHERE `$index` = ?", $args, $this->getCacheId($indexValue));
         }
         return false;
@@ -266,16 +265,16 @@ class Model
      */
     public function getCacheId($id)
     {
-//        if(is_array($id))
-//        {
-//            $tmp = "";
-//            foreach ($id as $key => $value)
-//            {
-//                $tmp .= $key . "_" . $value;
-//            }
-//            $id = $tmp;
-//        }
-        return $this->table_name . '_' . $id;
+        if(is_array($id))
+        {
+            $tmp = "";
+            foreach ($id as $key => $value)
+            {
+                $tmp .= $key . "_" . $value;
+            }
+            $id = $tmp;
+        }
+        return $this->addCacheIndex($this->table_name . '_' . $id);
     }
 
     /**
@@ -306,7 +305,7 @@ class Model
             }
             if (!empty($sql)) {
                 $sql = substr($sql, 0, -5);
-                return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE ' . $sql, $args));
+                return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE ' . $sql, $args, $this->getCacheId($id)));
             }
         }
         return $this->build(array());
@@ -353,7 +352,7 @@ class Model
      */
     public function get_all()
     {
-        return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE 1'));
+        return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE 1', [], $this->getCacheId('all')));
     }
 
     /**
@@ -366,8 +365,8 @@ class Model
     {
         $index = $this->getIndex();
         $value = $this->getFieldValue($index);
-        if ($value) {
-            return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE `' . $index . '` != ?', array((string)$value)));
+        if (is_string($value) && strlen($value) > 0) {
+            return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE `' . $index . '` != ?', array((string)$value), $this->getCacheId("not_" . $value)));
         }
         return $this->get_all();
     }
@@ -419,6 +418,7 @@ class Model
      */
     public function save($updateIndex = false)
     {
+        $this->clearCacheTableIndex();
         if ($this->exists()) {
             return $this->update();
         }
@@ -926,6 +926,31 @@ class Model
     public function clearCache($key)
     {
         $this->db->removeCache($this->getCacheId($key));
+    }
+
+    private function addCacheIndex($value) {
+        $cache = $this->db->getCache();
+        if($cache) {
+            $name = '__index_' . $this->table_name;
+            $index = $cache->get($name);
+            $index[$value] = true;
+            $cache->set($name, $index);
+        }
+        return $value;
+    }
+
+    public function clearCacheTableIndex() {
+        $cache = $this->db->getCache();
+        if($cache) {
+            $name = '__index_' . $this->table_name;
+            $values = $cache->get($name);
+            if($values) {
+                foreach ($values as $key => $value) {
+                    $cache->remove($key);
+                }
+            }
+            $cache->remove($name);
+        }
     }
 
     /**

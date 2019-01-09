@@ -13,6 +13,7 @@ class Profiler
 {
     
     private static $enable = false;
+    private static $file = false;
     private static $timers = [];
 
     public static function start($timer, $group = false) {
@@ -26,11 +27,10 @@ class Profiler
     public static function dump() {
         if(!self::$enable) return;
         $groups = [];
-        echo "<h1>Profiler Output</h1>";
-        echo "<pre>\n";
+        $res = "";
         foreach (self::$timers as $timer => $value) {
-            echo "$timer:\n";
-            echo "\t" . self::time($value['stop'] - $value['start']) . "\n";
+            $res .= "$timer:\n";
+            $res .= "\t" . self::time($value['stop'] - $value['start']) . "\n";
             if($value['group']) {
                 $groups[$value['group']] = $groups[$value['group']]??0;
                 $groups[$value['group']] += ($value['stop'] - $value['start']);
@@ -39,25 +39,32 @@ class Profiler
 
         if($groups) {
 
-            echo "=======================\n";
-            echo "Groups\n";
-            echo "=======================\n";
+            $res .= "=======================\n";
+            $res .= "Groups\n";
+            $res .= "=======================\n";
 
             foreach ($groups as $group => $time) {
-                echo "$group:\n";
-                echo "\t" . self::time($time) . "\n";
+                $res .= "$group:\n";
+                $res .= "\t" . self::time($time) . "\n";
 
             }
         }
 
-        echo "\n</pre>";
+        if(self::$file) {
+            file_put_contents(self::$file, $res, FILE_APPEND);
+        } else {
+            echo "<h1>Profiler Output</h1>";
+            echo "<pre>\n";
+            echo $res;
+            echo "\n</pre>";
+        }
     }
 
     private static function time($time) {
         return number_format($time * 1000, 4) . "ms";
     }
 
-    public static function setProfilerEnabled($state) {
+    public static function setProfilerEnabled($state, $file = false) {
         self::$enable = $state;
     }
 }
