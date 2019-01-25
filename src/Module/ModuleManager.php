@@ -276,7 +276,7 @@ class ModuleManager
             $this->mainModule->init();
             $this->mainModule->register_events();
             if (isset($this->config['modules'])) {
-                $this->loadConfig($this->config);
+                $this->loadConfig($this->config, $this->mainModule);
             }
 
             foreach ($this->modules as $module) {
@@ -288,6 +288,8 @@ class ModuleManager
                     $module->register_events();
                 }
             }
+//            dump($this->modules);
+//            die();
 //            Profiler::stop('moduleManager Init');
         } else {
             $file = $this->directory . "/config.yml";
@@ -317,7 +319,7 @@ class ModuleManager
      * @param $config
      * @throws \Exception
      */
-    public function loadConfig($config)
+    public function loadConfig($config, $parent = null)
     {
         $modules = $config['modules'];
         if (!is_array($modules)) {
@@ -372,6 +374,8 @@ class ModuleManager
                     $this->add($module);
                     $this->loadModuleDependencies($module);
                 }
+
+                $parent->addChildrenModule(self::getModuleInstanceByName($module->title));
             } else {
                 throw new \Exception('Can\'t not load module: ' . $name . ' in directory: \'' .
                     $path . '\'');
@@ -427,7 +431,7 @@ class ModuleManager
     {
         $config = $module->getConfig();
         if (isset($config['modules'])) {
-            $this->loadConfig($config);
+            $this->loadConfig($config, $module);
         }
     }
 

@@ -68,6 +68,14 @@ class Module extends SoftCache
     private $router;
     private $spl_autoload_controllers;
     private $spl_autoload_models;
+    /**
+     * @var Module
+     */
+    private $parentModule = null;
+    /**
+     * @var Module[]
+     */
+    private $childrenModules = [];
 
     static $routes = [];
     /**
@@ -691,4 +699,37 @@ class Module extends SoftCache
             include_once $composer;
         }
     }
+
+    /**
+     * @return Module
+     */
+    public function getParentModule()
+    {
+        return $this->parentModule;
+    }
+
+    /**
+     * @param Module $parentModule
+     */
+    public function setParentModule($parentModule)
+    {
+        $this->parentModule = $parentModule;
+    }
+
+    public function addChildrenModule($module) {
+        $this->childrenModules[] = $module;
+    }
+
+    /**
+     * @return Module[]
+     */
+    public function getChildrenModules(): array
+    {
+        return $this->childrenModules;
+    }
+
+
+
+
+
 }

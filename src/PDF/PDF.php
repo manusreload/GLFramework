@@ -33,9 +33,13 @@ class PDF
      * PDF constructor.
      * @param string $orientation
      */
-    public function __construct($orientation = 'P')
+    public function __construct($orientation = 'P', $pdf = null)
     {
-        $this->pdf = new \TCPDF($orientation, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        if(!$pdf) {
+            $this->pdf = new \TCPDF($orientation, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        } else {
+            $this->pdf = $pdf;
+        }
         $this->pdf->SetFont('helvetica', '', 10);
     }
 
