@@ -25,6 +25,8 @@ class TwigPDF extends \TCPDF
     private $body = null;
     private $customRender;
     private $footerHeight;
+    private $footerCallback;
+    public $props = [];
     /**
      * @param $controller Controller
      * @param $template
@@ -87,26 +89,32 @@ class TwigPDF extends \TCPDF
 
     }
     protected $last_page_flag = false;
+    private $position = 0;
 
     public function Close() {
         $this->last_page_flag = true;
+        $this->position = $this->GetY();
         parent::Close();
     }
 
     public function Footer()
     {
+
+        if($this->footerCallback) {
+            call_user_func($this->footerCallback, $this);
+        }
         $this->SetY(-15);
         // Page number
-        $this->Cell(0, 10, 'Página '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+        $this->Cell(0, $this->footerHeight, $this->footer, 0, false, 'C', 0, '', 0, false, 'T', 'M');
 
         if ($this->last_page_flag) {
-            if($this->GetY() - $this->footerHeight >  $this->getPageHeight()) {
+            if($this->position + $this->footerHeight >  $this->getPageHeight()) {
                 $this->last_page_flag = false;
                 $this->AddPage();
             }
             $this->SetY(-$this->footerHeight);
 //            $this->writeHTMLCell($w = 0, $h = 45, $x = '', $y = '', $this->footer, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = 'top', $autopadding = true);
-            $this->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $this->footerLast, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = 'top', $autopadding = true);
+            $this->writeHTMLCell($w = 0, $h = $this->footerHeight, $x = '', $y = '', $this->footerLast, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = 'top', $autopadding = true);
         }
     }
 
@@ -158,6 +166,27 @@ class TwigPDF extends \TCPDF
     {
         $this->footerHeight = $footerHeight;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getFooterCallback()
+    {
+        return $this->footerCallback;
+    }
+
+    /**
+     * @param mixed $footerCallback
+     */
+    public function setFooterCallback($footerCallback)
+    {
+        $this->footerCallback = $footerCallback;
+    }
+
+    public function setProp($name, $value) {
+        $this->props[$name] = $value;
+    }
+
 
 
 //
