@@ -375,7 +375,7 @@ class ModuleManager
                     $this->loadModuleDependencies($module);
                 }
 
-                $parent->addChildrenModule(self::getModuleInstanceByName($module->title));
+                //$parent->addChildrenModule(self::getModuleInstanceByName($module->title));
             } else {
                 throw new \Exception('Can\'t not load module: ' . $name . ' in directory: \'' .
                     $path . '\'');
