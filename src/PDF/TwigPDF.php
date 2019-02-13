@@ -105,7 +105,7 @@ class TwigPDF extends \TCPDF
         }
         $this->SetY(-15);
         // Page number
-        $this->Cell(0, $this->footerHeight, $this->footer, 0, false, 'C', 0, '', 0, false, 'T', 'M');
+        $this->Cell(0, 15, $this->footer, 0, false, 'C', 0, '', 0, false, 'T', 'M');
 
         if ($this->last_page_flag) {
             if($this->position + $this->footerHeight >  $this->getPageHeight()) {
