@@ -828,7 +828,7 @@ class Model
                                 }
                                 if(class_exists($mt)) {
                                     $object = new $mt($this->getFieldValue($field));
-                                    $json[$name] = $object->json($filter, $recursive, $limit);
+                                    $json[$name] = $object->export($filter, $recursive, $limit);
                                 }
                             }
                         }
