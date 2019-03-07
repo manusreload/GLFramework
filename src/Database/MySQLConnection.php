@@ -128,7 +128,7 @@ class MySQLConnection extends Connection
     {
         if($this->pdo) {
 
-            if (!GL_INSTALL) {
+            if (!defined('GL_INSTALL') || !GL_INSTALL) {
                 $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             } else {
                 $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING);
