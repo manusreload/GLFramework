@@ -279,6 +279,6 @@ class Upload
      */
     public function url($index = false)
     {
-        return 'http://' . $_SERVER['HTTP_HOST'] . '/' . $this->getFilename($index);
+        return get_protocol() . '://' . $_SERVER['HTTP_HOST'] . '/' . $this->getFilename($index);
     }
 }

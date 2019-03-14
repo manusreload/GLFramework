@@ -38,7 +38,7 @@ define("GL_INTERNAL_MODULES_PATH", realpath(__DIR__ . "/../modules"));
  */
 class Bootstrap
 {
-    public static $VERSION = '0.2.4';
+    public static $VERSION = '0.2.6';
     private static $singelton;
     private static $errorLevel = 0;
     /**
@@ -336,6 +336,10 @@ class Bootstrap
 //        Log::i(get_loaded_extensions());
 //        Log::i('· Modules priority: ');
 //        Log::i(array_map(function($module) { return $module->title; }, $this->manager->getModules()));
+
+        if(!$this->setupSSL()) {
+            return $this->redirectHttps();
+        }
         Events::dispatch('onCoreInit');
         Profiler::stop('boot');
         Profiler::start('database');
@@ -366,6 +370,21 @@ class Bootstrap
     }
     private function setupLanguage() {
         $this->translation = new Translation();
+    }
+    private function setupSSL() {
+        if(Server::get('REQUEST_METHOD') === 'GET' && isset($this->config['app']['ssl']) && $this->config['app']['ssl']) {
+            $secure = Server::get('HTTPS', false);
+            if(!$secure) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private function redirectHttps() {
+        $resposne = new Response();
+        $resposne->setRedirection( get_request_url(true) );
+        return $resposne;
     }
 
     /**
