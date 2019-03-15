@@ -33,7 +33,57 @@
                             <th>Ruta</th>
                             <td><code>{{ this.module.getDirectory() }}</code></td>
                         </tr>
+                        <tr>
+                            <th>Estado</th>
+                            <td>
+                                {% if module.isEnabled() %}
+                                    <span class="label label-success">Activado</span>
+                                {% else %}
+                                    <span class="label label-danger">Desactivado</span>
+                                {% endif %}
+                            </td>
+                        </tr>
                     </table>
+                {% endblock %}
+            {% endembed %}
+        </div>
+        <div class="col-lg-6">
+            {% embed "templates/box.twig" %}
+                {% block title %}
+                    Controladores
+                {% endblock %}
+                {% block content %}
+                    Ruta base: <b>{{ this.module.getDirectory() }}</b>
+                    <table class="table">
+                        <tr>
+                            <th>Clase</th>
+                            <th>Archivo</th>
+                            <th>Ruta</th>
+                        </tr>
+                        {% for class, file in this.module.controllers %}
+                            <tr>
+                                <td>{{ class }}</td>
+                                <td>{{ file }}</td>
+                                <td>{{ this.getLink(class) }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endblock %}
+            {% endembed %}
+        </div>
+        <div class="col-lg-6">
+            {% embed "templates/box.twig" %}
+                {% block title %}
+                    Dependencias
+                {% endblock %}
+                {% block content %}
+                    {% set mod = this.getModuleInManager(this.module) %}
+                    {{ this.module.title }}
+                    {% if mod %}
+                    {{ macros.dependency_tree(manager.getModulesDependencyTree(mod)) }}
+                    {% else %}
+                    <div class="alert alert-info">El módulo tiene que estar activo para poder ver las dependencias</div>
+                    {% endif %}
                 {% endblock %}
             {% endembed %}
         </div>

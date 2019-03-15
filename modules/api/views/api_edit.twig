@@ -75,6 +75,29 @@
                 {% endblock %}
             {% endembed %}
         </div>
+        {% if this.apiAuthorization.id %}
+        <div class="col-lg-6">
+            {% embed "templates/box.twig" %}
+                {% block title %}
+                    Log de Acceso
+                {% endblock %}
+                {% block content %}
+                    <table class="table">
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Endpoint</th>
+                        </tr>
+                        {% for item in this.apiAuthorization.getLog() %}
+                            <tr>
+                                <td>{{ item.created_at }}</td>
+                                <td>{{ item.endpoint }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endblock %}
+            {% endembed %}
+        </div>
+        {% endif %}
     </div>
 {% endblock %}
 {% block scripts %}

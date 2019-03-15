@@ -715,18 +715,18 @@ class Module extends SoftCache
     {
         $this->parentModule = $parentModule;
     }
-
-    public function addChildrenModule($module) {
-        $this->childrenModules[] = $module;
-    }
-
-    /**
-     * @return Module[]
-     */
-    public function getChildrenModules(): array
-    {
-        return $this->childrenModules;
-    }
+//
+//    public function addChildrenModule($module) {
+//        $this->childrenModules[] = $module;
+//    }
+//
+//    /**
+//     * @return Module[]
+//     */
+//    public function getChildrenModules(): array
+//    {
+//        return $this->childrenModules;
+//    }
 
 
 

@@ -371,6 +371,7 @@ class ModuleManager
             $module = $this->load($path, $moduleConfig);
             if ($module) {
                 if (!$this->exists($module->title)) {
+                    $module->setParentModule($parent);
                     $this->add($module);
                     $this->loadModuleDependencies($module);
                 }
@@ -582,5 +583,27 @@ class ModuleManager
     public function getRunningModule()
     {
         return $this->runningModule;
+    }
+
+    /**
+     * @param $current Module
+     */
+    public function getModulesDependencyTree($current) {
+        $list = [];
+        $childs = $this->getChildrenModules($current);
+        foreach ($childs as $child) {
+            $list[] = ['title' => $child->title, 'deps' => $this->getModulesDependencyTree($child)];
+        }
+        return $list;
+    }
+
+    public function getChildrenModules($parent) {
+        $list = [];
+        foreach ($this->modules as $module) {
+            if($module->getParentModule() === $parent) {
+                $list[] = $module;
+            }
+        }
+        return $list;
     }
 }

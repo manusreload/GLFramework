@@ -27,6 +27,14 @@ class APIAuthorization extends \GLFramework\Model
         )
     );
 
+    /**
+     * @return \GLFramework\ModelResult<APILog>
+     * @throws Exception
+     */
+    public function getLog() {
+        $log = new APILog();
+        return $log->get(['id_api' => $this->id])->order('id', true)->limit(100);
+    }
 
     public function getUser()
     {

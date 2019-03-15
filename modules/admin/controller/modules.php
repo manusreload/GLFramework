@@ -104,6 +104,10 @@ class modules extends AuthController {
         }
     }
 
+    public function getModuleInManager($module) {
+        return ModuleManager::getInstance()->getModuleInstanceByName($module->title);
+    }
+
     public function setModuleStateResponse($result) {
 
     }

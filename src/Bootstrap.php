@@ -668,6 +668,7 @@ class Bootstrap
         $dir = realpath('.');
         $url = str_replace($dir, '', $file);
         $url = str_replace('//', '/', $url);
+        $url = str_replace('\\', '/', $url);
         return $url;
     }
 
@@ -684,7 +685,7 @@ class Bootstrap
     {
         $a = realpath($this->getDirectory());
         $b = realpath($path);
-        return str_replace($a . "/", $b, "");
+        return str_replace($a . DIRECTORY_SEPARATOR, "", $b);
     }
 
     /**

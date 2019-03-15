@@ -37,3 +37,16 @@
     <small>{{ setting.description }}</small>
 
 {% endmacro %}
+
+{% macro dependency_tree(list) %}
+    {% import _self as forms %}
+
+    <ul>
+        {% for item in list %}
+            <li>
+                <a href="/admin/modules/{{ item.title }}">{{ item.title }}</a>
+                {{ forms.dependency_tree(item.deps) }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endmacro %}
