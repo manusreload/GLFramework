@@ -80,7 +80,7 @@ class GA
             $params['t'] = $type;
             $params['tid'] = $this->config['tracker'];
             $params['cid'] = $_COOKIE['_ga'];
-            $params['dr'] = get_request_uri();
+            $params['dr'] = \get_request_url();
             post('https://www.google-analytics.com/collect', $params);
         }
     }
