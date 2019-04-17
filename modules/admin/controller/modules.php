@@ -71,14 +71,18 @@ class modules extends AuthController {
                 $this->module = $module;
                 $this->module->init();
                 if (isset($_POST['settings'])) {
-                    $config = $configManager->load();
-                    $this->parseUploads();
-                    $configManager->setModuleSettings($config, $module, $_POST['settings']);
-                    if ($configManager->save($config)) {
-                        $this->addMessage("Se ha guardado correctamente");
-                        $this->quit($this->getLink($this, array('name' => $this->params['name'])));
+                    if($this->module->isEnabled()) {
+                        $config = $configManager->load();
+                        $this->parseUploads();
+                        $configManager->setModuleSettings($config, $module, $_POST['settings']);
+                        if ($configManager->save($config)) {
+                            $this->addMessage("Se ha guardado correctamente");
+                            $this->quit($this->getLink($this, array('name' => $this->params['name'])));
+                        } else {
+                            $this->addMessage("No se ha podido guardar la configuracion", "danger");
+                        }
                     } else {
-                        $this->addMessage("No se ha podido guardar la configuracion", "danger");
+                        $this->addMessage("No se puede configurar modulos desactivados", "danger");
                     }
                 }
                 $this->setTemplate("modules/module.twig");
