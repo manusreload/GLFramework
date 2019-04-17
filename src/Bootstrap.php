@@ -669,7 +669,7 @@ class Bootstrap
         $url = str_replace($dir, '', $file);
         $url = str_replace('//', '/', $url);
         $url = str_replace('\\', '/', $url);
-        return $url;
+        return $this->getBasePath() . $url;
     }
 
     /**
@@ -707,6 +707,11 @@ class Bootstrap
     public function getCurrentPath()
     {
         return realpath(".");
+    }
+
+    public function getBasePath()
+    {
+        return $this->config['app']['basepath'];
     }
 
     /**
