@@ -352,7 +352,7 @@ class Model
      */
     public function get_all()
     {
-        return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE 1', [], $this->getCacheId('all')));
+        return $this->build($this->db->select('SELECT * FROM `' . $this->table_name . '` WHERE 1', [], $this->getCacheId('all')));
     }
 
     /**
@@ -366,7 +366,7 @@ class Model
         $index = $this->getIndex();
         $value = $this->getFieldValue($index);
         if (is_string($value) && strlen($value) > 0) {
-            return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE `' . $index . '` != ?', array((string)$value), $this->getCacheId("not_" . $value)));
+            return $this->build($this->db->select('SELECT * FROM `' . $this->table_name . '` WHERE `' . $index . '` != ?', array((string)$value), $this->getCacheId("not_" . $value)));
         }
         return $this->get_all();
     }
@@ -405,7 +405,7 @@ class Model
             if($limit > 0) {
                 $sql .= " LIMIT $limit";
             }
-            return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE ' . $sql, $args));
+            return $this->build($this->db->select('SELECT * FROM `' . $this->table_name . '` WHERE ' . $sql, $args));
         }
         return $this->build(array());
     }
