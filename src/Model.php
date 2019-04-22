@@ -185,7 +185,7 @@ class Model
             if($currentIndex) {
                 $this->db->removeCache($this->getCacheId($currentIndex));
             }
-            return $this->db->insert('INSERT INTO '.$this->table_name.' ('.$sql1.') VALUES ('.$sql2.')', $args);
+            return $this->db->insert('INSERT INTO `'.$this->table_name.'` ('.$sql1.') VALUES ('.$sql2.')', $args);
         }
         return false;
     }
@@ -220,7 +220,7 @@ class Model
                 return false;
             }
             $args[] = $indexValue;
-            return $this->db->exec("UPDATE {$this->table_name} SET $sql1 WHERE `$index` = ?", $args, $this->getCacheId($indexValue));
+            return $this->db->exec("UPDATE `{$this->table_name}` SET $sql1 WHERE `$index` = ?", $args, $this->getCacheId($indexValue));
         }
         return false;
     }
@@ -289,7 +289,7 @@ class Model
         if (!is_array($id)) {
             $index = $this->getIndex();
             $id = $this->db->escape_string($id);
-            return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE `' . $index . '` = ? ',
+            return $this->build($this->db->select('SELECT * FROM `' . $this->table_name . '` WHERE `' . $index . '` = ? ',
                 array($id), $this->getCacheId($id)));
         }
         if (is_array($id)) {
@@ -305,7 +305,7 @@ class Model
             }
             if (!empty($sql)) {
                 $sql = substr($sql, 0, -5);
-                return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE ' . $sql, $args, $this->getCacheId($id)));
+                return $this->build($this->db->select('SELECT * FROM `' . $this->table_name . '` WHERE ' . $sql, $args, $this->getCacheId($id)));
             }
         }
         return $this->build(array());
@@ -340,7 +340,7 @@ class Model
         }
         if (!empty($sql)) {
             $sql = substr($sql, 0, -4);
-            return $this->build($this->db->select('SELECT * FROM ' . $this->table_name . ' WHERE ' . $sql, $args));
+            return $this->build($this->db->select('SELECT * FROM `' . $this->table_name . '` WHERE ' . $sql, $args));
         }
         return $this->build(array());
     }
