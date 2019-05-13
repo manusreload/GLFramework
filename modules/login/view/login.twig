@@ -5,7 +5,7 @@
 {% block body %}
     <div class="center-block" align="center">
         <img src="{{ mainconfig.app.banner }}" width="400" height="83"></div>
-    <form class="form-signin" name="form1" method="post" action="login">
+    <form class="form-signin" name="form1" method="post" action="/login">
 
         {% if this.result.error %}
         <div class="alert alert-danger">
