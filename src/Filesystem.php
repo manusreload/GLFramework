@@ -145,7 +145,7 @@ class Filesystem
     public function url($expires = null)
     {
         $this->setPublic($expires);
-        return get_protocol()  . ":" . $_SERVER['HTTP_HOST'] . '/_raw/' . $this->file;
+        return get_protocol()  . "://" . $_SERVER['HTTP_HOST'] . '/_raw/' . $this->file;
     }
 
     /**
