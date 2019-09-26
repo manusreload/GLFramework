@@ -645,7 +645,7 @@ function get($url, $header = array())
 function fix_url($url)
 {
     if (strpos($url, 'http') === false) {
-        $url = 'http://' . $_SERVER['HTTP_HOST'] . $url;
+        $url = get_protocol() . '://' . $_SERVER['HTTP_HOST'] . $url;
     }
     return $url;
 }
@@ -888,8 +888,17 @@ function compare_version($a, $b) {
 function require_version($version) {
     $current = \GLFramework\Bootstrap::$VERSION;
     $res = compare_version($current, $version);
-    if($res) {
+    if($res > 0) {
         die("Please update GLFramework: Use 'composer update'. Current version: $current. Requiered version: $version");
     }
 
+}
+
+function get_protocol($forceSsl = false) {
+    $https = \GLFramework\Globals\Server::get('HTTPS', false) || $forceSsl;
+    return ($https?"https":"http");
+}
+
+function get_request_url($forceSsl = false) {
+    return get_protocol($forceSsl) . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 }

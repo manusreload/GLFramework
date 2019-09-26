@@ -106,6 +106,7 @@ class setup extends Controller
             }
             $config['app']['name'] = $_POST['site_name'];
             $config['app']['debug'] = $_POST['debug']?true:false;
+            $config['app']['ssl'] = $_POST['ssl']?true:false;
             if($this->saveConfig($config))
             {
                 return true;

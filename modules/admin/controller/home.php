@@ -14,6 +14,7 @@ use GLFramework\Controller;
 use GLFramework\Controller\AuthController;
 use GLFramework\Events;
 use GLFramework\Log;
+use GLFramework\Mail;
 use GLFramework\Model\Page;
 use GLFramework\Model\User;
 use GLFramework\Model\UserPage;
@@ -91,6 +92,19 @@ class admin extends AuthController
         if(isset($controller->admin) && $controller->admin) return DISALLOW_USER;
         if(isset($controller->allowed) && $controller->allowed) return ALLOW_USER;
         return (isset($config['allowDefault']) && $config['allowDefault'])?ALLOW_USER:null;
+    }
+    
+    public static function sendWelcomeEmail($controller, $user) {
+        $config = Bootstrap::getSingleton()->getConfig();
+        $recovery = new \UserRecovery();
+        $recovery = $recovery->generateNew($user);
+        $recovery->save(true);
+        $mail = new Mail();
+        $message = $mail->render($controller, "mail/welcome.twig", array('user' => $user, 'recovery' => $recovery));
+        if($mail->send($user->email, "Bienvenido a " . $config['app']['name'], $message))
+        {
+            return true;
+        }
     }
 
 }

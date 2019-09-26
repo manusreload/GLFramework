@@ -16,6 +16,7 @@ app:
     GLFramework\Modules\Admin\system: "/admin/system/[*:section]?"
   listeners:
     isUserAllowed: GLFramework\Modules\Admin\admin::isUserAllowed
+    sendWelcomeEmail: GLFramework\Modules\Admin\admin::sendWelcomeEmail
 
   events: # Declared events in the module
     getAdminControllers:

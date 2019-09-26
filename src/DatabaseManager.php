@@ -473,6 +473,13 @@ class DatabaseManager
         self::$cache = null;
     }
 
+    /**
+     * @param $cache string
+     */
+    public function enableCache($cacheConnector) {
+        $this->instanceCache($cacheConnector);
+    }
+
 
     /**
      * Devuelve el SQL necesario para convertir la columna a entero.

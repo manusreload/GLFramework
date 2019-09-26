@@ -26,6 +26,8 @@
 
 namespace GLFramework\Upload;
 
+use GLFramework\Bootstrap;
+
 /**
  * Class Upload
  *
@@ -135,7 +137,8 @@ class Upload
         if (!is_dir($parent)) {
             mkdir($parent, 0777, true);
         }
-        return move_uploaded_file($source, $dest);
+        return $this->uploads->move($source, $dest);
+//        return move_uploaded_file($source, $dest);
     }
 
     /**
@@ -279,6 +282,6 @@ class Upload
      */
     public function url($index = false)
     {
-        return 'http://' . $_SERVER['HTTP_HOST'] . '/' . $this->getFilename($index);
+        return get_protocol() . '://' . $_SERVER['HTTP_HOST'] . '/' . $this->getFilename($index);
     }
 }

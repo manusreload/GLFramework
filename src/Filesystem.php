@@ -145,11 +145,7 @@ class Filesystem
     public function url($expires = null)
     {
         $this->setPublic($expires);
-        $scheme = 'http://';
-        if ($_SERVER['HTTPS']) {
-            $scheme = 'https://';
-        }
-        return $scheme . $_SERVER['HTTP_HOST'] . '/_raw/' . $this->file;
+        return get_protocol()  . "://" . $_SERVER['HTTP_HOST'] . '/_raw/' . $this->file;
     }
 
     /**

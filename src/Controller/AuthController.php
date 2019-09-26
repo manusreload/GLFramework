@@ -152,7 +152,7 @@ class AuthController extends Controller implements Middleware
                         $this->addMessage($this->reasonMessage, 'warning');
                     }
                     if (!isset($_GET['logout'])) {
-                        Session::set('return', 'http://' . Server::get('HTTP_HOST') . Server::get('REQUEST_URI'));
+                        Session::set('return', get_request_url());
                     }
                     $auth = "";
                     if (isset($_GET['auth'])) {

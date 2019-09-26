@@ -172,22 +172,11 @@ class Events
         if (isset($this->handlers[$event]) && count($this->handlers[$event]) > 0) {
             $handlers = $this->handlers[$event];
             foreach ($handlers as $item) {
-                $fn = $item['fn'];
-                $context = $item['context'];
-                //                print_debug($item);
-                if (is_callable($fn)) {
-                    $result = call_user_func_array($fn, $args);
-                    if ($result === true) {
-                        return true;
-                    }
-                    $buffer[] = $result;
-                } else {
-                    //                    print_r($fn);
-                    //                    die();
-                    $message = '<pre>Can not call event: ' . $event . ', context: ' . get_class($context)
-                        . ' function: ' . function_dump($fn) . ' ' . print_r($item, true);
-                    Log::getInstance()->error($message, array('events'));
+                $result = $item->run($args);
+                if ($result === true) {
+                    return true;
                 }
+                $buffer[] = $result;
             }
             return $buffer;
         }

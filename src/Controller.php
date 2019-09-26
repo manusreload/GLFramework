@@ -313,15 +313,21 @@ abstract class Controller
         if(substr($controller, 0, 1) === "\\") {
             $controller = substr($controller, 1);
         }
-        $url = Bootstrap::getSingleton()->getManager()->getRouter()->generate($controller, $params);
-        if ($fullPath) {
-            $protocol = 'http';
-            if (strpos($_SERVER['SCRIPT_URI'], 'https') !== false) {
-                $protocol = 'https';
+        try {
+
+            $url = Bootstrap::getSingleton()->getManager()->getRouter()->generate($controller, $params);
+            if ($fullPath) {
+                $protocol = 'http';
+                if (strpos($_SERVER['SCRIPT_URI'], 'https') !== false) {
+                    $protocol = 'https';
+                }
+                return $protocol . '://' . $_SERVER['HTTP_HOST'] . $url;
             }
-            return $protocol . '://' . $_SERVER['HTTP_HOST'] . $url;
+            return $url;
+        } catch (\Exception $ex) {
+
         }
-        return $url;
+        return "";
     }
 
     /**
@@ -350,7 +356,7 @@ abstract class Controller
      */
     public function getUploads()
     {
-        return new Uploads(Bootstrap::getSingleton()->getDirectory(), $this->config);
+        return new Uploads(Bootstrap::getSingleton()->getDirectory(), $this->mainConfig);
     }
 
     /**

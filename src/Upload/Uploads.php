@@ -36,6 +36,7 @@ class Uploads
     var $config;
     var $dir;
     var $folder;
+    private $strategy = "mv";
 
     /**
      * Uploads constructor.
@@ -50,6 +51,15 @@ class Uploads
         $this->folder = 'uploads';
         if (isset($config['app']['upload'])) {
             $this->folder = $config['app']['upload'];
+        }
+
+        if(isset($config['app']['uploads'])) {
+            if(isset($config['app']['uploads']['folder'])) {
+                $this->folder = $config['app']['uploads']['folder'];
+            }
+            if(isset($config['app']['uploads']['strategy'])) {
+                $this->strategy = $config['app']['uploads']['strategy'];
+            }
         }
 
         if (!is_dir($this->getUploadDir()) && is_dir(dirname($this->getUploadDir()))) {
@@ -77,5 +87,15 @@ class Uploads
     public function allocate($name, $folder = null)
     {
         return new Upload($this, isset($_FILES[$name])?$_FILES[$name]:array(), $folder);
+    }
+
+    public function move($source, $destination) {
+        if($this->strategy === "copy") {
+            if(copy($source, $destination)) {
+                return unlink($source);
+            }
+            return false;
+        }
+        return move_uploaded_file($source, $destination);
     }
 }

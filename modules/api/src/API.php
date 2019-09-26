@@ -35,7 +35,7 @@ class API implements Middleware
         // TODO: Implement next() method.
         if($auth = $request->getHeader("X-Authorization"))
         {
-            if($this->authorize($auth))
+            if($this->authorize($auth, $request->getUri()))
             {
                 $next($request, $response);
             }
@@ -64,7 +64,7 @@ class API implements Middleware
         }
     }
     
-    public function authorize($auth)
+    public function authorize($auth, $endpoint)
     {
         $apiAuth = new \APIAuthorization();
         $result = $apiAuth->get(array('token' => $auth));
@@ -73,6 +73,7 @@ class API implements Middleware
             $apiAuth = $result->getModel();
             if($apiAuth->id)
             {
+                \APILog::log($apiAuth, $endpoint);
                 if($apiAuth->id_user)
                 {
                     $this->controller->user = Controller\AuthController::auth($apiAuth->id_user);

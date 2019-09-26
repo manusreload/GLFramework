@@ -245,17 +245,9 @@ class users extends AuthController
 
     public function sendWelcomeEmail($user)
     {
-        $recovery = new \UserRecovery();
-        $recovery = $recovery->generateNew($user);
-        $recovery->save(true);
-        $mail = new Mail();
-        $message = $mail->render($this, "mail/welcome.twig", array('user' => $user, 'recovery' => $recovery));
-        if($mail->send($user->email, "Bienvenido a " . $this->config['app']['name'], $message))
-        {
+        if(Events::fire('sendWelcomeEmail', [$this, $user])===true) {
             $this->addMessage("Se ha enviado un email al usuario con los pasos que tiene que seguir para acceder al servicio");
-        }
-        else
-        {
+        } else {
             $this->addMessage("Se ha producido un error al enviar el email, verifique los parametros de configuración.", "danger");
         }
     }

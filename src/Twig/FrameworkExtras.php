@@ -58,6 +58,8 @@ class FrameworkExtras extends Extra
         $this->addFunction(new \Twig_SimpleFunction('meses', array($this, 'meses')));
         $this->addFunction(new \Twig_SimpleFunction('dump', array($this, 'dump'), $safe));
         $this->addFunction(new \Twig_SimpleFunction('tr', array($this, 'tr'), $safe));
+        $this->addFunction(new \Twig_SimpleFunction('path', array($this, 'path'), $safe));
+        $this->addFunction(new \Twig_SimpleFunction('link', array($this, 'link'), $safe));
         $this->addFilter(new \Twig_SimpleFilter('active', array($this, 'isHrefActive')));
         $this->addFilter(new \Twig_SimpleFilter('fecha_hora', array($this, 'parseFechaHora')));
         $this->addFilter(new \Twig_SimpleFilter('fecha', array($this, 'parseFecha')));
@@ -272,5 +274,13 @@ class FrameworkExtras extends Extra
     public function tr() {
         $translation = Bootstrap::getSingleton()->getTranslation();
         return call_user_func_array(array($translation, 'tr'), func_get_args());
+    }
+
+    public function path($file) {
+        return Bootstrap::getSingleton()->toUrl($file);
+    }
+    public function link($link) {
+
+        return Bootstrap::getSingleton()->getBasePath() . $link;
     }
 }
