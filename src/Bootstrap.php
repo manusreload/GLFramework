@@ -246,7 +246,7 @@ class Bootstrap
         $this->initTime = microtime(true);
         $this->init = true;
         Log::d('Initializing framework...');
-//        $this->register_error_handler();
+        $this->register_error_handler();
         date_default_timezone_set('Europe/Madrid');
         $this->setupLanguage();
 
@@ -545,6 +545,7 @@ class Bootstrap
             $errfile = $error['file'];
             $errline = $error['line'];
             $errstr = $error['message'];
+            error_log(("ERROR: $errstr at $errfile:$errfile ($errno)"));
             if ($errno === E_ERROR) {
                 Log::getInstance()->error($errstr . " " . $errfile . " " . $errline);
                 if (isset($this->config['app']['ignore_errors'])) {
@@ -658,7 +659,7 @@ class Bootstrap
     private function register_error_handler()
     {
         set_error_handler(array($this, 'fatal_handler'));
-        register_shutdown_function(array($this, 'fatal_handler'));
+//        register_shutdown_function(array($this, 'fatal_handler'));
     }
 
     public function relative($path)
