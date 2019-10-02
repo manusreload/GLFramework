@@ -209,7 +209,7 @@ class Bootstrap
     }
 
     public function getAppName() {
-        return isset( $config['app'] ) && isset( $config['app']['name'] ) ? $config['app']['name'] : "";
+        return isset( $this->config['app'] ) && isset( $this->config['app']['name'] ) ? $this->config['app']['name'] : "";
     }
 
     /**
