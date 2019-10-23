@@ -735,7 +735,7 @@ class Bootstrap
     {
         $a = realpath($this->getDirectory());
         $b = realpath($path);
-        return str_replace($a . DIRECTORY_SEPARATOR, $b, "");
+        return str_replace($a . DIRECTORY_SEPARATOR,  "", $b);
     }
 
     /**
