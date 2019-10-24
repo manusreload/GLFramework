@@ -38,7 +38,7 @@ define("GL_INTERNAL_MODULES_PATH", realpath(__DIR__ . "/../modules"));
  */
 class Bootstrap
 {
-    public static $VERSION = '0.2.6';
+    public static $VERSION = '0.2.7';
     private static $singelton;
     private static $errorLevel = 0;
     /**
@@ -209,7 +209,7 @@ class Bootstrap
     }
 
     public function getAppName() {
-        return isset( $config['app'] ) && isset( $config['app']['name'] ) ? $config['app']['name'] : "";
+        return isset( $this->config['app'] ) && isset( $this->config['app']['name'] ) ? $this->config['app']['name'] : "";
     }
 
     /**
@@ -246,7 +246,7 @@ class Bootstrap
         $this->initTime = microtime(true);
         $this->init = true;
         Log::d('Initializing framework...');
-//        $this->register_error_handler();
+        $this->register_error_handler();
         date_default_timezone_set('Europe/Madrid');
         $this->setupLanguage();
 
@@ -564,6 +564,7 @@ class Bootstrap
             $errfile = $error['file'];
             $errline = $error['line'];
             $errstr = $error['message'];
+            error_log(("ERROR: $errstr at $errfile:$errfile ($errno)"));
             if ($errno === E_ERROR) {
                 Log::getInstance()->error($errstr . " " . $errfile . " " . $errline);
                 if (isset($this->config['app']['ignore_errors'])) {
@@ -578,6 +579,53 @@ class Bootstrap
             }
         }
     }
+
+
+    function exceptionHandler($exception) {
+
+        // these are our templates
+        $traceline = "#%s %s(%s): %s(%s)";
+        $msg = "PHP Fatal error:  Uncaught exception '%s' with message '%s' in %s:%s\nStack trace:\n%s\n  thrown in %s on line %s";
+
+        // alter your trace as you please, here
+        $trace = $exception->getTrace();
+        foreach ($trace as $key => $stackPoint) {
+            // I'm converting arguments to their type
+            // (prevents passwords from ever getting logged as anything other than 'string')
+            $trace[$key]['args'] = array_map('gettype', $trace[$key]['args']);
+        }
+
+        // build your tracelines
+        $result = array();
+        foreach ($trace as $key => $stackPoint) {
+            $result[] = sprintf(
+                $traceline,
+                $key,
+                $stackPoint['file'],
+                $stackPoint['line'],
+                $stackPoint['function'],
+                implode(', ', $stackPoint['args'])
+            );
+        }
+        // trace always ends with {main}
+        $result[] = '#' . ++$key . ' {main}';
+
+        // write tracelines into main template
+        $msg = sprintf(
+            $msg,
+            get_class($exception),
+            $exception->getMessage(),
+            $exception->getFile(),
+            $exception->getLine(),
+            implode("\n", $result),
+            $exception->getFile(),
+            $exception->getLine()
+        );
+
+        // log or echo as you please
+        error_log($msg);
+    }
+
 
     /**
      * TODO
@@ -677,15 +725,17 @@ class Bootstrap
      */
     private function register_error_handler()
     {
+        set_exception_handler(array($this, 'exceptionHandler'));
         set_error_handler(array($this, 'fatal_handler'));
-        register_shutdown_function(array($this, 'fatal_handler'));
+
+//        register_shutdown_function(array($this, 'fatal_handler'));
     }
 
     public function relative($path)
     {
         $a = realpath($this->getDirectory());
         $b = realpath($path);
-        return str_replace($a . DIRECTORY_SEPARATOR, "", $b);
+        return str_replace($a . DIRECTORY_SEPARATOR,  "", $b);
     }
 
     /**
@@ -766,12 +816,5 @@ class Bootstrap
     {
         return $this->response;
     }
-
-
-
-
-
-
-
 
 }
