@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /
+{% if this.config.allow is defined %}
+{% for url in this.config.allow %}
+Allow: {{ url }}
+{% endfor %}
+{% endif %}
+{# TODO: Implement here some Allow/Disallow URLs #}

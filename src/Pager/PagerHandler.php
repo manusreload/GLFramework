@@ -6,7 +6,7 @@
  * Time: 15:58
  */
 
-namespace GLJarmauto;
+namespace GLVentas;
 
 
 trait PagerHandler

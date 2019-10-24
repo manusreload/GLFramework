@@ -1,0 +1,13 @@
+title:  robots
+description: Define las reglas de robots.txt
+version: 0.0.1
+
+app:
+  index: home
+
+  controllers: controller
+  model: model
+  views: views
+
+  routes:
+    - { GLFramework\Modules\Robots\robots: "/robots.txt" }
