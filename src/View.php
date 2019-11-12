@@ -66,7 +66,7 @@ class View
         $this->controller = $controller;
         $this->directories = ModuleManager::getInstance()->getViews($controller->module);
         $loader = new \Twig_Loader_Filesystem($this->directories);
-        $this->config = $this->getController()->config;
+        $this->config = $this->getController()->mainConfig;
         $config = isset($this->config['twig_config'])?$this->config['twig_config']:[];
         if(isset($this->config['app']['twig_cache']) && $this->config['app']['twig_cache'])
         {
