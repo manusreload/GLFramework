@@ -232,17 +232,14 @@ function file_get_php_classes($filepath)
     $classes = array();
     while($read = fgets($fp)) {
         $buffer .= $read;
-        $classes = get_php_classes($buffer);
-        if($classes) {
-            break;
-        }
+//        if(strpos($buffer, "class ") > 0) break;
     }
     fclose($fp);
 
 //    echo $filepath . ": ".  $it . "\n";
 
 //    $php_code = file_get_contents($filepath);
-//    $classes = get_php_classes($php_code);
+    $classes = get_php_classes($buffer);
 
     return $classes;
 }
