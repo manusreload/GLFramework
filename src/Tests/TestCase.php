@@ -213,29 +213,26 @@ class TestCase extends \PHPUnit\Framework\TestCase
      * TODO
      *
      * @param $files
+     * @param $result
      * @return array
      */
-    public function buildFilesForm($files)
+    public function buildFilesForm($data, $rec = false)
     {
-        $result = array();
-        if (is_array($files)) {
-            foreach ($files as $file) {
-                if (is_string($file)) {
-                    if (file_exists($file)) {
-                        $this->buildFile(0, $result, $file);
-                    } elseif ($file === '') {
-                        $this->buildFile(4, $result);
-                    }
+        $files = [];
+        foreach ($data as $key => $value) {
+            if(is_string($value)) {
+                if(file_exists($value)) {
+                    $this->buildFile(0, $files, $rec, $value );
+                } else {
+                    $this->buildFile(4, $files, $rec, $value);
                 }
             }
-        } else {
-            if (file_exists($files)) {
-                $this->buildFile(0, $result, $files);
-            } else if ($files === '') {
-                $this->buildFile(4, $result);
+            if (is_array($value)) {
+                $files[$key] = $this->buildFilesForm($value, true);
+                $data[$key] = $value;
             }
         }
-        return $result;
+        return $files;
     }
 
     /**
@@ -728,7 +725,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
      * @param string $size
      * @return array
      */
-    private function buildFile($error, &$array = array(), $tmp_name = '', $name = '', $type = '', $size = '')
+    private function buildFile($error, &$array = array(), $subarray = false, $tmp_name = '', $name = '', $type = '', $size = '')
     {
         if ($tmp_name !== '' && $name === '') {
             $name = basename($tmp_name);
@@ -739,7 +736,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
         if ($tmp_name !== '' && $size === '') {
             $size = filesize($tmp_name);
         }
-        if (isset($array['error'])) {
+        if ($subarray) {
             $array['error'][] = $error;
             $array['name'][] = $name;
             $array['tmp_name'][] = $tmp_name;
@@ -753,5 +750,14 @@ class TestCase extends \PHPUnit\Framework\TestCase
             $array['size'] = $size;
         }
         return $array;
+    }
+
+    public function createUploadFile($filename) {
+        if(file_exists($filename)) {
+            $tmp = sys_get_temp_dir() . "/" . basename($filename);
+            copy($filename, $tmp);
+            return $tmp;
+        }
+        return $filename;
     }
 }
