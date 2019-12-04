@@ -69,6 +69,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
             $db2 = new DBStructure();
             $res = $db2->executeModelChanges($this->database);
             $this->assertNotInstanceOf(\Exception::class, $res, 'Error installing models');
+            Bootstrap::getSingleton()->setDatabase($this->database);
         }
     }
 
