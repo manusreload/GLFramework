@@ -80,6 +80,7 @@ class setup extends Controller
         $ip = detect_client_ip();
         $allowed = $this->config['allowedIps'];
         $allowed = explode(",", $allowed);
+        $allowed[] = '127.0.0.1';
         if(in_array($ip, $allowed)) {
             return true;
         }

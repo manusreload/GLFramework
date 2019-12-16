@@ -542,5 +542,12 @@ class Manipulator
         if ($this->currentSheet !== null) {
             $this->getCore()->setSheet($this->currentSheet);
         }
+
+        if(isset($config['skip'])) {
+            $i = $config['skip'];
+            while ($i-- > 0) {
+                $this->getCore()->next();
+            }
+        }
     }
 }
