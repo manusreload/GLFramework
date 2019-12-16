@@ -550,20 +550,27 @@ class Bootstrap
     /**
      * TODO
      */
-    function fatal_handler()
+    function fatal_handler($errno, $errstr, $errfile, $errline, $errorContext)
     {
-        $errfile = 'unknown file';
-        $errstr = 'shutdown';
-        $errno = E_CORE_ERROR;
-        $errline = 0;
 
-        $error = \error_get_last();
-        //        error_clear_last();
-        if ($error !== null) {
-            $errno = $error['type'];
-            $errfile = $error['file'];
-            $errline = $error['line'];
-            $errstr = $error['message'];
+        if(!$errno) {
+
+            $errfile = 'unknown file';
+            $errstr = 'shutdown';
+            $errno = E_CORE_ERROR;
+            $errline = 0;
+
+            $error = \error_get_last();
+            error_clear_last();
+            if($error) {
+                $errno = $error['type'];
+                $errfile = $error['file'];
+                $errline = $error['line'];
+                $errstr = $error['message'];
+            }
+        }
+        if ($errno) {
+
             error_log(("ERROR: $errstr at $errfile:$errfile ($errno)"));
             if ($errno === E_ERROR) {
                 Log::getInstance()->error($errstr . " " . $errfile . " " . $errline);
