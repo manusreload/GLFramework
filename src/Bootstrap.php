@@ -571,7 +571,6 @@ class Bootstrap
         }
         if ($errno) {
 
-            error_log(("ERROR: $errstr at $errfile:$errfile ($errno)"));
             if ($errno === E_ERROR) {
                 Log::getInstance()->error($errstr . " " . $errfile . " " . $errline);
                 if (isset($this->config['app']['ignore_errors'])) {
@@ -581,6 +580,7 @@ class Bootstrap
                 }
 
                 if (isset($this->config['app']['debug']) && $this->config['app']['debug']) {
+                    error_log(("ERROR: $errstr at $errfile:$errfile ($errno)"));
                     ($this->format_error($errno, $errstr, $errfile, $errline));
                 }
             }
