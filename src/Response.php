@@ -191,4 +191,11 @@ class Response
     {
         $this->responseCode = $responseCode;
     }
+
+    public function __toString()
+    {
+        return "Response";
+    }
+
+
 }

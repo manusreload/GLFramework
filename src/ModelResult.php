@@ -307,4 +307,11 @@ class ModelResult implements \IteratorAggregate
         $filter = array_values(array_filter($this->models, $callback));
         return new ModelResult($this->model_class, $filter);
     }
+
+    public function __toString()
+    {
+        return "ModelResult{" . $this->count() . " of " . get_class($this->instance) . "}";
+    }
+
+
 }

@@ -727,9 +727,10 @@ class Module extends SoftCache
 //    {
 //        return $this->childrenModules;
 //    }
-
-
-
+    public function __toString()
+    {
+        return "Module{" . $this->title . "}";
+    }
 
 
 }

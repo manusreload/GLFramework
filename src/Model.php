@@ -964,4 +964,11 @@ class Model
     public function getEngine() {
         return $this->engine;
     }
+
+    public function __toString()
+    {
+        return "Model{" . get_class($this) . "}";
+    }
+
+
 }
