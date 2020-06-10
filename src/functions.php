@@ -124,11 +124,11 @@ function fix_date($date)
 {
     $date = trim($date);
     if ($date != "") {
-        if (preg_match('#(\d{2})/(\d{2})/(\d{4})#', $date, $matches)) {
+        if (preg_match('#^(\d{2})/(\d{2})/(\d{4})$#', $date, $matches)) {
             return $matches[3] . '-' . $matches[2] . '-' . $matches[1];
         }
 
-        if (preg_match('#(\d{2})-(\d{2})-(\d{2})#', $date, $matches)) {
+        if (preg_match('#^(\d{2})-(\d{2})-(\d{2})$#', $date, $matches)) {
             return '20' . $matches[3] . '-' . $matches[1] . '-' . $matches[2];
         }
         $date = str_replace('/', '-', $date);
