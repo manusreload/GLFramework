@@ -236,7 +236,7 @@ class FrameworkExtras extends Extra
             'Agosto',
             'Septiembre',
             'Octubre',
-            'Nombiembre',
+            'Noviembre',
             'Diciembre'
         );
     }
