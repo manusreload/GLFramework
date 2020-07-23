@@ -13,12 +13,12 @@
             <div class="wrapper">
 
                 {% embed "templates/box.twig" with {type: 'info'} %}
-                    {% block title %}Adminsitrar usuarios{% endblock %}
+                    {% block title %}Administrar usuarios{% endblock %}
                     {% block content %}
                         {% include "dashboard/users.twig" %}
                     {% endblock %}
                     {% block footer %}
-                        <a class="pull-right" href="{{ this.getLink('GLFramework\\Modules\\Admin\\users') }}">Adminsitrar usuarios <i class="fa fa-arrow-circle-right"></i></a>
+                        <a class="pull-right" href="{{ this.getLink('GLFramework\\Modules\\Admin\\users') }}">Administrar usuarios <i class="fa fa-arrow-circle-right"></i></a>
                         <div class="clearfix"></div>
                     {% endblock %}
                 {% endembed %}
@@ -27,12 +27,12 @@
         <div class="col-md-4">
             <div class="wrapper">
             {% embed "templates/box.twig"  with {type: 'warning'} %}
-                {% block title %}Adminsitrar módulos{% endblock %}
+                {% block title %}Administrar módulos{% endblock %}
                 {% block content %}
                     {% include "dashboard/modules.twig" %}
                 {% endblock %}
                 {% block footer %}
-                    <a class="pull-right" href="{{ this.getLink('GLFramework\\Modules\\Admin\\modules') }}">Adminsitrar módulos <i class="fa fa-arrow-circle-right"></i></a>
+                    <a class="pull-right" href="{{ this.getLink('GLFramework\\Modules\\Admin\\modules') }}">Administrar módulos <i class="fa fa-arrow-circle-right"></i></a>
                     <div class="clearfix"></div>
 
                 {% endblock %}
