@@ -92,8 +92,12 @@ class TwigPDF extends \TCPDF
     private $position = 0;
 
     public function Close() {
-        $this->last_page_flag = true;
         $this->position = $this->GetY();
+        if($this->GetY() + $this->footerHeight > ($this->getNumPages() * $this->getPageHeight())) {
+            $this->AddPage();
+        }
+
+        $this->last_page_flag = true;
         parent::Close();
     }
 
@@ -108,10 +112,10 @@ class TwigPDF extends \TCPDF
         $this->Cell(0, 15, $this->footer, 0, false, 'C', 0, '', 0, false, 'T', 'M');
 
         if ($this->last_page_flag) {
-            if($this->position + $this->footerHeight >  $this->getPageHeight()) {
-                $this->last_page_flag = false;
-                $this->AddPage();
-            }
+//            if($this->position + $this->footerHeight >  $this->getPageHeight()) {
+//                $this->last_page_flag = false;
+//                $this->AddPage();
+//            }
             $this->SetY(-$this->footerHeight);
 //            $this->writeHTMLCell($w = 0, $h = 45, $x = '', $y = '', $this->footer, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = 'top', $autopadding = true);
             $this->writeHTMLCell($w = 0, $h = $this->footerHeight, $x = '', $y = '', $this->footerLast, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = 'top', $autopadding = true);
