@@ -147,6 +147,7 @@ class setup extends Controller
             $config['database']['username'] = $_POST['username'];
             $config['database']['password'] = $_POST['password'];
             $config['database']['database'] = $_POST['database'];
+            $config['database']['port'] = $_POST['port'];
             try
             {
                 if($this->getDb()->isSelected())

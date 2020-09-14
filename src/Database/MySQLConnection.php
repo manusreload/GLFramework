@@ -59,10 +59,10 @@ class MySQLConnection extends Connection
      * @param $password
      * @return bool
      */
-    public function connect($hostname, $username, $password)
+    public function connect($hostname, $username, $password, $port = null)
     {
         try {
-            $this->pdo = new \PDO('mysql:host=' . $hostname . ';', $username, $password);
+            $this->pdo = new \PDO('mysql:host=' . $hostname . ';' . ($port>0?"port=" . $port . ";":""), $username, $password);
             $result = Events::dispatch('onPDOCreated', array(&$this->pdo));
             if (intval($this->pdo->errorCode()) === 0) {
                 $this->pdo->exec('SET NAMES utf8');

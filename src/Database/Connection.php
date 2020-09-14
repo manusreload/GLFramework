@@ -41,7 +41,7 @@ abstract class Connection
      * @param $password
      * @return mixed
      */
-    abstract public function connect($hostname, $username, $password);
+    abstract public function connect($hostname, $username, $password, $port = null);
 
     /**
      * TODO
