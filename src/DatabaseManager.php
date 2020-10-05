@@ -155,7 +155,8 @@ class DatabaseManager
             $host = $config['database']['hostname'];
             $user = $config['database']['username'];
             $pass = $config['database']['password'];
-            if ($conn->connect($host, $user, $pass)) {
+            $port = $config['database']['port'];
+            if ($conn->connect($host, $user, $pass, $port)) {
                 $this->connection = $conn;
                 $this->createCache();
                 return true;

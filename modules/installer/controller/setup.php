@@ -110,7 +110,6 @@ class setup extends Controller
             $upload = $this->getUploads()->allocate('banner');
             $config = $this->loadCurrentConfig();
             $this->parseUploads();
-            $config['app'] = array_merge($config['app'], $_POST['settings']);
             if($upload->isSuccess())
             {
                 if($upload->move())
@@ -126,6 +125,7 @@ class setup extends Controller
             $config['app']['name'] = $_POST['site_name'];
             $config['app']['debug'] = $_POST['debug']?true:false;
             $config['app']['ssl'] = $_POST['ssl']?true:false;
+            $config['app'] = array_merge($config['app'], $_POST['settings']);
             if($this->saveConfig($config))
             {
                 return true;
@@ -147,6 +147,7 @@ class setup extends Controller
             $config['database']['username'] = $_POST['username'];
             $config['database']['password'] = $_POST['password'];
             $config['database']['database'] = $_POST['database'];
+            $config['database']['port'] = $_POST['port'];
             try
             {
                 if($this->getDb()->isSelected())

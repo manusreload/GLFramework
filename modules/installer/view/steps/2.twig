@@ -27,9 +27,15 @@
                     </div>
                 </div>
                 <div class="form-group">
-                        <label class="control-label col-lg-4">Dase de datos</label>
+                    <label class="control-label col-lg-4">Dase de datos</label>
                     <div class="col-lg-8">
                         <input class="form-control" name="database" value="{{  _POST.database | default(mainconfig.database.database ) }}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-lg-4">Puerto</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" name="port" value="{{  _POST.port | default(mainconfig.database.port ) }}" placeholder="(Opcional)">
                     </div>
                 </div>
                 <div class="form-group">
