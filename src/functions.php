@@ -139,7 +139,7 @@ function fix_date($date)
 
 function fix_datetime($date)
 {
-    $day = fix_date($date);
+    $day = fix_date(substr($date, 0, strpos($date, " ")));
     return $day . " " . substr($date, strrpos($date," ") + 1);
 }
 
