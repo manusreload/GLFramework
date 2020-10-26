@@ -93,7 +93,7 @@ class TwigPDF extends \TCPDF
 
     public function Close() {
         $this->position = $this->GetY();
-        if($this->GetY() + $this->footerHeight > ($this->getNumPages() * $this->getPageHeight())) {
+        if($this->GetY() + $this->footerHeight > ($this->getPageHeight())) {
             $this->AddPage();
         }
 
