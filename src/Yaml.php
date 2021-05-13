@@ -36,7 +36,7 @@ class Yaml extends SoftCache
                 $data = implode("\n", array_filter(explode("\n", $data), function($line)
                 {
                     $line = trim($line);
-                    if($line && $line{0} === '#') return false;
+                    if($line && substr($line, 0, 1) === '#') return false;
                     return true;
                 }));
                 $res = yaml_parse($data);

@@ -97,6 +97,9 @@ abstract class Controller
         if(is_string($base)) {
             $this->directory = dirname($base);
             $base = substr($base, 0, strrpos($base, '.'));
+            if(strpos($base, '/') === 0) {
+                $base = substr($base, 1);
+            }
             $this->template = $base . '.twig';
         } else {
             $this->directory = $module->getDirectory();

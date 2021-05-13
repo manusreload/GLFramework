@@ -11,7 +11,7 @@ class DummyDatabaseConnector extends GLFramework\Database\Connection
 
     private static $data;
     private static $callback;
-    public function connect($hostname, $username, $password)
+    public function connect($hostname, $username, $password, $port = null)
     {
         // TODO: Implement connect() method.
         return true;
