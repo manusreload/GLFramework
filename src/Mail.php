@@ -114,9 +114,10 @@ class Mail
      * @param $message
      * @param array $attachments Use the array key to set the attachment file name in the email
      * @param array $cc
+     * @param array $bcc
      * @return int
      */
-    public function send($to, $subject, $message, $attachments = array(), $cc = array())
+    public function send($to, $subject, $message, $attachments = array(), $cc = array(), $bcc = array())
     {
         $mail = new \Swift_Message($subject, $message, 'text/html', 'UTF-8');
         if($this->from != '')
@@ -128,6 +129,7 @@ class Mail
         }
         $mail->setTo($to);
         $mail->setCc($cc);
+        $mail->setBcc($bcc);
         if($this->replyTo) {
             foreach ($this->replyTo as $addr => $name) {
                 $mail->setReplyTo($addr, $name);
