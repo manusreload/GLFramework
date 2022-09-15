@@ -55,7 +55,6 @@ class FrameworkExtras extends Extra
         $this->addFunction(new \Twig_SimpleFunction('css', array($this, 'css'), $safe));
         $this->addFunction(new \Twig_SimpleFunction('vars', array($this, 'vars')));
         $this->addFunction(new \Twig_SimpleFunction('meses', array($this, 'meses')));
-        $this->addFunction(new \Twig_SimpleFunction('meses', array($this, 'meses')));
         $this->addFunction(new \Twig_SimpleFunction('dump', array($this, 'dump'), $safe));
         $this->addFunction(new \Twig_SimpleFunction('tr', array($this, 'tr'), $safe));
         $this->addFunction(new \Twig_SimpleFunction('path', array($this, 'path'), $safe));

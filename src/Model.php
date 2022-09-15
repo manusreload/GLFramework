@@ -874,7 +874,7 @@ class Model
      */
     public function isString($field)
     {
-        $def = strtolower($this->getFieldDefinition($field));
+        $def = strtolower($this->getFieldDefinition($field) ?? '');
         if (strpos($def, 'varchar') !== false) {
             return true;
         }
