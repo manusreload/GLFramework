@@ -550,7 +550,7 @@ class Bootstrap
     /**
      * TODO
      */
-    function fatal_handler($errno, $errstr, $errfile, $errline, $errorContext)
+    function fatal_handler($errno, $errstr = null, $errfile = null, $errline = null, $errorContext = null)
     {
 
         if(!$errno) {
@@ -570,7 +570,7 @@ class Bootstrap
             }
         }
         if ($errno) {
-
+            error_log(("$errno $errstr at $errfile:$errline"));
             if ($errno === E_ERROR) {
                 Log::getInstance()->error($errstr . " " . $errfile . " " . $errline);
                 if (isset($this->config['app']['ignore_errors'])) {
@@ -581,7 +581,7 @@ class Bootstrap
 
                 if (isset($this->config['app']['debug']) && $this->config['app']['debug']) {
                     error_log(("ERROR: $errstr at $errfile:$errfile ($errno)"));
-                    ($this->format_error($errno, $errstr, $errfile, $errline));
+                    echo ($this->format_error($errno, $errstr, $errfile, $errline));
                 }
             }
         }

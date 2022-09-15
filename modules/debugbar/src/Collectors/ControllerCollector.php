@@ -92,7 +92,7 @@ class ControllerCollector extends DataCollector implements Renderable
                 } else if(is_string($value)) {
                     $array[$item->name] = $value;
                 } else {
-                    $array[$item->name] = (string) ($value);
+                    $array[$item->name] = (string) ('object');
                 }
             }
         }

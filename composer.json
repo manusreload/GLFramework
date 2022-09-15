@@ -20,7 +20,7 @@
   "bin": ["bin/gl"],
   "require": {
     "twig/twig": "~1.0",
-    "symfony/yaml": "^3.0",
+    "symfony/yaml": "~6.1",
     "altorouter/altorouter": "2.0.1",
     "phpmailer/phpmailer": "~5.2",
     "wikimedia/composer-merge-plugin": "v2.0.0",
@@ -37,13 +37,18 @@
     "symfony/translation": "*"
   },
   "require-dev": {
-    "phpunit/phpunit": "9.5.4"
+    "phpunit/phpunit": "^9.5"
   },
   "extra": {
     "merge-plugin": {
       "include": [
         "modules/*/composer.json"
       ]
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "wikimedia/composer-merge-plugin": true
     }
   }
 }

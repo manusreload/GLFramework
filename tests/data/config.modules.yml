@@ -7,9 +7,9 @@ modules:
     test
 
 database:
-  database: dummy
+  database: uned
   hostname: 'localhost'
   username: 'root'
-  password: ''
+  password: 'root'
   cache:
     connector: GLFramework\Cache\MemoryCache

@@ -595,7 +595,7 @@ class Model
                 $fileds = $this->getFields();
                 foreach ($fileds as $field) {
                     if (isset($data[$field]) && ($allowEmpty || $data[$field] !== '')) {
-                        if (strpos($this->getFieldType($field), 'varchar') !== false || $this->getFieldType($field) === 'text') {
+                        if ($this->isFieldType($field, 'varchar') || $this->getFieldType($field) === 'text') {
                             $encoding = mb_detect_encoding($data[$field]);
                             if ($encoding !== 'utf8') {
                                 $this->{$field} = mb_convert_encoding($data[$field], 'utf8', $encoding);
@@ -623,6 +623,13 @@ class Model
         return $this;
     }
 
+    public function isFieldType($field, $type) {
+        $fieldType = $this->getFieldType($field);
+        if($fieldType !== null) {
+            return strpos($fieldType, $type) !== false;
+        }
+        return false;
+    }
     /**
      * Devuelve la definicion original del modelo
      *
