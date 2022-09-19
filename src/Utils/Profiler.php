@@ -26,6 +26,18 @@ class Profiler
 
     public static function dump() {
         if(!self::$enable) return;
+        $res = self::generate();
+        if(self::$file) {
+            file_put_contents(self::$file, $res, FILE_APPEND);
+        } else {
+            echo "<h1>Profiler Output</h1>";
+            echo "<pre>\n";
+            echo $res;
+            echo "\n</pre>";
+        }
+    }
+
+    public static function generate() {
         $groups = [];
         $res = "";
         foreach (self::$timers as $timer => $value) {
@@ -49,15 +61,7 @@ class Profiler
 
             }
         }
-
-        if(self::$file) {
-            file_put_contents(self::$file, $res, FILE_APPEND);
-        } else {
-            echo "<h1>Profiler Output</h1>";
-            echo "<pre>\n";
-            echo $res;
-            echo "\n</pre>";
-        }
+        return  $res;
     }
 
     private static function time($time) {

@@ -535,7 +535,7 @@ WHERE
 
 
     public function getDropKey($table, $index) {
-        return "ALTER TABLE `$table` DROP INDEX `{$index['field']}`";
+        return "ALTER TABLE `$table` DROP INDEX `{$index}`";
     }
 
     public function getAddUnique($table, $field)

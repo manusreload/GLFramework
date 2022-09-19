@@ -31,7 +31,8 @@
  */
 function print_debug($info)
 {
-    forward_static_call_array(array('Kint', 'dump'), func_get_args());
+    dump($info);
+    // forward_static_call_array(array('Kint', 'dump'), func_get_args());
 
     die();
 }
@@ -332,8 +333,11 @@ function instance_method($name, &$cache = array(), $instanceParams = array())
                 \GLFramework\Log::d('Class ' . $split[0] . ' not found! While try to instance ' . $name);
             }
         }
-        $instance = $cache[$split[0]];
-        return array($instance, $split[1]);
+        if(isset($cache[$split[0]])) {
+            $instance = $cache[$split[0]];
+            return array($instance, $split[1]);
+        }
+        return null;
     }
     if (strpos($name, '::') !== false) {
         $split = explode('::', $name);

@@ -49,6 +49,7 @@ class BootstrapTest extends \PHPUnit\Framework\TestCase
         $this->assertArrayNotHasKey('modules', $config);
         $this->assertEquals('home', $config['app']['index']);
         $this->assertEquals('127.0.0.1', $config['database']['hostname']);
+
     }
 
     /**

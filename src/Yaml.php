@@ -39,7 +39,7 @@ class Yaml extends SoftCache
                     if($line && substr($line, 0, 1) === '#') return false;
                     return true;
                 }));
-                $res = yaml_parse($data);
+                $res = \yaml_parse($data);
             }
             else
             {
