@@ -22,7 +22,7 @@
     "twig/twig": "~1.0",
     "symfony/yaml": "~6.1",
     "altorouter/altorouter": "2.0.1",
-    "phpmailer/phpmailer": "~5.2",
+    "phpmailer/phpmailer": "~6.5",
     "wikimedia/composer-merge-plugin": "v2.0.0",
     "nuovo/spreadsheet-reader": "*",
     "tijsverkoyen/css-to-inline-styles": "^1.5",
