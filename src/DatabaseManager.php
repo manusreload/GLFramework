@@ -61,6 +61,11 @@ class DatabaseManager
 
     private $config;
 
+    private $enableTimerLog = false;
+
+    private $timers = [];
+
+
     /**
      * DBConnection constructor.
      *
@@ -76,6 +81,8 @@ class DatabaseManager
         'before' init the framework!");
 
         $this->config = $config;
+        $this->enableTimerLog = isset($this->config['database']) && isset($this->config['database']['profiler']) 
+            ? $this->config['database']['profiler'] : false ;
 //        $this->connect();
     }
 
@@ -165,31 +172,8 @@ class DatabaseManager
             throw new \Exception(sprintf('Can not establish connection to database! {host=%s, user=%s, database=%s} Error: %s',
                         $config['database']['hostname'], $config['database']['username'], $config['database']['database'], $err));
         }
-
+        
         return false;
-
-//        if (!$this->connection) {
-//
-//            if ($conn->connect()
-//            ) {
-//                if ($conn->select_database($config['database']['database'])) {
-//                    $this->connection = $conn;
-//                    self::$selected = true;
-//                    $this->createCache();
-////
-////                    if (!defined("GL_INSTALL") || !GL_INSTALL) {
-////                        $this->checkDatabaseStructure();
-////                    }
-//                    return true;
-//                }
-//                return false;
-//            } else {
-//                $err =$conn->getLastError();
-//                throw new \Exception(sprintf('Can not establish connection to database! {host=%s, user=%s, database=%s} Error: %s',
-//                    $config['database']['hostname'], $config['database']['username'], $config['database']['database'], $err));
-//            }
-//        }
-//        return true;
     }
 
     public function connectAndSelect() {
@@ -291,10 +275,22 @@ class DatabaseManager
             if ($this->pre_cache($result, $cache)) {
                 return $result;
             }
+            $timer = null;
+            if($this->enableTimerLog) {
+                $timer = ['start' => microtime(true), 'query' => $query, 'args' => $args];
+            }
 
             Profiler::start('query', 'database');
             $result = $this->connection->select($query, $args, true);
             Profiler::stop('query');
+
+            if($this->enableTimerLog) {
+                $timer['end']  = microtime(true);
+                $timer['duration'] = $timer['end'] - $timer['start'];
+                $timer['results'] = count($result);
+                $this->timers[] = $timer;
+            }
+
             return $this->cache($result, $cache, $duration);
         }
         throw new \Exception('Database connection is not open!');
@@ -495,5 +491,9 @@ class DatabaseManager
 
     public function date_style() {
         return "Y-m-d";
+    }
+
+    public function getTimers() {
+        return $this->timers;
     }
 }

@@ -38,7 +38,7 @@ define("GL_INTERNAL_MODULES_PATH", realpath(__DIR__ . "/../modules"));
  */
 class Bootstrap
 {
-    public static $VERSION = '0.2.7';
+    public static $VERSION = '0.2.8';
     private static $singelton;
     private static $errorLevel = 0;
     /**
