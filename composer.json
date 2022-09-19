@@ -20,7 +20,7 @@
   "bin": ["bin/gl"],
   "require": {
     "twig/twig": "~1.0",
-    "symfony/yaml": "~6.1",
+    "symfony/yaml": "~6.1|~5.2",
     "altorouter/altorouter": "2.0.1",
     "phpmailer/phpmailer": "~6.5",
     "wikimedia/composer-merge-plugin": "v2.0.0",
