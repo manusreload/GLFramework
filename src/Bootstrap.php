@@ -571,6 +571,7 @@ class Bootstrap
         }
         if ($errno) {
             error_log(("$errno $errstr at $errfile:$errline"));
+            // file_put_contents("error.log", "$errno $errstr at $errfile:$errline\n", FILE_APPEND);
             if ($errno === E_ERROR) {
                 Log::getInstance()->error($errstr . " " . $errfile . " " . $errline);
                 if (isset($this->config['app']['ignore_errors'])) {

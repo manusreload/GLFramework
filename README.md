@@ -4,6 +4,7 @@
 
 - [GLFramework](#glframework)
   - [GestionLan PHP Framework](#gestionlan-php-framework)
+    - [Requisitos](#requisitos)
     - [Tecnología utilizada en el desarrollo.](#tecnología-utilizada-en-el-desarrollo)
     - [Creación de una aplicación.](#creación-de-una-aplicación)
     - [Archivo "config.yml"](#archivo-configyml)
@@ -15,6 +16,9 @@
 
 En este documento se explica el funcionamiento y como utilizar este conjunto de funciones para realizar software.
 
+### Requisitos
+
+- PHP >= 7.2
 
 ### Tecnología utilizada en el desarrollo.
 

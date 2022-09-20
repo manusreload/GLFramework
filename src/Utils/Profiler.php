@@ -16,12 +16,16 @@ class Profiler
     private static $file = false;
     private static $timers = [];
 
-    public static function start($timer, $group = false) {
-        self::$timers[$timer] = ['start' => microtime(true), 'group' => $group];
+    public static function start($timer, $group = false, $tag = null) {
+        self::$timers[$timer][] = ['start' => microtime(true), 'group' => $group, 'tag' => $tag];
     }
 
     public static function stop($timer) {
-        self::$timers[$timer]['stop'] = microtime(true);
+        $items = self::$timers[$timer];
+        if(count($items) > 0) {
+            $item = & self::$timers[$timer][count($items) - 1];
+            $item['stop'] = microtime(true);
+        }
     }
 
     public static function dump() {
@@ -40,12 +44,14 @@ class Profiler
     public static function generate() {
         $groups = [];
         $res = "";
-        foreach (self::$timers as $timer => $value) {
+        foreach (self::$timers as $timer => $values) {
             $res .= "$timer:\n";
-            $res .= "\t" . self::time($value['stop'] - $value['start']) . "\n";
-            if($value['group']) {
-                $groups[$value['group']] = $groups[$value['group']]??0;
-                $groups[$value['group']] += ($value['stop'] - $value['start']);
+            foreach($values as $value) {
+                $res .= "\t" . self::time($value['stop'] - $value['start']) . ($value['tag'] ?  " => " . $value['tag'] : ""). "\n";
+                if($value['group']) {
+                    $groups[$value['group']] = $groups[$value['group']]??0;
+                    $groups[$value['group']] += ($value['stop'] - $value['start']);
+                }
             }
         }
 

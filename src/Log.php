@@ -170,7 +170,7 @@ class Log extends AbstractLogger
      * @param array $context
      * @return null
      */
-    public function log($level, Stringable|string $message, array $context = []): void
+    public function log($level, $message, array $context = []): void
     {
         if($this->debugMode)
         {
