@@ -280,7 +280,7 @@ class DatabaseManager
                 $timer = ['start' => microtime(true), 'query' => $query, 'args' => $args];
             }
 
-            Profiler::start('query', 'database');
+            Profiler::start('query', 'database', $query);
             $result = $this->connection->select($query, $args, true);
             Profiler::stop('query');
 
