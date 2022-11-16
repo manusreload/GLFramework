@@ -273,7 +273,7 @@ function get_php_classes($php_code)
         if ($tokens[$i] == ';') {
             $namespaceBool = false;
         }
-        if ($namespaceBool && $tokens[$i][0] == T_STRING) {
+        if ($namespaceBool && ($tokens[$i][0] == T_STRING || $tokens[$i][0]==265)) {
             $namespace .= $tokens[$i][1] . '\\';
         }
     }
