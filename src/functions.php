@@ -896,7 +896,9 @@ function require_version($version) {
 }
 
 function get_protocol($forceSsl = false) {
-    $https = \GLFramework\Globals\Server::get('HTTPS', false) || $forceSsl;
+    $native = \GLFramework\Globals\Server::get('HTTPS', false) || $forceSsl;
+    $proxy = \GLFramework\Globals\Server::get('HTTP_X_FORWARDED_PROTO', false);
+    $https = $native || $proxy;    
     return ($https?"https":"http");
 }
 
