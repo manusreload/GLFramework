@@ -101,7 +101,7 @@ class Debugbar
         $this->messages = $debugbar->getCollector('messages');
         $this->request = $debugbar->getCollector('request');
         $this->response = $debugbar->getCollector('response');
-        $this->controller = $debugbar->getCollector('controller');
+        // $this->controller = $debugbar->getCollector('controller');
         $this->exceptions = $debugbar->getCollector('exceptions');
         $this->errors = $debugbar->getCollector('errors');
 
@@ -118,7 +118,7 @@ class Debugbar
 //            self::$debugbar->addCollector(new PhpInfoCollector());
 //            self::$debugbar->addCollector(new MessagesCollector());
 //            self::$debugbar->addCollector(new RequestDataCollector());
-            self::$debugbar->addCollector(new ControllerCollector());
+            // self::$debugbar->addCollector(new ControllerCollector());
             self::$debugbar->addCollector(new ResponseCollector());
 //            self::$debugbar->addCollector(new TimeDataCollector());
 //            self::$debugbar->addCollector(new MemoryCollector());
@@ -261,11 +261,11 @@ class Debugbar
     // TODO: see: (https://github.com/maximebf/php-debugbar/issues/330)
     public function onViewCreated(&$twig)
     {
-        if(!$this->getDebugbar()->hasCollector('twig'))
-        {
-            $twig = new TraceableTwigEnvironment($twig, $this->time);
-            $this->getDebugbar()->addCollector(new TwigCollector($twig));
-        }
+        // if(!$this->getDebugbar()->hasCollector('twig'))
+        // {
+        //     $twig = new TraceableTwigEnvironment($twig, $this->time);
+        //     $this->getDebugbar()->addCollector(new TwigCollector($twig));
+        // }
     }
 
     public function onMailTransport($mailer)

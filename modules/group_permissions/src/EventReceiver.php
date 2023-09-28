@@ -16,7 +16,11 @@ use GLFramework\Model\User;
 
 class EventReceiver
 {
-
+    /**
+     * @param \GroupPage[] $cache 
+     */
+    private static $cache = [];
+    private static $groupsUserCache = [];
     public function beforeControllerRun($controller)
     {
         if($controller instanceof AuthController)
@@ -31,7 +35,7 @@ class EventReceiver
 
     /**
      * @param $controller
-     * @param $user User
+     * @param \User $user
      * @return bool
      */
     public static function isGroupAllowed($controller, $user)
@@ -40,15 +44,17 @@ class EventReceiver
         $config = $context->getConfig();
         $page = new Page();
         $page = $page->get_by_controller($controller)->getModel();
-        if($page->id > 0)
+        if($page instanceof Page && $page->id > 0)
         {
-            $group = new \Group();
-            $groupPages = new \GroupPage();
-            $groups = $group->getByUser($user);
+            $groups = self::getGroupsByUser($user);
             foreach($groups->getModels() as $group)
             {
-                $result = $groupPages->get(array('id_group' => $group->id, 'id_page' => $page->id));
-                if($result->count() > 0) return ALLOW_USER;
+                $result = self::isGroupPages($group->id, $page->id);
+                if($result) {
+                    return ALLOW_USER;
+                }
+                // $result = $groupPages->get(array('id_group' => $group->id, 'id_page' => $page->id));
+                // if($result->count() > 0) return ALLOW_USER;
             }
         }
         return isset($config['allowDefault'])?(!$config['allowDefault']?DISALLOW_USER:""):null;
@@ -57,5 +63,30 @@ class EventReceiver
     public function getAdminControllers()
     {
         return 'GLFramework\Modules\GroupPermissions\groups';
+    }
+
+    public static function getGroupsByUser($user) {
+        $user_id = $user->id;
+        $group = new \Group();
+        if(self::$groupsUserCache[$user_id]) {
+            return self::$groupsUserCache[$user_id];
+        }
+        self::$groupsUserCache[$user_id] = $group->getByUser($user);
+        return self::$groupsUserCache[$user_id];
+
+    }
+
+    public static function isGroupPages($id_group, $id_page) {
+        if(!self::$cache) {
+            $groupPages = new \GroupPage();
+            self::$cache = $groupPages->get_all()->getModels();
+        }
+        foreach (self::$cache as $key => $value) {
+            if($value->id_group == $id_group && $value->id_page == $id_page) {
+                return true;
+            }
+        }
+        return false;
+        
     }
 }

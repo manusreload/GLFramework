@@ -28,6 +28,7 @@ namespace GLFramework\Model;
 
 use GLFramework\Controller;
 use GLFramework\Model;
+use GLFramework\ModelResult;
 
 /**
  * Class UserPage
@@ -36,6 +37,7 @@ use GLFramework\Model;
  */
 class UserPage extends Model
 {
+    private static $cache;
     var $id;
     var $id_user;
     var $id_page;
@@ -107,7 +109,17 @@ class UserPage extends Model
      */
     public function getByPageUser($id_user, $id_page)
     {
-        return $this->get(array('id_user' => $id_user, 'id_page' => $id_page));
+        if(!self::$cache) {
+            self::$cache = $this->get_all();
+        }
+        $list = [];
+
+        foreach (self::$cache as $key => $value) {
+            if($value->id_user == $id_user && $value->id_page == $id_page) {
+                $list[] = $value;
+            }
+        }
+        return new ModelResult(UserPage::class, $list);
     }
 
     /**
