@@ -550,7 +550,7 @@ class Bootstrap
     /**
      * TODO
      */
-    function fatal_handler($errno, $errstr = null, $errfile = null, $errline = null, $errorContext = null)
+    function fatal_handler($errno, $errstr = null, $errfile = null, $errline = null)
     {
 
         if(!$errno) {
