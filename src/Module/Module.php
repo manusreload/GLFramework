@@ -582,7 +582,7 @@ class Module extends SoftCache
      */
     public function checkUserPermissions($instance) {
         if ($instance instanceof Controller\AuthController) {
-            if ($instance->user) {
+            if ($instance->user && !$instance->user->admin) {
                 $result = Events::dispatch('isUserAllowed', array($instance, $instance->user));
                 $evt = $result->getEvents();
                 foreach ($result->getArray() as $i => $item) {
