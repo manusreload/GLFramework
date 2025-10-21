@@ -41,6 +41,7 @@ class Bootstrap
     public static $VERSION = '1.2.8';
     private static $singelton;
     private static $errorLevel = 0;
+    private static $defaultTimezone = 'Europe/Madrid';
     /**
      * @var ModuleManager
      */
@@ -78,6 +79,10 @@ class Bootstrap
         $this->configFile = $config;
         $this->config = self::loadConfig($this->directory, $config);
         self::$singelton = $this;
+    }
+
+    public static function setDefaultTimezone($timezone) {
+        self::$defaultTimezone = $timezone;
     }
 
     public static function setErrorLevel($error) {
@@ -247,7 +252,9 @@ class Bootstrap
         $this->init = true;
         Log::d('Initializing framework...');
         $this->register_error_handler();
-        date_default_timezone_set('Europe/Madrid');
+        $timezone = isset($this->config['app']['timezone']) ? $this->config['app']['timezone'] : Bootstrap::$defaultTimezone;
+        date_default_timezone_set($timezone);
+
         $this->setupLanguage();
 
         Profiler::stop('init');
