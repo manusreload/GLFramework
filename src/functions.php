@@ -896,12 +896,22 @@ function require_version($version) {
 }
 
 function get_protocol($forceSsl = false) {
-    $native = \GLFramework\Globals\Server::get('HTTPS', false) || $forceSsl;
+    $native = \GLFramework\Globals\Server::get('HTTPS', false);
     $proxy = \GLFramework\Globals\Server::get('HTTP_X_FORWARDED_PROTO', false);
-    $https = $native || $proxy;    
+    $script = strpos(\GLFramework\Globals\Server::get('SCRIPT_URI', false), 'https') !== false
+    $https = $native || $proxy || $script || $forceSsl;    
     return ($https?"https":"http");
 }
 
 function get_request_url($forceSsl = false) {
     return get_protocol($forceSsl) . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+}
+
+function get_full_url($path, $forceSsl = false) {
+
+    if(strpos($path, "/") === 0) {
+        $path = substr($path, 1);
+    }
+    return get_protocol() . "://" . $_SERVER['HTTP_HOST'] . $path;
+
 }

@@ -320,11 +320,7 @@ abstract class Controller
 
             $url = Bootstrap::getSingleton()->getManager()->getRouter()->generate($controller, $params);
             if ($fullPath) {
-                $protocol = 'http';
-                if (strpos($_SERVER['SCRIPT_URI'], 'https') !== false) {
-                    $protocol = 'https';
-                }
-                return $protocol . '://' . $_SERVER['HTTP_HOST'] . $url;
+                return get_full_url($url);
             }
             return $url;
         } catch (\Exception $ex) {

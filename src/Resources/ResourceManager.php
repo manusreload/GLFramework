@@ -62,13 +62,7 @@ class ResourceManager
                 }
                 //$base = realpath($module->getDirectory());
                 //$index = strpos($path, $base);
-                $url = Bootstrap::getSingleton()->toUrl($path);
-                $protocol = 'http';
-                if (isset($_SERVER['SCRIPT_URI']) && strpos($_SERVER['SCRIPT_URI'], 'https') !== false) {
-                    $protocol = 'https';
-                }
-
-                return $protocol . '://' . $_SERVER['HTTP_HOST'] . $url;
+                return get_full_url($path);
             }
         }
         if($module !== ModuleManager::getInstance()->getMainModule()) {
