@@ -898,7 +898,7 @@ function require_version($version) {
 function get_protocol($forceSsl = false) {
     $native = \GLFramework\Globals\Server::get('HTTPS', false);
     $proxy = \GLFramework\Globals\Server::get('HTTP_X_FORWARDED_PROTO', false);
-    $script = strpos(\GLFramework\Globals\Server::get('SCRIPT_URI', false), 'https') !== false
+    $script = strpos(\GLFramework\Globals\Server::get('SCRIPT_URI', false), 'https') !== false;
     $https = $native || $proxy || $script || $forceSsl;    
     return ($https?"https":"http");
 }
@@ -913,5 +913,6 @@ function get_full_url($path, $forceSsl = false) {
         $path = substr($path, 1);
     }
     return get_protocol() . "://" . $_SERVER['HTTP_HOST'] . $path;
+
 
 }
