@@ -39,6 +39,7 @@ use GLFramework\Upload\Uploads;
  *
  * @package GLFramework
  */
+#[\AllowDynamicProperties]
 abstract class Controller
 {
     public $title = false;

@@ -28,7 +28,7 @@ class CSRF
      */
     public function beforeControllerRun($instance)
     {
-        $instance->getView()->getTwig()->addFunction(new \Twig_SimpleFunction('csrf_token', function()
+        $instance->getView()->getTwig()->addFunction(new \Twig\TwigFunction('csrf_token', function()
         {
             return \CSRF::generate()->token;
         }));

@@ -73,6 +73,7 @@
         </div>
         <div class="col-lg-6">
             {% embed "templates/box.twig" %}
+                {% import "components/macros.twig" as macros %}
                 {% block title %}
                     Dependencias
                 {% endblock %}
@@ -89,6 +90,7 @@
         </div>
         <div class="col-lg-6">
             {% embed "templates/box.twig" %}
+                {% import "components/macros.twig" as macros %}
                 {% block title %}
                     Ajustes
                 {% endblock %}

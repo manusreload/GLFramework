@@ -36,19 +36,19 @@ class TwigPDF extends \TCPDF
         $data['this'] = $controller;
         $data['pdf'] = $this;
         $twig = $controller->getView()->getTwig();
-        $twigTemplate = $twig->loadTemplate($template);
-        if($twigTemplate instanceof \Twig_Template) {
-            if($twigTemplate->hasBlock('variables')) {
-                $this->footer = $twigTemplate->renderBlock('variables', $data, $twigTemplate->getBlocks());
+        $twigTemplate = $twig->load($template);
+        if($twigTemplate instanceof \Twig\TemplateWrapper) {
+            if($twigTemplate->hasBlock('variables', $data)) {
+                $this->footer = $twigTemplate->renderBlock('variables', $data);
             }
-            if($twigTemplate->hasBlock('header')) {
+            if($twigTemplate->hasBlock('header', $data)) {
                 $this->header = $twigTemplate->renderBlock('header', $data);
             }
             $this->body = $twigTemplate->renderBlock('body', $data);
-            if($twigTemplate->hasBlock('footer')) {
+            if($twigTemplate->hasBlock('footer', $data)) {
                 $this->footer = $twigTemplate->renderBlock('footer', $data);
             }
-            if($twigTemplate->hasBlock('last_footer')) {
+            if($twigTemplate->hasBlock('last_footer', $data)) {
                 $this->footerLast = $twigTemplate->renderBlock('last_footer', $data);
             }
 

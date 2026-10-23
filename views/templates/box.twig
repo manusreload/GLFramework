@@ -11,7 +11,7 @@
             No content
         {% endblock %}
     </div>
-    {% set footer =  block('footer') %}
+    {% set footer =  (block('footer') is defined ? block('footer') : '') %}
     {% if footer != "" %}
     <div class="panel-footer">
         {{ footer | raw }}

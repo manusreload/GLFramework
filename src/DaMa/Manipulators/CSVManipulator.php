@@ -58,7 +58,7 @@ class CSVManipulator extends ManipulatorCore
      */
     public function next()
     {
-        return $this->map(fgetcsv($this->handle, null, $this->separator, '"'));
+        return $this->map(fgetcsv($this->handle, null, $this->separator, '"', '\\'));
     }
 
     private function map($items) {

@@ -38,7 +38,7 @@ class DateUtils
             if (!isset($tries[0])) {
                 $tries = array($tries);
             }
-            if (preg_match($item, $date, $matches)) {
+            if (preg_match($pattern, $date, $matches)) {
                 foreach ($tries as $try) {
                     $valid = $this->build($matches, $try);
                     //                    if($va)

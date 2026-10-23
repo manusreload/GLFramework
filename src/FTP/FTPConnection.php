@@ -212,7 +212,7 @@ class FTPConnection
     public function parseSnapshot($file)
     {
         $data = file_get_contents($file);
-        $lines = explode("\n");
+        $lines = explode("\n", $data);
     }
 
     /**

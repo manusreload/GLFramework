@@ -41,6 +41,7 @@ use GLFramework\Twig\IExtra;
 class View
 {
     private $filters = array();
+    private $mailCss = null;
     private $twig;
     /**
      * @var Controller
@@ -65,7 +66,7 @@ class View
     {
         $this->controller = $controller;
         $this->directories = ModuleManager::getInstance()->getViews($controller->module);
-        $loader = new \Twig_Loader_Filesystem($this->directories);
+        $loader = new \Twig\Loader\FilesystemLoader($this->directories);
         $this->config = $this->getController()->mainConfig;
         $config = isset($this->config['twig_config'])?$this->config['twig_config']:[];
         if(isset($this->config['app']['twig_cache']) && $this->config['app']['twig_cache'])
@@ -74,12 +75,14 @@ class View
             $fs->mkdir();
             $config['cache'] = $fs->getAbsolutePath();
         }
-        $this->twig = new \Twig_Environment($loader, $config);
+        $this->twig = new \Twig\Environment($loader, $config);
         Events::dispatch('onViewCreated', array(&$this->twig));
         Events::getInstance()->listen('displayScripts', array($this, 'getJavascripts'));
         Events::getInstance()->listen('displayStyle', array($this, 'getStylesheets'));
         Log::d('Register listener');
         $this->addExtras();
+        // Twig 3 no permite definir globals una vez inicializado: se declara aqui y render() solo lo actualiza
+        $this->twig->addGlobal('params', array());
     }
 
     /**
@@ -173,11 +176,14 @@ class View
      */
     public function mail($template, $data = array(), &$css = array())
     {
-        $this->twig->addFunction(new \Twig_SimpleFunction('css', function ($file) use (&$css) {
-            $css[] = $file;
-        }));
-        $template = $this->twig->loadTemplate($template);
-        return $template->render($data);
+        // La funcion css() del framework recoge los ficheros en $css mientras se renderiza el correo
+        $this->mailCss = &$css;
+        try {
+            return $this->twig->load($template)->render($data);
+        } finally {
+            unset($this->mailCss);
+            $this->mailCss = null;
+        }
     }
 
     /**
@@ -193,7 +199,7 @@ class View
     /**
      * TODO
      *
-     * @return \Twig_Environment
+     * @return \Twig\Environment
      */
     public function getTwig()
     {
@@ -239,6 +245,10 @@ class View
      */
     public function addCSS($css, $options = array())
     {
+        if ($this->mailCss !== null) {
+            $this->mailCss[] = $css;
+            return;
+        }
         $this->stylesheetMedia[] = new StylesheetMedia($css, $options);
     }
 
