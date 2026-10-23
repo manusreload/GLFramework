@@ -28,7 +28,7 @@
     "tijsverkoyen/css-to-inline-styles": "^1.5",
     "maximebf/debugbar": "1.*",
     "psr/log": ">= 1.0.0",
-    "symfony/dom-crawler": "^3.0",
+    "symfony/dom-crawler": "^6.4 || ^7.4",
     "swiftmailer/swiftmailer": "^5.4",
     "tecnickcom/tcpdf": "^6.2",
     "phpoffice/phpspreadsheet": "^3.10",
