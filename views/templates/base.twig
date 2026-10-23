@@ -30,7 +30,7 @@
 
 <body>
 {% if simple is null %}
-    {% include "components/menu.twig" with {menu: block('menu'), header: block('header')} %}
+    {% include "components/menu.twig" with {menu: (block('menu') is defined ? block('menu') : ''), header: (block('header') is defined ? block('header') : '')} %}
 {% endif %}
 
 <div class="container">
