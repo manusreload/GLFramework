@@ -45,8 +45,8 @@ class DataExample
             }
         }
         $fp = fopen($file, 'wb');
-        fputcsv($fp, $headers, ';');
-        fputcsv($fp, $values, ';');
+        fputcsv($fp, $headers, ';', '"', '\\');
+        fputcsv($fp, $values, ';', '"', '\\');
         fclose($fp);
     }
 }

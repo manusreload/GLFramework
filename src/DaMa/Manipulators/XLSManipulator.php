@@ -85,6 +85,6 @@ class XLSManipulator extends ManipulatorCore
      */
     public function map($item)
     {
-        return trim(utf8_encode($item));
+        return trim(mb_convert_encoding($item, "UTF-8", "ISO-8859-1"));
     }
 }

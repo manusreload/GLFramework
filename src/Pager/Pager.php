@@ -34,8 +34,8 @@ class Pager
             $context['_template'] = $fs->read();
             $context['_options'] = $options;
             $view = new \GLFramework\View($instance);
-            $view->getTwig()->addExtension(new \Twig_Extension_StringLoader());
-            return $view->getTwig()->loadTemplate("templates/pager-handler.twig")->render($context);
+            $view->getTwig()->addExtension(new \Twig\Extension\StringLoaderExtension());
+            return $view->getTwig()->load("templates/pager-handler.twig")->render($context);
         }
         return "Invalid Implementation!";
     }

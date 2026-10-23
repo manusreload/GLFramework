@@ -13,5 +13,8 @@ use GLFramework\Controller;
 
 class oauth extends Controller
 {
+    public function run()
+    {
+    }
 
 }

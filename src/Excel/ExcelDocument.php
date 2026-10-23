@@ -39,7 +39,7 @@ class ExcelDocument
 
     public $excel;
     /**
-     * @var \PHPExcel_Worksheet
+     * @var \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet
      */
     private $sheet;
 
@@ -52,10 +52,10 @@ class ExcelDocument
     public function __construct($file = null, $type = 'Excel2007')
     {
         if ($file !== null) {
-            $objReader = \PHPExcel_IOFactory::createReader($type);
+            $objReader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($type === 'Excel2007' ? 'Xlsx' : $type);
             $this->excel = $objReader->load($file);
         } else {
-            $this->excel = new \PHPExcel();
+            $this->excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         }
         $this->setActiveSheet(0);
     }
@@ -79,7 +79,7 @@ class ExcelDocument
      */
     public function getCellValue($column, $row = 1)
     {
-        return $this->sheet->getCellByColumnAndRow($column, $row);
+        return $this->sheet->getCell([$column + 1, $row]);
     }
 
     /**
@@ -88,11 +88,11 @@ class ExcelDocument
      * @param $column
      * @param $row
      * @param $value
-     * @return \PHPExcel_Cell
+     * @return \PhpOffice\PhpSpreadsheet\Cell\Cell
      */
     public function setCellValue($column, $row, $value)
     {
-        return $this->sheet->setCellValueByColumnAndRow($column, $row, $value, true);
+        return $this->sheet->setCellValue([$column + 1, $row], $value);
     }
 
     /**
@@ -118,7 +118,7 @@ class ExcelDocument
      */
     public function setStyle($style, $column1, $row1, $column2 = null, $row2 = null)
     {
-        $this->sheet->getStyleByColumnAndRow($column1, $row1, $column2, $row2)->applyFromArray($style);
+        $this->sheet->getStyle([$column1 + 1, $row1, ($column2 ?? $column1) + 1, $row2 ?? $row1])->applyFromArray($style);
     }
 
     /**
@@ -147,7 +147,7 @@ class ExcelDocument
         foreach ($models as $model) {
             $colum = 0;
             foreach ($header as $name => $item) {
-                $this->sheet->setCellValueByColumnAndRow($colum++, $row, $this->getValue($item, $model));
+                $this->sheet->setCellValue([++$colum, $row], $this->getValue($item, $model));
             }
             $row++;
         }
@@ -178,7 +178,7 @@ class ExcelDocument
         header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
         header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
         header('Pragma: public'); // HTTP/1.0
-        $objWriter = \PHPExcel_IOFactory::createWriter($this->excel, 'Excel2007');
+        $objWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($this->excel, 'Xlsx');
         $filePath = Filesystem::allocate(); // Crear un archivo temporal
         $objWriter->save($filePath);
         readfile($filePath);
@@ -195,7 +195,7 @@ class ExcelDocument
     public function saveAsFile($file, $folder = null)
     {
         $fs = new Filesystem($file, $folder);
-        $objWriter = \PHPExcel_IOFactory::createWriter($this->excel, 'Excel2007');
+        $objWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($this->excel, 'Xlsx');
         $objWriter->save($fs->getAbsolutePath());
         return $fs->getAbsolutePath();
     }

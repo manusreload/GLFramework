@@ -17,9 +17,9 @@ class DoctrineConnection extends MySQLConnection
 {
 
     private static $em;
-    public function connect($hostname, $username, $password)
+    public function connect($hostname, $username, $password, $port = null)
     {
-        if(parent::connect($hostname, $username, $password)) {
+        if(parent::connect($hostname, $username, $password, $port)) {
             $connection['driver'] = 'pdo_mysql';
             $connection['pdo']    = $this->getPDO();
             $config = Setup::createConfiguration(Bootstrap::isDebug());

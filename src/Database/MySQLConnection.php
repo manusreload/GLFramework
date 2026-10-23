@@ -90,8 +90,12 @@ class MySQLConnection extends Connection
         //        try{
 
         if ($this->pdo) {
-            if ($this->pdo->exec('USE ' . $database) !== FALSE) {
-                return true;
+            try {
+                if ($this->pdo->exec('USE ' . $database) !== FALSE) {
+                    return true;
+                }
+            } catch (\PDOException $ex) {
+                $this->lastError = $ex;
             }
         }
         //        }catch(\Exception $ex)

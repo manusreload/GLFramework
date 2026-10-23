@@ -376,7 +376,7 @@ function now($format = 'Y-m-d H:i:s')
  */
 function e($text)
 {
-    return htmlentities($text);
+    return htmlentities($text, ENT_COMPAT | ENT_HTML401);
 }
 
 /**
@@ -530,7 +530,7 @@ if (!function_exists('http_response_code')) {
                     $text = 'HTTP Version not supported';
                     break;
                 default:
-                    exit('Unknown http status code \'' . htmlentities($code) . '\'');
+                    exit('Unknown http status code \'' . htmlentities($code, ENT_COMPAT | ENT_HTML401) . '\'');
                     break;
             }
 

@@ -38,6 +38,7 @@ define("MODEL_FIELD_TYPE_DOUBLE", 3);
  *
  * @package GLFramework
  */
+#[\AllowDynamicProperties]
 class Model
 {
     /**
