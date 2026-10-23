@@ -167,7 +167,17 @@ class Bootstrap
             $url = Server::get('REQUEST_URI');
             $method = Server::get('REQUEST_METHOD');
             $bootstrap->run($url, $method)->display();
-        } catch (\Exception $ex) {
+        } catch (\Throwable $ex) {
+        
+            error_log("========== ERROR GLPLANNING ==========");
+            error_log("TIPO: " . get_class($ex));
+            error_log("MENSAJE: " . $ex->getMessage());
+            error_log("ARCHIVO: " . $ex->getFile());
+            error_log("LINEA: " . $ex->getLine());
+            error_log("TRACE: " . $ex->getTraceAsString());
+            error_log("======================================");
+        
+            http_response_code(500);
             display_exception($ex);
         }
     }
