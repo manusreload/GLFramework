@@ -909,10 +909,8 @@ function get_request_url($forceSsl = false) {
 
 function get_full_url($path, $forceSsl = false) {
 
-    if(strpos($path, "/") === 0) {
-        $path = substr($path, 1);
-    }
-    return get_protocol() . "://" . $_SERVER['HTTP_HOST'] . $path;
+    // La ruta se une al host con una sola barra
+    return get_protocol($forceSsl) . "://" . $_SERVER['HTTP_HOST'] . "/" . ltrim($path, "/");
 
 
 }

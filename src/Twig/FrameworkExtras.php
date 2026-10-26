@@ -178,6 +178,10 @@ class FrameworkExtras extends Extra
      */
     public function implode($array, $separator)
     {
+        // PHP 7 devolvia null (con warning) si no era un array; PHP 8 lanza TypeError
+        if (!is_array($array)) {
+            return null;
+        }
         return implode($separator, $array);
     }
 
