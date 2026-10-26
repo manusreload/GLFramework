@@ -62,7 +62,8 @@ class ResourceManager
                 }
                 //$base = realpath($module->getDirectory());
                 //$index = strpos($path, $base);
-                return get_full_url($path);
+                // toUrl() convierte la ruta del fichero en URL (respeta el base path de la instalacion)
+                return get_full_url(Bootstrap::getSingleton()->toUrl($path));
             }
         }
         if($module !== ModuleManager::getInstance()->getMainModule()) {
