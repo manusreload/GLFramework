@@ -658,7 +658,7 @@ function fix_url($url)
  * @param int $i
  * @return string
  */
-function display_exception(Exception $ex, $i = 1, $output = true)
+function display_exception(\Throwable $ex, $i = 1, $output = true)
 {
     $data = '';
     $data .= '<h3>(' . $i . ') ' . $ex->getMessage() . '</h3> at ' . $ex->getFile() . ':' . $ex->getLine();
