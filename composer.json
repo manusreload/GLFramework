@@ -1,47 +1,33 @@
 {
-  "name": "gestionlan/framework",
   "license": "proprietary",
-  "version":"0.2.1",
-  "description":"",
-  "authors": [
-    {
-      "name": "Manuel Muñoz Rosa",
-      "email": "mmunoz@gestionlan.com"
-    }
-  ],
-  "autoload" : {
+  "name": "gestionlan/planning_jarmauto",
+  "description": "",
+  "require": {
+    "gestionlan/framework": "dev-master",
+    "thruway/client": "^0.5",
+    "noone-silent/pawl-transport": "^0.5",
+    "abcaeffchen/sephpa": "2.0.0-beta1",
+    "symfony/translation": "^6.0|^7.0",
+    "symfony/var-dumper": "^6.0|^7.0",
+    "luecano/numero-a-letras": "3.0.0",
+    "postal/postal": "^2.0",
+    "phpoffice/phpspreadsheet": "^3.10",
+    "smalot/pdfparser": "dev-master"
+  },
+  "autoload":
+  {
     "psr-4": {
-      "GLFramework\\": "src/"
+      "GLJarmauto\\": "src/"
     },
     "files": [
-      "src/functions.php"
+      "src/funciones.php"
     ]
   },
-  "bin": ["bin/gl"],
-  "require": {
-    "twig/twig": "^3.30",
-    "symfony/yaml": "~6.1|~5.2",
-    "altorouter/altorouter": "2.0.1",
-    "phpmailer/phpmailer": "~6.5",
-    "wikimedia/composer-merge-plugin": "v2.0.0",
-    "nuovo/spreadsheet-reader": "*",
-    "tijsverkoyen/css-to-inline-styles": "^1.5",
-    "maximebf/debugbar": "1.*",
-    "psr/log": ">= 1.0.0",
-    "symfony/dom-crawler": "^6.4 || ^7.4",
-    "symfony/mailer": "^6.4 || ^7.4",
-    "tecnickcom/tcpdf": "^6.2",
-    "phpoffice/phpspreadsheet": "^3.10",
-    "mtdowling/cron-expression": "^1.2",
-    "doctrine/orm": "^2.6",
-    "symfony/translation": "*"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "^9.5"
-  },
+  "minimum-stability": "dev",
   "extra": {
     "merge-plugin": {
       "include": [
+        "vendor/gestionlan/framework/modules/*/composer.json",
         "modules/*/composer.json"
       ]
     }
