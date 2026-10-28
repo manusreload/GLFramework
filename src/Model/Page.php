@@ -88,11 +88,12 @@ class Page extends Model
     public function generate($controller)
     {
         if (!$controller instanceof Controller) {
-            $controller = new $controller('', null);
+            // Sin ejecutar el constructor: solo se leen propiedades ($admin, $name, $description).
+            $controller = (new \ReflectionClass($controller))->newInstanceWithoutConstructor();
         }
         $this->controller = get_class($controller);
         $this->admin = $controller->admin;
-        $this->title = $controller->name;
+        $this->title = $controller->name ?: get_class($controller);
         $this->description = $controller->description;
     }
 

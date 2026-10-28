@@ -206,7 +206,9 @@ class users extends AuthController
 
     public function isPagePermission($controller)
     {
-        $ins = new $controller();
+        // Sin ejecutar el constructor: solo se necesitan la clase y sus propiedades
+        // ($admin, $allowed). Los constructores pueden procesar $_POST/$_FILES.
+        $ins = (new \ReflectionClass($controller))->newInstanceWithoutConstructor();
         if(Events::dispatch('isUserAllowed', array($ins, $this->users))->any(DISALLOW_USER))
         {
             return false;
