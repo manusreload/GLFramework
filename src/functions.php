@@ -747,7 +747,8 @@ function function_dump($function)
         return function_closure_dump($function);
     }
     if (is_array($function)) {
-        return get_class($function[0]) . '::' . $function[1];
+        $class = is_object($function[0]) ? get_class($function[0]) : (string) $function[0];
+        return $class . '::' . $function[1];
     }
 }
 

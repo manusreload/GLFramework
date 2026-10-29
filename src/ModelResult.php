@@ -310,7 +310,8 @@ class ModelResult implements \IteratorAggregate
 
     public function __toString()
     {
-        return "ModelResult{" . $this->count() . " of " . get_class($this->instance) . "}";
+        $class = is_object($this->model_class) ? get_class($this->model_class) : (string) $this->model_class;
+        return "ModelResult{" . $this->count() . " of " . $class . "}";
     }
 
 

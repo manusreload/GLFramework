@@ -87,8 +87,10 @@ class ControllerCollector extends DataCollector implements Renderable
             if($item->isPublic())
             {
                 $value = $this->controllerStorage->{$item->name};
-                if(is_array($value)) {
+                if(is_object($value)) {
                     $array[$item->name] = get_class($value);
+                } else if(is_array($value)) {
+                    $array[$item->name] = 'array';
                 } else if(is_string($value)) {
                     $array[$item->name] = $value;
                 } else {

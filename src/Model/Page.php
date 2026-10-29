@@ -65,10 +65,10 @@ class Page extends Model
 
     public function getByController($controller)
     {
-        if (!is_string($controller)) {
+        if (is_object($controller)) {
             $name = get_class($controller);
         } else {
-            $name = $controller;
+            $name = (string) $controller;
         }
         if (self::$cache === null) {
             self::$cache = array();
