@@ -147,7 +147,7 @@ class AuthController extends Controller implements Middleware
         }
         if ($this->requireLogin) {
             if (!Session::has($this->session_key)) {
-                if (strpos(Server::get('REQUEST_URI'), '/login') === false) {
+                if (strpos(Server::get('REQUEST_URI', ''), '/login') === false) {
                     if (!isset($_GET['logout'])) {
                         $this->addMessage($this->reasonMessage, 'warning');
                     }

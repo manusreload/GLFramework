@@ -544,6 +544,7 @@ class Model
      */
     public function build($result)
     {
+        $result = $result ?: [];
         $modelResult = new ModelResult($this);
         $modelResult->models = $result;
         if (count($result) > 0) {

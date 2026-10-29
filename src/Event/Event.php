@@ -49,7 +49,8 @@ class Event
         $tag = $this->module . " " . $this->definition;
 //        Debugbar::timer($key, $this->name . " " . $tag);
         if (is_callable($this->fn)) {
-            $result = call_user_func_array($this->fn, $args);
+            // array_values: en PHP 8 las claves string se pasan como parámetros con nombre
+            $result = call_user_func_array($this->fn, array_values($args));
         } else {
             Log::getInstance()
                ->error('Can not call event: ' . $this->name . ' from: ' . $this->module . " " . $this->definition, array('events'));

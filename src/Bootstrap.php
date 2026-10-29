@@ -236,7 +236,7 @@ class Bootstrap
      */
     public static function autoDetectConfig($folder = '', $default = 'config.yml')
     {
-        $host = Server::get('HTTP_HOST');
+        $host = Server::get('HTTP_HOST', '');
         if (strpos($host, ':') !== false) {
             $host = substr($host, 0, strpos($host, ':'));
         }

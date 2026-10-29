@@ -70,20 +70,27 @@ class PHPMailer extends MailSystem
     }
 
     /**
-     * TODO
+     * Envío por SMTP con los datos de la configuración 'mail'
      *
-     * @return mixed
+     * @param \PHPMailer\PHPMailer\PHPMailer $mailer
      */
-    public function getTransport()
+    protected function configure($mailer)
     {
         $config = $this->config;
-        $transport = \Swift_SmtpTransport::newInstance($config['mail']['hostname'], $config['mail']['port']);
-        $transport->setUsername($config['mail']['username']);
-        $transport->setPassword($this->getPassword());
-        if(isset($config['mail']['encryption'])) {
-            $transport->setEncryption($config['mail']['encryption']);
+        $mailer->isSMTP();
+        $mailer->Host = $config['mail']['hostname'];
+        $mailer->Port = (int) $config['mail']['port'];
+        if (!empty($config['mail']['username'])) {
+            $mailer->SMTPAuth = true;
+            $mailer->Username = $config['mail']['username'];
+            $mailer->Password = (string) $this->getPassword();
         }
-        return $transport;
+        if (!empty($config['mail']['encryption'])) {
+            $mailer->SMTPSecure = $config['mail']['encryption'];
+        } else {
+            // Swiftmailer no hacía STARTTLS si no se indicaba 'encryption'
+            $mailer->SMTPAutoTLS = false;
+        }
     }
 
     /**

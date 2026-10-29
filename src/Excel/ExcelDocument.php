@@ -104,7 +104,8 @@ class ExcelDocument
      */
     public function setCellValueByName($name, $value)
     {
-        return $this->sheet->setCellValue($name, $value, true);
+        $this->sheet->setCellValue($name, $value);
+        return $this->sheet->getCell($name);
     }
 
     /**

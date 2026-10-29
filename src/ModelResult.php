@@ -230,7 +230,7 @@ class ModelResult implements \IteratorAggregate
      */
     public function limit($length, $start = null)
     {
-        return new ModelResult($this->model_class, array_slice($this->models, $start, $length));
+        return new ModelResult($this->model_class, array_slice($this->models, $start ?? 0, $length));
     }
 
     /**

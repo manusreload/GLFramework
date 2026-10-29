@@ -44,7 +44,23 @@ abstract class MailSystem
     }
 
     /**
-     * @return \Swift_Transport
+     * Devuelve una instancia nueva de PHPMailer configurada para este sistema de envío
+     *
+     * @return \PHPMailer\PHPMailer\PHPMailer
      */
-    abstract public function getTransport();
+    public function getTransport()
+    {
+        $mailer = new \PHPMailer\PHPMailer\PHPMailer(true);
+        $mailer->CharSet = \PHPMailer\PHPMailer\PHPMailer::CHARSET_UTF8;
+        $mailer->isHTML(true);
+        $this->configure($mailer);
+        return $mailer;
+    }
+
+    /**
+     * Configura el transporte del mailer
+     *
+     * @param \PHPMailer\PHPMailer\PHPMailer $mailer
+     */
+    abstract protected function configure($mailer);
 }

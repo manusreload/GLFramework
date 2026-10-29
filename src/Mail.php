@@ -35,13 +35,12 @@ use TijsVerkoyen\CssToInlineStyles\CssToInlineStyles;
  */
 class Mail
 {
-    private static $mailer;
     public $config;
     private $from;
     private $fromName;
     private $logger;
 
-    private $replyTo = false;
+    private $replyTo = array();
 
     /**
      * Mail constructor.
@@ -92,18 +91,15 @@ class Mail
     }
 
     /**
-     * Este transporte se genera mediante la configuración
+     * Este transporte se genera mediante la configuración. Devuelve una instancia nueva en cada llamada
      *
-     * @return \Swift_Transport
+     * @return \PHPMailer\PHPMailer\PHPMailer
      */
     public function getTransport()
     {
-        if (!self::$mailer) {
-
-            self::$mailer = $this->getMailSystem()->getTransport();
-            Events::dispatch('onMailTransport', array('transport' => self::$mailer));
-        }
-        return self::$mailer;
+        $mailer = $this->getMailSystem()->getTransport();
+        Events::dispatch('onMailTransport', array('transport' => $mailer));
+        return $mailer;
     }
 
     /**
@@ -116,10 +112,13 @@ class Mail
      * @param array $cc
      * @param array $bcc
      * @return int
+     * @throws \PHPMailer\PHPMailer\Exception
      */
     public function send($to, $subject, $message, $attachments = array(), $cc = array(), $bcc = array())
     {
-        $mail = new \Swift_Message($subject, $message, 'text/html', 'UTF-8');
+        $mail = $this->getTransport();
+        $mail->Subject = $subject;
+        $mail->Body = $message;
         if($this->from != '')
         {
             $mail->setFrom($this->from, $this->fromName);
@@ -127,20 +126,16 @@ class Mail
             $mail->setFrom('framework@gestionlan.com', "Manuel de Gestionlan");
 
         }
-        $mail->setTo($to);
-        $mail->setCc($cc);
-        $mail->setBcc($bcc);
+        $this->addRecipients($mail, 'addAddress', $to);
+        $this->addRecipients($mail, 'addCC', $cc);
+        $this->addRecipients($mail, 'addBCC', $bcc);
         if($this->replyTo) {
             foreach ($this->replyTo as $addr => $name) {
-                $mail->setReplyTo($addr, $name);
+                $mail->addReplyTo($addr, (string) $name);
             }
         }
         foreach ($attachments as $key => $attachment) {
-            $atta = \Swift_Attachment::fromPath($attachment);
-            if (!is_int($key)) {
-                $atta->setFilename($key);
-            }
-            $mail->attach($atta);
+            $mail->addAttachment($attachment, is_int($key) ? '' : $key);
         }
 
         return $this->done($mail);
@@ -152,35 +147,73 @@ class Mail
      * @param $to
      * @param $subject
      * @param $message
-     * @return \Swift_Message
+     * @return \PHPMailer\PHPMailer\PHPMailer
+     * @throws \PHPMailer\PHPMailer\Exception
      */
     public function build($to, $subject, $message)
     {
-        $mail = new \Swift_Message($subject, $message, 'text/html', 'UTF-8');
+        $mail = $this->getTransport();
+        $mail->Subject = $subject;
+        $mail->Body = $message;
         $mail->setFrom($this->from, $this->fromName);
-        $mail->setTo($to);
+        $this->addRecipients($mail, 'addAddress', $to);
         return $mail;
     }
 
     /**
-     * TODO
+     * Envia el email. Devuelve el número de destinatarios (0 si falla)
      *
-     * @param $mail \Swift_Message
+     * @param $mail \PHPMailer\PHPMailer\PHPMailer
      * @return int
+     * @throws \PHPMailer\PHPMailer\Exception
      */
     public function done($mail)
     {
-        $transport = $this->getTransport();
-        $mailer = new \Swift_Mailer($transport);
+        $emails = array();
+        foreach ($mail->getToAddresses() as $address) {
+            $emails[$address[0]] = $address[1] !== '' ? $address[1] : null;
+        }
 
         Events::dispatch('onEmail', array(
-            'emails' => $mail->getTo(),
-            'subject' => $mail->getSubject(),
-            'message' => $mail->getBody(),
-            'transport' => $transport
+            'emails' => $emails,
+            'subject' => $mail->Subject,
+            'message' => $mail->Body,
+            'transport' => $mail
         ));
-        $result = $mailer->send($mail, $fail);
-        return $result;
+        if (!$mail->send()) {
+            return 0;
+        }
+        return count($mail->getToAddresses()) + count($mail->getCcAddresses()) + count($mail->getBccAddresses());
+    }
+
+    /**
+     * Añade destinatarios. Acepta un email, una lista de emails o un array email => nombre
+     *
+     * @param \PHPMailer\PHPMailer\PHPMailer $mail
+     * @param string $method addAddress, addCC o addBCC
+     * @param string|array|null $recipients
+     * @throws \PHPMailer\PHPMailer\Exception
+     */
+    private function addRecipients($mail, $method, $recipients)
+    {
+        if (empty($recipients)) {
+            return;
+        }
+        if (!is_array($recipients)) {
+            $recipients = array($recipients);
+        }
+        foreach ($recipients as $key => $value) {
+            if (is_int($key)) {
+                $address = $value;
+                $name = '';
+            } else {
+                $address = $key;
+                $name = (string) $value;
+            }
+            if ($address !== null && trim($address) !== '') {
+                $mail->$method(trim($address), $name);
+            }
+        }
     }
 
     /**

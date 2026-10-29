@@ -34,13 +34,12 @@ namespace GLFramework\Mail;
 class Mail extends MailSystem
 {
     /**
-     * TODO
+     * Envío mediante la función mail() de PHP (el remitente se pasa con -f a sendmail)
      *
-     * @return \Swift_MailTransport
+     * @param \PHPMailer\PHPMailer\PHPMailer $mailer
      */
-    public function getTransport()
+    protected function configure($mailer)
     {
-        // TODO: Implement getTransport() method.
-        return new \Swift_MailTransport('-f %s');
+        $mailer->isMail();
     }
 }
