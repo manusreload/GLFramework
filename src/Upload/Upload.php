@@ -98,7 +98,10 @@ class Upload
      */
     public function getLength()
     {
-        return count($this->upload['name']);
+        if (!isset($this->upload['name'])) {
+            return 0;
+        }
+        return is_array($this->upload['name']) ? count($this->upload['name']) : 1;
     }
 
     /**
