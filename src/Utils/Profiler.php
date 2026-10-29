@@ -21,7 +21,7 @@ class Profiler
     }
 
     public static function stop($timer) {
-        $items = self::$timers[$timer];
+        $items = self::$timers[$timer] ?? [];
         if(count($items) > 0) {
             $item = & self::$timers[$timer][count($items) - 1];
             $item['stop'] = microtime(true);

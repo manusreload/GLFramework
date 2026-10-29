@@ -184,7 +184,7 @@ function fix_date_format($date, $format = 'd-m-Y')
 function reArrayFiles(&$file_post)
 {
     $file_ary = array();
-    $file_count = count($file_post['name']);
+    $file_count = isset($file_post['name']) && is_array($file_post['name']) ? count($file_post['name']) : 0;
     $file_keys = array_keys($file_post);
 
     for ($i = 0; $i < $file_count; $i++) {
