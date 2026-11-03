@@ -48,26 +48,33 @@ class CSVManipulator extends ManipulatorCore
     public function open($file, $config = array())
     {
         $this->separator = $this->detectSeparator($file);
-        return $this->handle = fopen($file, 'rb');
+        $this->handle = fopen($file, 'rb');
+        if ($this->handle === false) {
+            throw new \RuntimeException("No se puede abrir el fichero: $file");
+        }
+        return $this->handle;
     }
 
     /**
      * TODO
      *
-     * @return array
+     * @return array|bool
      */
     public function next()
     {
-        return $this->map(fgetcsv($this->handle, null, $this->separator, '"', '\\'));
+        if (!is_resource($this->handle)) {
+            return false;
+        }
+        $row = fgetcsv($this->handle, null, $this->separator, '"', '\\');
+        return $row === false ? false : $this->map($row);
     }
 
     private function map($items) {
-
+        $encoding = $this->encoding ?: 'UTF-8';
         foreach ($items as &$item) {
-            $item = trim(mb_convert_encoding($item, "UTF-8", $this->encoding));
+            $item = trim(mb_convert_encoding((string)$item, "UTF-8", $encoding));
         }
         return $items;
-
     }
 
     /**
