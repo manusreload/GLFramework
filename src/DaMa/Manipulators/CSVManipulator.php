@@ -72,7 +72,10 @@ class CSVManipulator extends ManipulatorCore
     private function map($items) {
         $encoding = $this->encoding ?: 'UTF-8';
         foreach ($items as &$item) {
-            $item = trim(mb_convert_encoding((string)$item, "UTF-8", $encoding));
+            $item = (string)$item;
+            // La cabecera puede ser ASCII puro y las filas venir en Windows-1252
+            $from = ($encoding === 'UTF-8' && !mb_check_encoding($item, 'UTF-8')) ? 'Windows-1252' : $encoding;
+            $item = trim(mb_convert_encoding($item, "UTF-8", $from));
         }
         return $items;
     }
@@ -90,7 +93,7 @@ class CSVManipulator extends ManipulatorCore
         if ($handle) {
             $minSeparator = $matches[0];
             if (($line = fgets($handle)) !== false) {
-                $this->encoding = mb_detect_encoding($line);
+                $this->encoding = mb_detect_encoding($line, array('UTF-8', 'Windows-1252'), true);
                 $line = mb_convert_encoding($line, "UTF-8", $this->encoding);
                 $minOffset = strlen($line);
                 foreach ($matches as $item) {
