@@ -92,7 +92,8 @@ class ExcelDocument
      */
     public function setCellValue($column, $row, $value)
     {
-        return $this->sheet->setCellValue([$column + 1, $row], $value);
+        $this->sheet->setCellValue([$column + 1, $row], $value);
+        return $this->sheet->getCell([$column + 1, $row]);
     }
 
     /**
