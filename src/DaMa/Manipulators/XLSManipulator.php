@@ -26,7 +26,9 @@
 
 namespace GLFramework\DaMa\Manipulators;
 
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
@@ -82,7 +84,18 @@ class XLSManipulator extends ManipulatorCore
         $range = 'A' . $this->row . ':' . $this->highestColumn . $this->row;
         $this->row++;
         $values = $this->sheet->rangeToArray($range, '', true, true, false);
-        return array_map(array($this, 'map'), $values[0]);
+        $row = $values[0];
+        // PhpSpreadsheet formatea el formato builtin 14 como 'm/d/yyyy' (PHPExcel usaba 'mm-dd-yy').
+        // Se mantiene el formato antiguo para que fix_date() siga interpretando bien las fechas.
+        foreach ($row as $index => $value) {
+            $cell = $this->sheet->getCell([$index + 1, $this->row - 1]);
+            if ($cell->getDataType() === DataType::TYPE_NUMERIC
+                && $cell->getStyle()->getNumberFormat()->getBuiltInFormatCode() === 14
+                && is_numeric($cell->getCalculatedValue())) {
+                $row[$index] = Date::excelToDateTimeObject($cell->getCalculatedValue())->format('m-d-y');
+            }
+        }
+        return array_map(array($this, 'map'), $row);
     }
 
     /**
