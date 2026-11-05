@@ -144,7 +144,7 @@ class ExcelDocument
         foreach ($header as $name => $item) {
             $this->setCellValue($colum++, $row, $name);
         }
-        $this->setStyle($styleArray, 0, $row, $colum, $row);
+        $this->setStyle($styleArray, 0, $row, $colum - 1, $row);
         $row++;
         foreach ($models as $model) {
             $colum = 0;
@@ -155,7 +155,7 @@ class ExcelDocument
         }
         $colum = 0;
         foreach ($header as $name => $item) {
-            $this->sheet->getColumnDimensionByColumn($colum++)->setAutoSize(true);
+            $this->sheet->getColumnDimensionByColumn(++$colum)->setAutoSize(true);
         }
 
         return $row;
@@ -171,7 +171,7 @@ class ExcelDocument
 
         // Redirect output to a client’s web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="' . $name . '.xls"');
+        header('Content-Disposition: attachment;filename="' . $name . '.xlsx"');
         header('Cache-Control: max-age=0');
         // If you're serving to IE 9, then the following may be needed
         header('Cache-Control: max-age=1');
