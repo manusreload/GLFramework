@@ -29,6 +29,7 @@ namespace GLFramework\DaMa\Manipulators;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
@@ -66,7 +67,13 @@ class XLSManipulator extends ManipulatorCore
      */
     public function open($file, $config = array())
     {
-        $reader = IOFactory::createReader($this->readerType);
+        // Detectar el tipo real: hay .xlsx subidos/guardados con extensión .xls y al revés
+        try {
+            $type = IOFactory::identify($file, array('Xls', 'Xlsx', 'Ods', 'Csv'));
+        } catch (\Throwable $e) {
+            $type = $this->readerType;
+        }
+        $reader = IOFactory::createReader($type);
         $this->reader = $reader->load($file);
         $this->changeSheet(0);
     }
@@ -93,9 +100,46 @@ class XLSManipulator extends ManipulatorCore
                 && $cell->getStyle()->getNumberFormat()->getBuiltInFormatCode() === 14
                 && is_numeric($cell->getCalculatedValue())) {
                 $row[$index] = Date::excelToDateTimeObject($cell->getCalculatedValue())->format('m-d-y');
+            } else {
+                $row[$index] = $this->compatValue($cell, $value);
             }
         }
         return array_map(array($this, 'map'), $row);
+    }
+
+    /**
+     * Mantiene la salida compatible con el lector anterior (nuovo/spreadsheet-reader):
+     *  - Booleanos como "1" / "0" en vez de "TRUE" / "FALSE"
+     *  - Números sin separador de miles ("8677.69 €" y no "8,677.69 €")
+     * Fechas y textos se devuelven tal como los formatea PhpSpreadsheet.
+     *
+     * @param \PhpOffice\PhpSpreadsheet\Cell\Cell $cell
+     * @param string $formatted valor formateado por PhpSpreadsheet
+     * @return string
+     */
+    private function compatValue($cell, $formatted)
+    {
+        $value = $cell->getCalculatedValue();
+        if (is_bool($value)) {
+            return $value ? '1' : '0';
+        }
+        if (!is_int($value) && !is_float($value)) {
+            return $formatted;
+        }
+        $code = $cell->getStyle()->getNumberFormat()->getFormatCode();
+        if ($code === NumberFormat::FORMAT_GENERAL || Date::isDateTimeFormatCode($code)) {
+            return $formatted;
+        }
+        // Quitar el separador de miles y los '#' (#,##0.00 => 0.00, #,###,##0.00 => 0.00).
+        // Con '#' sin agrupar PhpSpreadsheet rellena con ceros (##0.00 => 000.00).
+        $code = preg_replace_callback('/[#0,]+/', function ($m) {
+            $digits = str_replace(array('#', ','), '', $m[0]);
+            return $digits === '' ? '0' : $digits;
+        }, $code);
+        // Solo la primera sección del formato: los negativos salen con '-' y no como (417.35)
+        $code = explode(';', $code)[0];
+        $result = NumberFormat::toFormattedString(abs($value), $code);
+        return $value < 0 ? '-' . $result : $result;
     }
 
     /**
